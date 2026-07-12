@@ -1,0 +1,37 @@
+{
+  "expo": {
+    "name": "Scene Nearby",
+    "slug": "scene-nearby",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "backgroundColor": "#0a0a0a"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.cairn.scenenearby",
+      "buildNumber": "1.0.0",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Scene Nearby uses your location to show you nearby filming locations.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Scene Nearby uses your location to alert you when you're near a filming location."
+      }
+    },
+    "android": {
+      "package": "com.cairn.scenenearby",
+      "adaptiveIcon": {
+        "backgroundColor": "#0a0a0a"
+      }
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Scene Nearby uses your location to alert you when you're near a filming location.",
+          "locationWhenInUsePermission": "Scene Nearby uses your location to show you nearby filming locations."
+        }
+      ]
+    ]
+  }
+}
