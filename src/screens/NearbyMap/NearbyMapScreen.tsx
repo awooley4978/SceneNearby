@@ -12,7 +12,7 @@ import {
 import MapView, { Marker, Region } from 'react-native-maps';
 import { theme } from '../../theme';
 import { allLocations, mockRatings } from '../../data/sampleData';
-import { categoryColors, CITY_NAMES } from '../../models';
+import { categoryColors } from '../../models';
 import { LocationCard } from '../../components/LocationCard';
 import { StarRating } from '../../components/StarRating';
 import { CategoryBadge } from '../../components/CategoryBadge';
@@ -25,10 +25,17 @@ export const NearbyMapScreen: React.FC<{ navigation: any }> = ({ navigation }) =
   const [selectedLocation, setSelectedLocation] = useState<FilmingLocation | null>(null);
   const [showList, setShowList] = useState(false);
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set(['nyc-002', 'nyc-007', 'la-001', 'ldn-006']));
-  const [selectedCity, setSelectedCity] = useState('New York City');
+  const [selectedCity, setSelectedCity] = useState<string>(() =>
+    Array.from(new Set(allLocations.map((l) => l.city).filter(Boolean))).sort()[0] || 'New York City'
+  );
   const [showCityPicker, setShowCityPicker] = useState(false);
   const mapRef = useRef<MapView>(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  // Derive city list from location data — always in sync, never undefined
+  const cityNames = Array.from(
+    new Set((allLocations ?? []).map((loc) => loc.city).filter(Boolean))
+  ).sort();
 
   const initialRegion: Region = {
     latitude: 40.7580,
@@ -129,7 +136,7 @@ export const NearbyMapScreen: React.FC<{ navigation: any }> = ({ navigation }) =
       {showCityPicker && (
         <View style={styles.cityPickerDropdown}>
           <ScrollView style={{ maxHeight: 300 }}>
-            {CITY_NAMES.map((city) => (
+            {cityNames.map((city) => (
               <TouchableOpacity
                 key={city}
                 style={[styles.cityPickerItem, selectedCity === city && styles.cityPickerItemActive]}

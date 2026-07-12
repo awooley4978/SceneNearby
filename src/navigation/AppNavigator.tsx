@@ -288,6 +288,7 @@ export const AppNavigator: React.FC = () => {
         screenOptions={{
           headerShown: false,
         }}
+        initialRouteName="Discover"
       >
         <Tab.Screen name="Nearby" component={NearbyStack} />
         <Tab.Screen name="Discover" component={DiscoverStack} />
