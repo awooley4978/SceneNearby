@@ -8,6 +8,7 @@ import {
   ScrollView,
   Dimensions,
 } from 'react-native';
+import * as Location from 'expo-location';
 import { theme } from '../../theme';
 import { CITIES } from '../../models';
 
@@ -43,10 +44,10 @@ export const LocationSetupScreen: React.FC<LocationSetupScreenProps> = ({
 }) => {
   const [locationGranted, setLocationGranted] = useState<boolean | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-
-  // Mock: default location is Times Square, NYC
-  const mockCity = 'New York City';
-  const mockState = 'NY';
+  const [detectedCity, setDetectedCity] = useState<string | null>(null);
+  const [detectedState, setDetectedState] = useState<string | null>(null);
+  const [detectedCoords, setDetectedCoords] = useState<{lat: number; lng: number} | null>(null);
+  const [isLocating, setIsLocating] = useState(false);
 
   const filteredCities = useMemo(() => {
     if (!searchQuery.trim()) return [];
@@ -57,11 +58,10 @@ export const LocationSetupScreen: React.FC<LocationSetupScreenProps> = ({
   }, [searchQuery]);
 
   const handleExploreHere = () => {
-    // Use Times Square as default center for NYC
     onComplete({
-      activeCity: 'New York City',
-      activeCityLat: 40.7580,
-      activeCityLng: -73.9855,
+      activeCity: detectedCity || 'New York City',
+      activeCityLat: detectedCoords?.lat ?? 40.7580,
+      activeCityLng: detectedCoords?.lng ?? -73.9855,
     });
   };
 
@@ -108,9 +108,37 @@ export const LocationSetupScreen: React.FC<LocationSetupScreenProps> = ({
           </Text>
           <TouchableOpacity
             style={styles.primaryButton}
-            onPress={() => setLocationGranted(true)}
+            onPress={async () => {
+                setIsLocating(true);
+                try {
+                  const { status } = await Location.requestForegroundPermissionsAsync();
+                  if (status !== 'granted') {
+                    setLocationGranted(false);
+                    setIsLocating(false);
+                    return;
+                  }
+                  const pos = await Location.getCurrentPositionAsync({});
+                  const { latitude, longitude } = pos.coords;
+                  const geocode = await Location.reverseGeocodeAsync({ latitude, longitude });
+                  if (geocode.length > 0 && geocode[0].city) {
+                    setDetectedCity(geocode[0].city);
+                    setDetectedState(geocode[0].region || '');
+                    setDetectedCoords({ lat: latitude, lng: longitude });
+                  } else {
+                    setDetectedCity('New York City');
+                    setDetectedCoords({ lat: 40.7580, lng: -73.9855 });
+                  }
+                  setLocationGranted(true);
+                } catch {
+                  setDetectedCity('New York City');
+                  setDetectedCoords({ lat: 40.7580, lng: -73.9855 });
+                  setLocationGranted(true);
+                } finally {
+                  setIsLocating(false);
+                }
+              }}
           >
-            <Text style={styles.primaryButtonText}>Enable Location</Text>
+            <Text style={styles.primaryButtonText}>{isLocating ? 'Detecting...' : 'Enable Location'}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.secondaryButton}
@@ -130,10 +158,15 @@ export const LocationSetupScreen: React.FC<LocationSetupScreenProps> = ({
         <View style={styles.content}>
           <Text style={styles.emoji}>🗺️</Text>
           <Text style={styles.title}>Welcome to Scene Nearby!</Text>
-          <Text style={styles.locationText}>
-            It looks like you're in{' '}
-            <Text style={styles.locationHighlight}>{mockCity}</Text>.
-          </Text>
+          {isLocating ? (
+            <Text style={styles.locationText}>Detecting your location...</Text>
+          ) : (
+            <Text style={styles.locationText}>
+              It looks like you're in{' '}
+              <Text style={styles.locationHighlight}>{detectedCity || 'New York City'}</Text>
+              {detectedState ? `, ${detectedState}` : ''}.
+            </Text>
+          )}
 
           <TouchableOpacity style={styles.primaryButton} onPress={handleExploreHere}>
             <Text style={styles.primaryButtonText}>Yes, show me around!</Text>
