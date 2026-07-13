@@ -120,10 +120,17 @@ export const LocationSetupScreen: React.FC<LocationSetupScreenProps> = ({
                   const pos = await Location.getCurrentPositionAsync({});
                   const { latitude, longitude } = pos.coords;
                   const geocode = await Location.reverseGeocodeAsync({ latitude, longitude });
-                  if (geocode.length > 0 && geocode[0].city) {
-                    setDetectedCity(geocode[0].city);
-                    setDetectedState(geocode[0].region || '');
-                    setDetectedCoords({ lat: latitude, lng: longitude });
+                  if (geocode.length > 0) {
+                    const addr = geocode[0];
+                    const city = addr.city || addr.subregion || addr.region || null;
+                    if (city) {
+                      setDetectedCity(city);
+                      setDetectedState(addr.region || '');
+                      setDetectedCoords({ lat: latitude, lng: longitude });
+                    } else {
+                      setDetectedCity('New York City');
+                      setDetectedCoords({ lat: 40.7580, lng: -73.9855 });
+                    }
                   } else {
                     setDetectedCity('New York City');
                     setDetectedCoords({ lat: 40.7580, lng: -73.9855 });

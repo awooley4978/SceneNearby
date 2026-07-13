@@ -17,6 +17,7 @@ import { LocationCard } from '../../components/LocationCard';
 import { StarRating } from '../../components/StarRating';
 import { CategoryBadge } from '../../components/CategoryBadge';
 import { MoviePoster } from '../../components/MoviePoster';
+import { getOnboardingData } from '../../services/StorageService';
 import type { FilmingLocation } from '../../models';
 
 const { width, height } = Dimensions.get('window');
@@ -25,17 +26,26 @@ export const NearbyMapScreen: React.FC<{ navigation: any }> = ({ navigation }) =
   const [selectedLocation, setSelectedLocation] = useState<FilmingLocation | null>(null);
   const [showList, setShowList] = useState(false);
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set(['nyc-002', 'nyc-007', 'la-001', 'ldn-006']));
-  const [selectedCity, setSelectedCity] = useState<string>(() =>
-    // Default to New York City if it exists in the data, otherwise first alphabetically
-    (() => {
-      const cities = Array.from(new Set(allLocations.map((l) => l.city).filter(Boolean))).sort();
-      return cities.includes('New York City') ? 'New York City' : (cities[0] || 'New York City');
-    })()
-  );
+  const [selectedCity, setSelectedCity] = useState<string>('New York City');
   const [showCityPicker, setShowCityPicker] = useState(false);
   const mapRef = useRef<MapView>(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [region, setRegion] = useState<Region | null>(null);
+  const [onboardingLoaded, setOnboardingLoaded] = useState(false);
+
+  // Load active city from onboarding data
+  useEffect(() => {
+    (async () => {
+      try {
+        const data = await getOnboardingData();
+        if (data?.activeCity) {
+          setSelectedCity(data.activeCity);
+        }
+      } catch {} finally {
+        setOnboardingLoaded(true);
+      }
+    })();
+  }, []);
 
   useEffect(() => {
     const cityLocs = allLocations.filter((l) => l.city === selectedCity);
