@@ -35,8 +35,16 @@ export const NearbyMapScreen: React.FC<{ navigation: any }> = ({ navigation }) =
   const [showCityPicker, setShowCityPicker] = useState(false);
   const mapRef = useRef<MapView>(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const [region, setRegion] = useState<Region | null>(null);
 
+  // NYC initial region as fallback
+  const nycRegion: Region = {
+    latitude: 40.7580,
+    longitude: -73.9855,
+    latitudeDelta: 12,
+    longitudeDelta: 12,
+  };
+
+  // Animate map to selected city's centroid
   useEffect(() => {
     const cityLocs = allLocations.filter((l) => l.city === selectedCity);
     if (cityLocs.length > 0) {
@@ -48,7 +56,6 @@ export const NearbyMapScreen: React.FC<{ navigation: any }> = ({ navigation }) =
         latitudeDelta: 0.5,
         longitudeDelta: 0.5,
       };
-      setRegion(newRegion);
       mapRef.current?.animateToRegion(newRegion, 500);
     }
   }, [selectedCity]);
@@ -129,7 +136,7 @@ export const NearbyMapScreen: React.FC<{ navigation: any }> = ({ navigation }) =
       <MapView
         ref={mapRef}
         style={styles.map}
-        region={region ?? { latitude: 40.7580, longitude: -73.9855, latitudeDelta: 12, longitudeDelta: 12 }}
+        initialRegion={nycRegion}
         showsUserLocation
         showsCompass
         mapPadding={{ top: 60, right: 16, bottom: showList ? 280 : 120, left: 16 }}

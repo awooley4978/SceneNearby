@@ -5,13 +5,17 @@ import { theme } from '../theme';
 interface MoviePosterProps {
   title: string;
   emoji?: string;
-  size?: 'small' | 'medium' | 'large';
+  size?: 'mini' | 'small' | 'medium' | 'large' | 'hero';
+  isMovie?: boolean;
+  category?: string;
 }
 
 const posterSizes = {
+  mini: { width: 28, height: 40, fontSize: 14 },
   small: { width: 40, height: 56, fontSize: 20 },
   medium: { width: 60, height: 84, fontSize: 28 },
   large: { width: 80, height: 112, fontSize: 36 },
+  hero: { width: 100, height: 140, fontSize: 44 },
 };
 
 export const MoviePoster: React.FC<MoviePosterProps> = ({
