@@ -50,7 +50,6 @@ const MEDIA_INTERESTS = [
 
 export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
   const [currentPage, setCurrentPage] = useState(0);
-  const [discoveryIntent, setDiscoveryIntent] = useState<'travel' | 'discover' | null>(null);
   const [travelStyle, setTravelStyle] = useState<DiscoveryFrequency>('essentials');
   const [contentLoves, setContentLoves] = useState<string[]>([]);
   const [travelMode, setTravelMode] = useState<string>('walking');
@@ -58,7 +57,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
   const flatListRef = useRef<FlatList>(null);
   const scrollX = useRef(new Animated.Value(0)).current;
 
-  const totalPages = 9;
+  const totalPages = 8;
 
   const onScroll = Animated.event(
     [{ nativeEvent: { contentOffset: { x: scrollX } } }],
@@ -80,7 +79,6 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
 
   const handleComplete = () => {
     onComplete({
-      discoveryIntent,
       travelStyle,
       contentLoves,
       travelMode,
@@ -134,35 +132,6 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
         );
         case 1: return (
           <View style={styles.page}>
-            <View style={styles.gradientBg2} />
-            <TouchableOpacity
-              style={[styles.valueCard, discoveryIntent === 'travel' && styles.valueCardActive]}
-              onPress={() => setDiscoveryIntent('travel')}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.valueEmoji}>🗽</Text>
-              <Text style={styles.valueText}>Travel naturally.</Text>
-              {discoveryIntent === 'travel' && <Text style={styles.selectedBadge}>✓</Text>}
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.valueCard, discoveryIntent === 'discover' && styles.valueCardActive]}
-              onPress={() => setDiscoveryIntent('discover')}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.valueEmoji}>✨</Text>
-              <Text style={styles.valueText}>Discover unexpectedly.</Text>
-              {discoveryIntent === 'discover' && <Text style={styles.selectedBadge}>✓</Text>}
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.continueButton}
-              onPress={() => goToPage(2)}
-            >
-              <Text style={styles.continueButtonText}>Continue</Text>
-            </TouchableOpacity>
-          </View>
-        );
-        case 2: return (
-          <View style={styles.page}>
             <Text style={styles.pageEmoji}>📳</Text>
             <View style={styles.notifCard}>
               <Text style={styles.notifTitle}>📍 Scene Nearby</Text>
@@ -175,14 +144,14 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
             <Text style={styles.notifCaption}>That's exactly the experience.</Text>
           </View>
         );
-        case 3: return (
+        case 2: return (
           <View style={styles.page}>
             <Text style={styles.pageEmoji}>❤️</Text>
             <Text style={styles.pageTitle}>Let's make this yours.</Text>
             <Text style={styles.pageSubtitle}>Tell us about yourself. This is where the app starts listening.</Text>
           </View>
         );
-        case 4: return (
+        case 3: return (
           <View style={styles.page}>
             <Text style={styles.pageTitle}>How do you like to travel?</Text>
             <View style={styles.cardsColumn}>
@@ -208,7 +177,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
             </View>
           </View>
         );
-        case 5: return (
+        case 4: return (
           <View style={styles.page}>
             <Text style={styles.pageTitle}>What do you love?</Text>
             <View style={styles.loveGrid}>
@@ -231,7 +200,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
             </View>
           </View>
         );
-        case 6: return (
+        case 5: return (
           <View style={styles.page}>
             <Text style={styles.pageTitle}>How should we discover with you?</Text>
             <View style={styles.cardsColumn}>
@@ -254,7 +223,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
             </View>
           </View>
         );
-        case 7: return (
+        case 6: return (
           <View style={styles.page}>
             <Text style={styles.pageTitle}>What interests you?</Text>
             <View style={styles.cardsColumn}>
@@ -285,7 +254,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
             <Text style={styles.mediaNote}>History and Ghosts can appear someday if those apps install.</Text>
           </View>
         );
-        case 8: return (
+        case 7: return (
           <View style={styles.page}>
             <Text style={styles.pageEmoji}>🎉</Text>
             <Text style={styles.pageTitle}>You're ready.</Text>
