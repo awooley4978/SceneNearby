@@ -2,7 +2,7 @@ import { FilmingLocation, LocationCategory, LocationRating, CommunityPhoto, Movi
 
 const DEFAULT_LOCATION = { latitude: 40.7580, longitude: -73.9855 }; // Times Square, NYC
 
-function calculateDistance(
+export function calculateDistance(
   lat1: number,
   lon1: number,
   lat2: number,

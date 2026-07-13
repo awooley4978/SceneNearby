@@ -18,6 +18,7 @@ import {
   mockRatings,
   actorGroups,
   allLocationsWithActors,
+  calculateDistance,
 } from '../../data/sampleData';
 import { LocationCard } from '../../components/LocationCard';
 import { CardSkeleton } from '../../components/SkeletonLoader';
@@ -57,15 +58,19 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
   const [selectedType, setSelectedType] = useState<string>('all');
   const [refreshing, setRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeCity, setActiveCity] = useState<string | null>(null);
+  const [userLat, setUserLat] = useState<number | null>(null);
+  const [userLng, setUserLng] = useState<number | null>(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
-  // Load active city from onboarding
+  // Load user location from onboarding data
   useEffect(() => {
     (async () => {
       try {
         const data = await getOnboardingData();
-        if (data?.activeCity) setActiveCity(data.activeCity);
+        if (data?.activeCityLat && data?.activeCityLng) {
+          setUserLat(data.activeCityLat);
+          setUserLng(data.activeCityLng);
+        }
       } catch {}
     })();
   }, []);
@@ -145,18 +150,16 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
     return results;
   }, [searchQuery]);
 
+  // Constants
+  const DEFAULT_RADIUS_MILES = 50;
+  const ARRIVAL_THRESHOLD_MILES = 0.1;
+
   // Filtered locations (for the main feed)
   const filteredLocations = useMemo(() => {
     // If searching with actor results, still show filtered feed below
     let result = selectedCategory === 'all'
       ? allLocations
       : locationsByCategory(selectedCategory as LocationCategory);
-
-    // Filter by active city from onboarding
-    if (activeCity) {
-      const cityLocations = result.filter((l) => l.city === activeCity);
-      if (cityLocations.length > 0) result = cityLocations;
-    }
 
     // Apply type filter
     if (selectedType === 'movies') {
@@ -175,7 +178,18 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
       );
     }
 
-    if (sortMode === 'nearest') {
+    // Calculate distance from user for every location
+    if (userLat !== null && userLng !== null) {
+      result = result.map((loc) => ({
+        ...loc,
+        distanceFromUser: calculateDistance(userLat, userLng, loc.latitude, loc.longitude) / 1609.34, // meters to miles
+      }));
+      // Filter to within radius
+      result = result.filter((loc) => loc.distanceFromUser! <= DEFAULT_RADIUS_MILES);
+    }
+
+    // Sort by nearest (always, since we have distance data)
+    if (userLat !== null && userLng !== null) {
       result = [...result].sort((a, b) => (a.distanceFromUser || 0) - (b.distanceFromUser || 0));
     } else if (sortMode === 'rating') {
       result = [...result].sort((a, b) => {
@@ -186,13 +200,16 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
     }
 
     return result;
-  }, [selectedCategory, selectedType, searchQuery, sortMode, activeCity]);
+  }, [selectedCategory, selectedType, searchQuery, sortMode, userLat, userLng]);
 
   const nearYou = useMemo(() => {
-    return [...allLocations]
-      .sort((a, b) => (a.distanceFromUser || 0) - (b.distanceFromUser || 0))
-      .slice(0, 3);
-  }, []);
+    if (userLat === null || userLng === null) return [];
+    const withDist = allLocations.map((loc) => ({
+      ...loc,
+      distanceFromUser: calculateDistance(userLat, userLng, loc.latitude, loc.longitude) / 1609.34,
+    })).filter((loc) => loc.distanceFromUser! <= DEFAULT_RADIUS_MILES);
+    return withDist.sort((a, b) => (a.distanceFromUser || 0) - (b.distanceFromUser || 0)).slice(0, 3);
+  }, [userLat, userLng]);
 
   const onRefresh = () => {
     setRefreshing(true);

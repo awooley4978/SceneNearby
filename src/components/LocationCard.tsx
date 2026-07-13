@@ -157,11 +157,17 @@ export const LocationCard: React.FC<LocationCardProps> = ({
             {/* Distance badge — top right */}
             {location.distanceFromUser !== undefined && (
               <View style={styles.heroBadgeTopRight}>
-                <DistanceBadge
-                  distance={location.distanceFromUser < 1000
-                    ? `${Math.round(location.distanceFromUser)}m`
-                    : `${(location.distanceFromUser / 1000).toFixed(1)}km`}
-                />
+                {location.distanceFromUser < 0.1 ? (
+                  <View style={styles.arrivalBadge}>
+                    <Text style={styles.arrivalText}>YOU'RE HERE 🎉</Text>
+                  </View>
+                ) : (
+                  <DistanceBadge
+                    distance={location.distanceFromUser < 1
+                      ? `${(location.distanceFromUser * 5280).toFixed(0)}ft`
+                      : `${location.distanceFromUser.toFixed(1)}mi`}
+                  />
+                )}
               </View>
             )}
 
@@ -413,5 +419,18 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: theme.colors.textTertiary,
     maxWidth: '50%',
+  },
+  arrivalBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    backgroundColor: theme.colors.gold + 'E6',
+    borderRadius: 8,
+  },
+  arrivalText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: theme.colors.black,
   },
 });
