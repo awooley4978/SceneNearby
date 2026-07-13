@@ -45,7 +45,7 @@ const TRAVEL_MODES = [
 const MEDIA_INTERESTS = [
   { key: 'movies', emoji: '🎬', label: 'Movies', desc: 'Film locations' },
   { key: 'tv', emoji: '📺', label: 'TV', desc: 'TV show locations' },
-  { key: 'music', emoji: '🎵', label: 'Music', desc: 'Music video spots' },
+  { key: 'music', emoji: '🎵', label: 'Music', desc: 'Music video spots', comingSoon: true },
 ];
 
 export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
@@ -230,6 +230,25 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
               {MEDIA_INTERESTS.map((item) => {
                 const active = mediaInterests.includes(item.key);
                 return (
+                  {(item as any).comingSoon ? (
+                    <View
+                      key={item.key}
+                      style={[styles.mediaCard, styles.mediaCardDisabled]}
+                    >
+                      <View style={styles.mediaRow}>
+                        <Text style={[styles.mediaEmoji, { opacity: 0.4 }]}>{item.emoji}</Text>
+                        <View style={styles.mediaInfo}>
+                          <Text style={[styles.mediaLabel, { color: theme.colors.textTertiary }]}>
+                            {item.label}
+                          </Text>
+                          <Text style={styles.mediaDesc}>{item.desc}</Text>
+                        </View>
+                        <View style={styles.comingSoonBadge}>
+                          <Text style={styles.comingSoonText}>Coming soon</Text>
+                        </View>
+                      </View>
+                    </View>
+                  ) : (
                   <TouchableOpacity
                     key={item.key}
                     style={[styles.mediaCard, active && styles.mediaCardActive]}
@@ -248,10 +267,11 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
                       </View>
                     </View>
                   </TouchableOpacity>
+                  )}
                 );
               })}
             </View>
-            <Text style={styles.mediaNote}>History and Ghosts can appear someday if those apps install.</Text>
+
           </View>
         );
         case 7: return (
@@ -411,7 +431,9 @@ const styles = StyleSheet.create({
   },
   mediaToggleActive: { borderColor: theme.colors.gold, backgroundColor: theme.colors.gold },
   mediaToggleCheck: { fontSize: 13, color: theme.colors.black, fontWeight: '700' },
-  mediaNote: { fontSize: 11, color: theme.colors.textTertiary, textAlign: 'center', marginTop: 16, fontStyle: 'italic' },
+  mediaCardDisabled: { opacity: 0.6, borderColor: theme.colors.surface3 },
+  comingSoonBadge: { paddingHorizontal: 10, paddingVertical: 4, backgroundColor: theme.colors.gold + '20', borderRadius: 8 },
+  comingSoonText: { fontSize: 11, color: theme.colors.gold, fontWeight: '600' },
 
   // Let's Go
   letsGoButton: {
