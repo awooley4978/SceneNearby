@@ -209,7 +209,6 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
   const renderHeader = () => (
     <View>
       {/* Search bar */}
-      <View style={styles.searchBarContainer}>
       <View style={styles.searchBar}>
         <Text style={styles.searchIcon}>🔍</Text>
         <TextInput
@@ -226,9 +225,9 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
         )}
       </View>
 
-      {/* Search results dropdown — overlay on top of content */}
+      {/* Search results dropdown */}
       {searchQuery.trim().length > 0 && searchResults.length > 0 && (
-        <View style={styles.searchResultsOverlay}>
+        <View style={styles.searchResults}>
           <FlatList
             data={searchResults.slice(0, 10)}
             keyExtractor={(item) => item.id}
@@ -237,7 +236,6 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
           />
         </View>
       )}
-      </View>
 
       {/* Type filter chips */}
       <ScrollView
@@ -371,7 +369,6 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background },
   listContent: { paddingHorizontal: 16, paddingBottom: 100 },
-  searchBarContainer: { position: 'relative', zIndex: 10 },
   searchBar: {
     flexDirection: 'row', alignItems: 'center', backgroundColor: theme.colors.surface2, borderRadius: 12,
     paddingHorizontal: 14, marginTop: 12, marginBottom: 8, height: 48, borderWidth: 1, borderColor: theme.colors.gold + '40',
@@ -381,19 +378,13 @@ const styles = StyleSheet.create({
   searchInput: { flex: 1, color: theme.colors.textPrimary, fontSize: 15 },
   clearButton: { fontSize: 16, color: theme.colors.textTertiary, padding: 4 },
 
-  // Search results dropdown — overlay on top of content
-  searchResultsOverlay: {
-    position: 'absolute',
-    top: 60,
-    left: 0,
-    right: 0,
+  // Search results dropdown
+  searchResults: {
     backgroundColor: theme.colors.surface,
     borderRadius: 12,
+    marginBottom: 8,
     borderWidth: 1, borderColor: theme.colors.gold + '20',
     overflow: 'hidden',
-    zIndex: 100,
-    elevation: 10,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8,
   },
   searchResultRow: {
     flexDirection: 'row', alignItems: 'center', padding: 12,

@@ -60,7 +60,7 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
     Alert.alert('Rated!', `You gave ${location.title} ${rating} star${rating !== 1 ? 's' : ''}.`);
   };
 
-  const handleViewFilm = () => {
+  const handleViewMovie = () => {
     navigation.navigate('MovieDetail', { movieTitle: location.movieOrShow });
   };
 
