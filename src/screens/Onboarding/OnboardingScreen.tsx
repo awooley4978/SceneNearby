@@ -229,8 +229,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
             <View style={styles.cardsColumn}>
               {MEDIA_INTERESTS.map((item) => {
                 const active = mediaInterests.includes(item.key);
-                return (
-                  {(item as any).comingSoon ? (
+                return (item as any).comingSoon ? (
                     <View
                       key={item.key}
                       style={[styles.mediaCard, styles.mediaCardDisabled]}
@@ -267,8 +266,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
                       </View>
                     </View>
                   </TouchableOpacity>
-                  )}
-                );
+                  );
               })}
             </View>
 
