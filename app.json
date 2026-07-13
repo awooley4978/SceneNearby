@@ -7,7 +7,9 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "splash": {
-      "backgroundColor": "#0a0a0a"
+      "image": "./assets/splash-icon.png",
+      "backgroundColor": "#1a1a2e",
+      "resizeMode": "contain"
     },
     "ios": {
       "supportsTablet": false,
@@ -21,6 +23,7 @@
     "android": {
       "package": "com.cairn.scenenearby",
       "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0a0a0a"
       }
     },
