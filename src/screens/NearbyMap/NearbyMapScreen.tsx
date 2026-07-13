@@ -31,23 +31,38 @@ export const NearbyMapScreen: React.FC<{ navigation: any }> = ({ navigation }) =
   const mapRef = useRef<MapView>(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [region, setRegion] = useState<Region | null>(null);
-  const [onboardingLoaded, setOnboardingLoaded] = useState(false);
+  const [userCoords, setUserCoords] = useState<{lat: number; lng: number} | null>(null);
 
-  // Load active city from onboarding data
+  // Load user coordinates from onboarding data
   useEffect(() => {
     (async () => {
       try {
         const data = await getOnboardingData();
+        if (data?.activeCityLat && data?.activeCityLng) {
+          setUserCoords({ lat: data.activeCityLat, lng: data.activeCityLng });
+        }
         if (data?.activeCity) {
           setSelectedCity(data.activeCity);
         }
-      } catch {} finally {
-        setOnboardingLoaded(true);
-      }
+      } catch {}
     })();
   }, []);
 
+  // Set initial map region to user's coordinates or fall back to city-centroid
   useEffect(() => {
+    // If we have the user's actual coordinates, use them as the map center
+    if (userCoords) {
+      const newRegion: Region = {
+        latitude: userCoords.lat,
+        longitude: userCoords.lng,
+        latitudeDelta: 0.5,
+        longitudeDelta: 0.5,
+      };
+      setRegion(newRegion);
+      mapRef.current?.animateToRegion(newRegion, 500);
+      return;
+    }
+    // Fallback: center on city centroid from location data
     const cityLocs = allLocations.filter((l) => l.city === selectedCity);
     if (cityLocs.length > 0) {
       const avgLat = cityLocs.reduce((s, l) => s + l.latitude, 0) / cityLocs.length;
@@ -61,7 +76,7 @@ export const NearbyMapScreen: React.FC<{ navigation: any }> = ({ navigation }) =
       setRegion(newRegion);
       mapRef.current?.animateToRegion(newRegion, 500);
     }
-  }, [selectedCity]);
+  }, [userCoords, selectedCity]);
 
   const handleMarkerPress = (location: FilmingLocation) => {
     setSelectedLocation(location);
@@ -135,17 +150,21 @@ export const NearbyMapScreen: React.FC<{ navigation: any }> = ({ navigation }) =
 
   return (
     <View style={styles.container}>
-      {/* Map */}
+      {/* Map — only render once region is loaded */}
+      {region ? (
       <MapView
         ref={mapRef}
         style={styles.map}
-        region={region ?? { latitude: 40.7580, longitude: -73.9855, latitudeDelta: 12, longitudeDelta: 12 }}
+        region={region}
         showsUserLocation
         showsCompass
         mapPadding={{ top: 60, right: 16, bottom: showList ? 280 : 120, left: 16 }}
       >
         {allLocations.filter((l) => l.city === selectedCity).map(renderCluster)}
       </MapView>
+      ) : (
+        <View style={styles.map} />
+      )}
 
       {/* Header */}
       <View style={styles.header}>
