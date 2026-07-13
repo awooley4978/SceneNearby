@@ -208,34 +208,6 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
 
   const renderHeader = () => (
     <View>
-      {/* Search bar */}
-      <View style={styles.searchBar}>
-        <Text style={styles.searchIcon}>🔍</Text>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search movies, shows, actors..."
-          placeholderTextColor={theme.colors.textTertiary}
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
-        {searchQuery.length > 0 && (
-          <TouchableOpacity onPress={() => setSearchQuery('')}>
-            <Text style={styles.clearButton}>✕</Text>
-          </TouchableOpacity>
-        )}
-      </View>
-
-      {/* Search results dropdown */}
-      {searchQuery.trim().length > 0 && searchResults.length > 0 && (
-        <View style={styles.searchResults}>
-          <FlatList
-            data={searchResults.slice(0, 10)}
-            keyExtractor={(item) => item.id}
-            renderItem={renderSearchResult}
-            scrollEnabled={false}
-          />
-        </View>
-      )}
 
       {/* Type filter chips */}
       <ScrollView
@@ -335,6 +307,34 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
           <CardSkeleton />
         </Animated.View>
       ) : (
+      <>
+      {/* Search bar — outside FlatList so it never remounts on keystroke */}
+      <View style={styles.searchBar}>
+        <Text style={styles.searchIcon}>🔍</Text>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search movies, shows, actors..."
+          placeholderTextColor={theme.colors.textTertiary}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+        {searchQuery.length > 0 && (
+          <TouchableOpacity onPress={() => setSearchQuery('')}>
+            <Text style={styles.clearButton}>✕</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+      {/* Search results dropdown */}
+      {searchQuery.trim().length > 0 && searchResults.length > 0 && (
+        <View style={styles.searchResults}>
+          <FlatList
+            data={searchResults.slice(0, 10)}
+            keyExtractor={(item) => item.id}
+            renderItem={renderSearchResult}
+            scrollEnabled={false}
+          />
+        </View>
+      )}
       <FlatList
         data={filteredLocations}
         keyExtractor={(item) => item.id}
@@ -361,6 +361,7 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
         }
         showsVerticalScrollIndicator={false}
       />
+      </>
       )}
     </View>
   );
