@@ -101,7 +101,7 @@ const sharedScreens = (
 function DiscoverStack() {
   return (
     <Stack.Navigator screenOptions={{ ...stackOptions, cardStyleInterpolator }}>
-      <Stack.Screen name="DiscoverList" component={DiscoverScreen} options={{ title: 'Discover', headerLargeTitle: true }} />
+      <Stack.Screen name="DiscoverList" component={DiscoverScreen} options={{ title: 'Discover' }} />
       {sharedScreens}
     </Stack.Navigator>
   );

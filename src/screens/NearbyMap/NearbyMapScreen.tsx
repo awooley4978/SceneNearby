@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -26,23 +26,32 @@ export const NearbyMapScreen: React.FC<{ navigation: any }> = ({ navigation }) =
   const [showList, setShowList] = useState(false);
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set(['nyc-002', 'nyc-007', 'la-001', 'ldn-006']));
   const [selectedCity, setSelectedCity] = useState<string>(() =>
-    Array.from(new Set(allLocations.map((l) => l.city).filter(Boolean))).sort()[0] || 'New York City'
+    // Default to New York City if it exists in the data, otherwise first alphabetically
+    (() => {
+      const cities = Array.from(new Set(allLocations.map((l) => l.city).filter(Boolean))).sort();
+      return cities.includes('New York City') ? 'New York City' : (cities[0] || 'New York City');
+    })()
   );
   const [showCityPicker, setShowCityPicker] = useState(false);
   const mapRef = useRef<MapView>(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const [region, setRegion] = useState<Region | null>(null);
 
-  // Derive city list from location data — always in sync, never undefined
-  const cityNames = Array.from(
-    new Set((allLocations ?? []).map((loc) => loc.city).filter(Boolean))
-  ).sort();
-
-  const initialRegion: Region = {
-    latitude: 40.7580,
-    longitude: -73.9855,
-    latitudeDelta: 12,
-    longitudeDelta: 12,
-  };
+  useEffect(() => {
+    const cityLocs = allLocations.filter((l) => l.city === selectedCity);
+    if (cityLocs.length > 0) {
+      const avgLat = cityLocs.reduce((s, l) => s + l.latitude, 0) / cityLocs.length;
+      const avgLng = cityLocs.reduce((s, l) => s + l.longitude, 0) / cityLocs.length;
+      const newRegion: Region = {
+        latitude: avgLat,
+        longitude: avgLng,
+        latitudeDelta: 0.5,
+        longitudeDelta: 0.5,
+      };
+      setRegion(newRegion);
+      mapRef.current?.animateToRegion(newRegion, 500);
+    }
+  }, [selectedCity]);
 
   const handleMarkerPress = (location: FilmingLocation) => {
     setSelectedLocation(location);
@@ -109,13 +118,18 @@ export const NearbyMapScreen: React.FC<{ navigation: any }> = ({ navigation }) =
     );
   };
 
+  // Derive city list from location data
+  const cityNames = Array.from(
+    new Set((allLocations ?? []).map((loc) => loc.city).filter(Boolean))
+  ).sort();
+
   return (
     <View style={styles.container}>
       {/* Map */}
       <MapView
         ref={mapRef}
         style={styles.map}
-        initialRegion={initialRegion}
+        region={region ?? { latitude: 40.7580, longitude: -73.9855, latitudeDelta: 12, longitudeDelta: 12 }}
         showsUserLocation
         showsCompass
         mapPadding={{ top: 60, right: 16, bottom: showList ? 280 : 120, left: 16 }}
