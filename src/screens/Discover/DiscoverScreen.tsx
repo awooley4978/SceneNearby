@@ -22,6 +22,7 @@ import {
 import { LocationCard } from '../../components/LocationCard';
 import { CardSkeleton } from '../../components/SkeletonLoader';
 import { EmptyState } from '../../components/EmptyState';
+import { getOnboardingData } from '../../services/StorageService';
 import type { FilmingLocation, ActorGroup } from '../../models';
 
 const categories = [
@@ -56,7 +57,18 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
   const [selectedType, setSelectedType] = useState<string>('all');
   const [refreshing, setRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [activeCity, setActiveCity] = useState<string | null>(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  // Load active city from onboarding
+  useEffect(() => {
+    (async () => {
+      try {
+        const data = await getOnboardingData();
+        if (data?.activeCity) setActiveCity(data.activeCity);
+      } catch {}
+    })();
+  }, []);
 
   useEffect(() => {
     // Simulate initial load for skeleton demonstration
@@ -140,6 +152,12 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
       ? allLocations
       : locationsByCategory(selectedCategory as LocationCategory);
 
+    // Filter by active city from onboarding
+    if (activeCity) {
+      const cityLocations = result.filter((l) => l.city === activeCity);
+      if (cityLocations.length > 0) result = cityLocations;
+    }
+
     // Apply type filter
     if (selectedType === 'movies') {
       result = result.filter((l) => l.isMovie);
@@ -168,7 +186,7 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
     }
 
     return result;
-  }, [selectedCategory, selectedType, searchQuery, sortMode]);
+  }, [selectedCategory, selectedType, searchQuery, sortMode, activeCity]);
 
   const nearYou = useMemo(() => {
     return [...allLocations]
