@@ -13,6 +13,7 @@ import {
 import { theme } from '../../theme';
 import { locationById, mockRatings, photosByLocation } from '../../data/sampleData';
 import { categoryColors, STORAGE_KEYS } from '../../models';
+import { useSaved } from '../../context/SavedContext';
 import { CategoryBadge } from '../../components/CategoryBadge';
 import { StarRating } from '../../components/StarRating';
 import { PhotoGrid } from '../../components/PhotoGrid';
@@ -26,7 +27,8 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
   const rating = location ? mockRatings[location.id] : undefined;
   const photos = location ? photosByLocation(location.id) : [];
   const [userRating, setUserRating] = useState<number | undefined>(undefined);
-  const [saved, setSaved] = useState(false);
+  const { isSaved: checkSaved, toggleSave: toggleSaved } = useSaved();
+  const saved = checkSaved(locationId);
 
   if (!location) {
     return (
@@ -51,8 +53,8 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
     } catch {}
   };
 
-  const handleSave = () => {
-    setSaved(!saved);
+  const handleSave = async () => {
+    await toggleSaved(locationId);
   };
 
   const handleRate = (rating: number) => {
@@ -176,7 +178,7 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
           onPress={handleSave}
         >
           <Text style={[styles.secondaryButtonText, saved && styles.savedButtonText]}>
-            {saved ? '💾 Saved' : '💾 Save'}
+            {saved ? '✅ Saved' : '💾 Save'}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.secondaryButton} onPress={handleShare}>
@@ -214,10 +216,10 @@ const styles = StyleSheet.create({
   quoteIcon: { fontSize: 20, marginBottom: 8 },
   quoteText: { fontSize: 17, fontStyle: 'italic', color: theme.colors.textPrimary, lineHeight: 26 },
   quoteAttr: { fontSize: 13, color: theme.colors.textTertiary, marginTop: 8 },
-  actions: { flexDirection: 'row', paddingHorizontal: 20, paddingTop: 28, gap: 10, flexWrap: 'wrap' },
-  primaryButton: { flex: 1, backgroundColor: theme.colors.gold, paddingVertical: 14, borderRadius: 12, alignItems: 'center', minWidth: 120 },
+  actions: { flexDirection: 'row', paddingHorizontal: 20, paddingTop: 28, gap: 10 },
+  primaryButton: { flex: 1, backgroundColor: theme.colors.gold, paddingVertical: 14, borderRadius: 12, alignItems: 'center' },
   primaryButtonText: { color: theme.colors.black, fontWeight: '700', fontSize: 15 },
-  secondaryButton: { paddingVertical: 14, paddingHorizontal: 20, borderRadius: 12, alignItems: 'center', backgroundColor: theme.colors.surface3, minWidth: 80, borderWidth: 1, borderColor: 'transparent' },
+  secondaryButton: { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center', backgroundColor: theme.colors.surface3, borderWidth: 1, borderColor: 'transparent' },
   secondaryButtonText: { color: theme.colors.gold, fontWeight: '600', fontSize: 14 },
   savedButton: { backgroundColor: theme.colors.gold + '20', borderColor: theme.colors.gold },
   savedButtonText: { color: theme.colors.gold },
