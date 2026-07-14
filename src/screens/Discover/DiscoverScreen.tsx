@@ -454,6 +454,18 @@ const styles = StyleSheet.create({
   sortChipText: { fontSize: 12, fontWeight: '600', color: theme.colors.textSecondary },
   sortChipTextActive: { color: theme.colors.gold },
 
+  sectionTitleRow: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    marginBottom: 12,
+  },
+  viewMapButton: {
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    paddingHorizontal: 12, paddingVertical: 6,
+    backgroundColor: theme.colors.gold + '15',
+    borderRadius: 16, borderWidth: 1, borderColor: theme.colors.gold + '30',
+  },
+  viewMapButtonText: { fontSize: 12, fontWeight: '600', color: theme.colors.gold },
+  viewMapChevron: { fontSize: 16, color: theme.colors.gold, fontWeight: '300', marginTop: -1 },
   nearYouSection: { marginBottom: 16 },
   sectionTitle: { fontSize: 20, fontWeight: '700', color: theme.colors.textPrimary, marginBottom: 12 },
   resultsHeader: { marginTop: 4, marginBottom: 8 },
