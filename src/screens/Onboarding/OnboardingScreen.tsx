@@ -134,14 +134,33 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
           <View style={styles.page}>
             <Text style={styles.pageEmoji}>📳</Text>
             <View style={styles.notifCard}>
-              <Text style={styles.notifTitle}>📍 Scene Nearby</Text>
-              <Text style={styles.notifBody}>You're only 1.8 miles from the Friends apartment.</Text>
+              {/* Header bar with drag handle */}
+              <View style={styles.notifHandleBar} />
+              {/* Location badge */}
+              <View style={styles.notifLocationBadge}>
+                <Text style={styles.notifLocationDot}>📍</Text>
+                <Text style={styles.notifLocationLabel}>0.3 mi</Text>
+              </View>
+              {/* Title */}
+              <Text style={styles.notifShowTitle}>Friends</Text>
+              <Text style={styles.notifLocationTitle}>The Friends Apartment</Text>
+              {/* Scene description */}
+              <Text style={styles.notifBody}>
+                "The one where you're standing right outside the iconic apartment building from Central Perk."
+              </Text>
+              {/* Divider */}
+              <View style={styles.notifDivider} />
+              {/* Action buttons */}
               <View style={styles.notifActions}>
-                <Text style={styles.notifBtn}>View Details</Text>
-                <Text style={styles.notifBtn}>Navigate</Text>
+                <TouchableOpacity style={styles.notifDetailBtn}>
+                  <Text style={styles.notifDetailText}>View Details</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.notifNavigateBtn}>
+                  <Text style={styles.notifNavigateText}>Navigate</Text>
+                </TouchableOpacity>
               </View>
             </View>
-            <Text style={styles.notifCaption}>That's exactly the experience.</Text>
+            <Text style={styles.notifCaption}>Tap a notification to explore the scene.</Text>
           </View>
         );
         case 2: return (
@@ -374,14 +393,38 @@ const styles = StyleSheet.create({
   pageTitle: { fontSize: 24, fontWeight: '700', color: theme.colors.textPrimary, textAlign: 'center', marginBottom: 12 },
   pageSubtitle: { fontSize: 16, color: theme.colors.textSecondary, textAlign: 'center', lineHeight: 22, marginBottom: 24 },
   notifCard: {
-    backgroundColor: theme.colors.surface, borderRadius: 16, padding: 20,
+    backgroundColor: theme.colors.surface, borderRadius: 20, padding: 20, paddingTop: 12,
     width: '100%', marginBottom: 16, borderWidth: 1, borderColor: theme.colors.gold + '20',
     shadowColor: theme.colors.gold, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 12, elevation: 6,
   },
-  notifTitle: { fontSize: 16, fontWeight: '700', color: theme.colors.gold, marginBottom: 6 },
-  notifBody: { fontSize: 14, color: theme.colors.textPrimary, lineHeight: 20, marginBottom: 12 },
-  notifActions: { flexDirection: 'row', gap: 12 },
-  notifBtn: { fontSize: 13, fontWeight: '600', color: theme.colors.gold, paddingVertical: 4, paddingHorizontal: 12, backgroundColor: theme.colors.gold + '15', borderRadius: 8 },
+  notifHandleBar: {
+    width: 36, height: 4, backgroundColor: theme.colors.surface3,
+    borderRadius: 2, alignSelf: 'center', marginBottom: 14,
+  },
+  notifLocationBadge: {
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    backgroundColor: theme.colors.gold + '15', paddingHorizontal: 10, paddingVertical: 4,
+    borderRadius: 8, alignSelf: 'flex-start', marginBottom: 10,
+  },
+  notifLocationDot: { fontSize: 12 },
+  notifLocationLabel: { fontSize: 11, fontWeight: '700', color: theme.colors.gold },
+  notifShowTitle: { fontSize: 13, fontWeight: '600', color: theme.colors.gold, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 2 },
+  notifLocationTitle: { fontSize: 20, fontWeight: '700', color: theme.colors.textPrimary, marginBottom: 8, letterSpacing: -0.3 },
+  notifBody: { fontSize: 13, color: theme.colors.textSecondary, lineHeight: 18, marginBottom: 12, fontStyle: 'italic' },
+  notifDivider: { height: 1, backgroundColor: theme.colors.surface3 + '60', marginBottom: 14 },
+  notifActions: { flexDirection: 'row', gap: 10 },
+  notifDetailBtn: {
+    flex: 1, paddingVertical: 12, borderRadius: 12,
+    backgroundColor: theme.colors.surface2, borderWidth: 1, borderColor: theme.colors.surface3,
+    alignItems: 'center',
+  },
+  notifDetailText: { fontSize: 14, fontWeight: '600', color: theme.colors.textSecondary },
+  notifNavigateBtn: {
+    flex: 1, paddingVertical: 12, borderRadius: 12,
+    backgroundColor: theme.colors.gold, alignItems: 'center',
+    shadowColor: theme.colors.gold, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, shadowRadius: 4, elevation: 4,
+  },
+  notifNavigateText: { fontSize: 14, fontWeight: '700', color: theme.colors.black },
   notifCaption: { fontSize: 14, color: theme.colors.textSecondary, fontStyle: 'italic' },
 
   // Selection cards
