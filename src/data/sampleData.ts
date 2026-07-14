@@ -1245,7 +1245,7 @@ const londonLocations: FilmingLocation[] = [
             const dallasLocations: FilmingLocation[] = [
               {
                 id: 'dal-001', title: 'Dealey Plaza', movieOrShow: 'JFK', year: 1991,
-                imageUrl: 'https://loremflickr.com/800/600/dealey,plaza,dallas,texas?random=1',
+                imageUrl: 'https://picsum.photos/seed/dallas-dealey-plaza/800/600',
                 category: LocationCategory.drama, latitude: 32.7789, longitude: -96.8083,
                 address: 'Dealey Plaza, Dallas', city: 'Dallas', country: 'USA',
                 sceneDescription: 'Oliver Stone\'s masterful reconstruction of the Kennedy assassination weaves together multiple perspectives in Dealey Plaza.',
@@ -1292,7 +1292,7 @@ const londonLocations: FilmingLocation[] = [
               },
               {
                 id: 'dal-005', title: 'Deep Ellum', movieOrShow: 'Office Space', year: 1999,
-                imageUrl: 'https://loremflickr.com/800/600/deep,ellum,street,art,dallas?random=1',
+                imageUrl: 'https://picsum.photos/seed/dallas-deep-ellum/800/600',
                 category: LocationCategory.comedy, latitude: 32.7840, longitude: -96.7770,
                 address: 'Deep Ellum, Dallas', city: 'Dallas', country: 'USA',
                 sceneDescription: 'The cult classic about cubicle-dwelling software engineers was filmed in and around Dallas, with the city\'s suburban office parks standing in for generic corporate America.',
