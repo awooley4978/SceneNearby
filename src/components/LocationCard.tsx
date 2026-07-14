@@ -319,7 +319,7 @@ const styles = StyleSheet.create({
 
   // ── Hero Image ──
   hero: {
-    height: 220,
+    height: 260,
     justifyContent: 'flex-end',
     padding: 16,
     position: 'relative',
@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
   },
   heroGradientOverlay: {
     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-    opacity: 0.5,
+    opacity: 0.25,
   },
   heroOverlayGradient: {
     position: 'absolute',

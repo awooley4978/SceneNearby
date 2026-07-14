@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
   content: { paddingBottom: 40 },
   errorContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.background },
   errorText: { fontSize: 18, color: theme.colors.textSecondary },
-  hero: { height: 300, justifyContent: 'flex-end', paddingBottom: 20, position: 'relative', overflow: 'hidden' },
+  hero: { height: 360, justifyContent: 'flex-end', paddingBottom: 20, position: 'relative', overflow: 'hidden' },
   heroContent: { paddingHorizontal: 20, position: 'relative', zIndex: 2 },
   heroImage: {
     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
   },
   heroGradientOverlay: {
     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-    opacity: 0.6,
+    opacity: 0.3,
   },
   showName: { fontSize: 16, fontWeight: '700', color: theme.colors.gold, marginBottom: 4 },
   locationTitle: { fontSize: 26, fontWeight: '700', color: theme.colors.white, marginBottom: 12 },
