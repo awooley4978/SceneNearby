@@ -16,7 +16,8 @@ import { LocationCard } from '../../components/LocationCard';
 import { StarRating } from '../../components/StarRating';
 import { CategoryBadge } from '../../components/CategoryBadge';
 import { MoviePoster } from '../../components/MoviePoster';
-import { getOnboardingData, getSavedIds, setSavedIds } from '../../services/StorageService';
+import { getOnboardingData } from '../../services/StorageService';
+import { useSaved } from '../../context/SavedContext';
 import type { FilmingLocation } from '../../models';
 
 const { width, height } = Dimensions.get('window');
@@ -24,7 +25,7 @@ const { width, height } = Dimensions.get('window');
 export const NearbyMapScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [selectedLocation, setSelectedLocation] = useState<FilmingLocation | null>(null);
   const [showList, setShowList] = useState(false);
-  const [savedIds, setSavedIds] = useState<Set<string>>(new Set(['nyc-002', 'nyc-007', 'la-001', 'ldn-006']));
+  const { savedIds, toggleSave: toggleSaved } = useSaved();
   const mapRef = useRef<MapView>(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [region, setRegion] = useState<Region | null>(null);
@@ -34,8 +35,7 @@ export const NearbyMapScreen: React.FC<{ navigation: any }> = ({ navigation }) =
   useEffect(() => {
     (async () => {
       try {
-        const [data, saved] = await Promise.all([getOnboardingData(), getSavedIds()]);
-        setSavedIds(saved);
+        const data = await getOnboardingData();
         if (data?.activeCityLat && data?.activeCityLng) {
           const newRegion: Region = {
             latitude: data.activeCityLat,
@@ -82,12 +82,7 @@ export const NearbyMapScreen: React.FC<{ navigation: any }> = ({ navigation }) =
   };
 
   const handleSaveToggle = async (id: string) => {
-    const current = await getSavedIds();
-    const next = new Set(current);
-    if (next.has(id)) next.delete(id);
-    else next.add(id);
-    await setSavedIds(next);
-    setSavedIds(next); // sync local state
+    await toggleSaved(id);
     setSelectedLocation(selectedLocation?.id === id ? { ...selectedLocation! } : selectedLocation);
   };
 

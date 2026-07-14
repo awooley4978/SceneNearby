@@ -12,31 +12,25 @@ import { theme } from '../../theme';
 import { allLocations, mockRatings } from '../../data/sampleData';
 import { LocationCard } from '../../components/LocationCard';
 import { EmptyState } from '../../components/EmptyState';
-import { getSavedIds, setSavedIds as persistSavedIds } from '../../services/StorageService';
+import { useSaved } from '../../context/SavedContext';
 
 type SortMode = 'recent' | 'nearest' | 'az' | 'rating';
 
 export const SavedScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
-  const [loaded, setLoaded] = useState(false);
+  const { savedIds, loaded } = useSaved();
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<SortMode>('recent');
 
-  useEffect(() => {
-    (async () => {
-      const ids = await getSavedIds();
-      setSavedIds(ids);
-      setLoaded(true);
-    })();
-  }, []);
+  // Local state for instant removal on unsave (context updates async)
+  const [localRemoved, setLocalRemoved] = useState<Set<string>>(new Set());
 
-  const updateSavedIds = async (newIds: Set<string>) => {
-    setSavedIds(newIds);
-    await persistSavedIds(newIds);
-  };
+  // Reset local removal when savedIds change externally
+  useEffect(() => {
+    setLocalRemoved(new Set());
+  }, [savedIds.size]);
 
   const savedLocations = useMemo(() => {
-    let result = allLocations.filter((loc) => savedIds.has(loc.id));
+    let result = allLocations.filter((loc) => savedIds.has(loc.id) && !localRemoved.has(loc.id));
 
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
@@ -65,19 +59,6 @@ export const SavedScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
     return result;
   }, [savedIds, searchQuery, sortBy]);
-
-  const handleRemove = (id: string, title: string) => {
-    Alert.alert('Remove', `Remove "${title}" from saved?`, [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Remove', style: 'destructive', onPress: async () => {
-          const next = new Set(savedIds);
-          next.delete(id);
-          await updateSavedIds(next);
-        }
-      },
-    ]);
-  };
 
   const sortOptions: { key: SortMode; label: string }[] = [
     { key: 'recent', label: 'Recent' },

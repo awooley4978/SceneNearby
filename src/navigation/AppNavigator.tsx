@@ -5,6 +5,7 @@ import { createNativeStackNavigator, NativeStackNavigationOptions } from '@react
 import { NavigationContainer } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
 import { theme } from '../theme';
+import { SavedProvider } from '../context/SavedContext';
 
 import { NearbyMapScreen } from '../screens/NearbyMap/NearbyMapScreen';
 import { DiscoverScreen } from '../screens/Discover/DiscoverScreen';
@@ -282,6 +283,7 @@ const CustomTabBar: React.FC<{
 
 export const AppNavigator: React.FC = () => {
   return (
+    <SavedProvider>
     <NavigationContainer>
       <Tab.Navigator
         tabBar={(props) => <CustomTabBar {...props} />}
@@ -296,6 +298,7 @@ export const AppNavigator: React.FC = () => {
         <Tab.Screen name="Profile" component={ProfileStack} />
       </Tab.Navigator>
     </NavigationContainer>
+    </SavedProvider>
   );
 };
 
