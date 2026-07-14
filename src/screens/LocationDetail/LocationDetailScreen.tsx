@@ -47,11 +47,10 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
     })();
   }, []);
 
-  // Calculate distance in meters (matching the detail page's metric display)
+  // Calculate distance in miles (matching the card display)
   const distanceFromUser = React.useMemo(() => {
     if (userLat === null || userLng === null || !location) return undefined;
-    // calculateDistance returns meters
-    return calculateDistance(userLat, userLng, location.latitude, location.longitude);
+    return calculateDistance(userLat, userLng, location.latitude, location.longitude) / 1609.34;
   }, [userLat, userLng, location]);
 
   if (!location) {
@@ -119,9 +118,9 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
             {distanceFromUser !== undefined && (
               <View style={styles.distanceBadge}>
                 <Text style={styles.distanceText}>
-                  📍 {distanceFromUser < 1000
-                    ? `${Math.round(distanceFromUser)}m`
-                    : `${(distanceFromUser / 1000).toFixed(1)}km`} away
+                  📍 {distanceFromUser < 1
+                    ? `${(distanceFromUser * 5280).toFixed(0)}ft`
+                    : `${distanceFromUser.toFixed(1)}mi`} away
                 </Text>
               </View>
             )}
