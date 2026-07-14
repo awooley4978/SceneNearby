@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
   },
   heroGradientOverlay: {
     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-    opacity: 0.25,
+    opacity: 0.1,
   },
   heroOverlayGradient: {
     position: 'absolute',
@@ -340,7 +340,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 80,
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    backgroundColor: 'rgba(0,0,0,0.15)',
   },
   heroBadgeTopLeft: {
     position: 'absolute',
