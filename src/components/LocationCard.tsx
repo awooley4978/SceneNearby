@@ -13,6 +13,7 @@ import { CategoryBadge } from './CategoryBadge';
 import { DistanceBadge } from './DistanceBadge';
 import { StarRating } from './StarRating';
 import { mockRatings } from '../data/sampleData';
+import { getSavedIds, setSavedIds } from '../services/StorageService';
 
 interface LocationCardProps {
   location: FilmingLocation;
@@ -39,6 +40,19 @@ export const LocationCard: React.FC<LocationCardProps> = ({
 }) => {
   const rating = mockRatings[location.id];
   const [isSaved, setIsSaved] = React.useState(false);
+  const [savedLoaded, setSavedLoaded] = React.useState(false);
+
+  // Load saved state from AsyncStorage on mount
+  React.useEffect(() => {
+    (async () => {
+      try {
+        const ids = await getSavedIds();
+        setIsSaved(ids.has(location.id));
+      } catch {} finally {
+        setSavedLoaded(true);
+      }
+    })();
+  }, [location.id]);
   const heartScale = useRef(new Animated.Value(1)).current;
   const pressAnim = useRef(new Animated.Value(0)).current;
   const entranceAnim = useRef(new Animated.Value(0)).current;
@@ -74,7 +88,7 @@ export const LocationCard: React.FC<LocationCardProps> = ({
     }).start();
   };
 
-  const handleSave = useCallback(() => {
+  const handleSave = useCallback(async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
     const next = !isSaved;
     setIsSaved(next);
@@ -102,7 +116,15 @@ export const LocationCard: React.FC<LocationCardProps> = ({
         useNativeDriver: true,
       }).start();
     }
-  }, [isSaved, heartScale, particleAnim]);
+
+    // Persist to AsyncStorage
+    try {
+      const ids = await getSavedIds();
+      if (next) ids.add(location.id);
+      else ids.delete(location.id);
+      await setSavedIds(ids);
+    } catch {}
+  }, [isSaved, heartScale, particleAnim, location.id]);
 
   const entranceOpacity = entranceAnim.interpolate({
     inputRange: [0, 1], outputRange: [0, 1],

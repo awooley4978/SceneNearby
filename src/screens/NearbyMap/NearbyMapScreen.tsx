@@ -16,7 +16,7 @@ import { LocationCard } from '../../components/LocationCard';
 import { StarRating } from '../../components/StarRating';
 import { CategoryBadge } from '../../components/CategoryBadge';
 import { MoviePoster } from '../../components/MoviePoster';
-import { getOnboardingData } from '../../services/StorageService';
+import { getOnboardingData, getSavedIds, setSavedIds } from '../../services/StorageService';
 import type { FilmingLocation } from '../../models';
 
 const { width, height } = Dimensions.get('window');
@@ -30,11 +30,12 @@ export const NearbyMapScreen: React.FC<{ navigation: any }> = ({ navigation }) =
   const [region, setRegion] = useState<Region | null>(null);
   const [userCity, setUserCity] = useState<string>('');
 
-  // Load user coordinates from onboarding data
+  // Load user coordinates from onboarding data + saved IDs
   useEffect(() => {
     (async () => {
       try {
-        const data = await getOnboardingData();
+        const [data, saved] = await Promise.all([getOnboardingData(), getSavedIds()]);
+        setSavedIds(saved);
         if (data?.activeCityLat && data?.activeCityLng) {
           const newRegion: Region = {
             latitude: data.activeCityLat,
@@ -80,11 +81,13 @@ export const NearbyMapScreen: React.FC<{ navigation: any }> = ({ navigation }) =
     fadeAnim.setValue(0);
   };
 
-  const handleSaveToggle = (id: string) => {
-    const next = new Set(savedIds);
+  const handleSaveToggle = async (id: string) => {
+    const current = await getSavedIds();
+    const next = new Set(current);
     if (next.has(id)) next.delete(id);
     else next.add(id);
-    setSavedIds(next);
+    await setSavedIds(next);
+    setSavedIds(next); // sync local state
     setSelectedLocation(selectedLocation?.id === id ? { ...selectedLocation! } : selectedLocation);
   };
 
