@@ -9,6 +9,7 @@ import {
   Share,
   Platform,
   Alert,
+  Image,
 } from 'react-native';
 import { theme } from '../../theme';
 import { locationById, mockRatings, photosByLocation } from '../../data/sampleData';
@@ -75,7 +76,15 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       {/* Hero */}
-      <View style={[styles.hero, { backgroundColor: catColor + '33' }]}>
+      <View style={styles.hero}>
+        {/* Location image with gradient overlay */}
+        {location.imageUrl ? (
+          <Image
+            source={{ uri: location.imageUrl }}
+            style={styles.heroImage}
+          />
+        ) : null}
+        <View style={[styles.heroGradientOverlay, { backgroundColor: catColor + 'AA' }]} />
         <View style={styles.heroContent}>
           <TouchableOpacity onPress={handleViewMovie}>
             <Text style={styles.showName}>{location.movieOrShow} ›</Text>
@@ -194,8 +203,17 @@ const styles = StyleSheet.create({
   content: { paddingBottom: 40 },
   errorContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.background },
   errorText: { fontSize: 18, color: theme.colors.textSecondary },
-  hero: { height: 260, justifyContent: 'flex-end', paddingBottom: 20 },
-  heroContent: { paddingHorizontal: 20 },
+  hero: { height: 300, justifyContent: 'flex-end', paddingBottom: 20, position: 'relative', overflow: 'hidden' },
+  heroContent: { paddingHorizontal: 20, position: 'relative', zIndex: 2 },
+  heroImage: {
+    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+    width: '100%', height: '100%',
+    resizeMode: 'cover',
+  },
+  heroGradientOverlay: {
+    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+    opacity: 0.6,
+  },
   showName: { fontSize: 16, fontWeight: '700', color: theme.colors.gold, marginBottom: 4 },
   locationTitle: { fontSize: 26, fontWeight: '700', color: theme.colors.white, marginBottom: 12 },
   badges: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },

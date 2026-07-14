@@ -319,7 +319,7 @@ const styles = StyleSheet.create({
 
   // ── Hero Image ──
   hero: {
-    height: 180,
+    height: 220,
     justifyContent: 'flex-end',
     padding: 16,
     position: 'relative',
