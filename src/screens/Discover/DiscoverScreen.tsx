@@ -18,10 +18,12 @@ import {
   mockRatings,
   actorGroups,
   allLocationsWithActors,
+  calculateDistance,
 } from '../../data/sampleData';
 import { LocationCard } from '../../components/LocationCard';
 import { CardSkeleton } from '../../components/SkeletonLoader';
 import { EmptyState } from '../../components/EmptyState';
+import { getOnboardingData } from '../../services/StorageService';
 import type { FilmingLocation, ActorGroup } from '../../models';
 
 const categories = [
@@ -56,7 +58,22 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
   const [selectedType, setSelectedType] = useState<string>('all');
   const [refreshing, setRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [userLat, setUserLat] = useState<number | null>(null);
+  const [userLng, setUserLng] = useState<number | null>(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  // Load user location from onboarding data
+  useEffect(() => {
+    (async () => {
+      try {
+        const data = await getOnboardingData();
+        if (data?.activeCityLat && data?.activeCityLng) {
+          setUserLat(data.activeCityLat);
+          setUserLng(data.activeCityLng);
+        }
+      } catch {}
+    })();
+  }, []);
 
   useEffect(() => {
     // Simulate initial load for skeleton demonstration
@@ -133,6 +150,10 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
     return results;
   }, [searchQuery]);
 
+  // Constants
+  const DEFAULT_RADIUS_MILES = 50;
+  const ARRIVAL_THRESHOLD_MILES = 0.1;
+
   // Filtered locations (for the main feed)
   const filteredLocations = useMemo(() => {
     // If searching with actor results, still show filtered feed below
@@ -157,7 +178,18 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
       );
     }
 
-    if (sortMode === 'nearest') {
+    // Calculate distance from user for every location
+    if (userLat !== null && userLng !== null) {
+      result = result.map((loc) => ({
+        ...loc,
+        distanceFromUser: calculateDistance(userLat, userLng, loc.latitude, loc.longitude) / 1609.34, // meters to miles
+      }));
+      // Filter to within radius
+      result = result.filter((loc) => loc.distanceFromUser! <= DEFAULT_RADIUS_MILES);
+    }
+
+    // Sort by nearest (always, since we have distance data)
+    if (userLat !== null && userLng !== null) {
       result = [...result].sort((a, b) => (a.distanceFromUser || 0) - (b.distanceFromUser || 0));
     } else if (sortMode === 'rating') {
       result = [...result].sort((a, b) => {
@@ -168,13 +200,16 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
     }
 
     return result;
-  }, [selectedCategory, selectedType, searchQuery, sortMode]);
+  }, [selectedCategory, selectedType, searchQuery, sortMode, userLat, userLng]);
 
   const nearYou = useMemo(() => {
-    return [...allLocations]
-      .sort((a, b) => (a.distanceFromUser || 0) - (b.distanceFromUser || 0))
-      .slice(0, 3);
-  }, []);
+    if (userLat === null || userLng === null) return [];
+    const withDist = allLocations.map((loc) => ({
+      ...loc,
+      distanceFromUser: calculateDistance(userLat, userLng, loc.latitude, loc.longitude) / 1609.34,
+    })).filter((loc) => loc.distanceFromUser! <= DEFAULT_RADIUS_MILES);
+    return withDist.sort((a, b) => (a.distanceFromUser || 0) - (b.distanceFromUser || 0)).slice(0, 3);
+  }, [userLat, userLng]);
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -275,7 +310,16 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
       {/* Near You */}
       {!searchQuery && selectedCategory === 'all' && selectedType === 'all' && sortMode === 'default' && (
         <View style={styles.nearYouSection}>
-          <Text style={styles.sectionTitle}>📍 Near You</Text>
+          <View style={styles.sectionTitleRow}>
+            <Text style={styles.sectionTitle}>📍 Near You</Text>
+            <TouchableOpacity
+              style={styles.viewMapButton}
+              onPress={() => navigation.navigate('Nearby')}
+            >
+              <Text style={styles.viewMapButtonText}>View on Map</Text>
+              <Text style={styles.viewMapChevron}>›</Text>
+            </TouchableOpacity>
+          </View>
           {nearYou.map((loc) => (
             <LocationCard
               key={loc.id}
@@ -419,6 +463,18 @@ const styles = StyleSheet.create({
   sortChipText: { fontSize: 12, fontWeight: '600', color: theme.colors.textSecondary },
   sortChipTextActive: { color: theme.colors.gold },
 
+  sectionTitleRow: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    marginBottom: 12,
+  },
+  viewMapButton: {
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    paddingHorizontal: 12, paddingVertical: 6,
+    backgroundColor: theme.colors.gold + '15',
+    borderRadius: 16, borderWidth: 1, borderColor: theme.colors.gold + '30',
+  },
+  viewMapButtonText: { fontSize: 12, fontWeight: '600', color: theme.colors.gold },
+  viewMapChevron: { fontSize: 16, color: theme.colors.gold, fontWeight: '300', marginTop: -1 },
   nearYouSection: { marginBottom: 16 },
   sectionTitle: { fontSize: 20, fontWeight: '700', color: theme.colors.textPrimary, marginBottom: 12 },
   resultsHeader: { marginTop: 4, marginBottom: 8 },

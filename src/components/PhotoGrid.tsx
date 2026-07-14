@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   photoInfo: {
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    backgroundColor: 'rgba(0,0,0,0.2)',
     padding: 6,
   },
   photoUser: {

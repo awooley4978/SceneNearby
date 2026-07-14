@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Animated,
+  Image,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { theme } from '../theme';
@@ -13,11 +14,13 @@ import { CategoryBadge } from './CategoryBadge';
 import { DistanceBadge } from './DistanceBadge';
 import { StarRating } from './StarRating';
 import { mockRatings } from '../data/sampleData';
+import { useSaved } from '../context/SavedContext';
 
 interface LocationCardProps {
   location: FilmingLocation;
   onPress: () => void;
   onMoviePress?: () => void;
+  onUnsave?: (id: string) => void;
   showRating?: boolean;
   index?: number;
 }
@@ -34,11 +37,13 @@ export const LocationCard: React.FC<LocationCardProps> = ({
   location,
   onPress,
   onMoviePress,
+  onUnsave,
   showRating = true,
   index = 0,
 }) => {
   const rating = mockRatings[location.id];
-  const [isSaved, setIsSaved] = React.useState(false);
+  const { isSaved: checkSaved, toggleSave: contextToggle } = useSaved();
+  const isSaved = checkSaved(location.id);
   const heartScale = useRef(new Animated.Value(1)).current;
   const pressAnim = useRef(new Animated.Value(0)).current;
   const entranceAnim = useRef(new Animated.Value(0)).current;
@@ -74,10 +79,12 @@ export const LocationCard: React.FC<LocationCardProps> = ({
     }).start();
   };
 
-  const handleSave = useCallback(() => {
+  const handleSave = useCallback(async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
-    const next = !isSaved;
-    setIsSaved(next);
+    const wasSaved = isSaved;
+    await contextToggle(location.id);
+
+    // Heart animation
     Animated.sequence([
       Animated.spring(heartScale, {
         toValue: 1.3,
@@ -93,8 +100,8 @@ export const LocationCard: React.FC<LocationCardProps> = ({
       }),
     ]).start();
 
-    // Burst particle effect
-    if (next) {
+    // Burst particle effect on save (not unsave)
+    if (!wasSaved) {
       particleAnim.setValue(0);
       Animated.timing(particleAnim, {
         toValue: 1,
@@ -102,7 +109,12 @@ export const LocationCard: React.FC<LocationCardProps> = ({
         useNativeDriver: true,
       }).start();
     }
-  }, [isSaved, heartScale, particleAnim]);
+
+    // Notify parent when unsaved (e.g. to remove from Saved tab)
+    if (wasSaved && onUnsave) {
+      onUnsave(location.id);
+    }
+  }, [isSaved, heartScale, particleAnim, location.id, onUnsave, contextToggle]);
 
   const entranceOpacity = entranceAnim.interpolate({
     inputRange: [0, 1], outputRange: [0, 1],
@@ -145,7 +157,17 @@ export const LocationCard: React.FC<LocationCardProps> = ({
           ]}
         >
           {/* ── Hero Image Area ── */}
-          <View style={[styles.hero, heroGradient]}>
+          <View style={styles.hero}>
+            {/* Location image with gradient fallback */}
+            {location.imageUrl ? (
+              <Image
+                source={{ uri: location.imageUrl }}
+                style={styles.heroImage}
+                defaultSource={undefined}
+              />
+            ) : null}
+            {/* Gradient overlay (always present for fallback) */}
+            <View style={[styles.heroGradientOverlay, heroGradient]} />
             {/* Subtle gradient overlay at bottom of hero */}
             <View style={styles.heroOverlayGradient} />
 
@@ -157,11 +179,17 @@ export const LocationCard: React.FC<LocationCardProps> = ({
             {/* Distance badge — top right */}
             {location.distanceFromUser !== undefined && (
               <View style={styles.heroBadgeTopRight}>
-                <DistanceBadge
-                  distance={location.distanceFromUser < 1000
-                    ? `${Math.round(location.distanceFromUser)}m`
-                    : `${(location.distanceFromUser / 1000).toFixed(1)}km`}
-                />
+                {location.distanceFromUser < 0.1 ? (
+                  <View style={styles.arrivalBadge}>
+                    <Text style={styles.arrivalText}>YOU'RE HERE 🎉</Text>
+                  </View>
+                ) : (
+                  <DistanceBadge
+                    distance={location.distanceFromUser < 1
+                      ? `${(location.distanceFromUser * 5280).toFixed(0)}ft`
+                      : `${location.distanceFromUser.toFixed(1)}mi`}
+                  />
+                )}
               </View>
             )}
 
@@ -291,10 +319,20 @@ const styles = StyleSheet.create({
 
   // ── Hero Image ──
   hero: {
-    height: 180,
+    height: 260,
     justifyContent: 'flex-end',
     padding: 16,
     position: 'relative',
+    overflow: 'hidden',
+  },
+  heroImage: {
+    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+    width: '100%', height: '100%',
+    resizeMode: 'cover',
+  },
+  heroGradientOverlay: {
+    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+    opacity: 0.1,
   },
   heroOverlayGradient: {
     position: 'absolute',
@@ -302,7 +340,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 80,
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    backgroundColor: 'rgba(0,0,0,0.15)',
   },
   heroBadgeTopLeft: {
     position: 'absolute',
@@ -312,7 +350,7 @@ const styles = StyleSheet.create({
   },
   heroBadgeTopRight: {
     position: 'absolute',
-    top: 12,
+    top: 54,
     right: 12,
     zIndex: 10,
   },
@@ -413,5 +451,18 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: theme.colors.textTertiary,
     maxWidth: '50%',
+  },
+  arrivalBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    backgroundColor: theme.colors.gold + 'E6',
+    borderRadius: 8,
+  },
+  arrivalText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: theme.colors.black,
   },
 });

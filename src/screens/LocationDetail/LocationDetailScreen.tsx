@@ -9,10 +9,13 @@ import {
   Share,
   Platform,
   Alert,
+  Image,
 } from 'react-native';
 import { theme } from '../../theme';
-import { locationById, mockRatings, photosByLocation } from '../../data/sampleData';
+import { locationById, mockRatings, photosByLocation, calculateDistance } from '../../data/sampleData';
 import { categoryColors, STORAGE_KEYS } from '../../models';
+import { useSaved } from '../../context/SavedContext';
+import { getOnboardingData } from '../../services/StorageService';
 import { CategoryBadge } from '../../components/CategoryBadge';
 import { StarRating } from '../../components/StarRating';
 import { PhotoGrid } from '../../components/PhotoGrid';
@@ -26,7 +29,29 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
   const rating = location ? mockRatings[location.id] : undefined;
   const photos = location ? photosByLocation(location.id) : [];
   const [userRating, setUserRating] = useState<number | undefined>(undefined);
-  const [saved, setSaved] = useState(false);
+  const { isSaved: checkSaved, toggleSave: toggleSaved } = useSaved();
+  const saved = checkSaved(locationId);
+  const [userLat, setUserLat] = useState<number | null>(null);
+  const [userLng, setUserLng] = useState<number | null>(null);
+
+  // Load user GPS from onboarding and calculate distance
+  React.useEffect(() => {
+    (async () => {
+      try {
+        const data = await getOnboardingData();
+        if (data?.activeCityLat && data?.activeCityLng) {
+          setUserLat(data.activeCityLat);
+          setUserLng(data.activeCityLng);
+        }
+      } catch {}
+    })();
+  }, []);
+
+  // Calculate distance in miles (matching the card display)
+  const distanceFromUser = React.useMemo(() => {
+    if (userLat === null || userLng === null || !location) return undefined;
+    return calculateDistance(userLat, userLng, location.latitude, location.longitude) / 1609.34;
+  }, [userLat, userLng, location]);
 
   if (!location) {
     return (
@@ -51,8 +76,8 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
     } catch {}
   };
 
-  const handleSave = () => {
-    setSaved(!saved);
+  const handleSave = async () => {
+    await toggleSaved(locationId);
   };
 
   const handleRate = (rating: number) => {
@@ -73,7 +98,15 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       {/* Hero */}
-      <View style={[styles.hero, { backgroundColor: catColor + '33' }]}>
+      <View style={styles.hero}>
+        {/* Location image with gradient overlay */}
+        {location.imageUrl ? (
+          <Image
+            source={{ uri: location.imageUrl }}
+            style={styles.heroImage}
+          />
+        ) : null}
+        <View style={[styles.heroGradientOverlay, { backgroundColor: catColor + 'AA' }]} />
         <View style={styles.heroContent}>
           <TouchableOpacity onPress={handleViewMovie}>
             <Text style={styles.showName}>{location.movieOrShow} ›</Text>
@@ -82,12 +115,12 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
           <View style={styles.badges}>
             <CategoryBadge category={location.category} />
             <View style={styles.yearBadge}><Text style={styles.yearText}>{location.year}</Text></View>
-            {location.distanceFromUser !== undefined && (
+            {distanceFromUser !== undefined && (
               <View style={styles.distanceBadge}>
                 <Text style={styles.distanceText}>
-                  📍 {location.distanceFromUser < 1000
-                    ? `${Math.round(location.distanceFromUser)}m`
-                    : `${(location.distanceFromUser / 1000).toFixed(1)}km`} away
+                  📍 {distanceFromUser < 1
+                    ? `${(distanceFromUser * 5280).toFixed(0)}ft`
+                    : `${distanceFromUser.toFixed(1)}mi`} away
                 </Text>
               </View>
             )}
@@ -176,7 +209,7 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
           onPress={handleSave}
         >
           <Text style={[styles.secondaryButtonText, saved && styles.savedButtonText]}>
-            {saved ? '💾 Saved' : '💾 Save'}
+            {saved ? '✅ Saved' : '💾 Save'}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.secondaryButton} onPress={handleShare}>
@@ -192,8 +225,17 @@ const styles = StyleSheet.create({
   content: { paddingBottom: 40 },
   errorContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.background },
   errorText: { fontSize: 18, color: theme.colors.textSecondary },
-  hero: { height: 260, justifyContent: 'flex-end', paddingBottom: 20 },
-  heroContent: { paddingHorizontal: 20 },
+  hero: { height: 360, justifyContent: 'flex-end', paddingBottom: 20, position: 'relative', overflow: 'hidden' },
+  heroContent: { paddingHorizontal: 20, position: 'relative', zIndex: 2 },
+  heroImage: {
+    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+    width: '100%', height: '100%',
+    resizeMode: 'cover',
+  },
+  heroGradientOverlay: {
+    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+    opacity: 0.3,
+  },
   showName: { fontSize: 16, fontWeight: '700', color: theme.colors.gold, marginBottom: 4 },
   locationTitle: { fontSize: 26, fontWeight: '700', color: theme.colors.white, marginBottom: 12 },
   badges: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
@@ -214,11 +256,11 @@ const styles = StyleSheet.create({
   quoteIcon: { fontSize: 20, marginBottom: 8 },
   quoteText: { fontSize: 17, fontStyle: 'italic', color: theme.colors.textPrimary, lineHeight: 26 },
   quoteAttr: { fontSize: 13, color: theme.colors.textTertiary, marginTop: 8 },
-  actions: { flexDirection: 'row', paddingHorizontal: 20, paddingTop: 28, gap: 10, flexWrap: 'wrap' },
-  primaryButton: { flex: 1, backgroundColor: theme.colors.gold, paddingVertical: 14, borderRadius: 12, alignItems: 'center', minWidth: 120 },
-  primaryButtonText: { color: theme.colors.black, fontWeight: '700', fontSize: 15 },
-  secondaryButton: { paddingVertical: 14, paddingHorizontal: 20, borderRadius: 12, alignItems: 'center', backgroundColor: theme.colors.surface3, minWidth: 80, borderWidth: 1, borderColor: 'transparent' },
-  secondaryButtonText: { color: theme.colors.gold, fontWeight: '600', fontSize: 14 },
+  actions: { flexDirection: 'row', paddingHorizontal: 20, paddingTop: 28, gap: 10 },
+  primaryButton: { flex: 1, backgroundColor: theme.colors.gold, paddingVertical: 10, borderRadius: 10, alignItems: 'center' },
+  primaryButtonText: { color: theme.colors.black, fontWeight: '700', fontSize: 12 },
+  secondaryButton: { flex: 1, paddingVertical: 10, borderRadius: 10, alignItems: 'center', backgroundColor: theme.colors.surface3, borderWidth: 1, borderColor: 'transparent' },
+  secondaryButtonText: { color: theme.colors.gold, fontWeight: '600', fontSize: 12 },
   savedButton: { backgroundColor: theme.colors.gold + '20', borderColor: theme.colors.gold },
   savedButtonText: { color: theme.colors.gold },
 });

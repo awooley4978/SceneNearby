@@ -44,6 +44,7 @@ export interface FilmingLocation {
   distanceFromUser?: number;
   rating?: LocationRating;
   photoCount?: number;
+  imageUrl?: string;
   actors?: string[];
 }
 
