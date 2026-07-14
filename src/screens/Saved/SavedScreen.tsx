@@ -13,6 +13,8 @@ import { allLocations, mockRatings } from '../../data/sampleData';
 import { LocationCard } from '../../components/LocationCard';
 import { EmptyState } from '../../components/EmptyState';
 import { useSaved } from '../../context/SavedContext';
+import { getOnboardingData } from '../../services/StorageService';
+import { calculateDistance } from '../../data/sampleData';
 
 type SortMode = 'recent' | 'nearest' | 'az' | 'rating';
 
@@ -20,6 +22,21 @@ export const SavedScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { savedIds, loaded } = useSaved();
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<SortMode>('recent');
+  const [userLat, setUserLat] = useState<number | null>(null);
+  const [userLng, setUserLng] = useState<number | null>(null);
+
+  // Load user GPS from onboarding
+  useEffect(() => {
+    (async () => {
+      try {
+        const data = await getOnboardingData();
+        if (data?.activeCityLat && data?.activeCityLng) {
+          setUserLat(data.activeCityLat);
+          setUserLng(data.activeCityLng);
+        }
+      } catch {}
+    })();
+  }, []);
 
   // Local state for instant removal on unsave (context updates async)
   const [localRemoved, setLocalRemoved] = useState<Set<string>>(new Set());
@@ -31,6 +48,14 @@ export const SavedScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   const savedLocations = useMemo(() => {
     let result = allLocations.filter((loc) => savedIds.has(loc.id) && !localRemoved.has(loc.id));
+
+    // Calculate distances from user GPS
+    if (userLat !== null && userLng !== null) {
+      result = result.map((loc) => ({
+        ...loc,
+        distanceFromUser: calculateDistance(userLat, userLng, loc.latitude, loc.longitude) / 1609.34,
+      }));
+    }
 
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
@@ -58,7 +83,7 @@ export const SavedScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     }
 
     return result;
-  }, [savedIds, searchQuery, sortBy]);
+  }, [savedIds, searchQuery, sortBy, userLat, userLng]);
 
   const sortOptions: { key: SortMode; label: string }[] = [
     { key: 'recent', label: 'Recent' },
@@ -121,9 +146,7 @@ export const SavedScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
               onPress={() => navigation.navigate('LocationDetail', { locationId: item.id })}
               onMoviePress={() => navigation.navigate('MovieDetail', { movieTitle: item.movieOrShow })}
               onUnsave={(id) => {
-                const next = new Set(savedIds);
-                next.delete(id);
-                updateSavedIds(next);
+                setLocalRemoved((prev) => new Set(prev).add(id));
               }}
             />
           )}
