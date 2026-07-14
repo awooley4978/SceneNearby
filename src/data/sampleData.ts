@@ -1182,7 +1182,7 @@ const londonLocations: FilmingLocation[] = [
               {
                 id: 'dal-004', title: 'AT&T Stadium', movieOrShow: 'The Blind Side', year: 2009,
                 category: LocationCategory.drama, latitude: 32.7473, longitude: -97.0929,
-                address: '1 AT&T Way, Arlington', city: 'Dallas', country: 'USA',
+                address: '1 AT&T Way, Arlington', city: 'Arlington', country: 'USA',
                 sceneDescription: 'Michael Oher\'s journey from homelessness to NFL stardom includes scenes set in the massive stadium that defines modern Texas football.',
                 funFact: 'AT&T Stadium has the largest retractable roof in the world and a video board that spans 60 yards.',
                 quote: 'You\'re gonna go to school and get an education. And you\'re gonna play football.',
