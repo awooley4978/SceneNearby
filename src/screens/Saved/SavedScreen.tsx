@@ -135,13 +135,16 @@ export const SavedScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           data={savedLocations}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <TouchableOpacity onLongPress={() => handleRemove(item.id, item.title)} delayLongPress={300}>
-              <LocationCard
-                location={item}
-                onPress={() => navigation.navigate('LocationDetail', { locationId: item.id })}
-                onMoviePress={() => navigation.navigate('MovieDetail', { movieTitle: item.movieOrShow })}
-              />
-            </TouchableOpacity>
+            <LocationCard
+              location={item}
+              onPress={() => navigation.navigate('LocationDetail', { locationId: item.id })}
+              onMoviePress={() => navigation.navigate('MovieDetail', { movieTitle: item.movieOrShow })}
+              onUnsave={(id) => {
+                const next = new Set(savedIds);
+                next.delete(id);
+                updateSavedIds(next);
+              }}
+            />
           )}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}

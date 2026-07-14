@@ -19,6 +19,7 @@ interface LocationCardProps {
   location: FilmingLocation;
   onPress: () => void;
   onMoviePress?: () => void;
+  onUnsave?: (id: string) => void;
   showRating?: boolean;
   index?: number;
 }
@@ -35,6 +36,7 @@ export const LocationCard: React.FC<LocationCardProps> = ({
   location,
   onPress,
   onMoviePress,
+  onUnsave,
   showRating = true,
   index = 0,
 }) => {
@@ -124,7 +126,12 @@ export const LocationCard: React.FC<LocationCardProps> = ({
       else ids.delete(location.id);
       await setSavedIds(ids);
     } catch {}
-  }, [isSaved, heartScale, particleAnim, location.id]);
+
+    // Notify parent when unsaved (e.g. to remove from Saved tab)
+    if (!next && onUnsave) {
+      onUnsave(location.id);
+    }
+  }, [isSaved, heartScale, particleAnim, location.id, onUnsave]);
 
   const entranceOpacity = entranceAnim.interpolate({
     inputRange: [0, 1], outputRange: [0, 1],
