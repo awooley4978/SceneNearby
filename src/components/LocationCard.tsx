@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Animated,
+  Image,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { theme } from '../theme';
@@ -156,7 +157,17 @@ export const LocationCard: React.FC<LocationCardProps> = ({
           ]}
         >
           {/* ── Hero Image Area ── */}
-          <View style={[styles.hero, heroGradient]}>
+          <View style={styles.hero}>
+            {/* Location image with gradient fallback */}
+            {location.imageUrl ? (
+              <Image
+                source={{ uri: location.imageUrl }}
+                style={styles.heroImage}
+                defaultSource={undefined}
+              />
+            ) : null}
+            {/* Gradient overlay (always present for fallback) */}
+            <View style={[styles.heroGradientOverlay, heroGradient]} />
             {/* Subtle gradient overlay at bottom of hero */}
             <View style={styles.heroOverlayGradient} />
 
@@ -312,6 +323,16 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     padding: 16,
     position: 'relative',
+    overflow: 'hidden',
+  },
+  heroImage: {
+    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+    width: '100%', height: '100%',
+    resizeMode: 'cover',
+  },
+  heroGradientOverlay: {
+    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+    opacity: 0.5,
   },
   heroOverlayGradient: {
     position: 'absolute',

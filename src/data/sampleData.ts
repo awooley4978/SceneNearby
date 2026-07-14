@@ -24,6 +24,7 @@ export function calculateDistance(
 const newYorkLocations: FilmingLocation[] = [
   {
     id: 'nyc-001', title: 'Central Park Bow Bridge', movieOrShow: 'Enchanted', year: 2007,
+    imageUrl: 'https://picsum.photos/seed/nyc-001/400/300',
     category: LocationCategory.romance, latitude: 40.7762, longitude: -73.9717,
     address: 'Bow Bridge, Central Park', city: 'New York City', country: 'USA',
     sceneDescription: "Giselle and Robert dance through Central Park, culminating in a romantic moment on the iconic Bow Bridge. The scene captures the magic of NYC through the eyes of a fairytale princess discovering the real world.",
@@ -35,6 +36,7 @@ const newYorkLocations: FilmingLocation[] = [
   },
   {
     id: 'nyc-002', title: "Katz's Delicatessen", movieOrShow: 'When Harry Met Sally...', year: 1989,
+    imageUrl: 'https://picsum.photos/seed/nyc-002/400/300',
     category: LocationCategory.comedy, latitude: 40.7223, longitude: -73.9873,
     address: '205 E Houston St', city: 'New York City', country: 'USA',
     sceneDescription: "The iconic 'I'll have what she's having' scene where Sally demonstrates — very publicly — how to fake a woman's pleasure in a deli.",
@@ -46,6 +48,7 @@ const newYorkLocations: FilmingLocation[] = [
   },
   {
     id: 'nyc-003', title: 'Grand Central Terminal', movieOrShow: 'The Avengers', year: 2012,
+    imageUrl: 'https://picsum.photos/seed/nyc-003/400/300',
     category: LocationCategory.action, latitude: 40.7527, longitude: -73.9772,
     address: '89 E 42nd St', city: 'New York City', country: 'USA',
     sceneDescription: 'The climactic Battle of New York spills through Grand Central Terminal as the Avengers fight Loki and the Chitauri.',
@@ -57,6 +60,7 @@ const newYorkLocations: FilmingLocation[] = [
   },
   {
     id: 'nyc-004', title: 'Empire State Building Observation Deck', movieOrShow: 'Sleepless in Seattle', year: 1993,
+    imageUrl: 'https://picsum.photos/seed/nyc-004/400/300',
     category: LocationCategory.romance, latitude: 40.7484, longitude: -73.9857,
     address: '350 5th Ave', city: 'New York City', country: 'USA',
     sceneDescription: 'The heartwarming finale where Sam and Annie finally meet atop the Empire State Building on Valentine\'s Day.',
@@ -68,6 +72,7 @@ const newYorkLocations: FilmingLocation[] = [
   },
   {
     id: 'nyc-005', title: 'Washington Square Park Arch', movieOrShow: 'I Am Legend', year: 2007,
+    imageUrl: 'https://picsum.photos/seed/nyc-005/400/300',
     category: LocationCategory.drama, latitude: 40.7326, longitude: -73.9973,
     address: 'Washington Square Park', city: 'New York City', country: 'USA',
     sceneDescription: 'Robert Neville hunts deer with his dog Sam through an overgrown, desolate Washington Square Park.',
@@ -79,6 +84,7 @@ const newYorkLocations: FilmingLocation[] = [
   },
   {
     id: 'nyc-006', title: 'The Plaza Hotel', movieOrShow: 'Home Alone 2: Lost in New York', year: 1992,
+    imageUrl: 'https://picsum.photos/seed/nyc-006/400/300',
     category: LocationCategory.comedy, latitude: 40.7645, longitude: -73.9744,
     address: '768 5th Ave', city: 'New York City', country: 'USA',
     sceneDescription: 'Kevin McCallister checks into the Plaza Hotel using his dad\'s credit card and orders an extravagant room service feast.',
@@ -90,6 +96,7 @@ const newYorkLocations: FilmingLocation[] = [
   },
   {
     id: 'nyc-007', title: 'Rockefeller Center Ice Rink', movieOrShow: 'Elf', year: 2003,
+    imageUrl: 'https://picsum.photos/seed/nyc-007/400/300',
     category: LocationCategory.comedy, latitude: 40.7587, longitude: -73.9787,
     address: '45 Rockefeller Plaza', city: 'New York City', country: 'USA',
     sceneDescription: 'Buddy the Elf visits the Rockefeller Center Christmas tree, gleefully shouting his love for New York.',
@@ -101,6 +108,7 @@ const newYorkLocations: FilmingLocation[] = [
   },
   {
     id: 'nyc-008', title: '115A E 7th St (Apartment Building)', movieOrShow: 'Friends', year: 1994,
+    imageUrl: 'https://picsum.photos/seed/nyc-008/400/300',
     category: LocationCategory.comedy, latitude: 40.7266, longitude: -73.9873,
     address: '115A E 7th St (exterior only)', city: 'New York City', country: 'USA',
     sceneDescription: 'The exterior of the apartment building where Monica, Rachel, Chandler, and Joey lived.',
@@ -112,6 +120,7 @@ const newYorkLocations: FilmingLocation[] = [
   },
   {
     id: 'nyc-009', title: "St. Paul's Chapel", movieOrShow: 'National Treasure', year: 2004,
+    imageUrl: 'https://picsum.photos/seed/nyc-009/400/300',
     category: LocationCategory.action, latitude: 40.7114, longitude: -74.0069,
     address: '209 Broadway', city: 'New York City', country: 'USA',
     sceneDescription: 'Benjamin Franklin Gates follows a clue hidden in the church\'s architecture.',
@@ -123,6 +132,7 @@ const newYorkLocations: FilmingLocation[] = [
   },
   {
     id: 'nyc-010', title: 'The Imagine Mosaic — Strawberry Fields', movieOrShow: 'Across the Universe', year: 2007,
+    imageUrl: 'https://picsum.photos/seed/nyc-010/400/300',
     category: LocationCategory.drama, latitude: 40.7760, longitude: -73.9747,
     address: 'Strawberry Fields, Central Park', city: 'New York City', country: 'USA',
     sceneDescription: "The musical's protagonists share a tender moment at the iconic 'Imagine' mosaic in Central Park.",
@@ -137,6 +147,7 @@ const newYorkLocations: FilmingLocation[] = [
 const losAngelesLocations: FilmingLocation[] = [
   {
     id: 'la-001', title: 'Griffith Observatory', movieOrShow: 'La La Land', year: 2016,
+    imageUrl: 'https://picsum.photos/seed/la-001/400/300',
     category: LocationCategory.romance, latitude: 34.1184, longitude: -118.3004,
     address: '2800 E Observatory Rd', city: 'Los Angeles', country: 'USA',
     sceneDescription: 'Sebastian and Mia float through the Griffith Observatory in a dreamlike dance sequence.',
@@ -148,6 +159,7 @@ const losAngelesLocations: FilmingLocation[] = [
   },
   {
     id: 'la-002', title: 'Bradbury Building', movieOrShow: 'Blade Runner', year: 1982,
+    imageUrl: 'https://picsum.photos/seed/la-002/400/300',
     category: LocationCategory.sciFi, latitude: 34.0505, longitude: -118.2478,
     address: '304 S Broadway', city: 'Los Angeles', country: 'USA',
     sceneDescription: "Deckard pursues the replicant Zhora through the Bradbury Building's stunning atrium.",
@@ -159,6 +171,7 @@ const losAngelesLocations: FilmingLocation[] = [
   },
   {
     id: 'la-003', title: 'The TCL Chinese Theatre', movieOrShow: 'Once Upon a Time in Hollywood', year: 2019,
+    imageUrl: 'https://picsum.photos/seed/la-003/400/300',
     category: LocationCategory.drama, latitude: 34.1020, longitude: -118.3408,
     address: '6925 Hollywood Blvd', city: 'Los Angeles', country: 'USA',
     sceneDescription: 'Rick Dalton walks the forecourt of the Chinese Theatre, passing the famous handprints of Hollywood legends.',
@@ -170,6 +183,7 @@ const losAngelesLocations: FilmingLocation[] = [
   },
   {
     id: 'la-004', title: 'Union Station', movieOrShow: 'The Dark Knight Rises', year: 2012,
+    imageUrl: 'https://picsum.photos/seed/la-004/400/300',
     category: LocationCategory.action, latitude: 34.0562, longitude: -118.2367,
     address: '800 N Alameda St', city: 'Los Angeles', country: 'USA',
     sceneDescription: "Bane's takeover of Gotham's stock exchange was filmed at LA's Union Station.",
@@ -181,6 +195,7 @@ const losAngelesLocations: FilmingLocation[] = [
   },
   {
     id: 'la-005', title: 'The Whisky a Go Go', movieOrShow: 'Almost Famous', year: 2000,
+    imageUrl: 'https://picsum.photos/seed/la-005/400/300',
     category: LocationCategory.drama, latitude: 34.0907, longitude: -118.3856,
     address: '8901 W Sunset Blvd', city: 'Los Angeles', country: 'USA',
     sceneDescription: '15-year-old William Miller experiences his first rock concert at the Whisky a Go Go.',
@@ -192,6 +207,7 @@ const losAngelesLocations: FilmingLocation[] = [
   },
   {
     id: 'la-006', title: 'Greystone Mansion', movieOrShow: 'The Big Lebowski', year: 1998,
+    imageUrl: 'https://picsum.photos/seed/la-006/400/300',
     category: LocationCategory.comedy, latitude: 34.0925, longitude: -118.3745,
     address: '905 Loma Vista Dr', city: 'Beverly Hills', country: 'USA',
     sceneDescription: 'The Dude visits the magnate\'s opulent mansion, bowling ball in hand.',
@@ -203,6 +219,7 @@ const losAngelesLocations: FilmingLocation[] = [
   },
   {
     id: 'la-007', title: 'Angels Flight Railway', movieOrShow: '500 Days of Summer', year: 2009,
+    imageUrl: 'https://picsum.photos/seed/la-007/400/300',
     category: LocationCategory.romance, latitude: 34.0515, longitude: -118.2502,
     address: '350 S Grand Ave', city: 'Los Angeles', country: 'USA',
     sceneDescription: 'Tom and Summer share a playful moment riding Angels Flight, the historic funicular railway.',
@@ -214,6 +231,7 @@ const losAngelesLocations: FilmingLocation[] = [
   },
   {
     id: 'la-008', title: 'The Grove / Original Farmers Market', movieOrShow: 'The Muppets', year: 2011,
+    imageUrl: 'https://picsum.photos/seed/la-008/400/300',
     category: LocationCategory.comedy, latitude: 34.0729, longitude: -118.3569,
     address: '6333 W 3rd St', city: 'Los Angeles', country: 'USA',
     sceneDescription: 'The Muppets sing and dance through the iconic outdoor shopping complex.',
@@ -225,6 +243,7 @@ const losAngelesLocations: FilmingLocation[] = [
   },
   {
     id: 'la-009', title: 'Venice Beach Boardwalk', movieOrShow: "White Men Can't Jump", year: 1992,
+    imageUrl: 'https://picsum.photos/seed/la-009/400/300',
     category: LocationCategory.comedy, latitude: 33.9862, longitude: -118.4720,
     address: 'Venice Beach Boardwalk', city: 'Los Angeles', country: 'USA',
     sceneDescription: 'Billy Hoyle and Sidney Deane engage in a high-stakes basketball game on the legendary Venice Beach courts.',
@@ -239,6 +258,7 @@ const losAngelesLocations: FilmingLocation[] = [
 const londonLocations: FilmingLocation[] = [
   {
     id: 'ldn-001', title: "King's Cross Station — Platform 9¾", movieOrShow: 'Harry Potter and the Sorcerer\'s Stone', year: 2001,
+    imageUrl: 'https://picsum.photos/seed/ldn-001/400/300',
     category: LocationCategory.sciFi, latitude: 51.5348, longitude: -0.1238,
     address: "King's Cross Station, Euston Rd", city: 'London', country: 'UK',
     sceneDescription: 'A young Harry Potter runs headfirst at a brick wall — and emerges onto the magical Platform 9¾.',
@@ -250,6 +270,7 @@ const londonLocations: FilmingLocation[] = [
   },
   {
     id: 'ldn-002', title: '221B Baker Street (Exterior)', movieOrShow: 'Sherlock', year: 2010,
+    imageUrl: 'https://picsum.photos/seed/ldn-002/400/300',
     category: LocationCategory.drama, latitude: 51.5238, longitude: -0.1577,
     address: '187-189 Baker St', city: 'London', country: 'UK',
     sceneDescription: 'The exterior of 221B Baker Street — the residence of Sherlock Holmes and Dr. John Watson.',
@@ -261,6 +282,7 @@ const londonLocations: FilmingLocation[] = [
   },
   {
     id: 'ldn-003', title: 'Trafalgar Square', movieOrShow: 'Doctor Who', year: 2005,
+    imageUrl: 'https://picsum.photos/seed/ldn-003/400/300',
     category: LocationCategory.sciFi, latitude: 51.5079, longitude: -0.1281,
     address: 'Trafalgar Square', city: 'London', country: 'UK',
     sceneDescription: 'The Doctor and Rose land the TARDIS in the middle of Trafalgar Square.',
@@ -272,6 +294,7 @@ const londonLocations: FilmingLocation[] = [
   },
   {
     id: 'ldn-004', title: 'Leadenhall Market', movieOrShow: 'Harry Potter and the Sorcerer\'s Stone', year: 2001,
+    imageUrl: 'https://picsum.photos/seed/ldn-004/400/300',
     category: LocationCategory.sciFi, latitude: 51.5131, longitude: -0.0835,
     address: 'Whittington Ave', city: 'London', country: 'UK',
     sceneDescription: 'The cobbled streets of Leadenhall Market stood in for Diagon Alley.',
@@ -283,6 +306,7 @@ const londonLocations: FilmingLocation[] = [
   },
   {
     id: 'ldn-005', title: 'The Shard', movieOrShow: 'Mission: Impossible — Ghost Protocol', year: 2011,
+    imageUrl: 'https://picsum.photos/seed/ldn-005/400/300',
     category: LocationCategory.action, latitude: 51.5045, longitude: -0.0865,
     address: '32 London Bridge St', city: 'London', country: 'UK',
     sceneDescription: 'Ethan Hunt climbs the Burj Khalifa — but interior scenes were shot at The Shard.',
@@ -294,6 +318,7 @@ const londonLocations: FilmingLocation[] = [
   },
   {
     id: 'ldn-006', title: 'Notting Hill — The Blue Door', movieOrShow: 'Notting Hill', year: 1999,
+    imageUrl: 'https://picsum.photos/seed/ldn-006/400/300',
     category: LocationCategory.romance, latitude: 51.5176, longitude: -0.2069,
     address: '280 Westbourne Park Rd', city: 'London', country: 'UK',
     sceneDescription: "William Thacker's iconic blue front door, where Anna Scott asks him to love her.",
@@ -305,6 +330,7 @@ const londonLocations: FilmingLocation[] = [
   },
   {
     id: 'ldn-007', title: 'Borough Market', movieOrShow: "Bridget Jones's Diary", year: 2001,
+    imageUrl: 'https://picsum.photos/seed/ldn-007/400/300',
     category: LocationCategory.comedy, latitude: 51.5055, longitude: -0.0910,
     address: '8 Southwark St', city: 'London', country: 'UK',
     sceneDescription: 'Bridget Jones rushes through Borough Market in her signature reindeer sweater.',
@@ -316,6 +342,7 @@ const londonLocations: FilmingLocation[] = [
   },
   {
           id: 'ldn-008', title: "St. Bartholomew's Hospital", movieOrShow: 'Sherlock', year: 2010,
+          imageUrl: 'https://picsum.photos/seed/ldn-008/400/300',
           category: LocationCategory.drama, latitude: 51.5187, longitude: -0.1004,
           address: 'West Smithfield', city: 'London', country: 'UK',
           sceneDescription: "The rooftop of St. Bart's — site of the heartbreaking 'Reichenbach Fall'.",
@@ -330,6 +357,7 @@ const londonLocations: FilmingLocation[] = [
       const chicagoLocations: FilmingLocation[] = [
         {
           id: 'chi-001', title: 'Wrigley Field', movieOrShow: 'The Blues Brothers', year: 1980,
+          imageUrl: 'https://picsum.photos/seed/chi-001/400/300',
           category: LocationCategory.comedy, latitude: 41.9484, longitude: -87.6553,
           address: '1060 W Addison St', city: 'Chicago', country: 'USA',
           sceneDescription: 'Jake and Elwood Blues tear through Chicago in their iconic Bluesmobile in a high-speed chase through Wrigley Field.',
@@ -341,6 +369,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'chi-002', title: 'The L (El Train)', movieOrShow: 'The Dark Knight', year: 2008,
+          imageUrl: 'https://picsum.photos/seed/chi-002/400/300',
           category: LocationCategory.action, latitude: 41.8787, longitude: -87.6274,
           address: 'Various L stations, Chicago', city: 'Chicago', country: 'USA',
           sceneDescription: 'The Joker ambushes Commissioner Gordon\'s transport on the elevated train with the Chicago skyline as backdrop.',
@@ -352,6 +381,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'chi-003', title: 'Cloud Gate (The Bean)', movieOrShow: 'Source Code', year: 2011,
+          imageUrl: 'https://picsum.photos/seed/chi-003/400/300',
           category: LocationCategory.sciFi, latitude: 41.8827, longitude: -87.6233,
           address: 'Millennium Park, 201 E Randolph St', city: 'Chicago', country: 'USA',
           sceneDescription: 'Captain Colter Stevens navigates a parallel reality that includes the gleaming Cloud Gate sculpture in Millennium Park.',
@@ -363,6 +393,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'chi-004', title: 'John Hancock Center', movieOrShow: 'Ferris Bueller\'s Day Off', year: 1986,
+          imageUrl: 'https://picsum.photos/seed/chi-004/400/300',
           category: LocationCategory.comedy, latitude: 41.8989, longitude: -87.6230,
           address: '875 N Michigan Ave', city: 'Chicago', country: 'USA',
           sceneDescription: 'Ferris, Cameron, and Sloane take in the breathtaking view of Chicago from the top of the Hancock Center.',
@@ -374,6 +405,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'chi-005', title: 'The Art Institute of Chicago', movieOrShow: 'The Fugitive', year: 1993,
+          imageUrl: 'https://picsum.photos/seed/chi-005/400/300',
           category: LocationCategory.drama, latitude: 41.8796, longitude: -87.6237,
           address: '111 S Michigan Ave', city: 'Chicago', country: 'USA',
           sceneDescription: 'Dr. Richard Kimble weaves through the Art Institute in a tense chase with Deputy Marshal Gerard.',
@@ -388,6 +420,7 @@ const londonLocations: FilmingLocation[] = [
       const atlantaLocations: FilmingLocation[] = [
         {
           id: 'atl-001', title: 'Marvelous Mabel\'s', movieOrShow: 'Stranger Things', year: 2016,
+          imageUrl: 'https://picsum.photos/seed/atl-001/400/300',
           category: LocationCategory.drama, latitude: 33.7702, longitude: -84.3910,
           address: 'Various locations, Atlanta area', city: 'Atlanta', country: 'USA',
           sceneDescription: 'Joyce Byers communicates with her son Will through Christmas lights strung across the living room wall.',
@@ -399,6 +432,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'atl-002', title: 'Piedmont Park', movieOrShow: 'The Walking Dead', year: 2010,
+          imageUrl: 'https://picsum.photos/seed/atl-002/400/300',
           category: LocationCategory.drama, latitude: 33.7866, longitude: -84.3730,
           address: 'Piedmont Park, Atlanta', city: 'Atlanta', country: 'USA',
           sceneDescription: 'Rick Grimes rides through a post-apocalyptic Atlanta, navigating deserted streets overrun by walkers.',
@@ -410,6 +444,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'atl-003', title: 'The Fox Theatre', movieOrShow: 'Drumline', year: 2002,
+          imageUrl: 'https://picsum.photos/seed/atl-003/400/300',
           category: LocationCategory.drama, latitude: 33.7727, longitude: -84.3855,
           address: '660 Peachtree St NE', city: 'Atlanta', country: 'USA',
           sceneDescription: 'The climactic battle of the bands competition takes place at this iconic Atlanta venue.',
@@ -421,6 +456,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'atl-004', title: 'Jackson Street Bridge', movieOrShow: 'The Walking Dead', year: 2010,
+          imageUrl: 'https://picsum.photos/seed/atl-004/400/300',
           category: LocationCategory.drama, latitude: 33.7545, longitude: -84.3715,
           address: 'Jackson Street Bridge, Atlanta', city: 'Atlanta', country: 'USA',
           sceneDescription: 'The iconic shot of Rick Grimes riding into Atlanta with the skyline in the background.',
@@ -435,6 +471,7 @@ const londonLocations: FilmingLocation[] = [
       const sanFranciscoLocations: FilmingLocation[] = [
         {
           id: 'sfo-001', title: 'Alcatraz Island', movieOrShow: 'Escape from Alcatraz', year: 1979,
+          imageUrl: 'https://picsum.photos/seed/sfo-001/400/300',
           category: LocationCategory.drama, latitude: 37.8267, longitude: -122.4230,
           address: 'Alcatraz Island, San Francisco Bay', city: 'San Francisco', country: 'USA',
           sceneDescription: 'Clint Eastwood as Frank Morris meticulously plans and executes the most famous prison escape in American history.',
@@ -446,6 +483,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'sfo-002', title: 'Painted Ladies (Alamo Square)', movieOrShow: 'Full House', year: 1987,
+          imageUrl: 'https://picsum.photos/seed/sfo-002/400/300',
           category: LocationCategory.comedy, latitude: 37.7764, longitude: -122.4346,
           address: 'Alamo Square, 710 Steiner St', city: 'San Francisco', country: 'USA',
           sceneDescription: 'The iconic opening credits shot of the Tanner family home with the San Francisco skyline behind the Painted Ladies.',
@@ -457,6 +495,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'sfo-003', title: 'The Golden Gate Bridge', movieOrShow: 'Vertigo', year: 1958,
+          imageUrl: 'https://picsum.photos/seed/sfo-003/400/300',
           category: LocationCategory.drama, latitude: 37.8199, longitude: -122.4783,
           address: 'Golden Gate Bridge, San Francisco', city: 'San Francisco', country: 'USA',
           sceneDescription: 'Scottie Ferguson\'s acrophobia is triggered as he chases Madeleine through San Francisco and across the Golden Gate.',
@@ -468,6 +507,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'sfo-004', title: 'Chinatown — Grant Avenue', movieOrShow: 'Big Trouble in Little China', year: 1986,
+          imageUrl: 'https://picsum.photos/seed/sfo-004/400/300',
           category: LocationCategory.action, latitude: 37.7940, longitude: -122.4065,
           address: 'Grant Ave, San Francisco', city: 'San Francisco', country: 'USA',
           sceneDescription: 'Jack Burton navigates the mystical underworld beneath San Francisco\'s Chinatown.',
@@ -479,6 +519,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'sfo-005', title: 'City Hall Rotunda', movieOrShow: 'The Room', year: 2003,
+          imageUrl: 'https://picsum.photos/seed/sfo-005/400/300',
           category: LocationCategory.romance, latitude: 37.7793, longitude: -122.4192,
           address: '1 Dr Carlton B Goodlett Pl', city: 'San Francisco', country: 'USA',
           sceneDescription: 'Johnny and Lisa\'s wedding takes place in the stunning Beaux-Arts rotunda of San Francisco City Hall.',
@@ -493,6 +534,7 @@ const londonLocations: FilmingLocation[] = [
       const bostonLocations: FilmingLocation[] = [
         {
           id: 'bos-001', title: 'Boston Public Garden', movieOrShow: 'Good Will Hunting', year: 1997,
+          imageUrl: 'https://picsum.photos/seed/bos-001/400/300',
           category: LocationCategory.drama, latitude: 42.3540, longitude: -71.0696,
           address: 'Boston Public Garden', city: 'Boston', country: 'USA',
           sceneDescription: 'Will Hunting and Sean Maguire share a profound conversation on a park bench about life, love, and regret.',
@@ -504,6 +546,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'bos-002', title: 'Fenway Park', movieOrShow: 'Fever Pitch', year: 2005,
+          imageUrl: 'https://picsum.photos/seed/bos-002/400/300',
           category: LocationCategory.romance, latitude: 42.3467, longitude: -71.0972,
           address: '4 Jersey St, Boston', city: 'Boston', country: 'USA',
           sceneDescription: 'Ben and Lindsey\'s relationship is tested by his obsessive love for the Red Sox at Fenway Park.',
@@ -515,6 +558,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'bos-003', title: 'Acorn Street, Beacon Hill', movieOrShow: 'The Departed', year: 2006,
+          imageUrl: 'https://picsum.photos/seed/bos-003/400/300',
           category: LocationCategory.action, latitude: 42.3575, longitude: -71.0670,
           address: 'Acorn St, Beacon Hill', city: 'Boston', country: 'USA',
           sceneDescription: 'The cobblestone streets of Beacon Hill serve as the backdrop for the cat-and-mouse game between the mob and police.',
@@ -526,6 +570,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'bos-004', title: 'Harvard University Yard', movieOrShow: 'The Social Network', year: 2010,
+          imageUrl: 'https://picsum.photos/seed/bos-004/400/300',
           category: LocationCategory.drama, latitude: 42.3744, longitude: -71.1169,
           address: 'Harvard Yard, Cambridge', city: 'Boston', country: 'USA',
           sceneDescription: 'Mark Zuckerberg runs across Harvard Yard after creating FaceMash, setting the stage for Facebook.',
@@ -540,6 +585,7 @@ const londonLocations: FilmingLocation[] = [
       const seattleLocations: FilmingLocation[] = [
         {
           id: 'sea-001', title: 'Pike Place Market', movieOrShow: 'Sleepless in Seattle', year: 1993,
+          imageUrl: 'https://picsum.photos/seed/sea-001/400/300',
           category: LocationCategory.romance, latitude: 47.6092, longitude: -122.3407,
           address: 'Pike Place Market', city: 'Seattle', country: 'USA',
           sceneDescription: 'Sam Baldwin and his son Jonah navigate the bustling Pike Place Market with flying fish and vibrant stalls.',
@@ -551,6 +597,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'sea-002', title: 'Space Needle', movieOrShow: '10 Things I Hate About You', year: 1999,
+          imageUrl: 'https://picsum.photos/seed/sea-002/400/300',
           category: LocationCategory.comedy, latitude: 47.6205, longitude: -122.3493,
           address: '400 Broad St', city: 'Seattle', country: 'USA',
           sceneDescription: 'The climactic prom where Kat lets down her guard and Patrick declares his love near the Space Needle.',
@@ -562,6 +609,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'sea-003', title: 'Capitol Hill', movieOrShow: 'Singles', year: 1992,
+          imageUrl: 'https://picsum.photos/seed/sea-003/400/300',
           category: LocationCategory.romance, latitude: 47.6148, longitude: -122.3479,
           address: 'Capitol Hill, Seattle', city: 'Seattle', country: 'USA',
           sceneDescription: 'The grunge scene of early 90s Seattle comes to life amid the burgeoning music scene.',
@@ -573,6 +621,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'sea-004', title: 'Suzzallo Library, UW', movieOrShow: 'The Handmaid\'s Tale', year: 2017,
+          imageUrl: 'https://picsum.photos/seed/sea-004/400/300',
           category: LocationCategory.drama, latitude: 47.6555, longitude: -122.3100,
           address: 'Suzzallo Library, UW Campus', city: 'Seattle', country: 'USA',
           sceneDescription: 'The stunning Gothic reading room stands in for the oppressive architecture of Gilead.',
@@ -587,6 +636,7 @@ const londonLocations: FilmingLocation[] = [
       const vancouverLocations: FilmingLocation[] = [
         {
           id: 'van-001', title: 'Marine Building', movieOrShow: 'The Flash', year: 2014,
+          imageUrl: 'https://picsum.photos/seed/van-001/400/300',
           category: LocationCategory.action, latitude: 49.2848, longitude: -123.1130,
           address: '355 Burrard St, Vancouver', city: 'Vancouver', country: 'Canada',
           sceneDescription: 'The Art Deco Marine Building doubles as the exterior of S.T.A.R. Labs, Barry Allen\'s crime-fighting hub.',
@@ -598,6 +648,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'van-002', title: 'Stanley Park', movieOrShow: 'The X-Files', year: 1993,
+          imageUrl: 'https://picsum.photos/seed/van-002/400/300',
           category: LocationCategory.sciFi, latitude: 49.3043, longitude: -123.1445,
           address: 'Stanley Park, Vancouver', city: 'Vancouver', country: 'Canada',
           sceneDescription: 'Mulder and Scully investigate paranormal phenomena in the misty, ancient forests of the Pacific Northwest.',
@@ -609,6 +660,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'van-003', title: 'Gastown Steam Clock', movieOrShow: 'Lucifer', year: 2016,
+          imageUrl: 'https://picsum.photos/seed/van-003/400/300',
           category: LocationCategory.comedy, latitude: 49.2842, longitude: -123.1070,
           address: 'Water St & Cambie St, Vancouver', city: 'Vancouver', country: 'Canada',
           sceneDescription: 'Gastown\'s cobblestone streets serve as the backdrop for Lucifer Morningstar\'s nocturnal adventures.',
@@ -620,6 +672,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'van-004', title: 'Dr. Sun Yat-Sen Garden', movieOrShow: 'The Man in the High Castle', year: 2015,
+          imageUrl: 'https://picsum.photos/seed/van-004/400/300',
           category: LocationCategory.drama, latitude: 49.2797, longitude: -123.0983,
           address: '578 Carrall St, Vancouver', city: 'Vancouver', country: 'Canada',
           sceneDescription: 'The serene garden stands in for a Japanese-occupied Pacific States in this alternate history drama.',
@@ -631,6 +684,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'van-005', title: 'Vancouver Art Gallery', movieOrShow: 'The 100', year: 2014,
+          imageUrl: 'https://picsum.photos/seed/van-005/400/300',
           category: LocationCategory.sciFi, latitude: 49.2830, longitude: -123.1205,
           address: '750 Hornby St, Vancouver', city: 'Vancouver', country: 'Canada',
           sceneDescription: 'The neoclassical building stands in for the seat of government in the post-apocalyptic world.',
@@ -645,6 +699,7 @@ const londonLocations: FilmingLocation[] = [
       const torontoLocations: FilmingLocation[] = [
         {
           id: 'tor-001', title: 'Casa Loma', movieOrShow: 'X-Men', year: 2000,
+          imageUrl: 'https://picsum.photos/seed/tor-001/400/300',
           category: LocationCategory.action, latitude: 43.6781, longitude: -79.4094,
           address: '1 Austin Terrace, Toronto', city: 'Toronto', country: 'Canada',
           sceneDescription: 'The Gothic Revival castle serves as Professor Xavier\'s School for Gifted Youngsters.',
@@ -656,6 +711,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'tor-002', title: 'Scarborough Bluffs', movieOrShow: 'The Handmaid\'s Tale', year: 2017,
+          imageUrl: 'https://picsum.photos/seed/tor-002/400/300',
           category: LocationCategory.drama, latitude: 43.7240, longitude: -79.2480,
           address: 'Scarborough Bluffs, Lake Ontario', city: 'Toronto', country: 'Canada',
           sceneDescription: 'The dramatic cliffs overlooking Lake Ontario serve as the backdrop for June\'s moments of reflection.',
@@ -667,6 +723,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'tor-003', title: 'Elgin Theatre', movieOrShow: 'Chicago', year: 2002,
+          imageUrl: 'https://picsum.photos/seed/tor-003/400/300',
           category: LocationCategory.comedy, latitude: 43.6525, longitude: -79.3778,
           address: '189 Yonge St, Toronto', city: 'Toronto', country: 'Canada',
           sceneDescription: 'The stunning double-decker theater stands in for 1920s Chicago venues where Roxie Hart dreams of stardom.',
@@ -678,6 +735,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'tor-004', title: 'Toronto City Hall', movieOrShow: 'Suits', year: 2011,
+          imageUrl: 'https://picsum.photos/seed/tor-004/400/300',
           category: LocationCategory.drama, latitude: 43.6530, longitude: -79.3840,
           address: '100 Queen St W, Toronto', city: 'Toronto', country: 'Canada',
           sceneDescription: 'The modernist Toronto City Hall doubles as the exterior of Pearson Specter Litt law firm.',
@@ -689,6 +747,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'tor-005', title: 'Distillery District', movieOrShow: 'The Shape of Water', year: 2017,
+          imageUrl: 'https://picsum.photos/seed/tor-005/400/300',
           category: LocationCategory.romance, latitude: 43.6503, longitude: -79.3597,
           address: '55 Mill St, Toronto', city: 'Toronto', country: 'Canada',
           sceneDescription: 'The Victorian Industrial District stands in for 1960s Baltimore in this Oscar-winning fantasy.',
@@ -703,6 +762,7 @@ const londonLocations: FilmingLocation[] = [
       const parisLocations: FilmingLocation[] = [
         {
           id: 'par-001', title: 'Eiffel Tower', movieOrShow: 'Midnight in Paris', year: 2011,
+          imageUrl: 'https://picsum.photos/seed/par-001/400/300',
           category: LocationCategory.romance, latitude: 48.8584, longitude: 2.2945,
           address: 'Champ de Mars, Paris', city: 'Paris', country: 'France',
           sceneDescription: 'Gil Pender walks the midnight streets of Paris, transported back to the 1920s meeting his literary heroes.',
@@ -714,6 +774,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'par-002', title: 'Sacré-Cœur Basilica', movieOrShow: 'Amélie', year: 2001,
+          imageUrl: 'https://picsum.photos/seed/par-002/400/300',
           category: LocationCategory.romance, latitude: 48.8867, longitude: 2.3431,
           address: 'Montmartre, Paris', city: 'Paris', country: 'France',
           sceneDescription: 'Amélie navigates the whimsical streets of Montmartre, overlooking Paris from the steps of Sacré-Cœur.',
@@ -725,6 +786,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'par-003', title: 'The Louvre Pyramid', movieOrShow: 'The Da Vinci Code', year: 2006,
+          imageUrl: 'https://picsum.photos/seed/par-003/400/300',
           category: LocationCategory.action, latitude: 48.8606, longitude: 2.3376,
           address: 'Musée du Louvre, Paris', city: 'Paris', country: 'France',
           sceneDescription: 'Robert Langdon races through the Louvre\'s galleries deciphering clues hidden in Da Vinci\'s masterpieces.',
@@ -736,6 +798,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'par-004', title: 'Café de Flore', movieOrShow: 'Before Sunset', year: 2004,
+          imageUrl: 'https://picsum.photos/seed/par-004/400/300',
           category: LocationCategory.romance, latitude: 48.8540, longitude: 2.3326,
           address: '172 Boulevard Saint-Germain, Paris', city: 'Paris', country: 'France',
           sceneDescription: 'Jesse and Celine share a wandering conversation through Paris, stopping at this iconic café.',
@@ -747,6 +810,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'par-005', title: 'Pont Alexandre III', movieOrShow: 'Inception', year: 2010,
+          imageUrl: 'https://picsum.photos/seed/par-005/400/300',
           category: LocationCategory.action, latitude: 48.8637, longitude: 2.3136,
           address: 'Pont Alexandre III, Paris', city: 'Paris', country: 'France',
           sceneDescription: 'Arthur engages in a zero-gravity fight scene while the streets of Paris fold over the city.',
@@ -761,6 +825,7 @@ const londonLocations: FilmingLocation[] = [
       const romeLocations: FilmingLocation[] = [
         {
           id: 'rom-001', title: 'Trevi Fountain', movieOrShow: 'La Dolce Vita', year: 1960,
+          imageUrl: 'https://picsum.photos/seed/rom-001/400/300',
           category: LocationCategory.romance, latitude: 41.9009, longitude: 12.4833,
           address: 'Piazza di Trevi, Rome', city: 'Rome', country: 'Italy',
           sceneDescription: 'Marcello Mastroianni wades into the Trevi Fountain at dawn, calling for Anita Ekberg in cinema\'s most iconic scene.',
@@ -772,6 +837,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'rom-002', title: 'Spanish Steps', movieOrShow: 'Roman Holiday', year: 1953,
+          imageUrl: 'https://picsum.photos/seed/rom-002/400/300',
           category: LocationCategory.romance, latitude: 41.9060, longitude: 12.4826,
           address: 'Piazza di Spagna, Rome', city: 'Rome', country: 'Italy',
           sceneDescription: 'Princess Ann enjoys a gelato on the Spanish Steps during her secret escape from royal duties.',
@@ -783,6 +849,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'rom-003', title: 'The Colosseum', movieOrShow: 'Gladiator', year: 2000,
+          imageUrl: 'https://picsum.photos/seed/rom-003/400/300',
           category: LocationCategory.action, latitude: 41.8902, longitude: 12.4922,
           address: 'Piazza del Colosseo, Rome', city: 'Rome', country: 'Italy',
           sceneDescription: 'Maximus steps into the Colosseum for the first time, ready to fight for his life and avenge his family.',
@@ -794,6 +861,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'rom-004', title: 'Villa Borghese Gardens', movieOrShow: 'The Great Beauty', year: 2013,
+          imageUrl: 'https://picsum.photos/seed/rom-004/400/300',
           category: LocationCategory.drama, latitude: 41.9140, longitude: 12.4830,
           address: 'Villa Borghese, Rome', city: 'Rome', country: 'Italy',
           sceneDescription: 'Jep Gambardella wanders through the gardens of Rome, reflecting on a life of beauty and meaning.',
@@ -808,6 +876,7 @@ const londonLocations: FilmingLocation[] = [
       const sydneyLocations: FilmingLocation[] = [
         {
           id: 'syd-001', title: 'Sydney Opera House', movieOrShow: 'The Great Gatsby', year: 2013,
+          imageUrl: 'https://picsum.photos/seed/syd-001/400/300',
           category: LocationCategory.drama, latitude: -33.8568, longitude: 151.2153,
           address: 'Bennelong Point, Sydney', city: 'Sydney', country: 'Australia',
           sceneDescription: 'Baz Luhrmann\'s glittering adaptation captures the 1920s opulence with Sydney Harbour as a stunning backdrop.',
@@ -819,6 +888,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'syd-002', title: 'Bondi Beach', movieOrShow: 'The Inbetweeners 2', year: 2014,
+          imageUrl: 'https://picsum.photos/seed/syd-002/400/300',
           category: LocationCategory.comedy, latitude: -33.8915, longitude: 151.2767,
           address: 'Bondi Beach, Sydney', city: 'Sydney', country: 'Australia',
           sceneDescription: 'The lads from the UK experience iconic Australian beach culture at Bondi.',
@@ -830,6 +900,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'syd-003', title: 'The Rocks District', movieOrShow: 'Mission: Impossible 2', year: 2000,
+          imageUrl: 'https://picsum.photos/seed/syd-003/400/300',
           category: LocationCategory.action, latitude: -33.8597, longitude: 151.2089,
           address: 'The Rocks, Sydney', city: 'Sydney', country: 'Australia',
           sceneDescription: 'Ethan Hunt scales the cliffs of The Rocks in a high-octane opening sequence.',
@@ -841,6 +912,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'syd-004', title: 'Royal National Park', movieOrShow: 'The Matrix Reloaded', year: 2003,
+          imageUrl: 'https://picsum.photos/seed/syd-004/400/300',
           category: LocationCategory.action, latitude: -34.1230, longitude: 151.0640,
           address: 'Royal National Park, Sydney', city: 'Sydney', country: 'Australia',
           sceneDescription: 'The Merovingian\'s chateau and the highway chase were filmed in Sydney\'s stunning landscapes.',
@@ -852,6 +924,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'syd-005', title: 'Centennial Park', movieOrShow: 'Babe', year: 1995,
+          imageUrl: 'https://picsum.photos/seed/syd-005/400/300',
           category: LocationCategory.comedy, latitude: -33.8950, longitude: 151.2340,
           address: 'Centennial Park, Sydney', city: 'Sydney', country: 'Australia',
           sceneDescription: 'The gentle talking pig Babe wins hearts and proves that courage comes in all sizes.',
@@ -866,6 +939,7 @@ const londonLocations: FilmingLocation[] = [
       const aucklandLocations: FilmingLocation[] = [
         {
           id: 'akl-001', title: 'Hobbiton — Matamata', movieOrShow: 'The Lord of the Rings', year: 2001,
+          imageUrl: 'https://picsum.photos/seed/akl-001/400/300',
           category: LocationCategory.sciFi, latitude: -37.8720, longitude: 175.6815,
           address: 'Hobbiton, Matamata (near Auckland)', city: 'Auckland', country: 'New Zealand',
           sceneDescription: 'Frodo Baggins begins his epic journey from the peaceful Shire with its rolling green hills.',
@@ -877,6 +951,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'akl-002', title: 'Karekare Beach', movieOrShow: 'The Piano', year: 1993,
+          imageUrl: 'https://picsum.photos/seed/akl-002/400/300',
           category: LocationCategory.romance, latitude: -37.0100, longitude: 174.4800,
           address: 'Karekare Beach, Auckland', city: 'Auckland', country: 'New Zealand',
           sceneDescription: 'Ada McGrath and her daughter arrive on the wild, windswept shores of Karekare Beach.',
@@ -888,6 +963,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'akl-003', title: 'Mount Eden', movieOrShow: 'The Chronicles of Narnia', year: 2005,
+          imageUrl: 'https://picsum.photos/seed/akl-003/400/300',
           category: LocationCategory.sciFi, latitude: -36.8760, longitude: 174.7640,
           address: 'Mount Eden, Auckland', city: 'Auckland', country: 'New Zealand',
           sceneDescription: 'Auckland\'s volcanic landscapes stood in for the mythical world of Narnia.',
@@ -899,6 +975,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'akl-004', title: 'Waiheke Island', movieOrShow: 'Mystic', year: 2018,
+          imageUrl: 'https://picsum.photos/seed/akl-004/400/300',
           category: LocationCategory.drama, latitude: -36.7930, longitude: 175.1150,
           address: 'Waiheke Island, Auckland', city: 'Auckland', country: 'New Zealand',
           sceneDescription: 'The serene island vineyards and pristine beaches provide the backdrop for this dramatic mystery.',
@@ -913,6 +990,7 @@ const londonLocations: FilmingLocation[] = [
       const tokyoLocations: FilmingLocation[] = [
         {
           id: 'tky-001', title: 'Shibuya Crossing', movieOrShow: 'Lost in Translation', year: 2003,
+          imageUrl: 'https://picsum.photos/seed/tky-001/400/300',
           category: LocationCategory.comedy, latitude: 35.6595, longitude: 139.7004,
           address: 'Shibuya Crossing, Tokyo', city: 'Tokyo', country: 'Japan',
           sceneDescription: 'Bob Harris stands in Shibuya Crossing, overwhelmed by Tokyo\'s neon chaos while Charlotte observes from above.',
@@ -924,6 +1002,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'tky-002', title: 'Hotel New Otani Garden', movieOrShow: 'Kill Bill Vol. 1', year: 2003,
+          imageUrl: 'https://picsum.photos/seed/tky-002/400/300',
           category: LocationCategory.action, latitude: 35.6810, longitude: 139.7310,
           address: 'Hotel New Otani, Tokyo', city: 'Tokyo', country: 'Japan',
           sceneDescription: 'The Bride faces the Crazy 88s in the snow-covered garden of a Japanese estate.',
@@ -935,6 +1014,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'tky-003', title: 'Tsukiji Outer Market', movieOrShow: 'Jiro Dreams of Sushi', year: 2011,
+          imageUrl: 'https://picsum.photos/seed/tky-003/400/300',
           category: LocationCategory.drama, latitude: 35.6654, longitude: 139.7708,
           address: 'Tsukiji Outer Market, Tokyo', city: 'Tokyo', country: 'Japan',
           sceneDescription: 'The documentary follows Jiro Ono, an 85-year-old sushi master with a three-Michelin-star restaurant.',
@@ -946,6 +1026,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'tky-004', title: 'Rainbow Bridge', movieOrShow: 'Fast & Furious: Tokyo Drift', year: 2006,
+          imageUrl: 'https://picsum.photos/seed/tky-004/400/300',
           category: LocationCategory.action, latitude: 35.6369, longitude: 139.7620,
           address: 'Rainbow Bridge, Tokyo Bay', city: 'Tokyo', country: 'Japan',
           sceneDescription: 'Sean Boswell learns drift racing on the neon-lit streets of Tokyo with the Rainbow Bridge as backdrop.',
@@ -960,6 +1041,7 @@ const londonLocations: FilmingLocation[] = [
       const berlinLocations: FilmingLocation[] = [
         {
           id: 'ber-001', title: 'Brandenburg Gate', movieOrShow: 'The Bourne Supremacy', year: 2004,
+          imageUrl: 'https://picsum.photos/seed/ber-001/400/300',
           category: LocationCategory.action, latitude: 52.5163, longitude: 13.3777,
           address: 'Pariser Platz, Berlin', city: 'Berlin', country: 'Germany',
           sceneDescription: 'Jason Bourne races through Berlin, piecing together his past while evading the CIA near the Brandenburg Gate.',
@@ -971,6 +1053,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'ber-002', title: 'Berlin TV Tower', movieOrShow: 'The Lives of Others', year: 2006,
+          imageUrl: 'https://picsum.photos/seed/ber-002/400/300',
           category: LocationCategory.drama, latitude: 52.5170, longitude: 13.4090,
           address: 'Panoramastraße 1A, Berlin', city: 'Berlin', country: 'Germany',
           sceneDescription: 'A Stasi officer observes the lives of a playwright from the shadow of East Berlin\'s towering symbol.',
@@ -982,6 +1065,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'ber-003', title: 'East Side Gallery — Berlin Wall', movieOrShow: 'Bridge of Spies', year: 2015,
+          imageUrl: 'https://picsum.photos/seed/ber-003/400/300',
           category: LocationCategory.drama, latitude: 52.5050, longitude: 13.4390,
           address: 'East Side Gallery, Berlin', city: 'Berlin', country: 'Germany',
           sceneDescription: 'James Donovan negotiates the exchange of captured spies with the Berlin Wall looming in the background.',
@@ -993,6 +1077,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'ber-004', title: 'Tempelhof Airport', movieOrShow: 'The Hunger Games: Mockingjay', year: 2014,
+          imageUrl: 'https://picsum.photos/seed/ber-004/400/300',
           category: LocationCategory.action, latitude: 52.4730, longitude: 13.4030,
           address: 'Tempelhof Airport, Berlin', city: 'Berlin', country: 'Germany',
           sceneDescription: 'The massive Nazi-era airport stands in for the ruins of the Capitol.',
@@ -1007,6 +1092,7 @@ const londonLocations: FilmingLocation[] = [
       const dublinLocations: FilmingLocation[] = [
         {
           id: 'dub-001', title: 'Trinity College Library', movieOrShow: 'The Crown', year: 2016,
+          imageUrl: 'https://picsum.photos/seed/dub-001/400/300',
           category: LocationCategory.drama, latitude: 53.3440, longitude: -6.2567,
           address: 'Trinity College, Dublin', city: 'Dublin', country: 'Ireland',
           sceneDescription: 'The Long Room of Trinity College\'s Old Library stands in for the British Library in this royal drama.',
@@ -1018,6 +1104,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'dub-002', title: 'Temple Bar District', movieOrShow: 'PS I Love You', year: 2007,
+          imageUrl: 'https://picsum.photos/seed/dub-002/400/300',
           category: LocationCategory.romance, latitude: 53.3455, longitude: -6.2635,
           address: 'Temple Bar, Dublin', city: 'Dublin', country: 'Ireland',
           sceneDescription: 'Holly Kennedy travels to Ireland, finding love and healing in the lively pubs of Dublin.',
@@ -1029,6 +1116,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'dub-003', title: 'Howth Cliff Walk', movieOrShow: 'The Guard', year: 2011,
+          imageUrl: 'https://picsum.photos/seed/dub-003/400/300',
           category: LocationCategory.comedy, latitude: 53.3870, longitude: -6.0650,
           address: 'Howth Cliff Walk, Dublin', city: 'Dublin', country: 'Ireland',
           sceneDescription: 'Sergeant Gerry Boyle investigates a crime while showcasing the rugged Irish coastline.',
@@ -1040,6 +1128,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'dub-004', title: 'St. Stephen\'s Green', movieOrShow: 'Normal People', year: 2020,
+          imageUrl: 'https://picsum.photos/seed/dub-004/400/300',
           category: LocationCategory.romance, latitude: 53.3380, longitude: -6.2590,
           address: 'St. Stephen\'s Green, Dublin', city: 'Dublin', country: 'Ireland',
           sceneDescription: 'Connell and Marianne walk through the lush greenery of St. Stephen\'s Green.',
@@ -1054,6 +1143,7 @@ const londonLocations: FilmingLocation[] = [
       const newOrleansLocations: FilmingLocation[] = [
         {
           id: 'nol-001', title: 'French Quarter — Bourbon Street', movieOrShow: 'Interview with the Vampire', year: 1994,
+          imageUrl: 'https://picsum.photos/seed/nol-001/400/300',
           category: LocationCategory.drama, latitude: 29.9580, longitude: -90.0630,
           address: 'French Quarter, New Orleans', city: 'New Orleans', country: 'USA',
           sceneDescription: 'Louis recounts his 200-year life as a vampire, beginning in the atmospheric streets of 18th-century New Orleans.',
@@ -1065,6 +1155,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'nol-002', title: 'St. Louis Cathedral', movieOrShow: 'The Curious Case of Benjamin Button', year: 2008,
+          imageUrl: 'https://picsum.photos/seed/nol-002/400/300',
           category: LocationCategory.drama, latitude: 29.9578, longitude: -90.0630,
           address: 'Jackson Square, New Orleans', city: 'New Orleans', country: 'USA',
           sceneDescription: 'Benjamin Button grows younger against the backdrop of New Orleans\' most iconic landmark.',
@@ -1076,6 +1167,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'nol-003', title: 'Garden District Mansions', movieOrShow: 'The Originals', year: 2013,
+          imageUrl: 'https://picsum.photos/seed/nol-003/400/300',
           category: LocationCategory.drama, latitude: 29.9280, longitude: -90.0850,
           address: 'Garden District, New Orleans', city: 'New Orleans', country: 'USA',
           sceneDescription: 'The Mikaelson family of vampires rules from their opulent Garden District mansion.',
@@ -1087,6 +1179,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'nol-004', title: 'City Park — Big Oak', movieOrShow: 'The Princess and the Frog', year: 2009,
+          imageUrl: 'https://picsum.photos/seed/nol-004/400/300',
           category: LocationCategory.romance, latitude: 29.9970, longitude: -90.0930,
           address: 'City Park, New Orleans', city: 'New Orleans', country: 'USA',
           sceneDescription: 'Tiana and Prince Naveen share a magical evening surrounded by ancient oaks and fireflies.',
@@ -1101,6 +1194,7 @@ const londonLocations: FilmingLocation[] = [
       const washingtonDCLocations: FilmingLocation[] = [
         {
           id: 'was-001', title: 'Lincoln Memorial', movieOrShow: 'Forrest Gump', year: 1994,
+          imageUrl: 'https://picsum.photos/seed/was-001/400/300',
           category: LocationCategory.comedy, latitude: 38.8893, longitude: -77.0502,
           address: 'Lincoln Memorial, Washington DC', city: 'Washington DC', country: 'USA',
           sceneDescription: 'Forrest Gump recounts his life story to strangers on a bench with the Lincoln Memorial in the background.',
@@ -1112,6 +1206,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'was-002', title: 'National Mall', movieOrShow: 'Independence Day', year: 1996,
+          imageUrl: 'https://picsum.photos/seed/was-002/400/300',
           category: LocationCategory.action, latitude: 38.8895, longitude: -77.0220,
           address: 'National Mall, Washington DC', city: 'Washington DC', country: 'USA',
           sceneDescription: 'The alien mothership casts a shadow over the Washington Monument as humanity faces its greatest threat.',
@@ -1123,6 +1218,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'was-003', title: 'Jefferson Memorial', movieOrShow: 'The West Wing', year: 1999,
+          imageUrl: 'https://picsum.photos/seed/was-003/400/300',
           category: LocationCategory.drama, latitude: 38.8813, longitude: -77.0368,
           address: 'Jefferson Memorial, Washington DC', city: 'Washington DC', country: 'USA',
           sceneDescription: 'President Bartlet walks the halls of power with the Jefferson Memorial as a backdrop for reflection.',
@@ -1134,6 +1230,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
                 id: 'was-004', title: 'Library of Congress', movieOrShow: 'National Treasure 2', year: 2007,
+                imageUrl: 'https://picsum.photos/seed/was-004/400/300',
                 category: LocationCategory.action, latitude: 38.8887, longitude: -77.0047,
                 address: 'Library of Congress, Washington DC', city: 'Washington DC', country: 'USA',
                 sceneDescription: 'Ben Gates navigates the stunning reading room of the Library of Congress following clues to the City of Gold.',
@@ -1148,6 +1245,7 @@ const londonLocations: FilmingLocation[] = [
             const dallasLocations: FilmingLocation[] = [
               {
                 id: 'dal-001', title: 'Dealey Plaza', movieOrShow: 'JFK', year: 1991,
+                imageUrl: 'https://picsum.photos/seed/dal-001/400/300',
                 category: LocationCategory.drama, latitude: 32.7789, longitude: -96.8083,
                 address: 'Dealey Plaza, Dallas', city: 'Dallas', country: 'USA',
                 sceneDescription: 'Oliver Stone\'s masterful reconstruction of the Kennedy assassination weaves together multiple perspectives in Dealey Plaza.',
@@ -1159,6 +1257,7 @@ const londonLocations: FilmingLocation[] = [
               },
               {
                 id: 'dal-002', title: 'Southfork Ranch', movieOrShow: 'Dallas', year: 1978,
+                imageUrl: 'https://picsum.photos/seed/dal-002/400/300',
                 category: LocationCategory.drama, latitude: 33.0100, longitude: -96.5310,
                 address: '3700 Hogge Dr, Parker', city: 'Dallas', country: 'USA',
                 sceneDescription: 'The Ewing family saga unfolds at Southfork Ranch, where J.R., Bobby, and Sue Ellen scheme and love under the Texas sun.',
@@ -1170,6 +1269,7 @@ const londonLocations: FilmingLocation[] = [
               },
               {
                 id: 'dal-003', title: 'Texas Theatre', movieOrShow: 'Bonnie and Clyde', year: 1967,
+                imageUrl: 'https://picsum.photos/seed/dal-003/400/300',
                 category: LocationCategory.action, latitude: 32.7440, longitude: -96.8200,
                 address: '231 W Jefferson Blvd, Dallas', city: 'Dallas', country: 'USA',
                 sceneDescription: 'The historic Texas Theatre was where Lee Harvey Oswald was captured — but in film history, it represents the gritty Texas backdrop of the Depression-era gangster classic.',
@@ -1192,6 +1292,7 @@ const londonLocations: FilmingLocation[] = [
               },
               {
                 id: 'dal-005', title: 'Deep Ellum', movieOrShow: 'Office Space', year: 1999,
+                imageUrl: 'https://picsum.photos/seed/dal-005/400/300',
                 category: LocationCategory.comedy, latitude: 32.7840, longitude: -96.7770,
                 address: 'Deep Ellum, Dallas', city: 'Dallas', country: 'USA',
                 sceneDescription: 'The cult classic about cubicle-dwelling software engineers was filmed in and around Dallas, with the city\'s suburban office parks standing in for generic corporate America.',
