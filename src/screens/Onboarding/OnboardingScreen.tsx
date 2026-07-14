@@ -308,15 +308,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
     return (
       <View style={styles.pageContainer}>
         {pageContent()}
-        {!isLast && (
-          <TouchableOpacity
-            style={styles.skipBtn}
-            onPress={() => goToPage(Math.min(index + 1, totalPages - 1))}
-          >
-            <Text style={styles.skipText}>Skip</Text>
-          </TouchableOpacity>
-        )}
-        {index > 0 && (
+{index > 0 && (
           <TouchableOpacity
             style={styles.backBtn}
             onPress={() => goToPage(index - 1)}
@@ -483,9 +475,6 @@ const styles = StyleSheet.create({
   },
   letsGoText: { fontSize: 18, fontWeight: '700', color: theme.colors.black },
 
-  // Navigation
-  skipBtn: { position: 'absolute', top: 50, right: 20 },
-  skipText: { fontSize: 14, color: theme.colors.textTertiary, fontWeight: '500' },
   backBtn: { position: 'absolute', top: 50, left: 20 },
   backText: { fontSize: 16, color: theme.colors.textSecondary, fontWeight: '500' },
 
