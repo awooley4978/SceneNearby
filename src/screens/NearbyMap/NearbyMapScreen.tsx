@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import {
   View,
   StyleSheet,
@@ -51,6 +51,13 @@ export const NearbyMapScreen: React.FC<{ navigation: any }> = ({ navigation }) =
       } catch {}
     })();
   }, []);
+
+  // Filter locations by current city
+  const cityLocations = useMemo(() => {
+    if (!userCity) return allLocations;
+    const cityName = userCity.toLowerCase();
+    return allLocations.filter((l) => l.city.toLowerCase().includes(cityName) || cityName.includes(l.city.toLowerCase()));
+  }, [userCity]);
 
   const handleMarkerPress = (location: FilmingLocation) => {
     setSelectedLocation(location);
@@ -188,13 +195,13 @@ export const NearbyMapScreen: React.FC<{ navigation: any }> = ({ navigation }) =
       {showList && (
         <View style={styles.listPanel}>
           <View style={styles.listHeader}>
-            <Text style={styles.listTitle}>📍 {allLocations.length} filming locations</Text>
+            <Text style={styles.listTitle}>📍 {cityLocations.length} location{cityLocations.length !== 1 ? 's' : ''} in {userCity || 'your area'}</Text>
             <TouchableOpacity onPress={toggleList}>
               <Text style={styles.listClose}>✕</Text>
             </TouchableOpacity>
           </View>
           <FlatList
-            data={allLocations}
+            data={cityLocations}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <LocationCard
