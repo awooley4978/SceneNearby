@@ -12,9 +12,10 @@ import {
   Image,
 } from 'react-native';
 import { theme } from '../../theme';
-import { locationById, mockRatings, photosByLocation } from '../../data/sampleData';
+import { locationById, mockRatings, photosByLocation, calculateDistance } from '../../data/sampleData';
 import { categoryColors, STORAGE_KEYS } from '../../models';
 import { useSaved } from '../../context/SavedContext';
+import { getOnboardingData } from '../../services/StorageService';
 import { CategoryBadge } from '../../components/CategoryBadge';
 import { StarRating } from '../../components/StarRating';
 import { PhotoGrid } from '../../components/PhotoGrid';
@@ -30,6 +31,28 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
   const [userRating, setUserRating] = useState<number | undefined>(undefined);
   const { isSaved: checkSaved, toggleSave: toggleSaved } = useSaved();
   const saved = checkSaved(locationId);
+  const [userLat, setUserLat] = useState<number | null>(null);
+  const [userLng, setUserLng] = useState<number | null>(null);
+
+  // Load user GPS from onboarding and calculate distance
+  React.useEffect(() => {
+    (async () => {
+      try {
+        const data = await getOnboardingData();
+        if (data?.activeCityLat && data?.activeCityLng) {
+          setUserLat(data.activeCityLat);
+          setUserLng(data.activeCityLng);
+        }
+      } catch {}
+    })();
+  }, []);
+
+  // Calculate distance in meters (matching the detail page's metric display)
+  const distanceFromUser = React.useMemo(() => {
+    if (userLat === null || userLng === null || !location) return undefined;
+    // calculateDistance returns meters
+    return calculateDistance(userLat, userLng, location.latitude, location.longitude);
+  }, [userLat, userLng, location]);
 
   if (!location) {
     return (
@@ -93,12 +116,12 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
           <View style={styles.badges}>
             <CategoryBadge category={location.category} />
             <View style={styles.yearBadge}><Text style={styles.yearText}>{location.year}</Text></View>
-            {location.distanceFromUser !== undefined && (
+            {distanceFromUser !== undefined && (
               <View style={styles.distanceBadge}>
                 <Text style={styles.distanceText}>
-                  📍 {location.distanceFromUser < 1000
-                    ? `${Math.round(location.distanceFromUser)}m`
-                    : `${(location.distanceFromUser / 1000).toFixed(1)}km`} away
+                  📍 {distanceFromUser < 1000
+                    ? `${Math.round(distanceFromUser)}m`
+                    : `${(distanceFromUser / 1000).toFixed(1)}km`} away
                 </Text>
               </View>
             )}
