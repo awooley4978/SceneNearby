@@ -310,7 +310,16 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
       {/* Near You */}
       {!searchQuery && selectedCategory === 'all' && selectedType === 'all' && sortMode === 'default' && (
         <View style={styles.nearYouSection}>
-          <Text style={styles.sectionTitle}>📍 Near You</Text>
+          <View style={styles.sectionTitleRow}>
+            <Text style={styles.sectionTitle}>📍 Near You</Text>
+            <TouchableOpacity
+              style={styles.viewMapButton}
+              onPress={() => navigation.navigate('Nearby')}
+            >
+              <Text style={styles.viewMapButtonText}>View on Map</Text>
+              <Text style={styles.viewMapChevron}>›</Text>
+            </TouchableOpacity>
+          </View>
           {nearYou.map((loc) => (
             <LocationCard
               key={loc.id}
