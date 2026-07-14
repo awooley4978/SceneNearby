@@ -7,7 +7,6 @@ import {
   Text,
   FlatList,
   Animated,
-  ScrollView,
 } from 'react-native';
 import MapView, { Marker, Region } from 'react-native-maps';
 import { theme } from '../../theme';
@@ -26,12 +25,10 @@ export const NearbyMapScreen: React.FC<{ navigation: any }> = ({ navigation }) =
   const [selectedLocation, setSelectedLocation] = useState<FilmingLocation | null>(null);
   const [showList, setShowList] = useState(false);
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set(['nyc-002', 'nyc-007', 'la-001', 'ldn-006']));
-  const [selectedCity, setSelectedCity] = useState<string>('New York City');
-  const [showCityPicker, setShowCityPicker] = useState(false);
   const mapRef = useRef<MapView>(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [region, setRegion] = useState<Region | null>(null);
-  const [userCoords, setUserCoords] = useState<{lat: number; lng: number} | null>(null);
+  const [userCity, setUserCity] = useState<string>('');
 
   // Load user coordinates from onboarding data
   useEffect(() => {
@@ -39,44 +36,20 @@ export const NearbyMapScreen: React.FC<{ navigation: any }> = ({ navigation }) =
       try {
         const data = await getOnboardingData();
         if (data?.activeCityLat && data?.activeCityLng) {
-          setUserCoords({ lat: data.activeCityLat, lng: data.activeCityLng });
+          const newRegion: Region = {
+            latitude: data.activeCityLat,
+            longitude: data.activeCityLng,
+            latitudeDelta: 0.5,
+            longitudeDelta: 0.5,
+          };
+          setRegion(newRegion);
         }
         if (data?.activeCity) {
-          setSelectedCity(data.activeCity);
+          setUserCity(data.activeCity);
         }
       } catch {}
     })();
   }, []);
-
-  // Set initial map region to user's coordinates or fall back to city-centroid
-  useEffect(() => {
-    // If we have the user's actual coordinates, use them as the map center
-    if (userCoords) {
-      const newRegion: Region = {
-        latitude: userCoords.lat,
-        longitude: userCoords.lng,
-        latitudeDelta: 0.5,
-        longitudeDelta: 0.5,
-      };
-      setRegion(newRegion);
-      mapRef.current?.animateToRegion(newRegion, 500);
-      return;
-    }
-    // Fallback: center on city centroid from location data
-    const cityLocs = allLocations.filter((l) => l.city === selectedCity);
-    if (cityLocs.length > 0) {
-      const avgLat = cityLocs.reduce((s, l) => s + l.latitude, 0) / cityLocs.length;
-      const avgLng = cityLocs.reduce((s, l) => s + l.longitude, 0) / cityLocs.length;
-      const newRegion: Region = {
-        latitude: avgLat,
-        longitude: avgLng,
-        latitudeDelta: 0.5,
-        longitudeDelta: 0.5,
-      };
-      setRegion(newRegion);
-      mapRef.current?.animateToRegion(newRegion, 500);
-    }
-  }, [userCoords, selectedCity]);
 
   const handleMarkerPress = (location: FilmingLocation) => {
     setSelectedLocation(location);
@@ -120,15 +93,6 @@ export const NearbyMapScreen: React.FC<{ navigation: any }> = ({ navigation }) =
     setSelectedLocation(null);
   };
 
-  // Group locations by rough clusters for display
-  // (In real app would use supercluster or similar)
-  const clusters: { id: string; locations: FilmingLocation[]; latitude: number; longitude: number; count: number }[] = [];
-  const cityGroups: Record<string, FilmingLocation[]> = {};
-  for (const loc of allLocations) {
-    if (!cityGroups[loc.city]) cityGroups[loc.city] = [];
-    cityGroups[loc.city].push(loc);
-  }
-
   const renderCluster = (loc: FilmingLocation, index: number) => {
     const catColor = categoryColors[loc.category];
     const rating = mockRatings[loc.id];
@@ -143,11 +107,6 @@ export const NearbyMapScreen: React.FC<{ navigation: any }> = ({ navigation }) =
     );
   };
 
-  // Derive city list from location data
-  const cityNames = Array.from(
-    new Set((allLocations ?? []).map((loc) => loc.city).filter(Boolean))
-  ).sort();
-
   return (
     <View style={styles.container}>
       {/* Map — only render once region is loaded */}
@@ -160,40 +119,21 @@ export const NearbyMapScreen: React.FC<{ navigation: any }> = ({ navigation }) =
         showsCompass
         mapPadding={{ top: 60, right: 16, bottom: showList ? 280 : 120, left: 16 }}
       >
-        {allLocations.filter((l) => l.city === selectedCity).map(renderCluster)}
+        {allLocations.map(renderCluster)}
       </MapView>
       ) : (
         <View style={styles.map} />
       )}
 
-      {/* Header */}
+      {/* Header — descriptive only */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.cityPickerButton} onPress={() => setShowCityPicker(!showCityPicker)}>
-          <Text style={styles.cityPickerText}>📍 {selectedCity}</Text>
-          <Text style={styles.cityPickerChevron}>{showCityPicker ? '▲' : '▼'}</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerSubtitle}>{allLocations.filter((l) => l.city === selectedCity).length} filming locations in {selectedCity}</Text>
+        <Text style={styles.headerTitle}>📍 Nearby</Text>
+        {userCity ? (
+          <Text style={styles.headerSubtitle}>Exploring locations near {userCity}</Text>
+        ) : (
+          <Text style={styles.headerSubtitle}>{allLocations.length} filming locations worldwide</Text>
+        )}
       </View>
-
-      {/* City picker dropdown */}
-      {showCityPicker && (
-        <View style={styles.cityPickerDropdown}>
-          <ScrollView style={{ maxHeight: 300 }}>
-            {cityNames.map((city) => (
-              <TouchableOpacity
-                key={city}
-                style={[styles.cityPickerItem, selectedCity === city && styles.cityPickerItemActive]}
-                onPress={() => { setSelectedCity(city); setShowCityPicker(false); }}
-              >
-                <Text style={[styles.cityPickerItemText, selectedCity === city && styles.cityPickerItemTextActive]}>
-                  {city}
-                </Text>
-                {selectedCity === city && <Text style={styles.cityPickerCheck}>✓</Text>}
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
-      )}
 
       {/* List/Map toggle */}
       <TouchableOpacity style={styles.toggleButton} onPress={toggleList}>
@@ -250,13 +190,13 @@ export const NearbyMapScreen: React.FC<{ navigation: any }> = ({ navigation }) =
       {showList && (
         <View style={styles.listPanel}>
           <View style={styles.listHeader}>
-            <Text style={styles.listTitle}>📍 {allLocations.filter((l) => l.city === selectedCity).length} locations in {selectedCity}</Text>
+            <Text style={styles.listTitle}>📍 {allLocations.length} filming locations</Text>
             <TouchableOpacity onPress={toggleList}>
               <Text style={styles.listClose}>✕</Text>
             </TouchableOpacity>
           </View>
           <FlatList
-            data={allLocations.filter((l) => l.city === selectedCity)}
+            data={allLocations}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <LocationCard
@@ -282,28 +222,6 @@ const styles = StyleSheet.create({
   header: { position: 'absolute', top: 50, left: 16, zIndex: 10 },
   headerTitle: { fontSize: 28, fontWeight: '700', color: theme.colors.textPrimary },
   headerSubtitle: { fontSize: 14, color: theme.colors.textSecondary, marginTop: 2 },
-  cityPickerButton: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: theme.colors.surface,
-    paddingHorizontal: 14, paddingVertical: 10, borderRadius: 12,
-    borderWidth: 1, borderColor: theme.colors.gold + '30',
-  },
-  cityPickerText: { fontSize: 15, fontWeight: '600', color: theme.colors.textPrimary, marginRight: 8 },
-  cityPickerChevron: { fontSize: 10, color: theme.colors.gold },
-  cityPickerDropdown: {
-    position: 'absolute', top: 115, left: 16, right: 16,
-    backgroundColor: theme.colors.surface, borderRadius: 12,
-    borderWidth: 1, borderColor: theme.colors.gold + '20',
-    zIndex: 20, elevation: 10,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8,
-  },
-  cityPickerItem: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 14, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: theme.colors.surface3 + '40',
-  },
-  cityPickerItemActive: { backgroundColor: theme.colors.gold + '10' },
-  cityPickerItemText: { fontSize: 14, color: theme.colors.textPrimary, fontWeight: '500' },
-  cityPickerItemTextActive: { color: theme.colors.gold, fontWeight: '700' },
-  cityPickerCheck: { fontSize: 16, color: theme.colors.gold, fontWeight: '700' },
   toggleButton: {
     position: 'absolute',
     top: 110,
