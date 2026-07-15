@@ -17,6 +17,8 @@ import { categoryColors, STORAGE_KEYS } from '../../models';
 import { useSaved } from '../../context/SavedContext';
 import { getOnboardingData } from '../../services/StorageService';
 import { CategoryBadge } from '../../components/CategoryBadge';
+import { MissingPhotoCard } from '../../components/MissingPhotoCard';
+import { getLocalAsset } from '../../data/assetMap';
 import { StarRating } from '../../components/StarRating';
 import { PhotoGrid } from '../../components/PhotoGrid';
 
@@ -102,10 +104,15 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
         {/* Location image with gradient overlay */}
         {location.imageUrl ? (
           <Image
-            source={location.imageUrl.startsWith('asset://') ? require(`../../assets/${location.imageUrl.replace('asset://', '')}`) : { uri: location.imageUrl }}
+            source={location.imageUrl.startsWith('asset://')
+              ? getLocalAsset(location.imageUrl.replace('asset://', ''))
+              : { uri: location.imageUrl }}
             style={styles.heroImage}
+            resizeMode="cover"
           />
-        ) : null}
+        ) : (
+          <MissingPhotoCard category={location.category} height={360} variant="detail" />
+        )}
         <View style={[styles.heroGradientOverlay, { backgroundColor: catColor + 'AA' }]} />
         <View style={styles.heroContent}>
           <TouchableOpacity onPress={handleViewMovie}>

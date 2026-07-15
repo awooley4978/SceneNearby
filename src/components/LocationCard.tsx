@@ -10,7 +10,9 @@ import {
 import * as Haptics from 'expo-haptics';
 import { theme } from '../theme';
 import { FilmingLocation } from '../models';
+import { getLocalAsset } from '../data/assetMap';
 import { CategoryBadge } from './CategoryBadge';
+import { MissingPhotoCard } from './MissingPhotoCard';
 import { DistanceBadge } from './DistanceBadge';
 import { StarRating } from './StarRating';
 import { mockRatings } from '../data/sampleData';
@@ -161,11 +163,15 @@ export const LocationCard: React.FC<LocationCardProps> = ({
             {/* Location image with gradient fallback */}
             {location.imageUrl ? (
               <Image
-                source={location.imageUrl.startsWith('asset://') ? require(`../../assets/${location.imageUrl.replace('asset://', '')}`) : { uri: location.imageUrl }}
+                source={location.imageUrl.startsWith('asset://')
+                  ? getLocalAsset(location.imageUrl.replace('asset://', ''))
+                  : { uri: location.imageUrl }}
                 style={styles.heroImage}
-                defaultSource={undefined}
+                resizeMode="cover"
               />
-            ) : null}
+            ) : (
+              <MissingPhotoCard category={location.category} height={260} variant="card" />
+            )}
             {/* Gradient overlay (always present for fallback) */}
             <View style={[styles.heroGradientOverlay, heroGradient]} />
             {/* Subtle gradient overlay at bottom of hero */}
