@@ -1245,7 +1245,7 @@ const londonLocations: FilmingLocation[] = [
             const dallasLocations: FilmingLocation[] = [
               {
                 id: 'dal-001', title: 'Dealey Plaza', movieOrShow: 'JFK', year: 1991,
-                imageUrl: 'https://picsum.photos/seed/dallas-dealey-plaza/800/600',
+                imageUrl: 'https://images.unsplash.com/photo-K16kpdRD0Jw?w=800',
                 category: LocationCategory.drama, latitude: 32.7789, longitude: -96.8083,
                 address: 'Dealey Plaza, Dallas', city: 'Dallas', country: 'USA',
                 sceneDescription: 'Oliver Stone\'s masterful reconstruction of the Kennedy assassination weaves together multiple perspectives in Dealey Plaza.',
@@ -1257,7 +1257,7 @@ const londonLocations: FilmingLocation[] = [
               },
               {
                 id: 'dal-002', title: 'Southfork Ranch', movieOrShow: 'Dallas', year: 1978,
-                imageUrl: 'https://picsum.photos/seed/dal-002/800/600?gravity=center',
+                imageUrl: 'https://images.unsplash.com/photo-i8xvv5VWQ4c?w=800',
                 category: LocationCategory.drama, latitude: 33.0100, longitude: -96.5310,
                 address: '3700 Hogge Dr, Parker', city: 'Dallas', country: 'USA',
                 sceneDescription: 'The Ewing family saga unfolds at Southfork Ranch, where J.R., Bobby, and Sue Ellen scheme and love under the Texas sun.',
@@ -1281,6 +1281,7 @@ const londonLocations: FilmingLocation[] = [
               },
               {
                 id: 'dal-004', title: 'AT&T Stadium', movieOrShow: 'The Blind Side', year: 2009,
+                imageUrl: 'https://images.unsplash.com/photo-msELKyGunN4?w=800',
                 category: LocationCategory.drama, latitude: 32.7473, longitude: -97.0929,
                 address: '1 AT&T Way, Arlington', city: 'Arlington', country: 'USA',
                 sceneDescription: 'Michael Oher\'s journey from homelessness to NFL stardom includes scenes set in the massive stadium that defines modern Texas football.',
@@ -1292,7 +1293,7 @@ const londonLocations: FilmingLocation[] = [
               },
               {
                 id: 'dal-005', title: 'Deep Ellum', movieOrShow: 'Office Space', year: 1999,
-                imageUrl: 'https://picsum.photos/seed/dallas-deep-ellum/800/600',
+                imageUrl: 'https://images.unsplash.com/photo-IAPhiFploCo?w=800',
                 category: LocationCategory.comedy, latitude: 32.7840, longitude: -96.7770,
                 address: 'Deep Ellum, Dallas', city: 'Dallas', country: 'USA',
                 sceneDescription: 'The cult classic about cubicle-dwelling software engineers was filmed in and around Dallas, with the city\'s suburban office parks standing in for generic corporate America.',
