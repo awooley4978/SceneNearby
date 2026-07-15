@@ -357,7 +357,7 @@ const londonLocations: FilmingLocation[] = [
       const chicagoLocations: FilmingLocation[] = [
         {
           id: 'chi-001', title: 'Wrigley Field', movieOrShow: 'The Blues Brothers', year: 1980,
-          imageUrl: 'https://picsum.photos/seed/chi-001/800/600?gravity=center',
+          imageUrl: 'https://pixabay.com/images/download/gurumarketing-outdoors-3592815_1920.jpg',
           category: LocationCategory.comedy, latitude: 41.9484, longitude: -87.6553,
           address: '1060 W Addison St', city: 'Chicago', country: 'USA',
           sceneDescription: 'Jake and Elwood Blues tear through Chicago in their iconic Bluesmobile in a high-speed chase through Wrigley Field.',
@@ -546,7 +546,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'bos-002', title: 'Fenway Park', movieOrShow: 'Fever Pitch', year: 2005,
-          imageUrl: 'https://picsum.photos/seed/bos-002/800/600?gravity=center',
+          imageUrl: 'https://pixabay.com/images/download/mrsbrown-sport-1367690_1920.jpg',
           category: LocationCategory.romance, latitude: 42.3467, longitude: -71.0972,
           address: '4 Jersey St, Boston', city: 'Boston', country: 'USA',
           sceneDescription: 'Ben and Lindsey\'s relationship is tested by his obsessive love for the Red Sox at Fenway Park.',
@@ -939,7 +939,7 @@ const londonLocations: FilmingLocation[] = [
       const aucklandLocations: FilmingLocation[] = [
         {
           id: 'akl-001', title: 'Hobbiton — Matamata', movieOrShow: 'The Lord of the Rings', year: 2001,
-          imageUrl: 'https://picsum.photos/seed/akl-001/800/600?gravity=center',
+          imageUrl: 'https://pixabay.com/images/download/stocksnap-house-2616607_1920.jpg',
           category: LocationCategory.sciFi, latitude: -37.8720, longitude: 175.6815,
           address: 'Hobbiton, Matamata (near Auckland)', city: 'Auckland', country: 'New Zealand',
           sceneDescription: 'Frodo Baggins begins his epic journey from the peaceful Shire with its rolling green hills.',
