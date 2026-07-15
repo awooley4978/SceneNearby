@@ -102,7 +102,7 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
         {/* Location image with gradient overlay */}
         {location.imageUrl ? (
           <Image
-            source={{ uri: location.imageUrl }}
+            source={location.imageUrl.startsWith('asset://') ? require(`../../assets/${location.imageUrl.replace('asset://', '')}`) : { uri: location.imageUrl }}
             style={styles.heroImage}
           />
         ) : null}
@@ -229,12 +229,11 @@ const styles = StyleSheet.create({
   heroContent: { paddingHorizontal: 20, position: 'relative', zIndex: 2 },
   heroImage: {
     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-    width: '100%', height: '100%',
     resizeMode: 'cover',
   },
   heroGradientOverlay: {
     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-    opacity: 0.3,
+    opacity: 0.12,
   },
   showName: { fontSize: 16, fontWeight: '700', color: theme.colors.gold, marginBottom: 4 },
   locationTitle: { fontSize: 26, fontWeight: '700', color: theme.colors.white, marginBottom: 12 },

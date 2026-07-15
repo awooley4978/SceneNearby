@@ -161,7 +161,7 @@ export const LocationCard: React.FC<LocationCardProps> = ({
             {/* Location image with gradient fallback */}
             {location.imageUrl ? (
               <Image
-                source={{ uri: location.imageUrl }}
+                source={location.imageUrl.startsWith('asset://') ? require(`../../assets/${location.imageUrl.replace('asset://', '')}`) : { uri: location.imageUrl }}
                 style={styles.heroImage}
                 defaultSource={undefined}
               />
@@ -327,7 +327,6 @@ const styles = StyleSheet.create({
   },
   heroImage: {
     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-    width: '100%', height: '100%',
     resizeMode: 'cover',
   },
   heroGradientOverlay: {

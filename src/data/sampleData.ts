@@ -1269,7 +1269,7 @@ const londonLocations: FilmingLocation[] = [
               },
               {
                 id: 'dal-003', title: 'Texas Theatre', movieOrShow: 'Bonnie and Clyde', year: 1967,
-                imageUrl: 'https://picsum.photos/seed/dal-003/800/600?gravity=center',
+                imageUrl: 'asset://TexasTheatre.png',
                 category: LocationCategory.action, latitude: 32.7440, longitude: -96.8200,
                 address: '231 W Jefferson Blvd, Dallas', city: 'Dallas', country: 'USA',
                 sceneDescription: 'The historic Texas Theatre was where Lee Harvey Oswald was captured — but in film history, it represents the gritty Texas backdrop of the Depression-era gangster classic.',
