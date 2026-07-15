@@ -534,7 +534,7 @@ const londonLocations: FilmingLocation[] = [
       const bostonLocations: FilmingLocation[] = [
         {
           id: 'bos-001', title: 'Boston Public Garden', movieOrShow: 'Good Will Hunting', year: 1997,
-          imageUrl: 'https://picsum.photos/seed/bos-001/800/600?gravity=center',
+          imageUrl: 'https://images.unsplash.com/photo-cjrULwnJKhI?w=800',
           category: LocationCategory.drama, latitude: 42.3540, longitude: -71.0696,
           address: 'Boston Public Garden', city: 'Boston', country: 'USA',
           sceneDescription: 'Will Hunting and Sean Maguire share a profound conversation on a park bench about life, love, and regret.',
@@ -951,7 +951,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'akl-002', title: 'Karekare Beach', movieOrShow: 'The Piano', year: 1993,
-          imageUrl: 'https://picsum.photos/seed/akl-002/800/600?gravity=center',
+          imageUrl: 'https://images.unsplash.com/photo-18658bkC3bE?w=800',
           category: LocationCategory.romance, latitude: -37.0100, longitude: 174.4800,
           address: 'Karekare Beach, Auckland', city: 'Auckland', country: 'New Zealand',
           sceneDescription: 'Ada McGrath and her daughter arrive on the wild, windswept shores of Karekare Beach.',
