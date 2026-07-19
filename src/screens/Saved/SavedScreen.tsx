@@ -13,7 +13,7 @@ import { allLocations, mockRatings } from '../../data/sampleData';
 import { LocationCard } from '../../components/LocationCard';
 import { EmptyState } from '../../components/EmptyState';
 import { useSaved } from '../../context/SavedContext';
-import { useUserLocation } from '../../hooks/useUserLocation';
+import { getOnboardingData } from '../../services/StorageService';
 import { calculateDistance } from '../../data/sampleData';
 
 type SortMode = 'recent' | 'nearest' | 'az' | 'rating';
@@ -22,7 +22,21 @@ export const SavedScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { savedIds, loaded } = useSaved();
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<SortMode>('recent');
-  const userLocation = useUserLocation();
+  const [userLat, setUserLat] = useState<number | null>(null);
+  const [userLng, setUserLng] = useState<number | null>(null);
+
+  // Load user GPS from onboarding
+  useEffect(() => {
+    (async () => {
+      try {
+        const data = await getOnboardingData();
+        if (data?.activeCityLat && data?.activeCityLng) {
+          setUserLat(data.activeCityLat);
+          setUserLng(data.activeCityLng);
+        }
+      } catch {}
+    })();
+  }, []);
 
   // Local state for instant removal on unsave (context updates async)
   const [localRemoved, setLocalRemoved] = useState<Set<string>>(new Set());
@@ -36,10 +50,10 @@ export const SavedScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     let result = allLocations.filter((loc) => savedIds.has(loc.id) && !localRemoved.has(loc.id));
 
     // Calculate distances from user GPS
-    if (userLocation.latitude !== null && userLocation.longitude !== null) {
+    if (userLat !== null && userLng !== null) {
       result = result.map((loc) => ({
         ...loc,
-        distanceFromUser: calculateDistance(userLocation.latitude, userLocation.longitude, loc.latitude, loc.longitude) / 1609.34,
+        distanceFromUser: calculateDistance(userLat, userLng, loc.latitude, loc.longitude) / 1609.34,
       }));
     }
 
@@ -69,7 +83,7 @@ export const SavedScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     }
 
     return result;
-  }, [savedIds, searchQuery, sortBy, userLocation.latitude, userLocation.longitude]);
+  }, [savedIds, searchQuery, sortBy, userLat, userLng]);
 
   const sortOptions: { key: SortMode; label: string }[] = [
     { key: 'recent', label: 'Recent' },
