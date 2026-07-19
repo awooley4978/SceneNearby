@@ -10,7 +10,9 @@ import {
 import * as Haptics from 'expo-haptics';
 import { theme } from '../theme';
 import { FilmingLocation } from '../models';
+import { getLocalAsset } from '../data/assetMap';
 import { CategoryBadge } from './CategoryBadge';
+import { MissingPhotoCard } from './MissingPhotoCard';
 import { DistanceBadge } from './DistanceBadge';
 import { StarRating } from './StarRating';
 import { mockRatings } from '../data/sampleData';
@@ -161,11 +163,19 @@ export const LocationCard: React.FC<LocationCardProps> = ({
             {/* Location image with gradient fallback */}
             {location.imageUrl ? (
               <Image
-                source={{ uri: location.imageUrl }}
+                source={location.imageUrl.startsWith('asset://')
+                  ? getLocalAsset(location.imageUrl.replace('asset://', ''))
+                  : { uri: location.imageUrl }}
                 style={styles.heroImage}
-                defaultSource={undefined}
+                resizeMode="cover"
               />
-            ) : null}
+            ) : (
+              <MissingPhotoCard
+                locationName={location.title}
+                category={location.category}
+                movieOrShow={location.movieOrShow}
+              />
+            )}
             {/* Gradient overlay (always present for fallback) */}
             <View style={[styles.heroGradientOverlay, heroGradient]} />
             {/* Subtle gradient overlay at bottom of hero */}
@@ -185,9 +195,7 @@ export const LocationCard: React.FC<LocationCardProps> = ({
                   </View>
                 ) : (
                   <DistanceBadge
-                    distance={location.distanceFromUser < 1
-                      ? `${(location.distanceFromUser * 5280).toFixed(0)}ft`
-                      : `${location.distanceFromUser.toFixed(1)}mi`}
+                    distanceMiles={location.distanceFromUser}
                   />
                 )}
               </View>
@@ -327,7 +335,6 @@ const styles = StyleSheet.create({
   },
   heroImage: {
     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-    width: '100%', height: '100%',
     resizeMode: 'cover',
   },
   heroGradientOverlay: {

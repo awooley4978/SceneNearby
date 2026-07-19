@@ -357,7 +357,7 @@ const londonLocations: FilmingLocation[] = [
       const chicagoLocations: FilmingLocation[] = [
         {
           id: 'chi-001', title: 'Wrigley Field', movieOrShow: 'The Blues Brothers', year: 1980,
-          imageUrl: 'https://picsum.photos/seed/chi-001/800/600?gravity=center',
+          imageUrl: 'https://pixabay.com/images/download/gurumarketing-outdoors-3592815_1920.jpg',
           category: LocationCategory.comedy, latitude: 41.9484, longitude: -87.6553,
           address: '1060 W Addison St', city: 'Chicago', country: 'USA',
           sceneDescription: 'Jake and Elwood Blues tear through Chicago in their iconic Bluesmobile in a high-speed chase through Wrigley Field.',
@@ -534,7 +534,7 @@ const londonLocations: FilmingLocation[] = [
       const bostonLocations: FilmingLocation[] = [
         {
           id: 'bos-001', title: 'Boston Public Garden', movieOrShow: 'Good Will Hunting', year: 1997,
-          imageUrl: 'https://picsum.photos/seed/bos-001/800/600?gravity=center',
+          imageUrl: 'https://images.unsplash.com/photo-cjrULwnJKhI?w=800',
           category: LocationCategory.drama, latitude: 42.3540, longitude: -71.0696,
           address: 'Boston Public Garden', city: 'Boston', country: 'USA',
           sceneDescription: 'Will Hunting and Sean Maguire share a profound conversation on a park bench about life, love, and regret.',
@@ -546,7 +546,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'bos-002', title: 'Fenway Park', movieOrShow: 'Fever Pitch', year: 2005,
-          imageUrl: 'https://picsum.photos/seed/bos-002/800/600?gravity=center',
+          imageUrl: 'https://pixabay.com/images/download/mrsbrown-sport-1367690_1920.jpg',
           category: LocationCategory.romance, latitude: 42.3467, longitude: -71.0972,
           address: '4 Jersey St, Boston', city: 'Boston', country: 'USA',
           sceneDescription: 'Ben and Lindsey\'s relationship is tested by his obsessive love for the Red Sox at Fenway Park.',
@@ -939,7 +939,7 @@ const londonLocations: FilmingLocation[] = [
       const aucklandLocations: FilmingLocation[] = [
         {
           id: 'akl-001', title: 'Hobbiton — Matamata', movieOrShow: 'The Lord of the Rings', year: 2001,
-          imageUrl: 'https://picsum.photos/seed/akl-001/800/600?gravity=center',
+          imageUrl: 'https://pixabay.com/images/download/stocksnap-house-2616607_1920.jpg',
           category: LocationCategory.sciFi, latitude: -37.8720, longitude: 175.6815,
           address: 'Hobbiton, Matamata (near Auckland)', city: 'Auckland', country: 'New Zealand',
           sceneDescription: 'Frodo Baggins begins his epic journey from the peaceful Shire with its rolling green hills.',
@@ -951,7 +951,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'akl-002', title: 'Karekare Beach', movieOrShow: 'The Piano', year: 1993,
-          imageUrl: 'https://picsum.photos/seed/akl-002/800/600?gravity=center',
+          imageUrl: 'https://images.unsplash.com/photo-18658bkC3bE?w=800',
           category: LocationCategory.romance, latitude: -37.0100, longitude: 174.4800,
           address: 'Karekare Beach, Auckland', city: 'Auckland', country: 'New Zealand',
           sceneDescription: 'Ada McGrath and her daughter arrive on the wild, windswept shores of Karekare Beach.',
@@ -1245,7 +1245,7 @@ const londonLocations: FilmingLocation[] = [
             const dallasLocations: FilmingLocation[] = [
               {
                 id: 'dal-001', title: 'Dealey Plaza', movieOrShow: 'JFK', year: 1991,
-                imageUrl: 'https://picsum.photos/seed/dallas-dealey-plaza/800/600',
+                imageUrl: 'https://images.unsplash.com/photo-K16kpdRD0Jw?w=800',
                 category: LocationCategory.drama, latitude: 32.7789, longitude: -96.8083,
                 address: 'Dealey Plaza, Dallas', city: 'Dallas', country: 'USA',
                 sceneDescription: 'Oliver Stone\'s masterful reconstruction of the Kennedy assassination weaves together multiple perspectives in Dealey Plaza.',
@@ -1257,7 +1257,7 @@ const londonLocations: FilmingLocation[] = [
               },
               {
                 id: 'dal-002', title: 'Southfork Ranch', movieOrShow: 'Dallas', year: 1978,
-                imageUrl: 'https://picsum.photos/seed/dal-002/800/600?gravity=center',
+                imageUrl: 'https://images.unsplash.com/photo-i8xvv5VWQ4c?w=800',
                 category: LocationCategory.drama, latitude: 33.0100, longitude: -96.5310,
                 address: '3700 Hogge Dr, Parker', city: 'Dallas', country: 'USA',
                 sceneDescription: 'The Ewing family saga unfolds at Southfork Ranch, where J.R., Bobby, and Sue Ellen scheme and love under the Texas sun.',
@@ -1269,7 +1269,7 @@ const londonLocations: FilmingLocation[] = [
               },
               {
                 id: 'dal-003', title: 'Texas Theatre', movieOrShow: 'Bonnie and Clyde', year: 1967,
-                imageUrl: 'https://picsum.photos/seed/dal-003/800/600?gravity=center',
+                imageUrl: 'asset://TexasTheatre.png',
                 category: LocationCategory.action, latitude: 32.7440, longitude: -96.8200,
                 address: '231 W Jefferson Blvd, Dallas', city: 'Dallas', country: 'USA',
                 sceneDescription: 'The historic Texas Theatre was where Lee Harvey Oswald was captured — but in film history, it represents the gritty Texas backdrop of the Depression-era gangster classic.',
@@ -1281,6 +1281,7 @@ const londonLocations: FilmingLocation[] = [
               },
               {
                 id: 'dal-004', title: 'AT&T Stadium', movieOrShow: 'The Blind Side', year: 2009,
+                imageUrl: 'https://images.unsplash.com/photo-msELKyGunN4?w=800',
                 category: LocationCategory.drama, latitude: 32.7473, longitude: -97.0929,
                 address: '1 AT&T Way, Arlington', city: 'Arlington', country: 'USA',
                 sceneDescription: 'Michael Oher\'s journey from homelessness to NFL stardom includes scenes set in the massive stadium that defines modern Texas football.',
@@ -1292,7 +1293,7 @@ const londonLocations: FilmingLocation[] = [
               },
               {
                 id: 'dal-005', title: 'Deep Ellum', movieOrShow: 'Office Space', year: 1999,
-                imageUrl: 'https://picsum.photos/seed/dallas-deep-ellum/800/600',
+                imageUrl: 'https://images.unsplash.com/photo-IAPhiFploCo?w=800',
                 category: LocationCategory.comedy, latitude: 32.7840, longitude: -96.7770,
                 address: 'Deep Ellum, Dallas', city: 'Dallas', country: 'USA',
                 sceneDescription: 'The cult classic about cubicle-dwelling software engineers was filmed in and around Dallas, with the city\'s suburban office parks standing in for generic corporate America.',
