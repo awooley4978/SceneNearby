@@ -421,7 +421,7 @@ const londonLocations: FilmingLocation[] = [
       const atlantaLocations: FilmingLocation[] = [
         {
           id: 'atl-001', title: 'Marvelous Mabel\'s', movieOrShow: 'Stranger Things', year: 2016,
-          imageUrl: '',
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/PalaceArcade.avif',
           category: LocationCategory.drama, latitude: 33.7702, longitude: -84.3910,
           address: 'Various locations, Atlanta area', city: 'Atlanta', country: 'USA',
           sceneDescription: 'Joyce Byers communicates with her son Will through Christmas lights strung across the living room wall.',
@@ -964,7 +964,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'akl-003', title: 'Mount Eden', movieOrShow: 'The Chronicles of Narnia', year: 2005,
-          imageUrl: '',
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/CathedralCove.jpg',
           category: LocationCategory.sciFi, latitude: -36.8760, longitude: 174.7640,
           address: 'Mount Eden, Auckland', city: 'Auckland', country: 'New Zealand',
           sceneDescription: 'Auckland\'s volcanic landscapes stood in for the mythical world of Narnia.',
@@ -1054,7 +1054,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'ber-002', title: 'Berlin TV Tower', movieOrShow: 'The Lives of Others', year: 2006,
-          imageUrl: '',
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/StasiMuseum.jpg',
           category: LocationCategory.drama, latitude: 52.5170, longitude: 13.4090,
           address: 'Panoramastraße 1A, Berlin', city: 'Berlin', country: 'Germany',
           sceneDescription: 'A Stasi officer observes the lives of a playwright from the shadow of East Berlin\'s towering symbol.',
@@ -1066,7 +1066,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'ber-003', title: 'East Side Gallery — Berlin Wall', movieOrShow: 'Bridge of Spies', year: 2015,
-          imageUrl: '',
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Hohenscho%CC%88nhausenMemorial.jpg',
           category: LocationCategory.drama, latitude: 52.5050, longitude: 13.4390,
           address: 'East Side Gallery, Berlin', city: 'Berlin', country: 'Germany',
           sceneDescription: 'James Donovan negotiates the exchange of captured spies with the Berlin Wall looming in the background.',
