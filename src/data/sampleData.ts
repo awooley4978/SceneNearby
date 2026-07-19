@@ -17,8 +17,9 @@ export function calculateDistance(
       Math.cos((lat2 * Math.PI) / 180) *
       Math.sin(dLon / 2) *
       Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
+  const clampedA = Math.min(a, 1);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - clampedA));
+  return isFinite(R * c) ? R * c : 0;
 }
 
 const newYorkLocations: FilmingLocation[] = [

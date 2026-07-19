@@ -9,6 +9,9 @@ interface DistanceBadgeProps {
 
 /** Format a distance in miles to a human-readable string */
 const formatMiles = (miles: number): string => {
+  if (!isFinite(miles) || isNaN(miles)) {
+    return '';
+  }
   if (miles < 0.1) {
     const feet = Math.round(miles * 5280);
     return `${feet}ft`;
