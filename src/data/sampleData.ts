@@ -232,7 +232,7 @@ const losAngelesLocations: FilmingLocation[] = [
   },
   {
     id: 'la-008', title: 'The Grove / Original Farmers Market', movieOrShow: 'The Muppets', year: 2011,
-    imageUrl: '',
+    imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/TheGrove.HEIC',
     category: LocationCategory.comedy, latitude: 34.0729, longitude: -118.3569,
     address: '6333 W 3rd St', city: 'Los Angeles', country: 'USA',
     sceneDescription: 'The Muppets sing and dance through the iconic outdoor shopping complex.',
@@ -472,7 +472,7 @@ const londonLocations: FilmingLocation[] = [
       const sanFranciscoLocations: FilmingLocation[] = [
         {
           id: 'sfo-001', title: 'Alcatraz Island', movieOrShow: 'Escape from Alcatraz', year: 1979,
-          imageUrl: '',
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/AlcatrazIsland.jpg',
           category: LocationCategory.drama, latitude: 37.8267, longitude: -122.4230,
           address: 'Alcatraz Island, San Francisco Bay', city: 'San Francisco', country: 'USA',
           sceneDescription: 'Clint Eastwood as Frank Morris meticulously plans and executes the most famous prison escape in American history.',
@@ -520,7 +520,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'sfo-005', title: 'City Hall Rotunda', movieOrShow: 'The Room', year: 2003,
-          imageUrl: '',
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/CityHallRotunda.jpg',
           category: LocationCategory.romance, latitude: 37.7793, longitude: -122.4192,
           address: '1 Dr Carlton B Goodlett Pl', city: 'San Francisco', country: 'USA',
           sceneDescription: 'Johnny and Lisa\'s wedding takes place in the stunning Beaux-Arts rotunda of San Francisco City Hall.',
@@ -610,7 +610,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'sea-003', title: 'Capitol Hill', movieOrShow: 'Singles', year: 1992,
-          imageUrl: '',
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/CoryellCourtApartments.JPG',
           category: LocationCategory.romance, latitude: 47.6148, longitude: -122.3479,
           address: 'Capitol Hill, Seattle', city: 'Seattle', country: 'USA',
           sceneDescription: 'The grunge scene of early 90s Seattle comes to life amid the burgeoning music scene.',
@@ -799,7 +799,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'par-004', title: 'Café de Flore', movieOrShow: 'Before Sunset', year: 2004,
-          imageUrl: '',
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/LePureCafe.jpg',
           category: LocationCategory.romance, latitude: 48.8540, longitude: 2.3326,
           address: '172 Boulevard Saint-Germain, Paris', city: 'Paris', country: 'France',
           sceneDescription: 'Jesse and Celine share a wandering conversation through Paris, stopping at this iconic café.',
