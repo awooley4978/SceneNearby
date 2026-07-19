@@ -744,6 +744,7 @@ const londonLocations: FilmingLocation[] = [
           quoteAttribution: 'Harvey Specter',
           thenAndNow: 'Toronto City Hall\'s iconic twin towers remain one of the city\'s most recognizable buildings.',
           isMovie: false,
+        },
       ];
 
       const parisLocations: FilmingLocation[] = [
@@ -900,6 +901,7 @@ const londonLocations: FilmingLocation[] = [
         {
           id: 'syd-004', title: 'White Bay Power Station', movieOrShow: 'The Matrix Reloaded',
 
+        },
         {
           imageUrl: '',
           category: LocationCategory.romance, latitude: 29.9970, longitude: -90.0930,
