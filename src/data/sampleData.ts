@@ -899,6 +899,18 @@ const londonLocations: FilmingLocation[] = [
           thenAndNow: 'Royal National Park is the world\'s second-oldest national park, established in 1879.',
           isMovie: true,
         },
+        {
+          id: 'syd-005', title: 'Sydney Harbour Bridge', movieOrShow: 'The Fall Guy', year: 2024,
+          category: LocationCategory.action, latitude: -33.8523, longitude: 151.2108,
+          address: 'Sydney Harbour Bridge, Sydney', city: 'Sydney', country: 'Australia',
+          sceneDescription: 'The Sydney Harbour Bridge serves as a stunning backdrop for the high-octane stunts in The Fall Guy, with the bridge\'s iconic arch featured prominently.',
+          funFact: 'The Harbour Bridge is the world\'s largest steel arch bridge, nicknamed "The Coathanger" by locals.',
+          quote: 'I\'m a stuntman, not a superhero.',
+          quoteAttribution: 'Colt Seavers',
+          thenAndNow: 'The bridge remains one of the most recognizable landmarks in the world and a popular climb destination.',
+          isMovie: true,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/SydneyHarbourBridge.jpg',
+        },
       ];
 
       const aucklandLocations: FilmingLocation[] = [
