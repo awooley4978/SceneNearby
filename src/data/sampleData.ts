@@ -535,7 +535,7 @@ const londonLocations: FilmingLocation[] = [
       const bostonLocations: FilmingLocation[] = [
         {
           id: 'bos-001', title: 'Boston Public Garden', movieOrShow: 'Good Will Hunting', year: 1997,
-          imageUrl: 'https://images.unsplash.com/photo-cjrULwnJKhI?w=800',
+          imageUrl: 'https://images.unsplash.com/photo-1561133211-6067fc8e7348?w=800',
           category: LocationCategory.drama, latitude: 42.3540, longitude: -71.0696,
           address: 'Boston Public Garden', city: 'Boston', country: 'USA',
           sceneDescription: 'Will Hunting and Sean Maguire share a profound conversation on a park bench about life, love, and regret.',
@@ -952,7 +952,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'akl-002', title: 'Karekare Beach', movieOrShow: 'The Piano', year: 1993,
-          imageUrl: 'https://images.unsplash.com/photo-18658bkC3bE?w=800',
+          imageUrl: 'https://images.unsplash.com/photo-1683270962390-47b88653b1cc?w=800',
           category: LocationCategory.romance, latitude: -37.0100, longitude: 174.4800,
           address: 'Karekare Beach, Auckland', city: 'Auckland', country: 'New Zealand',
           sceneDescription: 'Ada McGrath and her daughter arrive on the wild, windswept shores of Karekare Beach.',
@@ -1246,7 +1246,7 @@ const londonLocations: FilmingLocation[] = [
             const dallasLocations: FilmingLocation[] = [
               {
                 id: 'dal-001', title: 'Dealey Plaza', movieOrShow: 'JFK', year: 1991,
-                imageUrl: 'https://images.unsplash.com/photo-K16kpdRD0Jw?w=800',
+                imageUrl: 'https://images.unsplash.com/photo-1740977148660-2c27086f79c7?w=800',
                 category: LocationCategory.drama, latitude: 32.7789, longitude: -96.8083,
                 address: 'Dealey Plaza, Dallas', city: 'Dallas', country: 'USA',
                 sceneDescription: 'Oliver Stone\'s masterful reconstruction of the Kennedy assassination weaves together multiple perspectives in Dealey Plaza.',
@@ -1258,7 +1258,7 @@ const londonLocations: FilmingLocation[] = [
               },
               {
                 id: 'dal-002', title: 'Southfork Ranch', movieOrShow: 'Dallas', year: 1978,
-                imageUrl: 'https://images.unsplash.com/photo-i8xvv5VWQ4c?w=800',
+                imageUrl: 'https://images.unsplash.com/photo-1573208078429-16e423f5f1e3?w=800',
                 category: LocationCategory.drama, latitude: 33.0100, longitude: -96.5310,
                 address: '3700 Hogge Dr, Parker', city: 'Dallas', country: 'USA',
                 sceneDescription: 'The Ewing family saga unfolds at Southfork Ranch, where J.R., Bobby, and Sue Ellen scheme and love under the Texas sun.',
@@ -1282,7 +1282,7 @@ const londonLocations: FilmingLocation[] = [
               },
               {
                 id: 'dal-004', title: 'AT&T Stadium', movieOrShow: 'The Blind Side', year: 2009,
-                imageUrl: 'https://images.unsplash.com/photo-msELKyGunN4?w=800',
+                imageUrl: 'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=800',
                 category: LocationCategory.drama, latitude: 32.7473, longitude: -97.0929,
                 address: '1 AT&T Way, Arlington', city: 'Arlington', country: 'USA',
                 sceneDescription: 'Michael Oher\'s journey from homelessness to NFL stardom includes scenes set in the massive stadium that defines modern Texas football.',
@@ -1294,7 +1294,7 @@ const londonLocations: FilmingLocation[] = [
               },
               {
                 id: 'dal-005', title: 'Deep Ellum', movieOrShow: 'Office Space', year: 1999,
-                imageUrl: 'https://images.unsplash.com/photo-IAPhiFploCo?w=800',
+                imageUrl: 'https://images.unsplash.com/photo-1628630470727-b726b8a15a9d?w=800',
                 category: LocationCategory.comedy, latitude: 32.7840, longitude: -96.7770,
                 address: 'Deep Ellum, Dallas', city: 'Dallas', country: 'USA',
                 sceneDescription: 'The cult classic about cubicle-dwelling software engineers was filmed in and around Dallas, with the city\'s suburban office parks standing in for generic corporate America.',
