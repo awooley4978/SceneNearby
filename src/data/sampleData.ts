@@ -219,8 +219,8 @@ const losAngelesLocations: FilmingLocation[] = [
     isMovie: true,
   },
   {
-    id: 'la-007', title: 'Angels Flight Railway', movieOrShow: '500 Days of Summer', year: 2009,
-    imageUrl: '',
+    id: 'la-007', title: 'Farmers and Merchants Building', movieOrShow: '500 Days of Summer', year: 2009,
+    imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/FarmersandMerchantsBuilding.jpg',
     category: LocationCategory.romance, latitude: 34.0515, longitude: -118.2502,
     address: '350 S Grand Ave', city: 'Los Angeles', country: 'USA',
     sceneDescription: 'Tom and Summer share a playful moment riding Angels Flight, the historic funicular railway.',
@@ -369,8 +369,8 @@ const londonLocations: FilmingLocation[] = [
           isMovie: true,
         },
         {
-          id: 'chi-002', title: 'The L (El Train)', movieOrShow: 'The Dark Knight', year: 2008,
-          imageUrl: '',
+          id: 'chi-002', title: 'Millennium Station', movieOrShow: 'The Dark Knight', year: 2008,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Millenium%20Station.jpg',
           category: LocationCategory.action, latitude: 41.8787, longitude: -87.6274,
           address: 'Various L stations, Chicago', city: 'Chicago', country: 'USA',
           sceneDescription: 'The Joker ambushes Commissioner Gordon\'s transport on the elevated train with the Chicago skyline as backdrop.',
@@ -393,8 +393,8 @@ const londonLocations: FilmingLocation[] = [
           isMovie: true,
         },
         {
-          id: 'chi-004', title: 'John Hancock Center', movieOrShow: 'Ferris Bueller\'s Day Off', year: 1986,
-          imageUrl: '',
+          id: 'chi-004', title: 'Glenbrook North High School', movieOrShow: 'Ferris Bueller\'s Day Off', year: 1986,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/GlenbrookNorthHighSchool.jpg',
           category: LocationCategory.comedy, latitude: 41.8989, longitude: -87.6230,
           address: '875 N Michigan Ave', city: 'Chicago', country: 'USA',
           sceneDescription: 'Ferris, Cameron, and Sloane take in the breathtaking view of Chicago from the top of the Hancock Center.',
@@ -405,8 +405,8 @@ const londonLocations: FilmingLocation[] = [
           isMovie: true,
         },
         {
-          id: 'chi-005', title: 'The Art Institute of Chicago', movieOrShow: 'The Fugitive', year: 1993,
-          imageUrl: '',
+          id: 'chi-005', title: 'John Crerar Library', movieOrShow: 'The Fugitive', year: 1993,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/JohnCrerarLibrary.jpg',
           category: LocationCategory.drama, latitude: 41.8796, longitude: -87.6237,
           address: '111 S Michigan Ave', city: 'Chicago', country: 'USA',
           sceneDescription: 'Dr. Richard Kimble weaves through the Art Institute in a tense chase with Deputy Marshal Gerard.',
@@ -420,7 +420,7 @@ const londonLocations: FilmingLocation[] = [
 
       const atlantaLocations: FilmingLocation[] = [
         {
-          id: 'atl-001', title: 'Marvelous Mabel\'s', movieOrShow: 'Stranger Things', year: 2016,
+          id: 'atl-001', title: 'Palace Arcade's', movieOrShow: 'Stranger Things', year: 2016,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/PalaceArcade.avif',
           category: LocationCategory.drama, latitude: 33.7702, longitude: -84.3910,
           address: 'Various locations, Atlanta area', city: 'Atlanta', country: 'USA',
@@ -444,8 +444,8 @@ const londonLocations: FilmingLocation[] = [
           isMovie: false,
         },
         {
-          id: 'atl-003', title: 'The Fox Theatre', movieOrShow: 'Drumline', year: 2002,
-          imageUrl: '',
+          id: 'atl-003', title: 'The Fox Theatre', movieOrShow: 'Black Panther', year: 2002,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/HighMuseumofArt.jpg',
           category: LocationCategory.drama, latitude: 33.7727, longitude: -84.3855,
           address: '660 Peachtree St NE', city: 'Atlanta', country: 'USA',
           sceneDescription: 'The climactic battle of the bands competition takes place at this iconic Atlanta venue.',
@@ -519,7 +519,6 @@ const londonLocations: FilmingLocation[] = [
           isMovie: true,
         },
         {
-          id: 'sfo-005', title: 'City Hall Rotunda', movieOrShow: 'The Room', year: 2003,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/CityHallRotunda.jpg',
           category: LocationCategory.romance, latitude: 37.7793, longitude: -122.4192,
           address: '1 Dr Carlton B Goodlett Pl', city: 'San Francisco', country: 'USA',
@@ -570,8 +569,8 @@ const londonLocations: FilmingLocation[] = [
           isMovie: true,
         },
         {
-          id: 'bos-004', title: 'Harvard University Yard', movieOrShow: 'The Social Network', year: 2010,
-          imageUrl: '',
+          id: 'bos-004', title: 'Boston Public Library', movieOrShow: 'The Social Network', year: 2010,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/BostonPublicLibrary.jpg',
           category: LocationCategory.drama, latitude: 42.3744, longitude: -71.1169,
           address: 'Harvard Yard, Cambridge', city: 'Boston', country: 'USA',
           sceneDescription: 'Mark Zuckerberg runs across Harvard Yard after creating FaceMash, setting the stage for Facebook.',
@@ -735,8 +734,8 @@ const londonLocations: FilmingLocation[] = [
           isMovie: true,
         },
         {
-          id: 'tor-004', title: 'Toronto City Hall', movieOrShow: 'Suits', year: 2011,
-          imageUrl: '',
+          id: 'tor-004', title: 'Bay Adelaide Centre West Tower', movieOrShow: 'Suits', year: 2011,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/BayAdelaideWestTowerLobby.jpg',
           category: LocationCategory.drama, latitude: 43.6530, longitude: -79.3840,
           address: '100 Queen St W, Toronto', city: 'Toronto', country: 'Canada',
           sceneDescription: 'The modernist Toronto City Hall doubles as the exterior of Pearson Specter Litt law firm.',
@@ -747,7 +746,6 @@ const londonLocations: FilmingLocation[] = [
           isMovie: false,
         },
         {
-          id: 'tor-005', title: 'Distillery District', movieOrShow: 'The Shape of Water', year: 2017,
           imageUrl: '',
           category: LocationCategory.romance, latitude: 43.6503, longitude: -79.3597,
           address: '55 Mill St, Toronto', city: 'Toronto', country: 'Canada',
@@ -810,8 +808,8 @@ const londonLocations: FilmingLocation[] = [
           isMovie: true,
         },
         {
-          id: 'par-005', title: 'Pont Alexandre III', movieOrShow: 'Inception', year: 2010,
-          imageUrl: '',
+          id: 'par-005', title: 'Pont de Bir-Hakeim', movieOrShow: 'Inception', year: 2010,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Pont%20de%20Bir-Hakaim.jpg',
           category: LocationCategory.action, latitude: 48.8637, longitude: 2.3136,
           address: 'Pont Alexandre III, Paris', city: 'Paris', country: 'France',
           sceneDescription: 'Arthur engages in a zero-gravity fight scene while the streets of Paris fold over the city.',
@@ -861,8 +859,8 @@ const londonLocations: FilmingLocation[] = [
           isMovie: true,
         },
         {
-          id: 'rom-004', title: 'Villa Borghese Gardens', movieOrShow: 'The Great Beauty', year: 2013,
-          imageUrl: '',
+          id: 'rom-004', title: 'Fontana dell\'Acqua Paola', movieOrShow: 'The Great Beauty', year: 2013,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Fontana%20dell%27acqua%20Paola.jpg',
           category: LocationCategory.drama, latitude: 41.9140, longitude: 12.4830,
           address: 'Villa Borghese, Rome', city: 'Rome', country: 'Italy',
           sceneDescription: 'Jep Gambardella wanders through the gardens of Rome, reflecting on a life of beauty and meaning.',
@@ -888,8 +886,8 @@ const londonLocations: FilmingLocation[] = [
           isMovie: true,
         },
         {
-          id: 'syd-002', title: 'Bondi Beach', movieOrShow: 'The Inbetweeners 2', year: 2014,
-          imageUrl: '',
+          id: 'syd-002', title: 'Wet\'n\'Wild Gold Coast', movieOrShow: 'The Inbetweeners 2', year: 2014,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Wet%27n%27Wild%20Gold%20Coast.jpg',
           category: LocationCategory.comedy, latitude: -33.8915, longitude: 151.2767,
           address: 'Bondi Beach, Sydney', city: 'Sydney', country: 'Australia',
           sceneDescription: 'The lads from the UK experience iconic Australian beach culture at Bondi.',
@@ -900,8 +898,8 @@ const londonLocations: FilmingLocation[] = [
           isMovie: true,
         },
         {
-          id: 'syd-003', title: 'The Rocks District', movieOrShow: 'Mission: Impossible 2', year: 2000,
-          imageUrl: '',
+          id: 'syd-003', title: 'Governor Phillip Tower', movieOrShow: 'Mission: Impossible 2', year: 2000,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/GovernorPhillipTower.jpg',
           category: LocationCategory.action, latitude: -33.8597, longitude: 151.2089,
           address: 'The Rocks, Sydney', city: 'Sydney', country: 'Australia',
           sceneDescription: 'Ethan Hunt scales the cliffs of The Rocks in a high-octane opening sequence.',
@@ -912,8 +910,8 @@ const londonLocations: FilmingLocation[] = [
           isMovie: true,
         },
         {
-          id: 'syd-004', title: 'Royal National Park', movieOrShow: 'The Matrix Reloaded', year: 2003,
-          imageUrl: '',
+          id: 'syd-004', title: 'White Bay Power Station', movieOrShow: 'The Matrix Reloaded', year: 2003,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/White%20Bay%20Power%20Station.jpg',
           category: LocationCategory.action, latitude: -34.1230, longitude: 151.0640,
           address: 'Royal National Park, Sydney', city: 'Sydney', country: 'Australia',
           sceneDescription: 'The Merovingian\'s chateau and the highway chase were filmed in Sydney\'s stunning landscapes.',
@@ -924,7 +922,6 @@ const londonLocations: FilmingLocation[] = [
           isMovie: true,
         },
         {
-          id: 'syd-005', title: 'Centennial Park', movieOrShow: 'Babe', year: 1995,
           imageUrl: '',
           category: LocationCategory.comedy, latitude: -33.8950, longitude: 151.2340,
           address: 'Centennial Park, Sydney', city: 'Sydney', country: 'Australia',
@@ -963,7 +960,7 @@ const londonLocations: FilmingLocation[] = [
           isMovie: true,
         },
         {
-          id: 'akl-003', title: 'Mount Eden', movieOrShow: 'The Chronicles of Narnia', year: 2005,
+          id: 'akl-003', title: 'Cathedral Cove', movieOrShow: 'The Chronicles of Narnia', year: 2005,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/CathedralCove.jpg',
           category: LocationCategory.sciFi, latitude: -36.8760, longitude: 174.7640,
           address: 'Mount Eden, Auckland', city: 'Auckland', country: 'New Zealand',
@@ -975,8 +972,8 @@ const londonLocations: FilmingLocation[] = [
           isMovie: true,
         },
         {
-          id: 'akl-004', title: 'Waiheke Island', movieOrShow: 'Mystic', year: 2018,
-          imageUrl: '',
+          id: 'akl-004', title: 'Waiheke Island', movieOrShow: 'The Minecraft Movie', year: 2018,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/HelensvilleAntiques.jpg',
           category: LocationCategory.drama, latitude: -36.7930, longitude: 175.1150,
           address: 'Waiheke Island, Auckland', city: 'Auckland', country: 'New Zealand',
           sceneDescription: 'The serene island vineyards and pristine beaches provide the backdrop for this dramatic mystery.',
@@ -1041,8 +1038,8 @@ const londonLocations: FilmingLocation[] = [
 
       const berlinLocations: FilmingLocation[] = [
         {
-          id: 'ber-001', title: 'Brandenburg Gate', movieOrShow: 'The Bourne Supremacy', year: 2004,
-          imageUrl: '',
+          id: 'ber-001', title: 'Brandenburg Gate', movieOrShow: 'Queens Gambit', year: 2004,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/KarlMarxAllee.jpg',
           category: LocationCategory.action, latitude: 52.5163, longitude: 13.3777,
           address: 'Pariser Platz, Berlin', city: 'Berlin', country: 'Germany',
           sceneDescription: 'Jason Bourne races through Berlin, piecing together his past while evading the CIA near the Brandenburg Gate.',
@@ -1053,7 +1050,7 @@ const londonLocations: FilmingLocation[] = [
           isMovie: true,
         },
         {
-          id: 'ber-002', title: 'Berlin TV Tower', movieOrShow: 'The Lives of Others', year: 2006,
+          id: 'ber-002', title: 'Stasi Museum', movieOrShow: 'The Lives of Others', year: 2006,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/StasiMuseum.jpg',
           category: LocationCategory.drama, latitude: 52.5170, longitude: 13.4090,
           address: 'Panoramastraße 1A, Berlin', city: 'Berlin', country: 'Germany',
@@ -1065,7 +1062,7 @@ const londonLocations: FilmingLocation[] = [
           isMovie: true,
         },
         {
-          id: 'ber-003', title: 'East Side Gallery — Berlin Wall', movieOrShow: 'Bridge of Spies', year: 2015,
+          id: 'ber-003', title: 'Hohenschönhausen Memorial', movieOrShow: 'Bridge of Spies', year: 2015,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Hohenscho%CC%88nhausenMemorial.jpg',
           category: LocationCategory.drama, latitude: 52.5050, longitude: 13.4390,
           address: 'East Side Gallery, Berlin', city: 'Berlin', country: 'Germany',
@@ -1092,8 +1089,8 @@ const londonLocations: FilmingLocation[] = [
 
       const dublinLocations: FilmingLocation[] = [
         {
-          id: 'dub-001', title: 'Trinity College Library', movieOrShow: 'The Crown', year: 2016,
-          imageUrl: '',
+          id: 'dub-001', title: 'Winchester Cathedral', movieOrShow: 'The Crown', year: 2016,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/WinchesterCathedral.jpg',
           category: LocationCategory.drama, latitude: 53.3440, longitude: -6.2567,
           address: 'Trinity College, Dublin', city: 'Dublin', country: 'Ireland',
           sceneDescription: 'The Long Room of Trinity College\'s Old Library stands in for the British Library in this royal drama.',
@@ -1104,8 +1101,8 @@ const londonLocations: FilmingLocation[] = [
           isMovie: false,
         },
         {
-          id: 'dub-002', title: 'Temple Bar District', movieOrShow: 'PS I Love You', year: 2007,
-          imageUrl: '',
+          id: 'dub-002', title: "Whelan's Pub", movieOrShow: 'PS I Love You', year: 2007,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/WhelansPub.jpg',
           category: LocationCategory.romance, latitude: 53.3455, longitude: -6.2635,
           address: 'Temple Bar, Dublin', city: 'Dublin', country: 'Ireland',
           sceneDescription: 'Holly Kennedy travels to Ireland, finding love and healing in the lively pubs of Dublin.',
@@ -1116,8 +1113,8 @@ const londonLocations: FilmingLocation[] = [
           isMovie: true,
         },
         {
-          id: 'dub-003', title: 'Howth Cliff Walk', movieOrShow: 'The Guard', year: 2011,
-          imageUrl: '',
+          id: 'dub-003', title: 'Wicklow Harbour', movieOrShow: 'The Guard', year: 2011,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/WicklowHarbour.jpg',
           category: LocationCategory.comedy, latitude: 53.3870, longitude: -6.0650,
           address: 'Howth Cliff Walk, Dublin', city: 'Dublin', country: 'Ireland',
           sceneDescription: 'Sergeant Gerry Boyle investigates a crime while showcasing the rugged Irish coastline.',
@@ -1179,7 +1176,6 @@ const londonLocations: FilmingLocation[] = [
           isMovie: false,
         },
         {
-          id: 'nol-004', title: 'City Park — Big Oak', movieOrShow: 'The Princess and the Frog', year: 2009,
           imageUrl: '',
           category: LocationCategory.romance, latitude: 29.9970, longitude: -90.0930,
           address: 'City Park, New Orleans', city: 'New Orleans', country: 'USA',
