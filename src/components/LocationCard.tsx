@@ -189,15 +189,7 @@ export const LocationCard: React.FC<LocationCardProps> = ({
             {/* Distance badge — top right */}
             {location.distanceFromUser !== undefined && (
               <View style={styles.heroBadgeTopRight}>
-                {location.distanceFromUser < 0.1 ? (
-                  <View style={styles.arrivalBadge}>
-                    <Text style={styles.arrivalText}>YOU'RE HERE 🎉</Text>
-                  </View>
-                ) : (
-                  <DistanceBadge
-                    distanceMiles={location.distanceFromUser}
-                  />
-                )}
+                <DistanceBadge distanceMiles={location.distanceFromUser} />
               </View>
             )}
 

@@ -9,11 +9,9 @@ interface DistanceBadgeProps {
 
 /** Format a distance in miles to a human-readable string */
 const formatMiles = (miles: number): string => {
-  if (miles < 0.1) {
-    const feet = Math.round(miles * 5280);
-    return `${feet}ft`;
-  }
-  return `${miles.toFixed(1)}mi`;
+  // Always show decimal miles — no feet display
+  const rounded = miles < 0.1 ? 0.1 : Math.round(miles * 10) / 10;
+  return `${rounded.toFixed(1)} mi`;
 };
 
 export const DistanceBadge: React.FC<DistanceBadgeProps> = ({ distanceMiles }) => {

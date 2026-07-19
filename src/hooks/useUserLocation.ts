@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import * as Location from 'expo-location';
 import { getOnboardingData } from '../services/StorageService';
 
@@ -21,7 +21,7 @@ const DEFAULT_LOCATION = { latitude: 40.7580, longitude: -73.9855 }; // Times Sq
  * Hook that provides the user's current location.
  *
  * Priority:
- * 1. Real GPS via expo-location (if permission granted)
+ * 1. Real GPS via expo-location (if permission granted) — watches for position changes
  * 2. Onboarding data (activeCityLat/activeCityLng) if permission denied
  * 3. Default location (Times Square) if no data available
  */
@@ -37,6 +37,7 @@ export function useUserLocation(): UserLocation {
 
   useEffect(() => {
     let mounted = true;
+    let watcher: Location.LocationSubscription | null = null;
 
     async function getLocation() {
       try {
@@ -59,6 +60,27 @@ export function useUserLocation(): UserLocation {
             permissionDenied: false,
             error: null,
           });
+
+          // Watch for position changes — recalculates distances as user moves
+          watcher = await Location.watchPositionAsync(
+            {
+              accuracy: Location.Accuracy.Balanced,
+              timeInterval: 5000,      // Every 5 seconds
+              distanceInterval: 100,   // Or every 100 meters
+            },
+            (newLoc) => {
+              if (mounted) {
+                setLocation({
+                  latitude: newLoc.coords.latitude,
+                  longitude: newLoc.coords.longitude,
+                  isGps: true,
+                  isLoading: false,
+                  permissionDenied: false,
+                  error: null,
+                });
+              }
+            }
+          );
           return;
         }
 
@@ -114,6 +136,7 @@ export function useUserLocation(): UserLocation {
 
     return () => {
       mounted = false;
+      if (watcher) watcher.remove();
     };
   }, []);
 
