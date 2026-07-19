@@ -15,7 +15,7 @@ import { theme } from '../../theme';
 import { locationById, mockRatings, photosByLocation, calculateDistance } from '../../data/sampleData';
 import { categoryColors, STORAGE_KEYS } from '../../models';
 import { useSaved } from '../../context/SavedContext';
-import { getOnboardingData } from '../../services/StorageService';
+import { useUserLocation } from '../../hooks/useUserLocation';
 import { CategoryBadge } from '../../components/CategoryBadge';
 import { MissingPhotoCard } from '../../components/MissingPhotoCard';
 import { getLocalAsset } from '../../data/assetMap';
@@ -33,27 +33,13 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
   const [userRating, setUserRating] = useState<number | undefined>(undefined);
   const { isSaved: checkSaved, toggleSave: toggleSaved } = useSaved();
   const saved = checkSaved(locationId);
-  const [userLat, setUserLat] = useState<number | null>(null);
-  const [userLng, setUserLng] = useState<number | null>(null);
-
-  // Load user GPS from onboarding and calculate distance
-  React.useEffect(() => {
-    (async () => {
-      try {
-        const data = await getOnboardingData();
-        if (data?.activeCityLat && data?.activeCityLng) {
-          setUserLat(data.activeCityLat);
-          setUserLng(data.activeCityLng);
-        }
-      } catch {}
-    })();
-  }, []);
+  const userLocation = useUserLocation();
 
   // Calculate distance in miles (matching the card display)
   const distanceFromUser = React.useMemo(() => {
-    if (userLat === null || userLng === null || !location) return undefined;
-    return calculateDistance(userLat, userLng, location.latitude, location.longitude) / 1609.34;
-  }, [userLat, userLng, location]);
+    if (userLocation.latitude === null || userLocation.longitude === null || !location) return undefined;
+    return calculateDistance(userLocation.latitude, userLocation.longitude, location.latitude, location.longitude) / 1609.34;
+  }, [userLocation.latitude, userLocation.longitude, location]);
 
   if (!location) {
     return (

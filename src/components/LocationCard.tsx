@@ -195,9 +195,7 @@ export const LocationCard: React.FC<LocationCardProps> = ({
                   </View>
                 ) : (
                   <DistanceBadge
-                    distance={location.distanceFromUser < 1
-                      ? `${(location.distanceFromUser * 5280).toFixed(0)}ft`
-                      : `${location.distanceFromUser.toFixed(1)}mi`}
+                    distanceMiles={location.distanceFromUser}
                   />
                 )}
               </View>

@@ -23,7 +23,7 @@ import {
 import { LocationCard } from '../../components/LocationCard';
 import { CardSkeleton } from '../../components/SkeletonLoader';
 import { EmptyState } from '../../components/EmptyState';
-import { getOnboardingData } from '../../services/StorageService';
+import { useUserLocation } from '../../hooks/useUserLocation';
 import type { FilmingLocation, ActorGroup } from '../../models';
 
 const categories = [
@@ -58,22 +58,8 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
   const [selectedType, setSelectedType] = useState<string>('all');
   const [refreshing, setRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [userLat, setUserLat] = useState<number | null>(null);
-  const [userLng, setUserLng] = useState<number | null>(null);
+  const userLocation = useUserLocation();
   const fadeAnim = useRef(new Animated.Value(0)).current;
-
-  // Load user location from onboarding data
-  useEffect(() => {
-    (async () => {
-      try {
-        const data = await getOnboardingData();
-        if (data?.activeCityLat && data?.activeCityLng) {
-          setUserLat(data.activeCityLat);
-          setUserLng(data.activeCityLng);
-        }
-      } catch {}
-    })();
-  }, []);
 
   useEffect(() => {
     // Simulate initial load for skeleton demonstration
@@ -179,17 +165,17 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
     }
 
     // Calculate distance from user for every location
-    if (userLat !== null && userLng !== null) {
+    if (userLocation.latitude !== null && userLocation.longitude !== null) {
       result = result.map((loc) => ({
         ...loc,
-        distanceFromUser: calculateDistance(userLat, userLng, loc.latitude, loc.longitude) / 1609.34, // meters to miles
+        distanceFromUser: calculateDistance(userLocation.latitude, userLocation.longitude, loc.latitude, loc.longitude) / 1609.34, // meters to miles
       }));
       // Filter to within radius
       result = result.filter((loc) => loc.distanceFromUser! <= DEFAULT_RADIUS_MILES);
     }
 
     // Sort by nearest (always, since we have distance data)
-    if (userLat !== null && userLng !== null) {
+    if (userLocation.latitude !== null && userLocation.longitude !== null) {
       result = [...result].sort((a, b) => (a.distanceFromUser || 0) - (b.distanceFromUser || 0));
     } else if (sortMode === 'rating') {
       result = [...result].sort((a, b) => {
@@ -200,16 +186,16 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
     }
 
     return result;
-  }, [selectedCategory, selectedType, searchQuery, sortMode, userLat, userLng]);
+  }, [selectedCategory, selectedType, searchQuery, sortMode, userLocation.latitude, userLocation.longitude]);
 
   const nearYou = useMemo(() => {
-    if (userLat === null || userLng === null) return [];
+    if (userLocation.latitude === null || userLocation.longitude === null) return [];
     const withDist = allLocations.map((loc) => ({
       ...loc,
-      distanceFromUser: calculateDistance(userLat, userLng, loc.latitude, loc.longitude) / 1609.34,
+      distanceFromUser: calculateDistance(userLocation.latitude, userLocation.longitude, loc.latitude, loc.longitude) / 1609.34,
     })).filter((loc) => loc.distanceFromUser! <= DEFAULT_RADIUS_MILES);
     return withDist.sort((a, b) => (a.distanceFromUser || 0) - (b.distanceFromUser || 0)).slice(0, 3);
-  }, [userLat, userLng]);
+  }, [userLocation.latitude, userLocation.longitude]);
 
   const onRefresh = () => {
     setRefreshing(true);

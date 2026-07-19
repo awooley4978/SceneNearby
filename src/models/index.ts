@@ -61,6 +61,16 @@ export const formatDistance = (meters: number): string => {
   return `${(meters / 1000).toFixed(1)} km away`;
 };
 
+/** Format distance in miles from meters, with consistent formatting */
+export const formatDistanceInMiles = (meters: number): string => {
+  const miles = meters / 1609.34;
+  if (miles < 0.1) {
+    const feet = Math.round(miles * 5280);
+    return `${feet}ft`;
+  }
+  return `${miles.toFixed(1)}mi`;
+};
+
 // ── Rating System ──
 export interface LocationRating {
   average: number;
