@@ -420,7 +420,7 @@ const londonLocations: FilmingLocation[] = [
 
       const atlantaLocations: FilmingLocation[] = [
         {
-          id: 'atl-001', title: 'Palace Arcade's', movieOrShow: 'Stranger Things', year: 2016,
+          id: 'atl-001', title: 'Palace Arcade', movieOrShow: 'Stranger Things', year: 2016,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/PalaceArcade.avif',
           category: LocationCategory.drama, latitude: 33.7702, longitude: -84.3910,
           address: 'Various locations, Atlanta area', city: 'Atlanta', country: 'USA',
@@ -744,18 +744,6 @@ const londonLocations: FilmingLocation[] = [
           quoteAttribution: 'Harvey Specter',
           thenAndNow: 'Toronto City Hall\'s iconic twin towers remain one of the city\'s most recognizable buildings.',
           isMovie: false,
-        },
-        {
-          imageUrl: '',
-          category: LocationCategory.romance, latitude: 43.6503, longitude: -79.3597,
-          address: '55 Mill St, Toronto', city: 'Toronto', country: 'Canada',
-          sceneDescription: 'The Victorian Industrial District stands in for 1960s Baltimore in this Oscar-winning fantasy.',
-          funFact: 'The Distillery District is the best-preserved collection of Victorian industrial architecture in North America.',
-          quote: 'He sees me for what I am.',
-          quoteAttribution: 'Elisa Esposito',
-          thenAndNow: 'The Distillery District is now a vibrant arts, culture, and entertainment neighborhood.',
-          isMovie: true,
-        },
       ];
 
       const parisLocations: FilmingLocation[] = [
