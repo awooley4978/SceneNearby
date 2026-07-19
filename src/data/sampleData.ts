@@ -637,7 +637,7 @@ const londonLocations: FilmingLocation[] = [
       const vancouverLocations: FilmingLocation[] = [
         {
           id: 'van-001', title: 'Marine Building', movieOrShow: 'The Flash', year: 2014,
-          imageUrl: '',
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/MarineBuilding.jpg',
           category: LocationCategory.action, latitude: 49.2848, longitude: -123.1130,
           address: '355 Burrard St, Vancouver', city: 'Vancouver', country: 'Canada',
           sceneDescription: 'The Art Deco Marine Building doubles as the exterior of S.T.A.R. Labs, Barry Allen\'s crime-fighting hub.',
@@ -649,7 +649,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'van-002', title: 'Stanley Park', movieOrShow: 'The X-Files', year: 1993,
-          imageUrl: '',
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/StanleyPark.jpg',
           category: LocationCategory.sciFi, latitude: 49.3043, longitude: -123.1445,
           address: 'Stanley Park, Vancouver', city: 'Vancouver', country: 'Canada',
           sceneDescription: 'Mulder and Scully investigate paranormal phenomena in the misty, ancient forests of the Pacific Northwest.',
@@ -661,7 +661,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'van-003', title: 'Gastown Steam Clock', movieOrShow: 'Lucifer', year: 2016,
-          imageUrl: '',
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/GastownSteamClock.jpg',
           category: LocationCategory.comedy, latitude: 49.2842, longitude: -123.1070,
           address: 'Water St & Cambie St, Vancouver', city: 'Vancouver', country: 'Canada',
           sceneDescription: 'Gastown\'s cobblestone streets serve as the backdrop for Lucifer Morningstar\'s nocturnal adventures.',
@@ -673,7 +673,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'van-004', title: 'Dr. Sun Yat-Sen Garden', movieOrShow: 'The Man in the High Castle', year: 2015,
-          imageUrl: '',
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/SunYatSenGarden.jpg',
           category: LocationCategory.drama, latitude: 49.2797, longitude: -123.0983,
           address: '578 Carrall St, Vancouver', city: 'Vancouver', country: 'Canada',
           sceneDescription: 'The serene garden stands in for a Japanese-occupied Pacific States in this alternate history drama.',
@@ -685,7 +685,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'van-005', title: 'Vancouver Art Gallery', movieOrShow: 'The 100', year: 2014,
-          imageUrl: '',
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/VancouverArtGallery.jpg',
           category: LocationCategory.sciFi, latitude: 49.2830, longitude: -123.1205,
           address: '750 Hornby St, Vancouver', city: 'Vancouver', country: 'Canada',
           sceneDescription: 'The neoclassical building stands in for the seat of government in the post-apocalyptic world.',
@@ -1195,7 +1195,7 @@ const londonLocations: FilmingLocation[] = [
       const washingtonDCLocations: FilmingLocation[] = [
         {
           id: 'was-001', title: 'Lincoln Memorial', movieOrShow: 'Forrest Gump', year: 1994,
-          imageUrl: '',
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/LincolnMemorial.JPG',
           category: LocationCategory.comedy, latitude: 38.8893, longitude: -77.0502,
           address: 'Lincoln Memorial, Washington DC', city: 'Washington DC', country: 'USA',
           sceneDescription: 'Forrest Gump recounts his life story to strangers on a bench with the Lincoln Memorial in the background.',
@@ -1207,7 +1207,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'was-002', title: 'National Mall', movieOrShow: 'Independence Day', year: 1996,
-          imageUrl: '',
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/NationalMall.jpg',
           category: LocationCategory.action, latitude: 38.8895, longitude: -77.0220,
           address: 'National Mall, Washington DC', city: 'Washington DC', country: 'USA',
           sceneDescription: 'The alien mothership casts a shadow over the Washington Monument as humanity faces its greatest threat.',
@@ -1219,7 +1219,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'was-003', title: 'Jefferson Memorial', movieOrShow: 'The West Wing', year: 1999,
-          imageUrl: '',
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/JeffersonMemorial.jpg',
           category: LocationCategory.drama, latitude: 38.8813, longitude: -77.0368,
           address: 'Jefferson Memorial, Washington DC', city: 'Washington DC', country: 'USA',
           sceneDescription: 'President Bartlet walks the halls of power with the Jefferson Memorial as a backdrop for reflection.',
@@ -1231,7 +1231,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
                 id: 'was-004', title: 'Library of Congress', movieOrShow: 'National Treasure 2', year: 2007,
-                imageUrl: '',
+                imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/LiibraryofCongress.jpg',
                 category: LocationCategory.action, latitude: 38.8887, longitude: -77.0047,
                 address: 'Library of Congress, Washington DC', city: 'Washington DC', country: 'USA',
                 sceneDescription: 'Ben Gates navigates the stunning reading room of the Library of Congress following clues to the City of Gold.',
