@@ -3,24 +3,13 @@ import { View, Text, StyleSheet } from 'react-native';
 import { theme } from '../theme';
 
 interface DistanceBadgeProps {
-  /** Distance in miles */
-  distanceMiles: number;
+  distance: string;
 }
 
-/** Format a distance in miles to a human-readable string */
-const formatMiles = (miles: number): string => {
-  if (miles < 0.1) {
-    const feet = Math.round(miles * 5280);
-    return `${feet}ft`;
-  }
-  return `${miles.toFixed(1)}mi`;
-};
-
-export const DistanceBadge: React.FC<DistanceBadgeProps> = ({ distanceMiles }) => {
-  const formatted = formatMiles(distanceMiles);
+export const DistanceBadge: React.FC<DistanceBadgeProps> = ({ distance }) => {
   return (
     <View style={styles.badge}>
-      <Text style={styles.distance}>{formatted}</Text>
+      <Text style={styles.distance}>{distance}</Text>
     </View>
   );
 };
