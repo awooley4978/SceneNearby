@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import * as Location from 'expo-location';
 import { getOnboardingData } from '../services/StorageService';
 
-interface UserLocation {
-  latitude: number;
-  longitude: number;
+export interface UserLocation {
+  latitude: number | null;
+  longitude: number | null;
   /** Whether the location came from real GPS (true) or onboarding fallback (false) */
   isGps: boolean;
   /** Whether we're still loading the location */
@@ -15,20 +15,32 @@ interface UserLocation {
   error: string | null;
 }
 
-const DEFAULT_LOCATION = { latitude: 40.7580, longitude: -73.9855 }; // Times Square, NYC
+/** Validate that a latitude/longitude pair is within valid geographic bounds */
+export function isValidCoordinate(lat: number | null, lng: number | null): boolean {
+  if (lat === null || lng === null) return false;
+  if (typeof lat !== 'number' || typeof lng !== 'number') return false;
+  if (isNaN(lat) || isNaN(lng)) return false;
+  if (lat < -90 || lat > 90) return false;
+  if (lng < -180 || lng > 180) return false;
+  return true;
+}
 
 /**
  * Hook that provides the user's current location.
  *
  * Priority:
- * 1. Real GPS via expo-location (if permission granted)
+ * 1. Real GPS via expo-location (if permission granted) — watches for position changes
  * 2. Onboarding data (activeCityLat/activeCityLng) if permission denied
- * 3. Default location (Times Square) if no data available
+ * 3. null if no data available (no distance is displayed)
+ *
+ * When GPS is available, coordinates are validated before being returned.
+ * When GPS is unavailable, the hook falls back to onboarding data.
+ * The hook never returns invalid coordinates.
  */
 export function useUserLocation(): UserLocation {
   const [location, setLocation] = useState<UserLocation>({
-    latitude: DEFAULT_LOCATION.latitude,
-    longitude: DEFAULT_LOCATION.longitude,
+    latitude: null,
+    longitude: null,
     isGps: false,
     isLoading: true,
     permissionDenied: false,
@@ -37,6 +49,7 @@ export function useUserLocation(): UserLocation {
 
   useEffect(() => {
     let mounted = true;
+    let watcher: Location.LocationSubscription | null = null;
 
     async function getLocation() {
       try {
@@ -51,14 +64,42 @@ export function useUserLocation(): UserLocation {
 
           if (!mounted) return;
 
-          setLocation({
-            latitude: loc.coords.latitude,
-            longitude: loc.coords.longitude,
-            isGps: true,
-            isLoading: false,
-            permissionDenied: false,
-            error: null,
-          });
+          const { latitude, longitude } = loc.coords;
+
+          // Only set valid coordinates
+          if (isValidCoordinate(latitude, longitude)) {
+            setLocation({
+              latitude,
+              longitude,
+              isGps: true,
+              isLoading: false,
+              permissionDenied: false,
+              error: null,
+            });
+          }
+
+          // Watch for position changes — recalculates distances as user moves
+          watcher = await Location.watchPositionAsync(
+            {
+              accuracy: Location.Accuracy.Balanced,
+              timeInterval: 5000,      // Every 5 seconds
+              distanceInterval: 100,   // Or every 100 meters
+            },
+            (newLoc) => {
+              if (!mounted) return;
+              const { latitude: newLat, longitude: newLng } = newLoc.coords;
+              if (isValidCoordinate(newLat, newLng)) {
+                setLocation({
+                  latitude: newLat,
+                  longitude: newLng,
+                  isGps: true,
+                  isLoading: false,
+                  permissionDenied: false,
+                  error: null,
+                });
+              }
+            }
+          );
           return;
         }
 
@@ -73,16 +114,26 @@ export function useUserLocation(): UserLocation {
           if (!mounted) return;
 
           if (onboardingData?.activeCityLat && onboardingData?.activeCityLng) {
-            setLocation({
-              latitude: onboardingData.activeCityLat,
-              longitude: onboardingData.activeCityLng,
-              isGps: false,
-              isLoading: false,
-              permissionDenied: true,
-              error: null,
-            });
+            const onboardingLat = onboardingData.activeCityLat;
+            const onboardingLng = onboardingData.activeCityLng;
+            if (isValidCoordinate(onboardingLat, onboardingLng)) {
+              setLocation({
+                latitude: onboardingLat,
+                longitude: onboardingLng,
+                isGps: false,
+                isLoading: false,
+                permissionDenied: true,
+                error: null,
+              });
+            } else {
+              setLocation((prev) => ({
+                ...prev,
+                isLoading: false,
+                error: 'Invalid onboarding coordinates',
+              }));
+            }
           } else {
-            // Use default
+            // No data available — stay null, don't display distance
             setLocation((prev) => ({
               ...prev,
               isLoading: false,
@@ -100,8 +151,8 @@ export function useUserLocation(): UserLocation {
       } catch (err: any) {
         if (!mounted) return;
         setLocation({
-          latitude: DEFAULT_LOCATION.latitude,
-          longitude: DEFAULT_LOCATION.longitude,
+          latitude: null,
+          longitude: null,
           isGps: false,
           isLoading: false,
           permissionDenied: false,
@@ -114,6 +165,7 @@ export function useUserLocation(): UserLocation {
 
     return () => {
       mounted = false;
+      if (watcher) watcher.remove();
     };
   }, []);
 
