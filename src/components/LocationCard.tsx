@@ -170,7 +170,11 @@ export const LocationCard: React.FC<LocationCardProps> = ({
                 resizeMode="cover"
               />
             ) : (
-              <MissingPhotoCard category={location.category} height={260} variant="card" />
+              <MissingPhotoCard
+                locationName={location.title}
+                category={location.category}
+                movieOrShow={location.movieOrShow}
+              />
             )}
             {/* Gradient overlay (always present for fallback) */}
             <View style={[styles.heroGradientOverlay, heroGradient]} />

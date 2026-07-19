@@ -1,12 +1,12 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, Animated, StyleSheet } from 'react-native';
+import { View, Text, Animated, StyleSheet, TouchableOpacity } from 'react-native';
 import { theme } from '../theme';
 import { LocationCategory } from '../models';
 
 interface MissingPhotoCardProps {
+  locationName: string;
   category: LocationCategory;
-  height?: number;
-  variant?: 'card' | 'detail';
+  movieOrShow: string;
 }
 
 const GRADIENT_PAIRS: Record<string, string[]> = {
@@ -18,12 +18,11 @@ const GRADIENT_PAIRS: Record<string, string[]> = {
 };
 
 export const MissingPhotoCard: React.FC<MissingPhotoCardProps> = ({
+  locationName,
   category,
-  height = 260,
-  variant = 'card',
+  movieOrShow,
 }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const pulseAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -31,24 +30,7 @@ export const MissingPhotoCard: React.FC<MissingPhotoCardProps> = ({
       duration: 600,
       useNativeDriver: true,
     }).start();
-
-    const pulse = Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, {
-          toValue: 0.85,
-          duration: 2000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 2000,
-          useNativeDriver: true,
-        }),
-      ]),
-    );
-    pulse.start();
-    return () => pulse.stop();
-  }, [fadeAnim, pulseAnim]);
+  }, [fadeAnim]);
 
   const gradientColors = GRADIENT_PAIRS[category] || ['#1a1a2e', '#0a0a0a'];
 
@@ -57,47 +39,56 @@ export const MissingPhotoCard: React.FC<MissingPhotoCardProps> = ({
       style={[
         styles.container,
         {
-          height,
           backgroundColor: gradientColors[0],
           opacity: fadeAnim,
         },
       ]}
     >
-      {/* Subtle gradient overlay */}
-      <View style={[styles.gradientOverlay, { backgroundColor: gradientColors[1] }]} />
-
-      {/* Icon with pulse */}
-      <Animated.View
-        style={[
-          styles.iconContainer,
-          { transform: [{ scale: pulseAnim }] },
-        ]}
-      >
-        <Text style={styles.icon}>🎬</Text>
-      </Animated.View>
-
-      {/* Film strip decoration */}
-      <View style={styles.filmStrip}>
-        {[0, 1, 2, 3, 4, 5].map((i) => (
-          <View
-            key={i}
-            style={[
-              styles.filmSprocket,
-              { opacity: 0.15 + (i % 2 === 0 ? 0.1 : 0) },
-            ]}
-          />
+      {/* Subtle grid pattern overlay */}
+      <View style={styles.gridOverlay}>
+        {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((i) => (
+          <View key={`h-${i}`} style={[styles.gridLine, styles.gridLineH, { top: `${(i + 1) * 8.3}%` }]} />
         ))}
+        {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((i) => (
+          <View key={`v-${i}`} style={[styles.gridLine, styles.gridLineV, { left: `${(i + 1) * 8.3}%` }]} />
+        ))}
+        {/* Subtle dots at intersections */}
+        {[1, 3, 5, 7, 9, 11].map((row) =>
+          [1, 3, 5, 7, 9, 11].map((col) => (
+            <View
+              key={`d-${row}-${col}`}
+              style={[
+                styles.gridDot,
+                { top: `${row * 8.3}%`, left: `${col * 8.3}%` },
+              ]}
+            />
+          ))
+        )}
       </View>
 
-      {/* Text */}
-      <Text style={styles.title}>No Photo Available</Text>
-      <Text style={styles.subtitle}>
-        {variant === 'detail'
-          ? 'A community-submitted photo will appear here'
-          : 'Photo coming soon'}
+      {/* Gradient overlay from gradient pair */}
+      <View style={[styles.gradientOverlay, { backgroundColor: gradientColors[1] }]} />
+
+      {/* Camera icon */}
+      <View style={styles.iconContainer}>
+        <Text style={styles.icon}>📷</Text>
+      </View>
+
+      {/* Heading */}
+      <Text style={styles.heading}>📷 Photo Needed</Text>
+
+      {/* Body text */}
+      <Text style={styles.bodyText}>
+        Help complete Scene Nearby.{'\n'}
+        Be the first to contribute a photo of this filming location. After review, your image could become the featured photo seen by movie and TV fans around the world.
       </Text>
 
-      {/* Bottom fade */}
+      {/* Disabled Submit button */}
+      <TouchableOpacity style={styles.submitButton} activeOpacity={1} onPress={() => {}}>
+        <Text style={styles.submitButtonText}>Submit Photo</Text>
+      </TouchableOpacity>
+
+      {/* Bottom fade overlay */}
       <View style={styles.bottomFade} />
     </Animated.View>
   );
@@ -105,10 +96,45 @@ export const MissingPhotoCard: React.FC<MissingPhotoCardProps> = ({
 
 const styles = StyleSheet.create({
   container: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    position: 'relative',
     overflow: 'hidden',
+    paddingHorizontal: 32,
+  },
+  gridOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  gridLine: {
+    position: 'absolute',
+    backgroundColor: 'rgba(255,255,255,0.04)',
+  },
+  gridLineH: {
+    left: 0,
+    right: 0,
+    height: 1,
+  },
+  gridLineV: {
+    top: 0,
+    bottom: 0,
+    width: 1,
+  },
+  gridDot: {
+    position: 'absolute',
+    width: 3,
+    height: 3,
+    borderRadius: 1.5,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    marginLeft: -1.5,
+    marginTop: -1.5,
   },
   gradientOverlay: {
     position: 'absolute',
@@ -119,49 +145,46 @@ const styles = StyleSheet.create({
     opacity: 0.3,
   },
   iconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: 'rgba(255,255,255,0.08)',
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: 'rgba(255,255,255,0.06)',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: theme.spacing.md,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: 'rgba(255,255,255,0.08)',
   },
   icon: {
-    fontSize: 24,
+    fontSize: 28,
   },
-  filmStrip: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-  },
-  filmSprocket: {
-    width: 4,
-    height: 20,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 2,
-  },
-  title: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: 'rgba(255,255,255,0.5)',
+  heading: {
+    fontSize: theme.fontSize.xl,
+    fontWeight: theme.fontWeight.bold,
+    color: '#FFFFFF',
     textAlign: 'center',
+    marginBottom: theme.spacing.sm,
     letterSpacing: 0.5,
   },
-  subtitle: {
-    fontSize: 12,
-    color: 'rgba(255,255,255,0.3)',
+  bodyText: {
+    fontSize: theme.fontSize.sm,
+    color: 'rgba(255,255,255,0.5)',
     textAlign: 'center',
-    marginTop: 4,
-    letterSpacing: 0.3,
+    lineHeight: 20,
+    marginBottom: theme.spacing.lg,
+    maxWidth: 280,
+  },
+  submitButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 28,
+    borderRadius: 12,
+    backgroundColor: theme.colors.gold,
+    opacity: 0.5,
+  },
+  submitButtonText: {
+    color: theme.colors.black,
+    fontWeight: theme.fontWeight.bold,
+    fontSize: theme.fontSize.md,
   },
   bottomFade: {
     position: 'absolute',

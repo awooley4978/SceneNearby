@@ -95,6 +95,83 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
     Alert.alert('Add Photo', 'Camera/gallery integration coming soon!');
   };
 
+  const handleCorrection = () => {
+    const subject = encodeURIComponent('Location Correction');
+    const body = encodeURIComponent(
+      'Hello Scene Nearby Team,%0D%0A%0D%0AI found something that may need updating.%0D%0A%0D%0A' +
+      '--- Location ---%0D%0A' +
+      `${location.title}%0D%0A%0D%0A` +
+      '--- Movie/TV ---%0D%0A' +
+      `${location.movieOrShow}%0D%0A%0D%0A` +
+      '--- City ---%0D%0A' +
+      `${location.city}, ${location.country}%0D%0A%0D%0A` +
+      '--- Location ID ---%0D%0A' +
+      `${location.id}%0D%0A%0D%0A` +
+      '--- Issue ---%0D%0A' +
+      '(e.g. Incorrect location, Incorrect photo, Duplicate location, Closed location)%0D%0A%0D%0A' +
+      '--- Details ---%0D%0A%0D%0A%0D%0A' +
+      '--- Supporting source (optional) ---%0D%0A%0D%0A%0D%0A' +
+      'Thank you for helping keep Scene Nearby accurate!'
+    );
+    const mailto = `mailto:scenenearbysupport@gmail.com?subject=${subject}&body=${body}`;
+    Linking.openURL(mailto).catch(() => {
+      Alert.alert('Error', 'Could not open email app. Please contact scenenearbysupport@gmail.com directly.');
+    });
+  };
+
+  const handleContentRequest = () => {
+    const subject = encodeURIComponent('Content Request');
+    const body = encodeURIComponent(
+      'Hello Scene Nearby Team,%0D%0A%0D%0A' +
+      'I would like to suggest adding a new filming location.%0D%0A%0D%0A' +
+      '--- Location ---%0D%0A%0D%0A%0D%0A' +
+      '--- Movie/TV Show ---%0D%0A%0D%0A%0D%0A' +
+      '--- City / Country ---%0D%0A%0D%0A%0D%0A' +
+      '--- Scene Description ---%0D%0A%0D%0A%0D%0A' +
+      '--- Why it should be featured ---%0D%0A%0D%0A%0D%0A' +
+      '--- Supporting source (link) ---%0D%0A%0D%0A%0D%0A' +
+      'Thank you for considering my request!'
+    );
+    const mailto = `mailto:scenenearbysupport@gmail.com?subject=${subject}&body=${body}`;
+    Linking.openURL(mailto).catch(() => {
+      Alert.alert('Error', 'Could not open email app. Please contact scenenearbysupport@gmail.com directly.');
+    });
+  };
+
+  const handleFeatureSuggestion = () => {
+    const subject = encodeURIComponent('Feature Suggestion');
+    const body = encodeURIComponent(
+      'Hello Scene Nearby Team,%0D%0A%0D%0A' +
+      'I have an idea for a feature!%0D%0A%0D%0A' +
+      '--- Feature Description ---%0D%0A%0D%0A%0D%0A' +
+      '--- How it would work ---%0D%0A%0D%0A%0D%0A' +
+      '--- Why it would be useful ---%0D%0A%0D%0A%0D%0A' +
+      'Thank you for making Scene Nearby better!'
+    );
+    const mailto = `mailto:scenenearbysupport@gmail.com?subject=${subject}&body=${body}`;
+    Linking.openURL(mailto).catch(() => {
+      Alert.alert('Error', 'Could not open email app. Please contact scenenearbysupport@gmail.com directly.');
+    });
+  };
+
+  const handleBugReport = () => {
+    const subject = encodeURIComponent('Bug Report');
+    const body = encodeURIComponent(
+      'Hello Scene Nearby Team,%0D%0A%0D%0A' +
+      'I encountered a bug while using the app.%0D%0A%0D%0A' +
+      '--- What happened ---%0D%0A%0D%0A%0D%0A' +
+      '--- Steps to reproduce ---%0D%0A%0D%0A%0D%0A' +
+      '--- What I expected to happen ---%0D%0A%0D%0A%0D%0A' +
+      '--- Device / OS ---%0D%0A%0D%0A%0D%0A' +
+      '--- App version ---%0D%0A1.0.0%0D%0A%0D%0A' +
+      'Thank you for your help!'
+    );
+    const mailto = `mailto:scenenearbysupport@gmail.com?subject=${subject}&body=${body}`;
+    Linking.openURL(mailto).catch(() => {
+      Alert.alert('Error', 'Could not open email app. Please contact scenenearbysupport@gmail.com directly.');
+    });
+  };
+
   const displayedRating = userRating || rating?.average || 0;
 
   return (
@@ -111,7 +188,11 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
             resizeMode="cover"
           />
         ) : (
-          <MissingPhotoCard category={location.category} height={360} variant="detail" />
+          <MissingPhotoCard
+            locationName={location.title}
+            category={location.category}
+            movieOrShow={location.movieOrShow}
+          />
         )}
         <View style={[styles.heroGradientOverlay, { backgroundColor: catColor + 'AA' }]} />
         <View style={styles.heroContent}>
@@ -223,6 +304,24 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
           <Text style={styles.secondaryButtonText}>📤 Share</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Support section */}
+      <View style={styles.supportSection}>
+        <Text style={styles.supportTitle}>📬 Support</Text>
+        <TouchableOpacity style={styles.supportLink} onPress={handleCorrection}>
+          <Text style={styles.supportLinkText}>📍 Location Correction</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.supportLink} onPress={handleContentRequest}>
+          <Text style={styles.supportLinkText}>➕ Suggest a Location</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.supportLink} onPress={handleFeatureSuggestion}>
+          <Text style={styles.supportLinkText}>💡 Feature Suggestion</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.supportLink} onPress={handleBugReport}>
+          <Text style={styles.supportLinkText}>🐛 Report a Bug</Text>
+        </TouchableOpacity>
+        <Text style={styles.supportFooter}>scenenearbysupport@gmail.com</Text>
+      </View>
     </ScrollView>
   );
 };
@@ -269,4 +368,31 @@ const styles = StyleSheet.create({
   secondaryButtonText: { color: theme.colors.gold, fontWeight: '600', fontSize: 12 },
   savedButton: { backgroundColor: theme.colors.gold + '20', borderColor: theme.colors.gold },
   savedButtonText: { color: theme.colors.gold },
+  supportSection: {
+    paddingVertical: 24,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.surface3 + '40',
+    marginTop: 12,
+  },
+  supportTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: theme.colors.textTertiary,
+    marginBottom: 12,
+  },
+  supportLink: {
+    paddingVertical: 8,
+  },
+  supportLinkText: {
+    fontSize: 13,
+    color: theme.colors.textTertiary,
+    textDecorationLine: 'underline',
+  },
+  supportFooter: {
+    fontSize: 11,
+    color: theme.colors.textTertiary + '60',
+    marginTop: 12,
+  },
 });
