@@ -63,9 +63,34 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
 
   const catColor = categoryColors[location.category];
 
-  const handleGetDirections = () => {
-    const url = `https://maps.apple.com/?daddr=${location.latitude},${location.longitude}`;
-    Linking.openURL(url);
+  const handleNavigate = async () => {
+    const lat = location.latitude;
+    const lng = location.longitude;
+    const appleMapsUrl = Platform.OS === 'ios'
+      ? `maps://?daddr=${lat},${lng}`
+      : `https://maps.apple.com/?daddr=${lat},${lng}`;
+    const wazeUrl = `waze://?ll=${lat},${lng}&navigate=yes`;
+    const wazeFallback = `https://waze.com/ul?ll=${lat},${lng}&navigate=yes`;
+
+    const canOpenWaze = await Linking.canOpenURL('waze://');
+    const canOpenAppleMaps = await Linking.canOpenURL('maps://');
+
+    const options = [
+      canOpenAppleMaps ? '🗺️ Apple Maps' : '🗺️ Apple Maps (web)',
+      canOpenWaze ? '🚗 Waze' : '🚗 Waze (web)',
+      'Cancel',
+    ];
+    const actions = [
+      () => Linking.openURL(appleMapsUrl),
+      () => canOpenWaze ? Linking.openURL(wazeUrl) : Linking.openURL(wazeFallback),
+      () => {},
+    ];
+
+    Alert.alert('Navigate To', location.title, options.map((opt, i) => ({
+      text: opt,
+      onPress: actions[i],
+      style: opt === 'Cancel' ? 'cancel' : 'default' as const,
+    })));
   };
 
   const handleShare = async () => {
@@ -284,8 +309,8 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
 
       {/* Actions */}
       <View style={styles.actions}>
-        <TouchableOpacity style={styles.primaryButton} onPress={handleGetDirections}>
-          <Text style={styles.primaryButtonText}>🗺️ Get Directions</Text>
+        <TouchableOpacity style={styles.primaryButton} onPress={handleNavigate}>
+          <Text style={styles.primaryButtonText}>🗺️ Navigate</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.secondaryButton, saved && styles.savedButton]}
