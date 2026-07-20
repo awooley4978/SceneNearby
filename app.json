@@ -17,7 +17,12 @@
       "buildNumber": "1.0.0",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Scene Nearby uses your location to show you nearby filming locations.",
-        "NSLocationAlwaysAndWhenInUseUsageDescription": "Scene Nearby uses your location to alert you when you're near a filming location."
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Scene Nearby uses your location to alert you when you're near a filming location.",
+        "LSApplicationQueriesSchemes": [
+          "waze",
+          "maps",
+          "comgooglemaps"
+        ]
       }
     },
     "android": {
@@ -36,5 +41,14 @@
         }
       ]
     ]
+  },
+  "ios": {
+    "infoPlist": {
+      "LSApplicationQueriesSchemes": [
+        "waze",
+        "maps",
+        "comgooglemaps"
+      ]
+    }
   }
 }
