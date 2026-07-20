@@ -18,6 +18,7 @@ import { useSaved } from '../../context/SavedContext';
 import { useUserLocation } from '../../hooks/useUserLocation';
 import { CategoryBadge } from '../../components/CategoryBadge';
 import { MissingPhotoCard } from '../../components/MissingPhotoCard';
+import { SmartHeroImage } from '../../components/SmartHeroImage';
 import { getLocalAsset } from '../../data/assetMap';
 import { StarRating } from '../../components/StarRating';
 import { RemoteDestinationBadge } from '../../components/RemoteDestinationBadge';
@@ -202,12 +203,11 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
       {/* Hero */}
       <View style={styles.hero}>
         {location.imageUrl ? (
-          <Image
-            source={location.imageUrl.startsWith('asset://')
-              ? getLocalAsset(location.imageUrl.replace('asset://', ''))
-              : { uri: location.imageUrl }}
-            style={styles.heroImage}
-            resizeMode="cover"
+          <SmartHeroImage
+            imageUrl={location.imageUrl}
+            localAsset={location.imageUrl.startsWith('asset://') ? getLocalAsset(location.imageUrl.replace('asset://', '')) : undefined}
+            focalPoint={location.focalPoint}
+            height={360}
           />
         ) : (
           <MissingPhotoCard
@@ -353,9 +353,6 @@ const styles = StyleSheet.create({
   errorText: { fontSize: 18, color: theme.colors.textSecondary },
   hero: { height: 360, justifyContent: 'flex-end', paddingBottom: 20, position: 'relative', overflow: 'hidden' },
   heroContent: { paddingHorizontal: 20, position: 'relative', zIndex: 2 },
-  heroImage: {
-    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-    resizeMode: 'cover',
   },
   heroGradientOverlay: {
     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
