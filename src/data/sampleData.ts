@@ -481,6 +481,10 @@ const londonLocations: FilmingLocation[] = [
           quoteAttribution: 'Frank Morris',
           thenAndNow: 'Alcatraz is now a National Park Service site and one of San Francisco\'s top attractions.',
           isMovie: true,
+          remoteDestination: {
+            warnings: ['Requires ferry booking (often sells out)', 'Limited facilities on the island', 'Weather can cancel ferry crossings'],
+            details: ['Buy tickets 2+ weeks in advance', 'Bring layers — island is very windy', 'Allow 2-3 hours for full visit'],
+          },
         },
         {
           id: 'sfo-002', title: 'Painted Ladies (Alamo Square)', movieOrShow: 'Full House', year: 1987,
@@ -898,6 +902,10 @@ const londonLocations: FilmingLocation[] = [
           quoteAttribution: 'Merovingian',
           thenAndNow: 'Royal National Park is the world\'s second-oldest national park, established in 1879.',
           isMovie: true,
+          remoteDestination: {
+            warnings: ['Located in Royal National Park — limited services', 'No food or fuel available on site', 'Limited cell service'],
+            details: ['Nearest fuel: 10 miles', 'Bring water and snacks', 'Stay on marked trails'],
+          },
         },
         {
           id: 'syd-005', title: 'Sydney Harbour Bridge', movieOrShow: 'The Fall Guy', year: 2024,
@@ -925,6 +933,10 @@ const londonLocations: FilmingLocation[] = [
           quoteAttribution: 'Galadriel',
           thenAndNow: 'Hobbiton is now a permanent tourist attraction drawing visitors from around the world.',
           isMovie: true,
+          remoteDestination: {
+            warnings: ['Long drive from Auckland (~2.5 hours)', 'Limited food options nearby', 'Book tickets well in advance'],
+            details: ['Nearest town: Matamata (20 min drive)', 'Bring water and sunscreen', 'No accommodation on site'],
+          },
         },
         {
           id: 'akl-002', title: 'Karekare Beach', movieOrShow: 'The Piano', year: 1993,
@@ -937,6 +949,10 @@ const londonLocations: FilmingLocation[] = [
           quoteAttribution: 'Ada McGrath',
           thenAndNow: 'Karekare Beach remains one of the most dramatic and untouched beaches near Auckland.',
           isMovie: true,
+          remoteDestination: {
+            warnings: ['Limited cell service', 'Dangerous rip currents — swim with caution', 'No public facilities on site'],
+            details: ['Nearest fuel: 15 miles', 'Best visited at low tide', 'Stay on marked paths'],
+          },
         },
         {
           id: 'akl-003', title: 'Cathedral Cove', movieOrShow: 'The Chronicles of Narnia', year: 2005,
@@ -949,6 +965,10 @@ const londonLocations: FilmingLocation[] = [
           quoteAttribution: 'Mr. Beaver',
           thenAndNow: 'Mount Eden is a dormant volcano offering panoramic views of Auckland.',
           isMovie: true,
+          remoteDestination: {
+            warnings: ['30-minute walk from car park', 'No public restrooms', 'Limited cell service'],
+            details: ['Nearest facilities: Hahei (10 min drive)', 'Bring water', 'Check tide times before visiting'],
+          },
         },
         {
           id: 'akl-004', title: 'Waiheke Island', movieOrShow: 'The Minecraft Movie', year: 2018,
@@ -961,6 +981,10 @@ const londonLocations: FilmingLocation[] = [
           quoteAttribution: 'Detective Croft',
           thenAndNow: 'Waiheke Island is a popular wine destination and weekend getaway for Aucklanders.',
           isMovie: false,
+          remoteDestination: {
+            warnings: ['Requires ferry (40 min from Auckland)', 'Limited evening return ferries', 'Cell service may be patchy'],
+            details: ['Check ferry schedule before going', 'Last ferry departs around 8 PM', 'ATMs available at main town only'],
+          },
         },
       ];
 

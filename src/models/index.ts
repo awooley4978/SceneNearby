@@ -46,6 +46,7 @@ export interface FilmingLocation {
   photoCount?: number;
   imageUrl?: string;
   actors?: string[];
+  remoteDestination?: RemoteDestinationInfo;
 }
 
 export interface ActorGroup {
@@ -84,6 +85,16 @@ export interface UserRating {
   timestamp: number;
 }
 
+// ── Remote Destination System ──
+export interface RemoteDestinationInfo {
+  /** Brief reason like "Limited cell service" shown as bullet points */
+  warnings: string[];
+  /** Optional detail like "Nearest fuel: 28 miles" */
+  details?: string[];
+  /** The severity/type label */
+  label?: string;
+}
+
 // ── Photo System ──
 export interface CommunityPhoto {
   id: string;
@@ -93,6 +104,29 @@ export interface CommunityPhoto {
   timestamp: number;
   color: string;
 }
+
+/** Gallery photo with real image support — used in LocationPhotoGallery */
+export interface GalleryPhoto {
+  id: string;
+  imageUrl: string;
+  caption?: string;
+  credit?: string;
+  submittedAt?: string;
+  submittedBy?: string;
+  likes?: number;
+  locationId?: string;
+}
+
+/** Map a CommunityPhoto (mock data) to a GalleryPhoto */
+export const communityPhotoToGallery = (photo: CommunityPhoto, primaryImageUrl?: string): GalleryPhoto => ({
+  id: photo.id,
+  imageUrl: primaryImageUrl || '',
+  caption: photo.caption,
+  credit: photo.username,
+  submittedBy: photo.username,
+  submittedAt: new Date(photo.timestamp).toISOString(),
+  locationId: photo.locationId,
+});
 
 // ── User Settings ──
 export type MapStyleOption = 'standard' | 'hybrid' | 'satellite';

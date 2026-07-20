@@ -20,7 +20,8 @@ import { CategoryBadge } from '../../components/CategoryBadge';
 import { MissingPhotoCard } from '../../components/MissingPhotoCard';
 import { getLocalAsset } from '../../data/assetMap';
 import { StarRating } from '../../components/StarRating';
-import { PhotoGrid } from '../../components/PhotoGrid';
+import { RemoteDestinationBadge } from '../../components/RemoteDestinationBadge';
+import { LocationPhotoGallery, GalleryPhoto } from '../../components/LocationPhotoGallery';
 
 export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = ({
   route,
@@ -29,17 +30,28 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
   const { locationId } = route.params;
   const location = locationById(locationId);
   const rating = location ? mockRatings[location.id] : undefined;
-  const photos = location ? photosByLocation(location.id) : [];
+  const communityPhotos = location ? photosByLocation(location.id) : [];
   const [userRating, setUserRating] = useState<number | undefined>(undefined);
   const { isSaved: checkSaved, toggleSave: toggleSaved } = useSaved();
   const saved = checkSaved(locationId);
   const userLocation = useUserLocation();
 
-  // Calculate distance in miles (matching the card display)
   const distanceFromUser = React.useMemo(() => {
     if (userLocation.latitude === null || userLocation.longitude === null || !location) return undefined;
     return calculateDistance(userLocation.latitude, userLocation.longitude, location.latitude, location.longitude) / 1609.34;
   }, [userLocation.latitude, userLocation.longitude, location]);
+
+  // Map community photos to gallery format
+  const galleryPhotos: GalleryPhoto[] = React.useMemo(() => {
+    return communityPhotos.map((p) => ({
+      id: p.id,
+      imageUrl: '',
+      caption: p.caption,
+      submittedBy: p.username,
+      submittedAt: new Date(p.timestamp).toISOString(),
+      locationId: p.locationId,
+    }));
+  }, [communityPhotos]);
 
   if (!location) {
     return (
@@ -164,7 +176,6 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       {/* Hero */}
       <View style={styles.hero}>
-        {/* Location image with gradient overlay */}
         {location.imageUrl ? (
           <Image
             source={location.imageUrl.startsWith('asset://')
@@ -188,6 +199,7 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
           <Text style={styles.locationTitle}>{location.title}</Text>
           <View style={styles.badges}>
             <CategoryBadge category={location.category} />
+            {location.remoteDestination && <RemoteDestinationBadge info={location.remoteDestination} />}
             <View style={styles.yearBadge}><Text style={styles.yearText}>{location.year}</Text></View>
             {distanceFromUser !== undefined && (
               <View style={styles.distanceBadge}>
@@ -252,15 +264,12 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
         <Text style={styles.bodyText}>{location.funFact}</Text>
       </View>
 
-      {/* Community Photos */}
-      <PhotoGrid
-        photos={photos.map((p) => ({
-          id: p.id,
-          color: p.color,
-          username: p.username,
-          caption: p.caption,
-        }))}
+      {/* Community Photos — using the new LocationPhotoGallery */}
+      <LocationPhotoGallery
+        photos={galleryPhotos}
+        primaryImageUrl={location.imageUrl}
         onAddPhoto={handleAddPhoto}
+        showAddButton={true}
       />
 
       {/* Location info */}
@@ -362,23 +371,8 @@ const styles = StyleSheet.create({
     borderTopColor: theme.colors.surface3 + '40',
     marginTop: 12,
   },
-  supportTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: theme.colors.textTertiary,
-    marginBottom: 12,
-  },
-  supportLink: {
-    paddingVertical: 8,
-  },
-  supportLinkText: {
-    fontSize: 13,
-    color: theme.colors.textTertiary,
-    textDecorationLine: 'underline',
-  },
-  supportFooter: {
-    fontSize: 11,
-    color: theme.colors.textTertiary + '60',
-    marginTop: 12,
-  },
+  supportTitle: { fontSize: 14, fontWeight: '600', color: theme.colors.textTertiary, marginBottom: 12 },
+  supportLink: { paddingVertical: 8 },
+  supportLinkText: { fontSize: 13, color: theme.colors.textTertiary, textDecorationLine: 'underline' },
+  supportFooter: { fontSize: 11, color: theme.colors.textTertiary + '60', marginTop: 12 },
 });
