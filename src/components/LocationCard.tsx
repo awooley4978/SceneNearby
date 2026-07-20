@@ -5,14 +5,13 @@ import {
   TouchableOpacity,
   StyleSheet,
   Animated,
-  Image,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { theme } from '../theme';
 import { FilmingLocation } from '../models';
-import { getLocalAsset } from '../data/assetMap';
 import { CategoryBadge } from './CategoryBadge';
 import { MissingPhotoCard } from './MissingPhotoCard';
+import { SmartHeroImage } from './SmartHeroImage';
 import { DistanceBadge } from './DistanceBadge';
 import { StarRating } from './StarRating';
 import { mockRatings } from '../data/sampleData';
@@ -162,12 +161,10 @@ export const LocationCard: React.FC<LocationCardProps> = ({
           <View style={styles.hero}>
             {/* Location image with gradient fallback */}
             {location.imageUrl ? (
-              <Image
-                source={location.imageUrl.startsWith('asset://')
-                  ? getLocalAsset(location.imageUrl.replace('asset://', ''))
-                  : { uri: location.imageUrl }}
+              <SmartHeroImage
+                imageUrl={location.imageUrl}
+                focalPoint={location.focalPoint}
                 style={styles.heroImage}
-                resizeMode="cover"
               />
             ) : (
               <MissingPhotoCard

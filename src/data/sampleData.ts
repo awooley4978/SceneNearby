@@ -26,6 +26,7 @@ const newYorkLocations: FilmingLocation[] = [
   {
     id: 'nyc-001', title: 'Central Park Bow Bridge', movieOrShow: 'Enchanted', year: 2007,
     imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/BowBridge.jpg',
+    focalPoint: { x: 0.5, y: 0.45 },
     category: LocationCategory.romance, latitude: 40.7762, longitude: -73.9717,
     address: 'Bow Bridge, Central Park', city: 'New York City', country: 'USA',
     sceneDescription: "Giselle and Robert dance through Central Park, culminating in a romantic moment on the iconic Bow Bridge. The scene captures the magic of NYC through the eyes of a fairytale princess discovering the real world.",
@@ -62,6 +63,7 @@ const newYorkLocations: FilmingLocation[] = [
   {
     id: 'nyc-004', title: 'Empire State Building Observation Deck', movieOrShow: 'Sleepless in Seattle', year: 1993,
     imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/EmpireStateBuildingObservationDeck.jpg',
+    focalPoint: { x: 0.5, y: 0.25 },
     category: LocationCategory.romance, latitude: 40.7484, longitude: -73.9857,
     address: '350 5th Ave', city: 'New York City', country: 'USA',
     sceneDescription: 'The heartwarming finale where Sam and Annie finally meet atop the Empire State Building on Valentine\'s Day.',
@@ -74,6 +76,7 @@ const newYorkLocations: FilmingLocation[] = [
   {
     id: 'nyc-005', title: 'Washington Square Park Arch', movieOrShow: 'I Am Legend', year: 2007,
     imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/2015_Washington_Square_Arch_from_southeast.jpg',
+    focalPoint: { x: 0.5, y: 0.35 },
     category: LocationCategory.drama, latitude: 40.7326, longitude: -73.9973,
     address: 'Washington Square Park', city: 'New York City', country: 'USA',
     sceneDescription: 'Robert Neville hunts deer with his dog Sam through an overgrown, desolate Washington Square Park.',
@@ -149,6 +152,7 @@ const losAngelesLocations: FilmingLocation[] = [
   {
     id: 'la-001', title: 'Griffith Observatory', movieOrShow: 'La La Land', year: 2016,
     imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/GriffithObservatory.jpg',
+    focalPoint: { x: 0.5, y: 0.35 },
     category: LocationCategory.romance, latitude: 34.1184, longitude: -118.3004,
     address: '2800 E Observatory Rd', city: 'Los Angeles', country: 'USA',
     sceneDescription: 'Sebastian and Mia float through the Griffith Observatory in a dreamlike dance sequence.',
@@ -161,6 +165,7 @@ const losAngelesLocations: FilmingLocation[] = [
   {
     id: 'la-002', title: 'Bradbury Building', movieOrShow: 'Blade Runner', year: 1982,
     imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/BradburyBuilding.jpg',
+    focalPoint: { x: 0.5, y: 0.35 },
     category: LocationCategory.sciFi, latitude: 34.0505, longitude: -118.2478,
     address: '304 S Broadway', city: 'Los Angeles', country: 'USA',
     sceneDescription: "Deckard pursues the replicant Zhora through the Bradbury Building's stunning atrium.",
@@ -383,6 +388,7 @@ const londonLocations: FilmingLocation[] = [
         {
           id: 'chi-003', title: 'Cloud Gate (The Bean)', movieOrShow: 'Source Code', year: 2011,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/TheBean.jpg',
+    focalPoint: { x: 0.5, y: 0.4 },
           category: LocationCategory.sciFi, latitude: 41.8827, longitude: -87.6233,
           address: 'Millennium Park, 201 E Randolph St', city: 'Chicago', country: 'USA',
           sceneDescription: 'Captain Colter Stevens navigates a parallel reality that includes the gleaming Cloud Gate sculpture in Millennium Park.',
@@ -473,6 +479,7 @@ const londonLocations: FilmingLocation[] = [
         {
           id: 'sfo-001', title: 'Alcatraz Island', movieOrShow: 'Escape from Alcatraz', year: 1979,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/AlcatrazIsland.jpg',
+    focalPoint: { x: 0.5, y: 0.4 },
           category: LocationCategory.drama, latitude: 37.8267, longitude: -122.4230,
           address: 'Alcatraz Island, San Francisco Bay', city: 'San Francisco', country: 'USA',
           sceneDescription: 'Clint Eastwood as Frank Morris meticulously plans and executes the most famous prison escape in American history.',
@@ -499,7 +506,8 @@ const londonLocations: FilmingLocation[] = [
           isMovie: false,
         },
         {
-          id: 'sfo-003', title: 'The Golden Gate Bridge', movieOrShow: 'Vertigo', year: 1958,
+              focalPoint: { x: 0.4, y: 0.5 },
+    id: 'sfo-003', title: 'The Golden Gate Bridge', movieOrShow: 'Vertigo', year: 1958,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/GoldenGateBridge.jpg',
           category: LocationCategory.drama, latitude: 37.8199, longitude: -122.4783,
           address: 'Golden Gate Bridge, San Francisco', city: 'San Francisco', country: 'USA',
@@ -591,6 +599,7 @@ const londonLocations: FilmingLocation[] = [
         {
           id: 'sea-002', title: 'Space Needle', movieOrShow: '10 Things I Hate About You', year: 1999,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/SpaceNeedle.jpg',
+    focalPoint: { x: 0.5, y: 0.25 },
           category: LocationCategory.comedy, latitude: 47.6205, longitude: -122.3493,
           address: '400 Broad St', city: 'Seattle', country: 'USA',
           sceneDescription: 'The climactic prom where Kat lets down her guard and Patrick declares his love near the Space Needle.',
@@ -744,6 +753,7 @@ const londonLocations: FilmingLocation[] = [
         {
           id: 'par-001', title: 'Eiffel Tower', movieOrShow: 'Midnight in Paris', year: 2011,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/EiffelTower.jpg',
+    focalPoint: { x: 0.5, y: 0.25 },
           category: LocationCategory.romance, latitude: 48.8584, longitude: 2.2945,
           address: 'Champ de Mars, Paris', city: 'Paris', country: 'France',
           sceneDescription: 'Gil Pender walks the midnight streets of Paris, transported back to the 1920s meeting his literary heroes.',
@@ -807,6 +817,7 @@ const londonLocations: FilmingLocation[] = [
         {
           id: 'rom-001', title: 'Trevi Fountain', movieOrShow: 'La Dolce Vita', year: 1960,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/TreviFountain.jpg',
+    focalPoint: { x: 0.5, y: 0.6 },
           category: LocationCategory.romance, latitude: 41.9009, longitude: 12.4833,
           address: 'Piazza di Trevi, Rome', city: 'Rome', country: 'Italy',
           sceneDescription: 'Marcello Mastroianni wades into the Trevi Fountain at dawn, calling for Anita Ekberg in cinema\'s most iconic scene.',
@@ -858,6 +869,7 @@ const londonLocations: FilmingLocation[] = [
         {
           id: 'syd-001', title: 'Sydney Opera House', movieOrShow: 'The Great Gatsby', year: 2013,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/SydneyOperaHouse.jpg',
+    focalPoint: { x: 0.55, y: 0.35 },
           category: LocationCategory.drama, latitude: -33.8568, longitude: 151.2153,
           address: 'Bennelong Point, Sydney', city: 'Sydney', country: 'Australia',
           sceneDescription: 'Baz Luhrmann\'s glittering adaptation captures the 1920s opulence with Sydney Harbour as a stunning backdrop.',
@@ -1043,6 +1055,7 @@ const londonLocations: FilmingLocation[] = [
         {
           id: 'ber-001', title: 'Brandenburg Gate', movieOrShow: 'Queens Gambit', year: 2004,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/KarlMarxAllee.jpg',
+    focalPoint: { x: 0.5, y: 0.35 },
           category: LocationCategory.action, latitude: 52.5163, longitude: 13.3777,
           address: 'Pariser Platz, Berlin', city: 'Berlin', country: 'Germany',
           sceneDescription: 'Jason Bourne races through Berlin, piecing together his past while evading the CIA near the Brandenburg Gate.',
@@ -1157,6 +1170,7 @@ const londonLocations: FilmingLocation[] = [
         {
           id: 'nol-002', title: 'St. Louis Cathedral', movieOrShow: 'The Curious Case of Benjamin Button', year: 2008,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/St.LouisCathedral.jpg',
+    focalPoint: { x: 0.5, y: 0.3 },
           category: LocationCategory.drama, latitude: 29.9578, longitude: -90.0630,
           address: 'Jackson Square, New Orleans', city: 'New Orleans', country: 'USA',
           sceneDescription: 'Benjamin Button grows younger against the backdrop of New Orleans\' most iconic landmark.',
@@ -1184,6 +1198,7 @@ const londonLocations: FilmingLocation[] = [
         {
           id: 'was-001', title: 'Lincoln Memorial', movieOrShow: 'Forrest Gump', year: 1994,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/LincolnMemorial.JPG',
+    focalPoint: { x: 0.5, y: 0.4 },
           category: LocationCategory.comedy, latitude: 38.8893, longitude: -77.0502,
           address: 'Lincoln Memorial, Washington DC', city: 'Washington DC', country: 'USA',
           sceneDescription: 'Forrest Gump recounts his life story to strangers on a bench with the Lincoln Memorial in the background.',
