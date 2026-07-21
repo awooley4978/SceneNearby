@@ -14,6 +14,15 @@ export interface NotificationEvent {
   read: boolean;
   /** Soft prompt: user can dismiss or take action */
   actions?: { label: string; action: 'view' | 'navigate' }[];
+  /** Richer data for the DiscoveryNotificationCard */
+  movieTitle?: string;
+  locationName?: string;
+  city?: string;
+  description?: string;
+  distance?: string;
+  imageUrl?: string;
+  rating?: string;
+  visitTime?: string;
 }
 
 /** Current threshold in meters (defaults to Driving / 3 miles) */
@@ -63,6 +72,14 @@ export const NotificationService = {
     locationName: string,
     movieOrShow: string,
     locationId: string,
+    extraData?: {
+      city?: string;
+      description?: string;
+      distance?: string;
+      imageUrl?: string;
+      rating?: string;
+      visitTime?: string;
+    },
   ) => {
     const notification: NotificationEvent = {
       id: `notif-${Date.now()}`,
@@ -75,6 +92,14 @@ export const NotificationService = {
         { label: 'View Details', action: 'view' },
         { label: 'Navigate', action: 'navigate' },
       ],
+      movieTitle: movieOrShow,
+      locationName,
+      city: extraData?.city,
+      description: extraData?.description,
+      distance: extraData?.distance,
+      imageUrl: extraData?.imageUrl,
+      rating: extraData?.rating,
+      visitTime: extraData?.visitTime,
     };
 
     // Notify listeners (UI handles showing the soft prompt)
