@@ -357,7 +357,6 @@ const styles = StyleSheet.create({
   errorText: { fontSize: 18, color: theme.colors.textSecondary },
   hero: { height: 360, justifyContent: 'flex-end', paddingBottom: 20, position: 'relative', overflow: 'hidden' },
   heroContent: { paddingHorizontal: 20, position: 'relative', zIndex: 2 },
-  },
   heroGradientOverlay: {
     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
     opacity: 0.12,
