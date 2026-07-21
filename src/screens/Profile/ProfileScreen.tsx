@@ -11,6 +11,7 @@ import { theme } from '../../theme';
 import { availableCityPacks, defaultUserSettings } from '../../models';
 import type { MapStyleOption } from '../../models';
 import { resetOnboarding } from '../../services/StorageService';
+import { logPremiumUpgrade } from '../../services/analytics';
 
 export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [settings, setSettings] = useState(defaultUserSettings);
@@ -24,6 +25,7 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
   };
 
   const handleBuyPremium = () => {
+    logPremiumUpgrade();
     setIsPremium(true);
   };
 

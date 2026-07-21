@@ -24,6 +24,7 @@ import { LocationCard } from '../../components/LocationCard';
 import { CardSkeleton } from '../../components/SkeletonLoader';
 import { EmptyState } from '../../components/EmptyState';
 import { useUserLocation } from '../../hooks/useUserLocation';
+import { logSearchPerformed, logMovieTapped, logActorTapped } from '../../services/analytics';
 import type { FilmingLocation, ActorGroup } from '../../models';
 
 const categories = [
@@ -57,6 +58,13 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedType, setSelectedType] = useState<string>('all');
   const [refreshing, setRefreshing] = useState(false);
+  const prevQuery = useRef('');
+  useEffect(() => {
+    if (searchQuery.trim() && searchQuery !== prevQuery.current) {
+      logSearchPerformed({ query: searchQuery, resultCount: searchResults.length });
+      prevQuery.current = searchQuery;
+    }
+  }, [searchQuery, searchResults.length]);
   const [isLoading, setIsLoading] = useState(true);
   const userLocation = useUserLocation();
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -203,6 +211,8 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
   };
 
   const handleSearchResultPress = (item: SearchResultItem) => {
+    if (item.type === 'actor') logActorTapped({ actorName: item.data.actorName });
+    else if (item.type === 'movie' || item.type === 'show') logMovieTapped({ movieTitle: item.data.movieTitle, source: 'search' });
     if (item.type === 'actor') {
       navigation.navigate('ActorDetail', { actorName: item.data.actorName });
     } else if (item.type === 'movie' || item.type === 'show') {

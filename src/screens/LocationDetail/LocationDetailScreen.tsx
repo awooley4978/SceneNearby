@@ -23,6 +23,7 @@ import { getLocalAsset } from '../../data/assetMap';
 import { StarRating } from '../../components/StarRating';
 import { RemoteDestinationBadge } from '../../components/RemoteDestinationBadge';
 import { LocationPhotoGallery, GalleryPhoto } from '../../components/LocationPhotoGallery';
+import { logLocationViewed, logLocationSaved, logLocationUnsaved, logLocationNavigate, logLocationShared, logUserRating } from '../../services/analytics';
 
 export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = ({
   route,
@@ -65,6 +66,7 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
   const catColor = categoryColors[location.category];
 
   const handleNavigate = async () => {
+    logLocationNavigate({ locationId: location.id, appName: 'navigate' });
     const lat = location.latitude;
     const lng = location.longitude;
     const appleMapsUrl = Platform.OS === 'ios'
@@ -95,6 +97,7 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
   };
 
   const handleShare = async () => {
+    logLocationShared({ locationId: location.id, movieTitle: location.movieOrShow });
     try {
       await Share.share({
         message: `🎬 Check out ${location.movieOrShow} filming location: ${location.title}\n${location.address}, ${location.city}\n\nvia Scene Nearby`,
@@ -107,6 +110,7 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
   };
 
   const handleRate = (rating: number) => {
+    logUserRating({ locationId: location.id, rating });
     setUserRating(rating);
     Alert.alert('Rated!', `You gave ${location.title} ${rating} star${rating !== 1 ? 's' : ''}.`);
   };

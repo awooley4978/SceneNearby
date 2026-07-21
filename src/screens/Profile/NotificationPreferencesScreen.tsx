@@ -9,6 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import { theme } from '../../theme';
+import { logNotificationPrefsUpdated } from '../../services/analytics';
 import {
   defaultNotificationPreferences,
   PROXIMITY_PRESETS,
