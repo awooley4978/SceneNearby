@@ -112,7 +112,7 @@ const newYorkLocations: FilmingLocation[] = [
   },
   {
     id: 'nyc-008', title: '115A E 7th St (Apartment Building)', movieOrShow: 'Friends', year: 1994,
-    imageUrl: '',
+    imageUrl: 'friends-apartment.png',
     category: LocationCategory.comedy, latitude: 40.7266, longitude: -73.9873,
     address: '115A E 7th St (exterior only)', city: 'New York City', country: 'USA',
     sceneDescription: 'The exterior of the apartment building where Monica, Rachel, Chandler, and Joey lived.',
