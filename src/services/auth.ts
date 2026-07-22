@@ -72,7 +72,21 @@ export function getCurrentUser(): User | null {
 export async function sendMagicLink(email: string): Promise<void> {
   // Store email so we can retrieve it when the link is clicked
   await AsyncStorage.setItem(MAGIC_LINK_STORAGE_KEY, email);
-  await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+  try {
+    await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+    console.log('[auth] sendSignInLinkToEmail succeeded');
+  } catch (err: any) {
+    const detail = {
+      code: err?.code,
+      message: err?.message,
+      name: err?.name,
+      // Firebase errors sometimes nest details here
+      customData: err?.customData,
+      email: err?.email,
+    };
+    console.error('[auth] sendSignInLinkToEmail failed:', JSON.stringify(detail, null, 2));
+    throw err;
+  }
 }
 
 /** Complete magic link sign-in using the URL from the deep link */
