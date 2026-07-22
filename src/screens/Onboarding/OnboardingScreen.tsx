@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { Image,
+import { Image, ImageBackground,
   View,
   Text,
   FlatList,
@@ -8,8 +8,8 @@ import { Image,
   Dimensions,
   Animated,
 } from 'react-native';
-import { Image, theme } from '../../theme';
-import { Image, DISCOVERY_FREQUENCIES, STORAGE_KEYS } from '../../models';
+import { Image, ImageBackground, theme } from '../../theme';
+import { Image, ImageBackground, DISCOVERY_FREQUENCIES, STORAGE_KEYS } from '../../models';
 import type { DiscoveryFrequency } from '../../models';
 
 const { width, height } = Dimensions.get('window');
@@ -29,6 +29,19 @@ const GENRE_GRADIENTS: Record<string, string[]> = {
   'Fantasy': ['#22D3EE', '#0E7490'],
   'Animation': ['#A78BFA', '#7C3AED'],
   'Documentary': ['#10B981', '#059669'],
+};
+
+const GENRE_IMAGES: Record<string, any> = {
+  'Comedy': require('../../assets/genre-comedy.jpg'),
+  'Drama': require('../../assets/genre-drama.jpg'),
+  'Action': require('../../assets/genre-action.jpg'),
+  'Sci-Fi': require('../../assets/genre-scifi.jpg'),
+  'Horror': require('../../assets/genre-horror.jpg'),
+  'Romance': require('../../assets/genre-romance.jpg'),
+  'Thriller': require('../../assets/genre-thriller.jpg'),
+  'Fantasy': require('../../assets/genre-fantasy.jpg'),
+  'Animation': require('../../assets/genre-animation.jpg'),
+  'Documentary': require('../../assets/genre-documentary.jpg'),
 };
 
 const GENRES = Object.keys(GENRE_GRADIENTS).map((label) => ({
@@ -227,11 +240,15 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
                     style={[
                       styles.genreCard,
                       active && styles.genreCardActive,
-                      { backgroundColor: item.gradient[0] + '22' },
                     ]}
                     onPress={() => toggleContentLove(item.label)}
                   >
-                    <View style={[styles.genreGradient, { backgroundColor: item.gradient[0] }]}>
+                    <ImageBackground
+                      source={GENRE_IMAGES[item.label]}
+                      style={styles.genreImage}
+                      imageStyle={styles.genreImageStyle}
+                    >
+                      <View style={styles.genreOverlay} />
                       <Text style={styles.genreIconText}>
                         {item.label === 'Comedy' ? '🎭' :
                          item.label === 'Drama' ? '🎬' :
@@ -243,7 +260,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
                          item.label === 'Fantasy' ? '✨' :
                          item.label === 'Animation' ? '🎨' : '📖'}
                       </Text>
-                    </View>
+                    </ImageBackground>
                     <Text style={[styles.genreLabel, active && styles.genreLabelActive]}>
                       {item.label}
                     </Text>
@@ -526,12 +543,18 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 6,
   },
-  genreGradient: {
+  genreImage: {
     width: '100%', aspectRatio: 1.6, borderRadius: 10,
     justifyContent: 'center', alignItems: 'center',
-    marginBottom: 6,
+    marginBottom: 6, overflow: 'hidden',
   },
-  genreIconText: { fontSize: 28 },
+  genreImageStyle: { borderRadius: 10 },
+  genreOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    borderRadius: 10,
+  },
+  genreIconText: { fontSize: 28, zIndex: 1 },
   genreLabel: {
     fontSize: 11, fontWeight: '600', color: theme.colors.textSecondary,
     textAlign: 'center', marginTop: 2,
