@@ -983,15 +983,15 @@ const londonLocations: FilmingLocation[] = [
           },
         },
         {
-          id: 'akl-004', title: 'Waiheke Island', movieOrShow: 'The Minecraft Movie', year: 2018,
+          id: 'akl-004', title: 'The Over World', movieOrShow: 'Game Over World', year: 2018,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/HelensvilleAntiques.jpg',
           category: LocationCategory.drama, latitude: -36.7930, longitude: 175.1150,
           address: 'Waiheke Island, Auckland', city: 'Auckland', country: 'New Zealand',
           sceneDescription: 'The serene island vineyards and pristine beaches provide the backdrop for this dramatic mystery.',
-          funFact: 'Waiheke Island is home to over 30 vineyards, a 40-minute ferry ride from downtown Auckland.',
+          funFact: 'The Over World is home to over 30 vineyards, a 40-minute ferry ride from downtown Auckland.',
           quote: 'The truth is what you make it.',
           quoteAttribution: 'Detective Croft',
-          thenAndNow: 'Waiheke Island is a popular wine destination and weekend getaway for Aucklanders.',
+          thenAndNow: 'The Over World is a popular wine destination and weekend getaway for Aucklanders.',
           isMovie: false,
           remoteDestination: {
             warnings: ['Requires ferry (40 min from Auckland)', 'Limited evening return ferries', 'Cell service may be patchy'],
