@@ -105,9 +105,9 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
 
     // Show action sheet
     const options: { label: string; app: string; available: boolean }[] = [
-      { label: '🚗 Waze', app: 'waze', available: canOpenWaze },
-      { label: '🗺️ Apple Maps', app: 'applemaps', available: canOpenAppleMaps },
       { label: '📍 Google Maps', app: 'googlemaps', available: canOpenGoogleMaps },
+      { label: '🗺️ Apple Maps', app: 'applemaps', available: canOpenAppleMaps },
+      { label: '🚗 Waze', app: 'waze', available: canOpenWaze },
     ];
 
     const sheetOptions: string[] = [

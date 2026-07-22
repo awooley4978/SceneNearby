@@ -151,9 +151,9 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
           style={styles.navLinkRow}
           onPress={() => {
             const apps = [
-              { label: '🚗 Waze', value: 'waze' },
-              { label: '🗺️ Apple Maps', value: 'applemaps' },
               { label: '📍 Google Maps', value: 'googlemaps' },
+              { label: '🗺️ Apple Maps', value: 'applemaps' },
+              { label: '🚗 Waze', value: 'waze' },
               { label: 'Ask each time', value: null },
             ];
             Alert.alert(
