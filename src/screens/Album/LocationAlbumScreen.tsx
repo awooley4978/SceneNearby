@@ -78,7 +78,7 @@ export const LocationAlbumScreen: React.FC<{ route: any; navigation: any }> = ({
       <EmptyState
         emoji="📸"
         title="No photos yet"
-        subtitle={`You haven't added any photos at ${locationName}.`}
+        subtitle="No photos at this location yet."
       />
     );
   }
@@ -147,21 +147,20 @@ export const LocationAlbumScreen: React.FC<{ route: any; navigation: any }> = ({
             </View>
           )}
 
-          {/* Swipeable FlatList */}
+          {/* Swipeable FlatList — vertical */}
           <FlatList
             data={photos}
             keyExtractor={(item) => item.id}
-            horizontal
             pagingEnabled
-            showsHorizontalScrollIndicator={false}
+            showsVerticalScrollIndicator={false}
             initialScrollIndex={viewerIndex ?? 0}
             getItemLayout={(_, idx) => ({
-              length: SCREEN_WIDTH,
-              offset: SCREEN_WIDTH * idx,
+              length: SCREEN_HEIGHT,
+              offset: SCREEN_HEIGHT * idx,
               index: idx,
             })}
             onMomentumScrollEnd={(e) => {
-              const newIndex = Math.round(e.nativeEvent.contentOffset.x / SCREEN_WIDTH);
+              const newIndex = Math.round(e.nativeEvent.contentOffset.y / SCREEN_HEIGHT);
               setViewerIndex(newIndex);
             }}
             renderItem={({ item }) => (
