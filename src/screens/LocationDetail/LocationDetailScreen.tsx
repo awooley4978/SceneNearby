@@ -288,7 +288,7 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
       </View>
 
       {/* Ratings & Reviews */}
-      <View style={styles.section}>
+      <View style={styles.compactSection}>
         <RatingSection googleRating={location.googleRating} />
       </View>
 
@@ -300,7 +300,7 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
       )}
 
       {/* Worth the Visit — Scene Nearby community */}
-      <View style={styles.section}>
+      <View style={styles.compactSection}>
         <WorthTheVisit
           percentage={location.worthItPercentage}
           votes={location.worthItVotes}
@@ -309,7 +309,7 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
       </View>
 
       {/* Estimated Visit Time */}
-      <View style={styles.section}>
+      <View style={styles.compactSection}>
         <EstimatedVisitTime time={location.estimatedVisitTime} locationId={location.id} />
       </View>
 
@@ -430,6 +430,7 @@ const styles = StyleSheet.create({
   ratingCount: { fontSize: 13, color: theme.colors.textTertiary },
   ratePrompt: { fontSize: 13, color: theme.colors.textSecondary, marginBottom: 4 },
   section: { paddingHorizontal: 20, paddingTop: 24 },
+  compactSection: { paddingHorizontal: 20, paddingTop: 12 },
   sectionTitle: { fontSize: 20, fontWeight: '700', color: theme.colors.textPrimary, marginBottom: 10 },
   bodyText: { fontSize: 15, color: theme.colors.textSecondary, lineHeight: 24 },
   emptyStateText: { fontSize: 15, color: theme.colors.textTertiary, lineHeight: 24, fontStyle: 'italic' },
@@ -460,7 +461,7 @@ const styles = StyleSheet.create({
 
   remoteWarningSection: {
     marginHorizontal: 20,
-    marginTop: 16,
+    marginTop: 12,
     padding: 14,
     backgroundColor: "#F5C5180c",
     borderRadius: 12,

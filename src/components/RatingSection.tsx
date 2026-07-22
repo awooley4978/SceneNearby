@@ -6,7 +6,6 @@ import type { GooglePlaceRating } from '../models';
 interface RatingSectionProps {
   googleRating?: GooglePlaceRating;
   localRating?: { average: number; count: number };
-  /** Scene Nearby user rating (future: native reviews) */
   userRating?: number;
 }
 
@@ -30,43 +29,23 @@ export const RatingSection: React.FC<RatingSectionProps> = ({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Ratings & Reviews</Text>
-
       {/* Scene Nearby local rating — primary when both exist */}
       {hasLocal && (
-        <TouchableOpacity
-          style={styles.ratingRow}
-          onPress={hasGoogle ? undefined : undefined}
-          activeOpacity={hasGoogle ? 0.7 : 1}
-        >
-          <Text style={styles.stars}>⭐ {localRating!.average.toFixed(1)}</Text>
-          <Text style={styles.reviewCount}>({localRating!.count} Scene Nearby reviews)</Text>
-        </TouchableOpacity>
+        <Text style={styles.localRow}>
+          ⭐ {localRating!.average.toFixed(1)} · {localRating!.count} Scene Nearby reviews
+        </Text>
       )}
 
-      {/* Google rating — secondary when local exists, primary otherwise */}
+      {/* Google rating — compact single line */}
       {hasGoogle && (
-        <TouchableOpacity style={styles.ratingRow} onPress={openGoogleReviews} activeOpacity={0.7}>
+        <TouchableOpacity onPress={openGoogleReviews} activeOpacity={0.7}>
           <View style={styles.googleRow}>
-            <Text style={[styles.stars, hasLocal && styles.secondaryStars]}>
-              Google ★ {googleRating!.rating}
-            </Text>
-            <Text style={[styles.reviewCount, hasLocal && styles.secondaryText]}>
-              ({googleRating!.reviewCount.toLocaleString()} reviews)
+            <Text style={[styles.googleText, hasLocal && styles.secondaryText]}>
+              Google ★ {googleRating!.rating} ({googleRating!.reviewCount.toLocaleString()} reviews) ›
             </Text>
           </View>
-          <Text style={styles.tapHint}>›</Text>
+          <Text style={styles.attribution}>Powered by Google</Text>
         </TouchableOpacity>
-      )}
-
-      {/* Attribution */}
-      {hasGoogle && (
-        <Text style={styles.attribution}>Powered by Google</Text>
-      )}
-
-      {/* Future: Scene Nearby native reviews slot */}
-      {!hasLocal && !hasGoogle && (
-        <Text style={styles.emptyText}>No ratings yet. Be the first to review!</Text>
       )}
     </View>
   );
@@ -74,62 +53,31 @@ export const RatingSection: React.FC<RatingSectionProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 24,
-    paddingHorizontal: 0,
+    gap: 6,
   },
-  heading: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: theme.colors.textPrimary,
-    marginBottom: 12,
-  },
-  ratingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: theme.colors.surface2,
-    padding: 14,
-    borderRadius: 12,
-    marginBottom: 8,
+  localRow: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: theme.colors.gold,
   },
   googleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
   },
-  stars: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: theme.colors.gold,
-  },
-  secondaryStars: {
+  googleText: {
     fontSize: 14,
     fontWeight: '600',
-    color: theme.colors.textSecondary,
-  },
-  reviewCount: {
-    fontSize: 13,
-    color: theme.colors.textSecondary,
+    color: theme.colors.gold,
   },
   secondaryText: {
-    fontSize: 12,
-  },
-  tapHint: {
-    fontSize: 18,
-    color: theme.colors.textTertiary,
-    fontWeight: '300',
+    fontSize: 13,
+    fontWeight: '500',
+    color: theme.colors.textSecondary,
   },
   attribution: {
-    fontSize: 11,
+    fontSize: 10,
     color: theme.colors.textTertiary,
-    textAlign: 'center',
-    marginTop: 4,
     fontStyle: 'italic',
-  },
-  emptyText: {
-    fontSize: 14,
-    color: theme.colors.textTertiary,
-    textAlign: 'center',
-    fontStyle: 'italic',
+    marginTop: 1,
   },
 });
