@@ -158,7 +158,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
             </View>
             {/* Friends apartment building image */}
             <View style={styles.notifBuildingContainer}>
-              <Image source={require("../../assets/friends-apartment.png")} style={styles.notifBuildingImage} resizeMode="cover" />
+              <Image source={require("../../../assets/friends-apartment.png")} style={styles.notifBuildingImage} resizeMode="cover" />
               <View style={styles.notifBuildingGlow} />
             </View>
             {/* Notification card */}
