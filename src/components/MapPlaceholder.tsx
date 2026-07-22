@@ -1,10 +1,9 @@
-import React, { useEffect, useRef } from 'react';
-import { View, Animated, StyleSheet } from 'react-native';
-import Svg, { Circle, Line, Path, Defs, LinearGradient, Stop } from 'react-native-svg';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, StyleSheet, LayoutChangeEvent } from 'react-native';
+import Svg, { Circle, Line, Path, G, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { theme } from '../theme';
 
 interface MapPlaceholderProps {
-  /** Subtle tint color, defaults to gold for brand consistency */
   tintColor?: string;
 }
 
@@ -12,6 +11,7 @@ export const MapPlaceholder: React.FC<MapPlaceholderProps> = ({
   tintColor = theme.colors.gold,
 }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const [size, setSize] = useState({ width: 400, height: 300 });
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -21,13 +21,24 @@ export const MapPlaceholder: React.FC<MapPlaceholderProps> = ({
     }).start();
   }, [fadeAnim]);
 
+  const onLayout = (e: LayoutChangeEvent) => {
+    const { width, height } = e.nativeEvent.layout;
+    if (width > 0 && height > 0) {
+      setSize({ width, height });
+    }
+  };
+
   const pinColor = tintColor;
   const pinShadow = '#000000';
+  const cx = size.width / 2;
+  const cy = size.height / 2;
 
   return (
-    <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
-      {/* Map grid — subtle street-like lines */}
-      <Svg width="100%" height="100%" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">
+    <Animated.View
+      style={[styles.container, { opacity: fadeAnim }]}
+      onLayout={onLayout}
+    >
+      <Svg width={size.width} height={size.height} viewBox={`0 0 ${size.width} ${size.height}`}>
         <Defs>
           <LinearGradient id="mapFade" x1="0" y1="0" x2="0" y2="1">
             <Stop offset="0%" stopColor="rgba(255,255,255,0.06)" stopOpacity="1" />
@@ -40,16 +51,16 @@ export const MapPlaceholder: React.FC<MapPlaceholderProps> = ({
         </Defs>
 
         {/* Background */}
-        <Circle cx="200" cy="150" r="300" fill="url(#mapFade)" />
+        <Circle cx={cx} cy={cy} r={Math.max(size.width, size.height)} fill="url(#mapFade)" />
 
         {/* Horizontal street lines */}
         {[0.08, 0.16, 0.24, 0.32, 0.40, 0.48, 0.56, 0.64, 0.72, 0.80, 0.88].map((pct, i) => (
           <Line
             key={`h-${i}`}
             x1="0"
-            y1={pct * 300}
-            x2="400"
-            y2={pct * 300}
+            y1={pct * size.height}
+            x2={size.width}
+            y2={pct * size.height}
             stroke="rgba(255,255,255,0.04)"
             strokeWidth={i % 3 === 1 ? 1.5 : 0.5}
           />
@@ -59,47 +70,47 @@ export const MapPlaceholder: React.FC<MapPlaceholderProps> = ({
         {[0.06, 0.12, 0.18, 0.25, 0.32, 0.38, 0.44, 0.50, 0.56, 0.62, 0.68, 0.75, 0.82, 0.88].map((pct, i) => (
           <Line
             key={`v-${i}`}
-            x1={pct * 400}
+            x1={pct * size.width}
             y1="0"
-            x2={pct * 400}
-            y2="300"
+            x2={pct * size.width}
+            y2={size.height}
             stroke="rgba(255,255,255,0.04)"
             strokeWidth={i % 4 === 2 ? 1.2 : 0.5}
           />
         ))}
 
-        {/* A few subtle curved paths suggesting roads */}
+        {/* Curved paths suggesting roads */}
         <Path
-          d="M0 180 Q 80 120, 160 140 T 300 100"
+          d={`M0 ${cy * 0.6} Q ${cx * 0.4} ${cy * 0.3}, ${cx * 0.8} ${cy * 0.35} T ${size.width} ${cy * 0.4}`}
           stroke="rgba(255,255,255,0.05)"
           strokeWidth="2"
           fill="none"
         />
         <Path
-          d="M400 80 Q 300 160, 200 150 T 50 200"
+          d={`M${size.width} ${cy * 0.7} Q ${cx * 1.2} ${cy * 1.1}, ${cx} ${cy} T ${cx * 0.3} ${cy * 1.4}`}
           stroke="rgba(255,255,255,0.04)"
           strokeWidth="1.5"
           fill="none"
         />
-        <Path
-          d="M200 0 Q 180 80, 220 160 T 180 300"
-          stroke="rgba(255,255,255,0.03)"
-          strokeWidth="1"
-          fill="none"
-        />
 
-        {/* Pin shadow */}
-        <Circle cx="200" cy="155" r="8" fill={pinShadow} opacity="0.25" />
+        {/* Pin — flipped 180° so point faces down */}
+        <G
+          rotation={180}
+          origin={`${cx}, ${cy}`}
+        >
+          {/* Pin shadow */}
+          <Circle cx={cx} cy={cy + 5} r={Math.min(size.width, size.height) * 0.027} fill={pinShadow} opacity="0.25" />
 
-        {/* Pin body — drop/teardrop shape */}
-        <Path
-          d="M200 120 C200 120, 188 140, 188 153 C188 160, 193 166, 200 166 C207 166, 212 160, 212 153 C212 140, 200 120, 200 120 Z"
-          fill="url(#pinGrad)"
-        />
+          {/* Pin body — teardrop pointing up (will flip to point down) */}
+          <Path
+            d={`M${cx} ${cy - 30} C${cx} ${cy - 30}, ${cx - 12} ${cy - 10}, ${cx - 12} ${cy + 3} C${cx - 12} ${cy + 10}, ${cx - 7} ${cy + 16}, ${cx} ${cy + 16} C${cx + 7} ${cy + 16}, ${cx + 12} ${cy + 10}, ${cx + 12} ${cy + 3} C${cx + 12} ${cy - 10}, ${cx} ${cy - 30}, ${cx} ${cy - 30} Z`}
+            fill="url(#pinGrad)"
+          />
 
-        {/* Pin inner circle */}
-        <Circle cx="200" cy="151" r="5" fill={theme.colors.background} />
-        <Circle cx="200" cy="151" r="3" fill={pinColor} opacity="0.8" />
+          {/* Pin inner circle */}
+          <Circle cx={cx} cy={cy + 1} r={Math.min(size.width, size.height) * 0.017} fill={theme.colors.background} />
+          <Circle cx={cx} cy={cy + 1} r={Math.min(size.width, size.height) * 0.01} fill={pinColor} opacity="0.8" />
+        </G>
       </Svg>
     </Animated.View>
   );
