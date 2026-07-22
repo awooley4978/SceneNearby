@@ -146,8 +146,31 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
   const [sortMode, setSortMode] = useState<SortMode>('default');
 
   // Constants
-  const DEFAULT_RADIUS_MILES = 50;
+  const RADIUS_STAGES = [3, 5, 10, 25, 50];
   const ARRIVAL_THRESHOLD_MILES = 0.1;
+
+  // Progressive radius: smallest stage with >=1 result, defaults to max (50) if 0
+  const activeRadius = useMemo(() => {
+    if (userLocation.latitude === null || userLocation.longitude === null) return null;
+    // Don't expand during active search -- use max radius
+    if (searchQuery.trim()) return RADIUS_STAGES[RADIUS_STAGES.length - 1];
+
+    let base = selectedCategory === 'all'
+      ? allLocations
+      : locationsByCategory(selectedCategory as LocationCategory);
+    if (selectedType === 'movies') base = base.filter((l) => l.isMovie);
+    else if (selectedType === 'shows') base = base.filter((l) => !l.isMovie);
+
+    const withDist = base.map((loc) => ({
+      ...loc,
+      distanceFromUser: calculateDistance(userLocation.latitude!, userLocation.longitude!, loc.latitude, loc.longitude) / 1609.34,
+    }));
+
+    for (const stage of RADIUS_STAGES) {
+      if (withDist.some((loc) => loc.distanceFromUser! <= stage)) return stage;
+    }
+    return RADIUS_STAGES[RADIUS_STAGES.length - 1]; // fallback: max radius
+  }, [userLocation.latitude, userLocation.longitude, searchQuery, selectedCategory, selectedType]);
 
   // Filtered locations (for the main feed)
   const filteredLocations = useMemo(() => {
@@ -180,7 +203,8 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
         distanceFromUser: calculateDistance(userLocation.latitude, userLocation.longitude, loc.latitude, loc.longitude) / 1609.34, // meters to miles
       }));
       // Filter to within radius
-      result = result.filter((loc) => loc.distanceFromUser! <= DEFAULT_RADIUS_MILES);
+      const radius = activeRadius ?? RADIUS_STAGES[RADIUS_STAGES.length - 1];
+      result = result.filter((loc) => loc.distanceFromUser! <= radius);
     }
 
     // Sort by nearest (always, since we have distance data)
@@ -195,16 +219,16 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
     }
 
     return result;
-  }, [selectedCategory, selectedType, searchQuery, sortMode, userLocation.latitude, userLocation.longitude]);
+  }, [selectedCategory, selectedType, searchQuery, sortMode, userLocation.latitude, userLocation.longitude, activeRadius]);
 
   const nearYou = useMemo(() => {
     if (userLocation.latitude === null || userLocation.longitude === null) return [];
     const withDist = allLocations.map((loc) => ({
       ...loc,
       distanceFromUser: calculateDistance(userLocation.latitude, userLocation.longitude, loc.latitude, loc.longitude) / 1609.34,
-    })).filter((loc) => loc.distanceFromUser! <= DEFAULT_RADIUS_MILES);
+    })).filter((loc) => loc.distanceFromUser! <= (activeRadius ?? RADIUS_STAGES[RADIUS_STAGES.length - 1]));
     return withDist.sort((a, b) => (a.distanceFromUser || 0) - (b.distanceFromUser || 0)).slice(0, 3);
-  }, [userLocation.latitude, userLocation.longitude]);
+  }, [userLocation.latitude, userLocation.longitude, activeRadius]);
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -308,7 +332,15 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
       {!searchQuery && selectedCategory === 'all' && selectedType === 'all' && sortMode === 'default' && (
         <View style={styles.nearYouSection}>
           <View style={styles.sectionTitleRow}>
-            <Text style={styles.sectionTitle}>📍 Near You</Text>
+            <View style={styles.sectionTitleLeft}>
+              <Text style={styles.sectionTitle}>📍 Near You</Text>
+              {activeRadius && (
+                <View style={styles.radiusPill}>
+                  <Text style={styles.radiusPillText}>Within {activeRadius} mi</Text>
+                </View>
+              )}
+            </View>
+            </View>
             <TouchableOpacity
               style={styles.viewMapButton}
               onPress={() => navigation.navigate('Nearby')}
@@ -330,11 +362,18 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
 
       {/* Results count */}
       <View style={styles.resultsHeader}>
-        <Text style={styles.sectionTitle}>
-          {searchQuery || selectedCategory !== 'all' || selectedType !== 'all'
-            ? `${filteredLocations.length} Results`
-            : 'All Locations'}
-        </Text>
+        <View style={styles.sectionTitleLeft}>
+          <Text style={styles.sectionTitle}>
+            {searchQuery || selectedCategory !== 'all' || selectedType !== 'all'
+              ? `${filteredLocations.length} Results`
+              : 'All Locations'}
+          </Text>
+          {!searchQuery && activeRadius && (
+            <View style={styles.radiusPill}>
+              <Text style={styles.radiusPillText}>Within {activeRadius} mi</Text>
+            </View>
+          )}
+        </View>
       </View>
     </View>
   );
@@ -392,7 +431,9 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
             <EmptyState
               emoji="🎬"
               title="No locations found"
-              subtitle="Try adjusting your search or filters"
+              subtitle={activeRadius === 50 && !searchQuery
+                ? `No filming locations within ${RADIUS_STAGES[RADIUS_STAGES.length - 1]} miles`
+                : "Try adjusting your search or filters"}
             />
           )
         }
@@ -460,6 +501,14 @@ const styles = StyleSheet.create({
   sortChipText: { fontSize: 12, fontWeight: '600', color: theme.colors.textSecondary },
   sortChipTextActive: { color: theme.colors.gold },
 
+  sectionTitleLeft: { flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1 },
+  radiusPill: {
+    backgroundColor: theme.colors.gold + '18',
+    paddingHorizontal: 10, paddingVertical: 4,
+    borderRadius: 12,
+    borderWidth: 1, borderColor: theme.colors.gold + '30',
+  },
+  radiusPillText: { fontSize: 11, fontWeight: '600', color: theme.colors.gold },
   sectionTitleRow: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     marginBottom: 12,
