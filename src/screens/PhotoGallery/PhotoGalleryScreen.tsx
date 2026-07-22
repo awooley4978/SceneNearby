@@ -24,7 +24,6 @@ export const PhotoGalleryScreen: React.FC<{ route: any }> = ({ route }) => {
       {location?.imageUrl ? (
         <LocationPhotoGallery
           photos={galleryPhotos}
-          primaryImageUrl={location.imageUrl}
           showAddButton={false}
         />
       ) : galleryPhotos.length === 0 ? (

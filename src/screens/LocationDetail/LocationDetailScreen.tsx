@@ -289,12 +289,18 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
         <Text style={styles.bodyText}>{location.funFact}</Text>
       </View>
 
-      {/* Community Photos — using the new LocationPhotoGallery */}
-      <LocationPhotoGallery
-        photos={galleryPhotos}
-        primaryImageUrl={location.imageUrl}
-        showAddButton={false}
-      />
+      {/* Community Photos */}
+      {galleryPhotos.length > 0 ? (
+        <LocationPhotoGallery
+          photos={galleryPhotos}
+          showAddButton={false}
+        />
+      ) : (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>📸 Community Photos</Text>
+          <Text style={styles.emptyStateText}>No community photos yet. Check back soon.</Text>
+        </View>
+      )}
 
       {/* Location info */}
       <View style={styles.section}>
@@ -371,6 +377,7 @@ const styles = StyleSheet.create({
   section: { paddingHorizontal: 20, paddingTop: 24 },
   sectionTitle: { fontSize: 20, fontWeight: '700', color: theme.colors.textPrimary, marginBottom: 10 },
   bodyText: { fontSize: 15, color: theme.colors.textSecondary, lineHeight: 24 },
+  emptyStateText: { fontSize: 15, color: theme.colors.textTertiary, lineHeight: 24, fontStyle: 'italic' },
   coords: { fontSize: 12, color: theme.colors.textTertiary, marginTop: 6, fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace' },
   quoteSection: { marginHorizontal: 20, marginTop: 24, padding: 20, backgroundColor: theme.colors.surface, borderRadius: 16, borderLeftWidth: 3, borderLeftColor: theme.colors.gold },
   quoteIcon: { fontSize: 20, marginBottom: 8 },
