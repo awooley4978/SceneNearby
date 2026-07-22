@@ -32,16 +32,16 @@ const GENRE_GRADIENTS: Record<string, string[]> = {
 };
 
 const GENRE_IMAGES: Record<string, any> = {
-  'Comedy': require('../../assets/genre-comedy.jpg'),
-  'Drama': require('../../assets/genre-drama.jpg'),
-  'Action': require('../../assets/genre-action.jpg'),
-  'Sci-Fi': require('../../assets/genre-scifi.jpg'),
-  'Horror': require('../../assets/genre-horror.jpg'),
-  'Romance': require('../../assets/genre-romance.jpg'),
-  'Thriller': require('../../assets/genre-thriller.jpg'),
-  'Fantasy': require('../../assets/genre-fantasy.jpg'),
-  'Animation': require('../../assets/genre-animation.jpg'),
-  'Documentary': require('../../assets/genre-documentary.jpg'),
+  'Comedy': require('../../../assets/genre-comedy.jpg'),
+  'Drama': require('../../../assets/genre-drama.jpg'),
+  'Action': require('../../../assets/genre-action.jpg'),
+  'Sci-Fi': require('../../../assets/genre-scifi.jpg'),
+  'Horror': require('../../../assets/genre-horror.jpg'),
+  'Romance': require('../../../assets/genre-romance.jpg'),
+  'Thriller': require('../../../assets/genre-thriller.jpg'),
+  'Fantasy': require('../../../assets/genre-fantasy.jpg'),
+  'Animation': require('../../../assets/genre-animation.jpg'),
+  'Documentary': require('../../../assets/genre-documentary.jpg'),
 };
 
 const GENRES = Object.keys(GENRE_GRADIENTS).map((label) => ({
