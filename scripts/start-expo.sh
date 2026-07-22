@@ -4,7 +4,7 @@ PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting Scene Nearby Expo environment..." | tee "$PROJECT_DIR/scripts/watchdog.log"
 
 # Start Expo in background
-cd "$PROJECT_DIR" && nohup npx expo start --tunnel > /tmp/expo-start.log 2>&1 &
+cd "$PROJECT_DIR" && nohup ./node_modules/.bin/expo start --tunnel > /tmp/expo-start.log 2>&1 &
 EXPO_PID=$!
 echo "Expo started (PID: $EXPO_PID). Log: /tmp/expo-start.log"
 

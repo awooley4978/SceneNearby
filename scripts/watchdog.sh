@@ -14,7 +14,7 @@ while true; do
     log "Metro not responding (HTTP $HTTP_CODE) — restarting Expo..."
     pkill -f "expo start" 2>/dev/null || true
     sleep 2
-    cd "$PROJECT_DIR" && nohup npx expo start --tunnel > /tmp/expo-start.log 2>&1 &
+    cd "$PROJECT_DIR" && nohup ./node_modules/.bin/expo start --tunnel > /tmp/expo-start.log 2>&1 &
     log "Expo restarted. PID: $!"
     sleep 10
   fi
