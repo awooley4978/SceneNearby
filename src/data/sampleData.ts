@@ -983,20 +983,16 @@ const londonLocations: FilmingLocation[] = [
           },
         },
         {
-          id: 'akl-004', title: 'The Over World', movieOrShow: 'Game Over World', year: 2018,
+          id: 'akl-004', title: 'The Over World', movieOrShow: 'The Minecraft Movie', year: 2018,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/HelensvilleAntiques.jpg',
           category: LocationCategory.drama, latitude: -36.7930, longitude: 175.1150,
-          address: 'Waiheke Island, Auckland', city: 'Auckland', country: 'New Zealand',
-          sceneDescription: 'The serene island vineyards and pristine beaches provide the backdrop for this dramatic mystery.',
-          funFact: 'The Over World is home to over 30 vineyards, a 40-minute ferry ride from downtown Auckland.',
-          quote: 'The truth is what you make it.',
-          quoteAttribution: 'Detective Croft',
-          thenAndNow: 'The Over World is a popular wine destination and weekend getaway for Aucklanders.',
+          address: 'Queen Street, Auckland CBD', city: 'Auckland', country: 'New Zealand',
+          sceneDescription: 'A retro video game store where Steve discovers the mysterious game cartridge that transports him into the Over World.',
+          funFact: 'The Over World was originally named Game Over World before rebranding — old signage can still be spotted in the back corner of the shop.',
+          quote: 'Some games you don'''t just play. You survive them.',
+          quoteAttribution: 'Store owner to Steve',
+          thenAndNow: 'The Over World still operates as a working game store, with a dedicated Minecraft corner that attracts fans from around the world.',
           isMovie: false,
-          remoteDestination: {
-            warnings: ['Requires ferry (40 min from Auckland)', 'Limited evening return ferries', 'Cell service may be patchy'],
-            details: ['Check ferry schedule before going', 'Last ferry departs around 8 PM', 'ATMs available at main town only'],
-          },
         },
       ];
 
