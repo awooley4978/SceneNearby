@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  TextInput,
+  ActivityIndicator,
 } from 'react-native';
 import { theme } from '../../theme';
 import { availableCityPacks, defaultUserSettings } from '../../models';
@@ -16,7 +18,16 @@ import { logPremiumUpgrade } from '../../services/analytics';
 import { useAuth } from '../../context/AuthContext';
 
 export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const { user, signIn: authSignIn, signUp: authSignUp, signOut: authSignOut } = useAuth();
+  const {
+    user,
+    signIn: authSignIn,
+    signUp: authSignUp,
+    signOut: authSignOut,
+    magicLinkState,
+    sendMagicLink,
+    resetMagicLinkState,
+  } = useAuth();
+  const [email, setEmail] = useState('');
   const [settings, setSettings] = useState(defaultUserSettings);
   const [isPremium, setIsPremium] = useState(false);
   const [purchasedPacks, setPurchasedPacks] = useState<string[]>([]);
@@ -130,29 +141,66 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
             </TouchableOpacity>
           </View>
         ) : (
-          <TouchableOpacity
-            style={styles.authButton}
-            onPress={() => {
-              Alert.prompt
-                ? Alert.prompt('Sign In', 'Enter your email', [
-                    { text: 'Cancel', style: 'cancel' },
-                    {
-                      text: 'Continue',
-                      onPress: async (email) => {
-                        if (!email) return;
-                        Alert.prompt('Password', '', async (password) => {
-                          if (!password) return;
-                          try { await authSignIn(email, password); }
-                          catch { Alert.alert('Error', 'Sign in failed. Try signing up instead.'); }
-                        }, 'secure-text');
-                      },
-                    },
-                  ])
-                : Alert.alert('Coming Soon', 'Sign in will be available in the next update.');
-            }}
-          >
-            <Text style={styles.authButtonText}>Sign In</Text>
-          </TouchableOpacity>
+          <View style={styles.magicLinkContainer}>
+            {/* Idle / Error state — email input + send button */}
+            {(magicLinkState.status === 'idle' || magicLinkState.status === 'error' || magicLinkState.status === 'invalid') && (
+              <>
+                {magicLinkState.status === 'error' && (
+                  <Text style={styles.errorText}>{magicLinkState.error || 'Could not send link. Check your email and try again.'}</Text>
+                )}
+                {magicLinkState.status === 'invalid' && (
+                  <Text style={styles.errorText}>{magicLinkState.error || 'This sign-in link has expired or was already used.'}</Text>
+                )}
+                <TextInput
+                  style={styles.emailInput}
+                  placeholder="you@email.com"
+                  placeholderTextColor={theme.colors.textTertiary}
+                  value={email}
+                  onChangeText={setEmail}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                />
+                <TouchableOpacity
+                  style={[styles.authButton, (!email.trim() || magicLinkState.status === 'sending') && styles.authButtonDisabled]}
+                  onPress={() => sendMagicLink(email.trim())}
+                  disabled={!email.trim() || magicLinkState.status === 'sending'}
+                >
+                  <Text style={styles.authButtonText}>Send Magic Link</Text>
+                </TouchableOpacity>
+              </>
+            )}
+
+            {/* Sending state */}
+            {magicLinkState.status === 'sending' && (
+              <View style={styles.magicLinkState}>
+                <ActivityIndicator size="small" color={theme.colors.gold} />
+                <Text style={styles.magicLinkStateText}>Sending link...</Text>
+              </View>
+            )}
+
+            {/* Sent state */}
+            {magicLinkState.status === 'sent' && (
+              <View style={styles.magicLinkState}>
+                <Text style={styles.magicLinkIcon}>✉️</Text>
+                <Text style={styles.magicLinkStateText}>
+                  Check your email — tap the link we sent to{' '}
+                  <Text style={styles.magicLinkEmail}>{magicLinkState.email}</Text> to sign in.
+                </Text>
+                <TouchableOpacity onPress={resetMagicLinkState}>
+                  <Text style={styles.magicLinkReset}>Use a different email</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
+            {/* Verifying state */}
+            {magicLinkState.status === 'verifying' && (
+              <View style={styles.magicLinkState}>
+                <ActivityIndicator size="small" color={theme.colors.gold} />
+                <Text style={styles.magicLinkStateText}>Verifying link...</Text>
+              </View>
+            )}
+          </View>
         )}
       </View>
 
@@ -304,7 +352,50 @@ const styles = StyleSheet.create({
   authEmail: { fontSize: 14, fontWeight: '600', color: theme.colors.textPrimary },
   authStatus: { fontSize: 12, color: theme.colors.textTertiary, marginTop: 2 },
   authButton: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 10, backgroundColor: theme.colors.gold },
+  authButtonDisabled: { opacity: 0.5 },
   authButtonText: { fontSize: 13, fontWeight: '700', color: theme.colors.black },
+
+  // Magic link
+  magicLinkContainer: { gap: 10 },
+  emailInput: {
+    backgroundColor: theme.colors.surface,
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    fontSize: 14,
+    color: theme.colors.textPrimary,
+    borderWidth: 1,
+    borderColor: theme.colors.surface3,
+  },
+  errorText: {
+    fontSize: 13,
+    color: theme.colors.error,
+    marginBottom: 4,
+  },
+  magicLinkState: {
+    alignItems: 'center',
+    paddingVertical: 12,
+    gap: 8,
+  },
+  magicLinkIcon: {
+    fontSize: 32,
+    marginBottom: 4,
+  },
+  magicLinkStateText: {
+    fontSize: 14,
+    color: theme.colors.textSecondary,
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  magicLinkEmail: {
+    fontWeight: '700',
+    color: theme.colors.gold,
+  },
+  magicLinkReset: {
+    fontSize: 13,
+    color: theme.colors.gold,
+    textDecorationLine: 'underline',
+  },
   premiumDesc: { fontSize: 14, color: theme.colors.textSecondary, textAlign: 'center', lineHeight: 20, marginBottom: 16 },
   premiumButton: { backgroundColor: theme.colors.gold, paddingHorizontal: 32, paddingVertical: 12, borderRadius: 12 },
   premiumButtonText: { color: theme.colors.black, fontWeight: '700', fontSize: 16 },

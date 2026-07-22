@@ -3,6 +3,7 @@
     "name": "Scene Nearby",
     "slug": "scene-nearby",
     "version": "1.0.0",
+    "scheme": "scenenearby",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
