@@ -340,7 +340,6 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
                 </View>
               )}
             </View>
-            </View>
             <TouchableOpacity
               style={styles.viewMapButton}
               onPress={() => navigation.navigate('Nearby')}
