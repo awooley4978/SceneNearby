@@ -47,6 +47,8 @@ export interface FilmingLocation {
   imageUrl?: string;
   actors?: string[];
   remoteDestination?: RemoteDestinationInfo;
+  /** Google Places rating data */
+  googleRating?: GooglePlaceRating;
   /** Focal point for smart cropping: { x, y } in range 0–1 (0=top/left, 1=bottom/right).
    *  Defaults to { x: 0.5, y: 0.5 } (center) when not set. */
   focalPoint?: { x: number; y: number };
@@ -76,6 +78,14 @@ export const formatDistanceInMiles = (meters: number): string => {
 };
 
 // ── Rating System ──
+// ── Google Places Rating ──
+export interface GooglePlaceRating {
+  rating: number;
+  reviewCount: number;
+  placeId: string;
+  attribution: string;
+}
+
 export interface LocationRating {
   average: number;
   count: number;

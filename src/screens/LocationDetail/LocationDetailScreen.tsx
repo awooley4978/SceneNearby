@@ -22,6 +22,7 @@ import { MissingPhotoCard } from '../../components/MissingPhotoCard';
 import { SmartHeroImage } from '../../components/SmartHeroImage';
 import { getLocalAsset } from '../../data/assetMap';
 import { StarRating } from '../../components/StarRating';
+import { RatingSection } from '../../components/RatingSection';
 import { RemoteDestinationBadge } from '../../components/RemoteDestinationBadge';
 import { LocationPhotoGallery, GalleryPhoto } from '../../components/LocationPhotoGallery';
 import { logLocationViewed, logLocationSaved, logLocationUnsaved, logLocationNavigate, logLocationShared, logUserRating } from '../../services/analytics';
