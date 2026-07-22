@@ -19,8 +19,10 @@ export const SmartHeroImage: React.FC<SmartHeroImageProps> = ({
   const fx = focalPoint?.x ?? 0.5;
   const fy = focalPoint?.y ?? 0.5;
 
-  const leftOffset = ((-(scale - 1) * fx * 100)).toFixed(1) + "%";
-  const topOffset = ((-(scale - 1) * fy * 100)).toFixed(1) + "%";
+  // Position image so focal point aligns with center of container
+  // At scale 1.3: center→-15%, top-focused(0.25)→+17.5%, bottom-focused(0.6)→-28%
+  const leftOffset = ((0.5 - fx * scale) * 100).toFixed(1) + "%";
+  const topOffset = ((0.5 - fy * scale) * 100).toFixed(1) + "%";
 
   const source = imageUrl.startsWith("asset://")
     ? { uri: imageUrl }
