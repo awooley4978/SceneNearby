@@ -456,4 +456,14 @@ const styles = StyleSheet.create({
   supportLink: { paddingVertical: 8 },
   supportLinkText: { fontSize: 13, color: theme.colors.textTertiary, textDecorationLine: 'underline' },
   supportFooter: { fontSize: 11, color: theme.colors.textTertiary + '60', marginTop: 12 },
+
+  remoteWarningSection: {
+    marginHorizontal: 20,
+    marginTop: 16,
+    padding: 14,
+    backgroundColor: "#F5C5180c",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#F5C51830",
+  },
 });
