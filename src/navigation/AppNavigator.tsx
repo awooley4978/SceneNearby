@@ -19,6 +19,7 @@ import { PhotoGalleryScreen } from '../screens/PhotoGallery/PhotoGalleryScreen';
 import { ActorDetailScreen } from '../screens/Discover/ActorDetailScreen';
 import { AlbumScreen } from '../screens/Album/AlbumScreen';
 import { LocationAlbumScreen } from '../screens/Album/LocationAlbumScreen';
+import { MagicLinkScreen } from '../screens/Auth/MagicLinkScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -135,6 +136,7 @@ function ProfileStack() {
       <Stack.Screen name="NotificationPreferences" component={NotificationPreferencesScreen} options={{ title: 'Notifications' }} />
       <Stack.Screen name="Album" component={AlbumScreen} options={{ title: 'Album' }} />
       <Stack.Screen name="LocationAlbum" component={LocationAlbumScreen} options={{ title: 'Photos' }} />
+      <Stack.Screen name="MagicLink" component={MagicLinkScreen} options={{ title: 'Sign In', headerShown: false, animation: 'fade' as any, presentation: 'modal' as any }} />
     </Stack.Navigator>
   );
 }
