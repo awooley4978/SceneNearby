@@ -164,11 +164,6 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
               <View style={[styles.mapNodeDot, { top: '69%', left: '72%' }]} />
               <View style={[styles.mapNodeDot, { top: '14%', left: '46%' }]} />
             </View>
-            {/* Friends apartment building image */}
-            <View style={styles.notifBuildingContainer}>
-              <Image source={require("../../../assets/friends-apartment.png")} style={styles.notifBuildingImage} resizeMode="cover" />
-              <View style={styles.notifBuildingGlow} />
-            </View>
             {/* Notification card */}
             <View style={styles.notifCard}>
               {/* Header bar with drag handle */}
