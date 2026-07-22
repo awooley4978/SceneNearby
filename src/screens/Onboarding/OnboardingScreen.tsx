@@ -27,7 +27,9 @@ const GENRE_GRADIENTS: Record<string, string[]> = {
   'Romance': ['#EC4899', '#DB2777'],
   'Thriller': ['#F97316', '#EA580C'],
   'Fantasy': ['#22D3EE', '#0E7490'],
-  'Animation': ['#A78BFA', '#7C3AED'],
+  'Historical': ['#D4A574', '#B8860B'],
+  'Adventure': ['#22C55E', '#16A34A'],
+  'Mystery': ['#6366F1', '#4338CA'],
   'Documentary': ['#10B981', '#059669'],
 };
 
@@ -40,7 +42,9 @@ const GENRE_IMAGES: Record<string, any> = {
   'Romance': require('../../../assets/genre-romance.jpg'),
   'Thriller': require('../../../assets/genre-thriller.jpg'),
   'Fantasy': require('../../../assets/genre-fantasy.jpg'),
-  'Animation': require('../../../assets/genre-animation.jpg'),
+  'Historical': require('../../../assets/genre-historical.jpg'),
+  'Adventure': require('../../../assets/genre-adventure.jpg'),
+  'Mystery': require('../../../assets/genre-mystery.jpg'),
   'Documentary': require('../../../assets/genre-documentary.jpg'),
 };
 
