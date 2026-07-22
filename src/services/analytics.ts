@@ -67,3 +67,11 @@ export async function logNotificationPrefsUpdated(data: { frequency: string; max
 export async function logPremiumUpgrade() {
   await logEvent("premium_upgrade", {});
 }
+
+export async function logUserRating(data: { locationId: string; rating: number }) {
+  await logEvent("user_rating", { location_id: data.locationId, rating: data.rating });
+}
+
+export async function logPhotoGalleryViewed(data: { locationId: string; photoCount: number }) {
+  await logEvent("photo_gallery_view", { location_id: data.locationId, photo_count: data.photoCount });
+}
