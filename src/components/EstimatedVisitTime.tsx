@@ -13,9 +13,9 @@ export const EstimatedVisitTime: React.FC<EstimatedVisitTimeProps> = ({ time }) 
       <View style={styles.container}>
         <Text style={styles.heading}>⏱️ Estimated Visit Time</Text>
         <View style={styles.emptyState}>
-          <Text style={styles.emptyIcon}>🕐</Text>
+          <Text style={styles.emptyIcon}>⏱️</Text>
           <Text style={styles.emptyText}>
-            Help future travelers by estimating how long you spent here.
+            No visit time data available yet for this location.
           </Text>
         </View>
       </View>
