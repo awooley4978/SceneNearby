@@ -983,10 +983,10 @@ const londonLocations: FilmingLocation[] = [
           },
         },
         {
-          id: 'akl-004', title: 'The Over World', movieOrShow: 'The Minecraft Movie', year: 2018,
+          id: 'akl-004', title: 'The Over World (formerly Game Over World)', movieOrShow: 'The Minecraft Movie', year: 2018,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/HelensvilleAntiques.jpg',
           category: LocationCategory.drama, latitude: -36.7930, longitude: 175.1150,
-          address: 'Queen Street, Auckland CBD', city: 'Auckland', country: 'New Zealand',
+          address: '7 Commercial Road, Helensville 0800', city: 'Auckland', country: 'New Zealand',
           sceneDescription: 'A retro video game store where Steve discovers the mysterious game cartridge that transports him into the Over World.',
           funFact: 'The Over World was originally named Game Over World before rebranding — old signage can still be spotted in the back corner of the shop.',
           quote: 'Some games you don'''t just play. You survive them.',
