@@ -364,7 +364,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
     return (
       <View style={styles.pageContainer}>
         {pageContent()}
-{index > 0 && (
+        {index > 0 && (
           <TouchableOpacity
             style={styles.backBtn}
             onPress={() => goToPage(index - 1)}
