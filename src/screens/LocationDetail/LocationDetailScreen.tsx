@@ -18,7 +18,7 @@ import { getUserSettings, setUserSettings } from '../../services/StorageService'
 import { useSaved } from '../../context/SavedContext';
 import { useUserLocation } from '../../hooks/useUserLocation';
 import { CategoryBadge } from '../../components/CategoryBadge';
-import { MissingPhotoCard } from '../../components/MissingPhotoCard';
+import { MapPlaceholder } from '../../components/MapPlaceholder';
 import { SmartHeroImage } from '../../components/SmartHeroImage';
 import { getLocalAsset } from '../../data/assetMap';
 import { RatingSection } from '../../components/RatingSection';
@@ -260,11 +260,7 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
             height={360}
           />
         ) : (
-          <MissingPhotoCard
-            locationName={location.title}
-            category={location.category}
-            movieOrShow={location.movieOrShow}
-          />
+          <MapPlaceholder />
         )}
         <View style={styles.heroContent}>
           <TouchableOpacity onPress={handleViewMovie}>

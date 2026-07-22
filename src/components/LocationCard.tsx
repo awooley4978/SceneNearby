@@ -10,7 +10,7 @@ import * as Haptics from 'expo-haptics';
 import { theme } from '../theme';
 import { FilmingLocation } from '../models';
 import { CategoryBadge } from './CategoryBadge';
-import { MissingPhotoCard } from './MissingPhotoCard';
+import { MapPlaceholder } from './MapPlaceholder';
 import { SmartHeroImage } from './SmartHeroImage';
 import { DistanceBadge } from './DistanceBadge';
 import { StarRating } from './StarRating';
@@ -167,11 +167,7 @@ export const LocationCard: React.FC<LocationCardProps> = ({
                 style={styles.heroImage}
               />
             ) : (
-              <MissingPhotoCard
-                locationName={location.title}
-                category={location.category}
-                movieOrShow={location.movieOrShow}
-              />
+              <MapPlaceholder />
             )}
             {/* Category badge — top left */}
             <View style={styles.heroBadgeTopLeft}>
