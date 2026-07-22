@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
   hero: {
     height: 260,
     justifyContent: 'flex-end',
-    padding: 16,
+    padding: 0,
     position: 'relative',
     overflow: 'hidden',
   },
