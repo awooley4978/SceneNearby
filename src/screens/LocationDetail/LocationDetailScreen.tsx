@@ -80,14 +80,14 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
     const canOpenWaze = await Linking.canOpenURL('waze://');
     const canOpenAppleMaps = await Linking.canOpenURL('maps://');
     const options: string[] = [
-      canOpenAppleMaps ? '🗺️ Apple Maps' : '🗺️ Apple Maps (web)',
       canOpenGoogleMaps ? '📍 Google Maps' : '📍 Google Maps (web)',
+      canOpenAppleMaps ? '🗺️ Apple Maps' : '🗺️ Apple Maps (web)',
       canOpenWaze ? '🚗 Waze' : '🚗 Waze (web)',
       'Cancel',
     ];
     const actions: (() => void)[] = [
-      () => Linking.openURL(appleMapsUrl),
       () => canOpenGoogleMaps ? Linking.openURL(googleMapsUrl) : Linking.openURL(googleMapsFallback),
+      () => Linking.openURL(appleMapsUrl),
       () => canOpenWaze ? Linking.openURL(wazeUrl) : Linking.openURL(wazeFallback),
       () => {},
     ];
