@@ -154,7 +154,7 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
               { label: '📍 Google Maps', value: 'googlemaps' },
               { label: '🗺️ Apple Maps', value: 'applemaps' },
               { label: '🚗 Waze', value: 'waze' },
-              { label: 'Ask each time', value: null },
+              { label: 'Always ask', value: null },
             ];
             Alert.alert(
               'Default Navigation App',
@@ -177,7 +177,7 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
               {navApp === 'waze' ? 'Waze' :
                navApp === 'applemaps' ? 'Apple Maps' :
                navApp === 'googlemaps' ? 'Google Maps' :
-               'Ask each time'}
+               'Always ask'}
             </Text>
           </View>
           <Text style={styles.navLinkChevron}>›</Text>
