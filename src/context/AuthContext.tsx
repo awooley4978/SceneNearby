@@ -71,10 +71,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await sendMagicLink(email);
       setMagicLinkState({ status: 'sent', email });
     } catch (err: any) {
+      const code = err?.code || '';
+      const isQuota = code.includes('quota') || code.includes('too-many');
       setMagicLinkState({
         status: 'error',
         email,
-        error: err?.message || 'Could not send link. Check your email and try again.',
+        error: isQuota
+          ? "Email temporarily unavailable\n\nWe've reached today's email sign-in limit for our testing environment. Please try again tomorrow."
+          : err?.message || 'Could not send link. Check your email and try again.',
       });
     }
   }, []);
