@@ -18,17 +18,23 @@ interface OnboardingScreenProps {
   onComplete: (data: any) => void;
 }
 
-const CONTENT_LOVES = [
-  { emoji: '☕', label: 'Friends' },
-  { emoji: '⚡', label: 'Harry Potter' },
-  { emoji: '🦸', label: 'Marvel' },
-  { emoji: '📎', label: 'The Office' },
-  { emoji: '🍂', label: 'Gilmore Girls' },
-  { emoji: '⭐', label: 'Star Wars' },
-  { emoji: '👻', label: 'Horror' },
-  { emoji: '🏰', label: 'Disney' },
-  { emoji: '😄', label: 'Comedy' },
-];
+const GENRE_GRADIENTS: Record<string, string[]> = {
+  'Comedy': ['#F5C518', '#E8A800'],
+  'Drama': ['#8B5CF6', '#6D28D9'],
+  'Action': ['#EF4444', '#DC2626'],
+  'Sci-Fi': ['#06B6D4', '#0891B2'],
+  'Horror': ['#6B7280', '#4B5563'],
+  'Romance': ['#EC4899', '#DB2777'],
+  'Thriller': ['#F97316', '#EA580C'],
+  'Fantasy': ['#22D3EE', '#0E7490'],
+  'Animation': ['#A78BFA', '#7C3AED'],
+  'Documentary': ['#10B981', '#059669'],
+};
+
+const GENRES = Object.keys(GENRE_GRADIENTS).map((label) => ({
+  label,
+  gradient: GENRE_GRADIENTS[label],
+}));
 
 const TRAVEL_STYLES: { key: DiscoveryFrequency; emoji: string; label: string; desc: string }[] = [
   { key: 'essentials', emoji: '🌿', label: 'Essentials', desc: 'Only the must-see locations.' },
@@ -51,7 +57,7 @@ const MEDIA_INTERESTS = [
 export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [travelStyle, setTravelStyle] = useState<DiscoveryFrequency>('essentials');
-  const [contentLoves, setContentLoves] = useState<string[]>([]);
+  const [contentLoves, setContentLoves] = useState<string[]>([]); // now genres
   const [travelMode, setTravelMode] = useState<string>('walking');
   const [mediaInterests, setMediaInterests] = useState<string[]>(['movies', 'tv']);
   const flatListRef = useRef<FlatList>(null);
@@ -211,24 +217,42 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
         case 4: return (
           <View style={styles.page}>
             <Text style={styles.pageTitle}>What do you love?</Text>
+            <Text style={styles.pageSubtitle}>Pick your favorites and we'll find scenes you'll love.</Text>
             <View style={styles.loveGrid}>
-              {CONTENT_LOVES.map((item) => {
+              {GENRES.map((item) => {
                 const active = contentLoves.includes(item.label);
                 return (
                   <TouchableOpacity
                     key={item.label}
-                    style={[styles.loveCard, active && styles.loveCardActive]}
+                    style={[
+                      styles.genreCard,
+                      active && styles.genreCardActive,
+                      { backgroundColor: item.gradient[0] + '22' },
+                    ]}
                     onPress={() => toggleContentLove(item.label)}
                   >
-                    <Text style={styles.loveEmoji}>{item.emoji}</Text>
-                    <Text style={[styles.loveLabel, active && styles.loveLabelActive]}>
+                    <View style={[styles.genreGradient, { backgroundColor: item.gradient[0] }]}>
+                      <Text style={styles.genreIconText}>
+                        {item.label === 'Comedy' ? '🎭' :
+                         item.label === 'Drama' ? '🎬' :
+                         item.label === 'Action' ? '💥' :
+                         item.label === 'Sci-Fi' ? '🚀' :
+                         item.label === 'Horror' ? '👻' :
+                         item.label === 'Romance' ? '💕' :
+                         item.label === 'Thriller' ? '🔍' :
+                         item.label === 'Fantasy' ? '✨' :
+                         item.label === 'Animation' ? '🎨' : '📖'}
+                      </Text>
+                    </View>
+                    <Text style={[styles.genreLabel, active && styles.genreLabelActive]}>
                       {item.label}
                     </Text>
-                    {active && <Text style={styles.heartIcon}>❤️</Text>}
+                    {active && <View style={styles.genreCheck}>✓</View>}
                   </TouchableOpacity>
                 );
               })}
             </View>
+            <Text style={styles.genreFooter}>You can change this anytime.</Text>
           </View>
         );
         case 5: return (
@@ -484,18 +508,48 @@ const styles = StyleSheet.create({
   bigCardDesc: { fontSize: 12, color: theme.colors.textSecondary, marginTop: 2 },
   selectedBadge: { fontSize: 18, color: theme.colors.gold, fontWeight: '700' },
 
-  // Content love grid
+  // Genre selection grid
   loveGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8 },
-  loveCard: {
-    width: (width - 80) / 3, aspectRatio: 0.9, borderRadius: 14,
+  genreCard: {
+    width: (width - 80) / 3, aspectRatio: 1.1, borderRadius: 14,
     backgroundColor: theme.colors.surface, justifyContent: 'center', alignItems: 'center',
     borderWidth: 1.5, borderColor: theme.colors.surface3,
+    padding: 6,
   },
-  loveCardActive: { borderColor: theme.colors.gold, backgroundColor: theme.colors.gold + '10' },
-  loveEmoji: { fontSize: 28, marginBottom: 6 },
-  loveLabel: { fontSize: 11, fontWeight: '500', color: theme.colors.textSecondary, textAlign: 'center' },
-  loveLabelActive: { color: theme.colors.gold, fontWeight: '600' },
-  heartIcon: { position: 'absolute', top: 6, right: 6, fontSize: 14 },
+  genreCardActive: {
+    borderColor: theme.colors.gold,
+    borderWidth: 2,
+    transform: [{ scale: 1.05 }],
+    shadowColor: theme.colors.gold,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  genreGradient: {
+    width: '100%', aspectRatio: 1.6, borderRadius: 10,
+    justifyContent: 'center', alignItems: 'center',
+    marginBottom: 6,
+  },
+  genreIconText: { fontSize: 28 },
+  genreLabel: {
+    fontSize: 11, fontWeight: '600', color: theme.colors.textSecondary,
+    textAlign: 'center', marginTop: 2,
+  },
+  genreLabelActive: { color: theme.colors.gold, fontWeight: '700' },
+  genreCheck: {
+    position: 'absolute', top: 6, right: 6,
+    width: 20, height: 20, borderRadius: 10,
+    backgroundColor: theme.colors.gold,
+    justifyContent: 'center', alignItems: 'center',
+    fontSize: 12, fontWeight: '700', color: theme.colors.black,
+    overflow: 'hidden',
+  },
+  genreFooter: {
+    fontSize: 13, color: theme.colors.textTertiary,
+    fontStyle: 'italic', textAlign: 'center',
+    marginTop: 16,
+  },
 
   // Media interest cards
   mediaCard: {
