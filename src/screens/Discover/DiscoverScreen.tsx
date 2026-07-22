@@ -227,7 +227,38 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
       ...loc,
       distanceFromUser: calculateDistance(userLocation.latitude, userLocation.longitude, loc.latitude, loc.longitude) / 1609.34,
     })).filter((loc) => loc.distanceFromUser! <= (activeRadius ?? RADIUS_STAGES[RADIUS_STAGES.length - 1]));
-    return withDist.sort((a, b) => (a.distanceFromUser || 0) - (b.distanceFromUser || 0)).slice(0, 3);
+    return withDist.sort((a, b) => (a.distanceFromUser || 0) - (b.distanceFromUser || 0)).slice(0, 5);
+  }, [userLocation.latitude, userLocation.longitude, activeRadius]);
+
+  const moreToDiscover = useMemo(() => {
+    if (userLocation.latitude === null || userLocation.longitude === null) return [];
+    if (activeRadius === null) return [];
+    const activeRadiusVal = activeRadius;
+
+    const withDist = allLocations.map((loc) => ({
+      ...loc,
+      distanceFromUser: calculateDistance(userLocation.latitude!, userLocation.longitude!, loc.latitude, loc.longitude) / 1609.34,
+    }));
+
+    let outer = withDist.filter((loc) => loc.distanceFromUser! > activeRadiusVal);
+
+    let outerCap = 50;
+    const within50 = outer.filter((loc) => loc.distanceFromUser! <= 50);
+    if (within50.length < 20) outerCap = 100;
+
+    outer = outer.filter((loc) => loc.distanceFromUser! <= outerCap);
+
+    const movieMap = new Map<string, typeof outer[0]>();
+    for (const loc of outer) {
+      const key = loc.movieOrShow;
+      if (!movieMap.has(key) || movieMap.get(key)!.distanceFromUser! > loc.distanceFromUser!) {
+        movieMap.set(key, loc);
+      }
+    }
+
+    return Array.from(movieMap.values())
+      .sort((a, b) => (a.distanceFromUser || 0) - (b.distanceFromUser || 0))
+      .slice(0, 20);
   }, [userLocation.latitude, userLocation.longitude, activeRadius]);
 
   const onRefresh = () => {
@@ -355,6 +386,30 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
               onPress={() => navigation.navigate('LocationDetail', { locationId: loc.id })}
               onMoviePress={() => navigation.navigate('MovieDetail', { movieTitle: loc.movieOrShow })}
             />
+          ))}
+        </View>
+      )}
+
+      {/* More to Discover */}
+      {!searchQuery && selectedCategory === 'all' && selectedType === 'all' && sortMode === 'default' && moreToDiscover.length > 0 && (
+        <View style={styles.moreSection}>
+          <Text style={styles.moreTitle}>🌍 More to Discover</Text>
+          {moreToDiscover.map((loc, idx) => (
+            <TouchableOpacity
+              key={loc.id}
+              style={[styles.moreRow, idx === moreToDiscover.length - 1 && styles.moreRowLast]}
+              onPress={() => navigation.navigate('LocationDetail', { locationId: loc.id })}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.moreMovie} numberOfLines={1}>
+                🎬 {loc.movieOrShow}
+              </Text>
+              <Text style={styles.moreDistance}>
+                {loc.distanceFromUser! <= 50
+                  ? `${Math.round(loc.distanceFromUser!)} mi`
+                  : `${Math.round(loc.distanceFromUser!)} mi away`}
+              </Text>
+            </TouchableOpacity>
           ))}
         </View>
       )}
@@ -527,4 +582,31 @@ const styles = StyleSheet.create({
   emptyIcon: { fontSize: 48, marginBottom: 16 },
   emptyTitle: { fontSize: 18, fontWeight: '700', color: theme.colors.textPrimary, marginBottom: 8 },
   emptyMessage: { fontSize: 14, color: theme.colors.textSecondary },
+  moreSection: {
+    marginBottom: 20,
+    backgroundColor: theme.colors.surface,
+    borderRadius: 14,
+    padding: 16,
+    borderWidth: 1, borderColor: theme.colors.gold + '18',
+  },
+  moreTitle: {
+    fontSize: 16, fontWeight: '700',
+    color: theme.colors.gold,
+    marginBottom: 12,
+  },
+  moreRow: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    paddingVertical: 12,
+    borderBottomWidth: 1, borderBottomColor: theme.colors.surface2,
+  },
+  moreRowLast: { borderBottomWidth: 0 },
+  moreMovie: {
+    flex: 1, fontSize: 14, fontWeight: '600',
+    color: theme.colors.textPrimary,
+    marginRight: 12,
+  },
+  moreDistance: {
+    fontSize: 13, fontWeight: '600',
+    color: theme.colors.gold,
+  },
 });
