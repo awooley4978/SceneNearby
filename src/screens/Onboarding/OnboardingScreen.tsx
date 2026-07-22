@@ -256,17 +256,6 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
                       imageStyle={styles.genreImageStyle}
                     >
                       <View style={styles.genreOverlay} />
-                      <Text style={styles.genreIconText}>
-                        {item.label === 'Comedy' ? '🎭' :
-                         item.label === 'Drama' ? '🎬' :
-                         item.label === 'Action' ? '💥' :
-                         item.label === 'Sci-Fi' ? '🚀' :
-                         item.label === 'Horror' ? '👻' :
-                         item.label === 'Romance' ? '💕' :
-                         item.label === 'Thriller' ? '🔍' :
-                         item.label === 'Fantasy' ? '✨' :
-                         item.label === 'Animation' ? '🎨' : '📖'}
-                      </Text>
                     </ImageBackground>
                     <Text style={[styles.genreLabel, active && styles.genreLabelActive]}>
                       {item.label}
