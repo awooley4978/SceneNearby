@@ -34,6 +34,7 @@ const newYorkLocations: FilmingLocation[] = [
     quote: "I was wondering — why didn't you dance with me at the ball?",
     quoteAttribution: "Giselle to Robert",
     thenAndNow: "The bridge looks nearly identical today — its ornate iron railings and scenic views of the lake make it instantly recognizable.",
+    estimatedVisitTime: '20-30 min',
     isMovie: true,
   },
   {
@@ -46,6 +47,7 @@ const newYorkLocations: FilmingLocation[] = [
     quote: "I'll have what she's having.",
     quoteAttribution: "Older woman at nearby table",
     thenAndNow: "Katz's is still operating and looks remarkably similar. Fans still sit at 'the table' where the scene was filmed.",
+    estimatedVisitTime: '45-60 min',
     isMovie: true,
   },
   {
@@ -160,6 +162,7 @@ const losAngelesLocations: FilmingLocation[] = [
     quote: "Here's to the ones who dream / Foolish as they may seem.",
     quoteAttribution: "Mia (from 'Audition')",
     thenAndNow: 'The Griffith Observatory remains one of LA\'s most popular landmarks.',
+    estimatedVisitTime: '1-2 hrs',
     isMovie: true,
   },
   {
@@ -761,6 +764,7 @@ const londonLocations: FilmingLocation[] = [
           quote: 'Paris is even more beautiful when you\'re in love.',
           quoteAttribution: 'Gil Pender',
           thenAndNow: 'The Eiffel Tower remains the most visited paid monument in the world.',
+          estimatedVisitTime: '1-2 hrs',
           isMovie: true,
         },
         {

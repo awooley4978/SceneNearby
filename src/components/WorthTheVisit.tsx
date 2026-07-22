@@ -14,9 +14,8 @@ export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes 
       <View style={styles.container}>
         <Text style={styles.heading}>👍 Worth the Visit</Text>
         <View style={styles.emptyState}>
-          <Text style={styles.emptyIcon}>🗳️</Text>
           <Text style={styles.emptyText}>
-            Be the first to vote if this location is worth a stop.
+            No community votes yet for this location.
           </Text>
         </View>
       </View>
