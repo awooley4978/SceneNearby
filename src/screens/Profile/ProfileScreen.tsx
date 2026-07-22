@@ -171,6 +171,17 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
           <Text style={styles.navLinkChevron}>›</Text>
         </TouchableOpacity>
 
+        <TouchableOpacity
+          style={styles.navLinkRow}
+          onPress={() => navigation.navigate('Album')}
+        >
+          <View style={styles.navLinkInfo}>
+            <Text style={styles.navLinkLabel}>📸 Album</Text>
+            <Text style={styles.navLinkDesc}>Photos you've taken at filming locations</Text>
+          </View>
+          <Text style={styles.navLinkChevron}>›</Text>
+        </TouchableOpacity>
+
         <View style={styles.settingRow}>
           <Text style={styles.settingLabel}>Metric Units</Text>
           <TouchableOpacity

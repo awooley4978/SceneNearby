@@ -6,6 +6,7 @@ import { AppNavigator } from './src/navigation/AppNavigator';
 import { SplashScreen } from './src/screens/Splash/SplashScreen';
 import { OnboardingScreen } from './src/screens/Onboarding/OnboardingScreen';
 import { LocationSetupScreen } from './src/screens/Onboarding/LocationSetupScreen';
+import { AuthProvider } from './src/context/AuthContext';
 import { theme } from './src/theme';
 import {
   getOnboardingComplete,
@@ -102,7 +103,9 @@ const App: React.FC = () => {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
-        <AppNavigator />
+        <AuthProvider>
+          <AppNavigator />
+        </AuthProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );
