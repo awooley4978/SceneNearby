@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react';
-import {
+import { Image,
   View,
   Text,
   FlatList,
@@ -8,8 +8,8 @@ import {
   Dimensions,
   Animated,
 } from 'react-native';
-import { theme } from '../../theme';
-import { DISCOVERY_FREQUENCIES, STORAGE_KEYS } from '../../models';
+import { Image, theme } from '../../theme';
+import { Image, DISCOVERY_FREQUENCIES, STORAGE_KEYS } from '../../models';
 import type { DiscoveryFrequency } from '../../models';
 
 const { width, height } = Dimensions.get('window');
@@ -132,11 +132,21 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
         );
         case 1: return (
           <View style={styles.page}>
-            <Text style={styles.pageEmoji}>📳</Text>
+            <View style={styles.mapBg}>
+              <View style={styles.mapGridOverlay} />
+              <View style={styles.mapRoad} />
+              <View style={styles.mapRoad2} />
+            </View>
+            {/* Friends apartment building image */}
+            <View style={styles.notifBuildingContainer}>
+              <Image source={require("../../assets/friends-apartment.png")} style={styles.notifBuildingImage} resizeMode="cover" />
+              <View style={styles.notifBuildingGlow} />
+            </View>
+            {/* Notification card */}
             <View style={styles.notifCard}>
               {/* Header bar with drag handle */}
               <View style={styles.notifHandleBar} />
-              {/* Location badge */}
+              {/* Location badge — gold app-icon style */}
               <View style={styles.notifLocationBadge}>
                 <Text style={styles.notifLocationDot}>📍</Text>
                 <Text style={styles.notifLocationLabel}>0.3 mi</Text>
@@ -160,7 +170,9 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
                 </TouchableOpacity>
               </View>
             </View>
-            <Text style={styles.notifCaption}>Tap a notification to explore the scene.</Text>
+            {/* Footer text */}
+            <Text style={styles.notifFooterTitle}>Discover iconic locations</Text>
+            <Text style={styles.notifFooterSub}>Found near you, in real time.</Text>
           </View>
         );
         case 2: return (
@@ -381,6 +393,43 @@ const styles = StyleSheet.create({
   continueButtonText: { fontSize: 16, fontWeight: '700', color: theme.colors.black },
 
   // Notification preview
+  // Map background
+  mapBg: {
+    position: 'absolute', top: 0, left: 0, right: 0, height: 300,
+    backgroundColor: '#1a2e1a',
+  },
+  mapGridOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+  },
+  mapRoad: {
+    position: 'absolute', left: -20, right: -20, height: 8,
+    backgroundColor: '#2a3a2a', top: 240, borderRadius: 4,
+  },
+  mapRoad2: {
+    position: 'absolute', top: 180, bottom: 100, width: 8,
+    backgroundColor: '#2a3a2a', left: '30%', borderRadius: 4,
+  },
+  // Building image
+  notifBuildingContainer: {
+    width: 180, height: 180, borderRadius: 24,
+    marginBottom: -30, zIndex: 2,
+    overflow: 'hidden',
+    shadowColor: theme.colors.gold, shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.25, shadowRadius: 16, elevation: 10,
+  },
+  notifBuildingImage: {
+    width: '100%', height: '100%',
+    backgroundColor: '#8B7355',
+    borderRadius: 24,
+  },
+  notifBuildingGlow: {
+    position: 'absolute', bottom: -10, left: '20%', right: '20%', height: 20,
+    backgroundColor: theme.colors.gold + '30',
+    borderRadius: 10,
+  },
+
   pageEmoji: { fontSize: 60, marginBottom: 20 },
   pageTitle: { fontSize: 24, fontWeight: '700', color: theme.colors.textPrimary, textAlign: 'center', marginBottom: 12 },
   pageSubtitle: { fontSize: 16, color: theme.colors.textSecondary, textAlign: 'center', lineHeight: 22, marginBottom: 24 },
@@ -418,6 +467,8 @@ const styles = StyleSheet.create({
   },
   notifNavigateText: { fontSize: 14, fontWeight: '700', color: theme.colors.black },
   notifCaption: { fontSize: 14, color: theme.colors.textSecondary, fontStyle: 'italic' },
+  notifFooterTitle: { fontSize: 18, fontWeight: '700', color: theme.colors.textPrimary, textAlign: 'center', marginBottom: 6 },
+  notifFooterSub: { fontSize: 14, color: theme.colors.textSecondary, textAlign: 'center' },
 
   // Selection cards
   cardsColumn: { width: '100%', gap: 10 },

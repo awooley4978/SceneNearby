@@ -3,6 +3,7 @@
 // Add new local assets here by importing them.
 
 const assets: Record<string, number> = {
+  'friends-apartment.png': require('../../assets/friends-apartment.png'),
   'TexasTheatre.png': require('../../assets/TexasTheatre.png'),
   'WrigleyField.png': require('../../assets/WrigleyField.png'),
   'FenwayPark.png': require('../../assets/FenwayPark.png'),
