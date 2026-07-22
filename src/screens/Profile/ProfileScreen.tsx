@@ -204,6 +204,20 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
         )}
       </View>
 
+      {/* Album */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>📸 Album</Text>
+        <TouchableOpacity
+          style={styles.navLinkRow}
+          onPress={() => navigation.navigate('Album')}
+        >
+          <View style={styles.navLinkInfo}>
+            <Text style={styles.navLinkDesc}>Photos you've taken at filming locations</Text>
+          </View>
+          <Text style={styles.navLinkChevron}>›</Text>
+        </TouchableOpacity>
+      </View>
+
       {/* Settings — link to Notification Preferences */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>⚙️ Settings</Text>
@@ -215,17 +229,6 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
           <View style={styles.navLinkInfo}>
             <Text style={styles.navLinkLabel}>🔔 Notifications</Text>
             <Text style={styles.navLinkDesc}>Alert types, range, quiet hours & more</Text>
-          </View>
-          <Text style={styles.navLinkChevron}>›</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.navLinkRow}
-          onPress={() => navigation.navigate('Album')}
-        >
-          <View style={styles.navLinkInfo}>
-            <Text style={styles.navLinkLabel}>📸 Album</Text>
-            <Text style={styles.navLinkDesc}>Photos you've taken at filming locations</Text>
           </View>
           <Text style={styles.navLinkChevron}>›</Text>
         </TouchableOpacity>
