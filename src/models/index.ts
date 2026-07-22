@@ -49,6 +49,12 @@ export interface FilmingLocation {
   remoteDestination?: RemoteDestinationInfo;
   /** Google Places rating data */
   googleRating?: GooglePlaceRating;
+  /** Scene Nearby community: percentage who say this location is worth a visit */
+  worthItPercentage?: number;
+  /** Scene Nearby community: number of votes on worth-it question */
+  worthItVotes?: number;
+  /** Estimated time to spend at this location (e.g. "5-10 min", "1-2 hrs") */
+  estimatedVisitTime?: string;
   /** Focal point for smart cropping: { x, y } in range 0–1 (0=top/left, 1=bottom/right).
    *  Defaults to { x: 0.5, y: 0.5 } (center) when not set. */
   focalPoint?: { x: number; y: number };

@@ -22,6 +22,8 @@ import { MissingPhotoCard } from '../../components/MissingPhotoCard';
 import { SmartHeroImage } from '../../components/SmartHeroImage';
 import { getLocalAsset } from '../../data/assetMap';
 import { RatingSection } from '../../components/RatingSection';
+import { WorthTheVisit } from '../../components/WorthTheVisit';
+import { EstimatedVisitTime } from '../../components/EstimatedVisitTime';
 import { RemoteDestinationBadge } from '../../components/RemoteDestinationBadge';
 import { LocationPhotoGallery, GalleryPhoto } from '../../components/LocationPhotoGallery';
 import { logLocationViewed, logLocationSaved, logLocationUnsaved, logLocationNavigate, logLocationShared, logUserRating } from '../../services/analytics';
@@ -297,6 +299,19 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
         </View>
       )}
 
+      {/* Worth the Visit — Scene Nearby community */}
+      <View style={styles.section}>
+        <WorthTheVisit
+          percentage={location.worthItPercentage}
+          votes={location.worthItVotes}
+        />
+      </View>
+
+      {/* Estimated Visit Time */}
+      <View style={styles.section}>
+        <EstimatedVisitTime time={location.estimatedVisitTime} />
+      </View>
+
       {/* What Happened Here */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>🎬 What Happened Here</Text>
@@ -441,13 +456,4 @@ const styles = StyleSheet.create({
   supportLink: { paddingVertical: 8 },
   supportLinkText: { fontSize: 13, color: theme.colors.textTertiary, textDecorationLine: 'underline' },
   supportFooter: { fontSize: 11, color: theme.colors.textTertiary + '60', marginTop: 12 },
-  remoteWarningSection: {
-    marginHorizontal: 20,
-    marginTop: 16,
-    padding: 14,
-    backgroundColor: '#F5C5180c',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#F5C51830',
-  },
 });
