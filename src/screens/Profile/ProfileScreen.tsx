@@ -71,6 +71,43 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
         </View>
       </View>
 
+      {/* Account */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>👤 Account</Text>
+        {user ? (
+          <View style={styles.authRow}>
+            <View style={styles.authInfo}>
+              <Text style={styles.authEmail}>{user.email ?? 'Signed in'}</Text>
+              <Text style={styles.authStatus}>Firebase Auth</Text>
+            </View>
+            <TouchableOpacity style={styles.authButton} onPress={() => authSignOut()}>
+              <Text style={styles.authButtonText}>Sign Out</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <TouchableOpacity
+            style={styles.authButton}
+            onPress={() => navigation.navigate('Auth')}
+          >
+            <Text style={styles.authButtonText}>Sign In</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+
+      {/* Album */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>📸 Album</Text>
+        <TouchableOpacity
+          style={styles.navLinkRow}
+          onPress={() => navigation.navigate('Album')}
+        >
+          <View style={styles.navLinkInfo}>
+            <Text style={styles.navLinkDesc}>Photos you've taken at filming locations</Text>
+          </View>
+          <Text style={styles.navLinkChevron}>›</Text>
+        </TouchableOpacity>
+      </View>
+
       {/* Premium upgrade */}
       {!isPremium && (
         <View style={styles.premiumCard}>
@@ -114,43 +151,6 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
             </View>
           );
         })}
-      </View>
-
-      {/* Account */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>👤 Account</Text>
-        {user ? (
-          <View style={styles.authRow}>
-            <View style={styles.authInfo}>
-              <Text style={styles.authEmail}>{user.email ?? 'Signed in'}</Text>
-              <Text style={styles.authStatus}>Firebase Auth</Text>
-            </View>
-            <TouchableOpacity style={styles.authButton} onPress={() => authSignOut()}>
-              <Text style={styles.authButtonText}>Sign Out</Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <TouchableOpacity
-            style={styles.authButton}
-            onPress={() => navigation.navigate('Auth')}
-          >
-            <Text style={styles.authButtonText}>Sign In</Text>
-          </TouchableOpacity>
-        )}
-      </View>
-
-      {/* Album */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>📸 Album</Text>
-        <TouchableOpacity
-          style={styles.navLinkRow}
-          onPress={() => navigation.navigate('Album')}
-        >
-          <View style={styles.navLinkInfo}>
-            <Text style={styles.navLinkDesc}>Photos you've taken at filming locations</Text>
-          </View>
-          <Text style={styles.navLinkChevron}>›</Text>
-        </TouchableOpacity>
       </View>
 
       {/* Settings — link to Notification Preferences */}
