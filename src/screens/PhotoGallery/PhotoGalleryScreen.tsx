@@ -25,10 +25,7 @@ export const PhotoGalleryScreen: React.FC<{ route: any }> = ({ route }) => {
         <LocationPhotoGallery
           photos={galleryPhotos}
           primaryImageUrl={location.imageUrl}
-          showAddButton={true}
-          onAddPhoto={() => {
-            // Placeholder — in real app would open camera/image picker
-          }}
+          showAddButton={false}
         />
       ) : galleryPhotos.length === 0 ? (
         <View style={styles.empty}>
@@ -39,8 +36,7 @@ export const PhotoGalleryScreen: React.FC<{ route: any }> = ({ route }) => {
       ) : (
         <LocationPhotoGallery
           photos={galleryPhotos}
-          showAddButton={true}
-          onAddPhoto={() => {}}
+          showAddButton={false}
         />
       )}
     </View>

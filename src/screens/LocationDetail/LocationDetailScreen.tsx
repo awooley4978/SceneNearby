@@ -119,9 +119,6 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
     navigation.navigate('MovieDetail', { movieTitle: location.movieOrShow });
   };
 
-  const handleAddPhoto = () => {
-    Alert.alert('Add Photo', 'Camera/gallery integration coming soon!');
-  };
 
   const handleCorrection = () => {
     const subject = encodeURIComponent('Location Correction');
@@ -296,8 +293,7 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
       <LocationPhotoGallery
         photos={galleryPhotos}
         primaryImageUrl={location.imageUrl}
-        onAddPhoto={handleAddPhoto}
-        showAddButton={true}
+        showAddButton={false}
       />
 
       {/* Location info */}
