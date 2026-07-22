@@ -59,31 +59,8 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
   const [selectedType, setSelectedType] = useState<string>('all');
   const [refreshing, setRefreshing] = useState(false);
   const prevQuery = useRef('');
-  useEffect(() => {
-    if (searchQuery.trim() && searchQuery !== prevQuery.current) {
-      logSearchPerformed({ query: searchQuery, resultCount: searchResults.length });
-      prevQuery.current = searchQuery;
-    }
-  }, [searchQuery, searchResults.length]);
-  const [isLoading, setIsLoading] = useState(true);
-  const userLocation = useUserLocation();
-  const fadeAnim = useRef(new Animated.Value(0)).current;
 
-  useEffect(() => {
-    // Simulate initial load for skeleton demonstration
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 400,
-        useNativeDriver: true,
-      }).start();
-    }, 800);
-    return () => clearTimeout(timer);
-  }, []);
-  const [sortMode, setSortMode] = useState<SortMode>('default');
-
-  // Search results with grouping
+  // Search results with grouping — MUST be before the useEffect that references it
   const searchResults = useMemo((): SearchResultItem[] => {
     const q = searchQuery.trim().toLowerCase();
     if (!q) return [];
@@ -143,6 +120,30 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
 
     return results;
   }, [searchQuery]);
+
+  useEffect(() => {
+    if (searchQuery.trim() && searchQuery !== prevQuery.current) {
+      logSearchPerformed({ query: searchQuery, resultCount: searchResults.length });
+      prevQuery.current = searchQuery;
+    }
+  }, [searchQuery, searchResults.length]);
+  const [isLoading, setIsLoading] = useState(true);
+  const userLocation = useUserLocation();
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    // Simulate initial load for skeleton demonstration
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 400,
+        useNativeDriver: true,
+      }).start();
+    }, 800);
+    return () => clearTimeout(timer);
+  }, []);
+  const [sortMode, setSortMode] = useState<SortMode>('default');
 
   // Constants
   const DEFAULT_RADIUS_MILES = 50;
