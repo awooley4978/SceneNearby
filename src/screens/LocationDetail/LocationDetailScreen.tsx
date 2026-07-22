@@ -271,7 +271,6 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
           <Text style={styles.locationTitle}>{location.title}</Text>
           <View style={styles.badges}>
             <CategoryBadge category={location.category} />
-            {location.remoteDestination && <RemoteDestinationBadge info={location.remoteDestination} />}
             <View style={styles.yearBadge}><Text style={styles.yearText}>{location.year}</Text></View>
             {distanceFromUser !== undefined && (
               <View style={styles.distanceBadge}>
@@ -290,6 +289,13 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
       <View style={styles.section}>
         <RatingSection googleRating={location.googleRating} />
       </View>
+
+      {/* Remote Destination Warning */}
+      {location.remoteDestination && (
+        <View style={styles.remoteWarningSection}>
+          <RemoteDestinationBadge info={location.remoteDestination} />
+        </View>
+      )}
 
       {/* What Happened Here */}
       <View style={styles.section}>
