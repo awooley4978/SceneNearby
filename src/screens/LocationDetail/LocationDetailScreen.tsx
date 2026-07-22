@@ -12,7 +12,7 @@ import {
   Image,
 } from 'react-native';
 import { theme } from '../../theme';
-import { locationById, mockRatings, photosByLocation, calculateDistance } from '../../data/sampleData';
+import { locationById, photosByLocation, calculateDistance } from '../../data/sampleData';
 import { categoryColors, STORAGE_KEYS, defaultUserSettings } from '../../models';
 import { getUserSettings, setUserSettings } from '../../services/StorageService';
 import { useSaved } from '../../context/SavedContext';
@@ -21,7 +21,6 @@ import { CategoryBadge } from '../../components/CategoryBadge';
 import { MissingPhotoCard } from '../../components/MissingPhotoCard';
 import { SmartHeroImage } from '../../components/SmartHeroImage';
 import { getLocalAsset } from '../../data/assetMap';
-import { StarRating } from '../../components/StarRating';
 import { RatingSection } from '../../components/RatingSection';
 import { RemoteDestinationBadge } from '../../components/RemoteDestinationBadge';
 import { LocationPhotoGallery, GalleryPhoto } from '../../components/LocationPhotoGallery';
@@ -33,9 +32,7 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
 }) => {
   const { locationId } = route.params;
   const location = locationById(locationId);
-  const rating = location ? mockRatings[location.id] : undefined;
   const communityPhotos = location ? photosByLocation(location.id) : [];
-  const [userRating, setUserRating] = useState<number | undefined>(undefined);
   const { isSaved: checkSaved, toggleSave: toggleSaved } = useSaved();
   const saved = checkSaved(locationId);
   const userLocation = useUserLocation();
@@ -165,11 +162,6 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
     await toggleSaved(locationId);
   };
 
-  const handleRate = (rating: number) => {
-    logUserRating({ locationId: location.id, rating });
-    setUserRating(rating);
-    Alert.alert('Rated!', `You gave ${location.title} ${rating} star${rating !== 1 ? 's' : ''}.`);
-  };
 
   const handleViewMovie = () => {
     navigation.navigate('MovieDetail', { movieTitle: location.movieOrShow });
@@ -253,7 +245,6 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
     });
   };
 
-  const displayedRating = userRating || rating?.average || 0;
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -295,24 +286,10 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
         </View>
       </View>
 
-      {/* Rating section */}
-      {rating && (
-        <View style={styles.ratingSection}>
-          <View style={styles.ratingRow}>
-            <StarRating rating={displayedRating} size={20} showCount={false} />
-            <Text style={styles.ratingAverage}>{rating.average.toFixed(1)}</Text>
-            <Text style={styles.ratingCount}>({rating.count} ratings)</Text>
-          </View>
-          <Text style={styles.ratePrompt}>Tap to rate:</Text>
-          <StarRating
-            rating={userRating || 0}
-            size={24}
-            interactive
-            onRate={handleRate}
-            showCount={false}
-          />
-        </View>
-      )}
+      {/* Ratings & Reviews */}
+      <View style={styles.section}>
+        <RatingSection googleRating={location.googleRating} />
+      </View>
 
       {/* What Happened Here */}
       <View style={styles.section}>
