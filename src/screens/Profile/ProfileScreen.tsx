@@ -10,13 +10,20 @@ import {
 import { theme } from '../../theme';
 import { availableCityPacks, defaultUserSettings } from '../../models';
 import type { MapStyleOption } from '../../models';
-import { resetOnboarding } from '../../services/StorageService';
+import { resetOnboarding, getUserSettings, setUserSettings } from '../../services/StorageService';
+import { Linking, Platform } from 'react-native';
 import { logPremiumUpgrade } from '../../services/analytics';
 
 export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [settings, setSettings] = useState(defaultUserSettings);
   const [isPremium, setIsPremium] = useState(false);
   const [purchasedPacks, setPurchasedPacks] = useState<string[]>([]);
+  const [navApp, setNavApp] = useState<string | null>(null);
+
+  // Load saved nav preference
+  React.useEffect(() => {
+    getUserSettings(defaultUserSettings).then((s) => setNavApp(s.navApp));
+  }, []);
 
   const stats = {
     saves: 4,
@@ -138,6 +145,43 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
             </Text>
           </TouchableOpacity>
         </View>
+
+        {/* Default Navigation App */}
+        <TouchableOpacity
+          style={styles.navLinkRow}
+          onPress={() => {
+            const apps = [
+              { label: '🚗 Waze', value: 'waze' },
+              { label: '🗺️ Apple Maps', value: 'applemaps' },
+              { label: '📍 Google Maps', value: 'googlemaps' },
+              { label: 'Ask each time', value: null },
+            ];
+            Alert.alert(
+              'Default Navigation App',
+              'Choose which app to use when navigating to locations.',
+              apps.map((a) => ({
+                text: a.label + (navApp === a.value ? ' ✓' : ''),
+                onPress: async () => {
+                  const settings = await getUserSettings(defaultUserSettings);
+                  const updated = { ...settings, navApp: a.value };
+                  await setUserSettings(updated);
+                  setNavApp(a.value);
+                },
+              })).concat([{ text: 'Cancel', style: 'cancel' as const }]),
+            );
+          }}
+        >
+          <View style={styles.navLinkInfo}>
+            <Text style={styles.navLinkLabel}>🧭 Default Navigation App</Text>
+            <Text style={styles.navLinkDesc}>
+              {navApp === 'waze' ? 'Waze' :
+               navApp === 'applemaps' ? 'Apple Maps' :
+               navApp === 'googlemaps' ? 'Google Maps' :
+               'Ask each time'}
+            </Text>
+          </View>
+          <Text style={styles.navLinkChevron}>›</Text>
+        </TouchableOpacity>
 
         {/* Reset Onboarding */}
         <TouchableOpacity

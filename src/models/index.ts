@@ -185,6 +185,7 @@ export interface UserSettings {
   savedLocationIds: string[];
   proximityMode: ProximityMode;
   notificationPrefs: NotificationPreferences;
+  navApp: 'googlemaps' | 'applemaps' | 'waze' | null;
 }
 
 export const defaultUserSettings: UserSettings = {
@@ -198,6 +199,7 @@ export const defaultUserSettings: UserSettings = {
   savedLocationIds: ['nyc-002', 'nyc-007', 'la-001', 'ldn-006'],
   proximityMode: 'driving',
   notificationPrefs: defaultNotificationPreferences,
+  navApp: null,
 };
 
 // ── City Pack ──

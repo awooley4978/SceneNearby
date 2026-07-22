@@ -13,7 +13,8 @@ import {
 } from 'react-native';
 import { theme } from '../../theme';
 import { locationById, mockRatings, photosByLocation, calculateDistance } from '../../data/sampleData';
-import { categoryColors, STORAGE_KEYS } from '../../models';
+import { categoryColors, STORAGE_KEYS, defaultUserSettings } from '../../models';
+import { getUserSettings, setUserSettings } from '../../services/StorageService';
 import { useSaved } from '../../context/SavedContext';
 import { useUserLocation } from '../../hooks/useUserLocation';
 import { CategoryBadge } from '../../components/CategoryBadge';
@@ -66,7 +67,6 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
   const catColor = categoryColors[location.category];
 
   const handleNavigate = async () => {
-    logLocationNavigate({ locationId: location.id, appName: 'navigate' });
     const lat = location.latitude;
     const lng = location.longitude;
     const appleMapsUrl = Platform.OS === 'ios'
@@ -76,25 +76,77 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
     const wazeFallback = `https://waze.com/ul?ll=${lat},${lng}&navigate=yes`;
     const googleMapsUrl = `comgooglemaps://?daddr=${lat},${lng}&directionsmode=driving`;
     const googleMapsFallback = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+
+    // Check availability
     const canOpenGoogleMaps = await Linking.canOpenURL('comgooglemaps://');
     const canOpenWaze = await Linking.canOpenURL('waze://');
     const canOpenAppleMaps = await Linking.canOpenURL('maps://');
-    const options: string[] = [
-      canOpenGoogleMaps ? '📍 Google Maps' : '📍 Google Maps (web)',
-      canOpenAppleMaps ? '🗺️ Apple Maps' : '🗺️ Apple Maps (web)',
-      canOpenWaze ? '🚗 Waze' : '🚗 Waze (web)',
+
+    // Check saved preference
+    const settings = await getUserSettings(defaultUserSettings);
+    const pref = settings.navApp;
+
+    const openApp = (app: string) => {
+      if (app === 'googlemaps') Linking.openURL(canOpenGoogleMaps ? googleMapsUrl : googleMapsFallback);
+      else if (app === 'applemaps') Linking.openURL(appleMapsUrl);
+      else if (app === 'waze') Linking.openURL(canOpenWaze ? wazeUrl : wazeFallback);
+    };
+
+    // Direct open if preference is set and available
+    if (pref && (
+      (pref === 'googlemaps' && canOpenGoogleMaps) ||
+      (pref === 'applemaps' && canOpenAppleMaps) ||
+      (pref === 'waze' && canOpenWaze)
+    )) {
+      logLocationNavigate({ locationId: location.id, appName: pref });
+      openApp(pref);
+      return;
+    }
+
+    // Show action sheet
+    const options: { label: string; app: string; available: boolean }[] = [
+      { label: '🚗 Waze', app: 'waze', available: canOpenWaze },
+      { label: '🗺️ Apple Maps', app: 'applemaps', available: canOpenAppleMaps },
+      { label: '📍 Google Maps', app: 'googlemaps', available: canOpenGoogleMaps },
+    ];
+
+    const sheetOptions: string[] = [
+      ...options.map((o) => o.available ? o.label : o.label + ' (web)'),
+      ...(pref ? ['Choose another app'] : []),
       'Cancel',
     ];
-    const actions: (() => void)[] = [
-      () => canOpenGoogleMaps ? Linking.openURL(googleMapsUrl) : Linking.openURL(googleMapsFallback),
-      () => Linking.openURL(appleMapsUrl),
-      () => canOpenWaze ? Linking.openURL(wazeUrl) : Linking.openURL(wazeFallback),
+
+    const sheetActions: (() => void)[] = [
+      ...options.map((o) => () => {
+        logLocationNavigate({ locationId: location.id, appName: o.app });
+        openApp(o.app);
+        // Save selection as preference
+        setUserSettings({ ...settings, navApp: o.app });
+      }),
+      ...(pref ? [() => {
+        // "Choose another app" — show full picker without saving
+        const pickerOptions: string[] = options.map((o) => o.available ? o.label : o.label + ' (web)');
+        pickerOptions.push('Cancel');
+        const pickerActions: (() => void)[] = [
+          ...options.map((o) => () => {
+            logLocationNavigate({ locationId: location.id, appName: o.app });
+            openApp(o.app);
+            setUserSettings({ ...settings, navApp: o.app });
+          }),
+          () => {},
+        ];
+        Alert.alert('Navigate With', location.title, pickerOptions.map((opt, i) => ({
+          text: opt,
+          onPress: pickerActions[i],
+          style: opt === 'Cancel' ? 'cancel' : 'default' as const,
+        })));
+      }] : []),
       () => {},
     ];
 
-    Alert.alert('Navigate To', location.title, options.map((opt, i) => ({
+    Alert.alert('Navigate To', location.title, sheetOptions.map((opt, i) => ({
       text: opt,
-      onPress: actions[i],
+      onPress: sheetActions[i],
       style: opt === 'Cancel' ? 'cancel' : 'default' as const,
     })));
   };
