@@ -1337,7 +1337,7 @@ export const allLocations: FilmingLocation[] = [
     DEFAULT_LOCATION.longitude,
     loc.latitude,
     loc.longitude,
-  ),
+  ) / 1609.34, // convert meters to miles
 }));
 
 // ── Actors per location ──
