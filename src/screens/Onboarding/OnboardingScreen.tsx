@@ -152,9 +152,17 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
         case 1: return (
           <View style={styles.page}>
             <View style={styles.mapBg}>
-              <View style={styles.mapGridOverlay} />
-              <View style={styles.mapRoad} />
-              <View style={styles.mapRoad2} />
+              <View style={styles.mapDiag1} />
+              <View style={styles.mapDiag2} />
+              <View style={styles.mapDiag3} />
+              <View style={styles.mapDiag4} />
+              <View style={styles.mapDiag5} />
+              <View style={[styles.mapNodeDot, { top: '24%', left: '28%' }]} />
+              <View style={[styles.mapNodeDot, { top: '24%', left: '62%' }]} />
+              <View style={[styles.mapNodeDot, { top: '44%', left: '52%' }]} />
+              <View style={[styles.mapNodeDot, { top: '54%', left: '38%' }]} />
+              <View style={[styles.mapNodeDot, { top: '69%', left: '72%' }]} />
+              <View style={[styles.mapNodeDot, { top: '14%', left: '46%' }]} />
             </View>
             {/* Friends apartment building image */}
             <View style={styles.notifBuildingContainer}>
@@ -434,23 +442,38 @@ const styles = StyleSheet.create({
   continueButtonText: { fontSize: 16, fontWeight: '700', color: theme.colors.black },
 
   // Notification preview
-  // Map background
+  // Map background — abstract, atmospheric, predominantly black
   mapBg: {
     position: 'absolute', top: 0, left: 0, right: 0, height: 300,
-    backgroundColor: '#1a2e1a',
+    backgroundColor: '#060606',
   },
   mapGridOverlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'transparent',
-    borderWidth: 0,
   },
-  mapRoad: {
-    position: 'absolute', left: -20, right: -20, height: 8,
-    backgroundColor: '#2a3a2a', top: 240, borderRadius: 4,
+  mapDiag1: {
+    position: 'absolute', left: '-10%', right: '-10%', height: 1,
+    backgroundColor: '#B8942D15', top: '25%', transform: [{ rotate: '-28deg' }],
   },
-  mapRoad2: {
-    position: 'absolute', top: 180, bottom: 100, width: 8,
-    backgroundColor: '#2a3a2a', left: '30%', borderRadius: 4,
+  mapDiag2: {
+    position: 'absolute', left: '-10%', right: '-10%', height: 1,
+    backgroundColor: '#B8942D10', top: '45%', transform: [{ rotate: '-28deg' }],
+  },
+  mapDiag3: {
+    position: 'absolute', left: '-10%', right: '-10%', height: 1,
+    backgroundColor: '#B8942D12', top: '55%', transform: [{ rotate: '32deg' }],
+  },
+  mapDiag4: {
+    position: 'absolute', left: '-10%', right: '-10%', height: 1,
+    backgroundColor: '#B8942D08', top: '70%', transform: [{ rotate: '-12deg' }],
+  },
+  mapDiag5: {
+    position: 'absolute', left: '-10%', right: '-10%', height: 1,
+    backgroundColor: '#B8942D0A', top: '15%', transform: [{ rotate: '48deg' }],
+  },
+  mapNodeDot: {
+    position: 'absolute', width: 3, height: 3, borderRadius: 2,
+    backgroundColor: '#B8942D20',
   },
   // Building image
   notifBuildingContainer: {
