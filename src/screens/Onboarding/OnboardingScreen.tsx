@@ -8,8 +8,8 @@ import { Image, ImageBackground,
   Dimensions,
   Animated,
 } from 'react-native';
-import { Image, ImageBackground, theme } from '../../theme';
-import { Image, ImageBackground, DISCOVERY_FREQUENCIES, STORAGE_KEYS } from '../../models';
+import { theme } from '../../theme';
+import { DISCOVERY_FREQUENCIES, STORAGE_KEYS } from '../../models';
 import type { DiscoveryFrequency } from '../../models';
 
 const { width, height } = Dimensions.get('window');
