@@ -1330,15 +1330,7 @@ export const allLocations: FilmingLocation[] = [
   ...newOrleansLocations,
   ...washingtonDCLocations,
   ...dallasLocations,
-].map((loc) => ({
-  ...loc,
-  distanceFromUser: calculateDistance(
-    DEFAULT_LOCATION.latitude,
-    DEFAULT_LOCATION.longitude,
-    loc.latitude,
-    loc.longitude,
-  ) / 1609.34, // convert meters to miles
-}));
+]; // distanceFromUser calculated at runtime from user GPS coordinates
 
 // ── Actors per location ──
 const actorMap: Record<string, string[]> = {
