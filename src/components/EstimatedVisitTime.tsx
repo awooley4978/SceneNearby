@@ -1,14 +1,27 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { theme } from '../theme';
 
 interface EstimatedVisitTimeProps {
   time?: string;
+  locationId?: string;
 }
 
-export const EstimatedVisitTime: React.FC<EstimatedVisitTimeProps> = ({ time }) => {
+export const EstimatedVisitTime: React.FC<EstimatedVisitTimeProps> = ({ time, locationId }) => {
+  const [liveTime, setLiveTime] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!locationId) return;
+    import('../services/firestore').then(({ getVisitTimeStats }) => {
+      getVisitTimeStats(locationId).then((t) => {
+        if (t) setLiveTime(t);
+      }).catch(() => {});
+    });
+  }, [locationId]);
+
+  const display = liveTime ?? time;
   // No data — show inviting empty state
-  if (!time) {
+  if (!display) {
     return (
       <View style={styles.container}>
         <Text style={styles.heading}>⏱️ Estimated Visit Time</Text>

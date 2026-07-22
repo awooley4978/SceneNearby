@@ -304,12 +304,13 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
         <WorthTheVisit
           percentage={location.worthItPercentage}
           votes={location.worthItVotes}
+          locationId={location.id}
         />
       </View>
 
       {/* Estimated Visit Time */}
       <View style={styles.section}>
-        <EstimatedVisitTime time={location.estimatedVisitTime} />
+        <EstimatedVisitTime time={location.estimatedVisitTime} locationId={location.id} />
       </View>
 
       {/* What Happened Here */}

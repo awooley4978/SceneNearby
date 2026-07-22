@@ -1,15 +1,28 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { theme } from '../theme';
 
 interface WorthTheVisitProps {
   percentage?: number;
   votes?: number;
+  locationId?: string;
 }
 
-export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes }) => {
+export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes, locationId }) => {
+  const [liveStats, setLiveStats] = useState<{ percentage: number; votes: number } | null>(null);
+
+  useEffect(() => {
+    if (!locationId) return;
+    import('../services/firestore').then(({ getWorthItStats }) => {
+      getWorthItStats(locationId).then((stats) => {
+        if (stats) setLiveStats(stats);
+      }).catch(() => {});
+    });
+  }, [locationId]);
+
+  const display = liveStats ?? (percentage !== undefined && votes !== undefined ? { percentage, votes } : null);
   // No data — show inviting empty state
-  if (percentage === undefined || votes === undefined) {
+  if (!display) {
     return (
       <View style={styles.container}>
         <Text style={styles.heading}>👍 Worth the Visit</Text>
