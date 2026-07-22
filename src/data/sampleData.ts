@@ -989,7 +989,7 @@ const londonLocations: FilmingLocation[] = [
           address: '7 Commercial Road, Helensville 0800', city: 'Auckland', country: 'New Zealand',
           sceneDescription: 'A retro video game store where Steve discovers the mysterious game cartridge that transports him into the Over World.',
           funFact: 'The Over World was originally named Game Over World before rebranding — old signage can still be spotted in the back corner of the shop.',
-          quote: 'Some games you don'''t just play. You survive them.',
+          quote: 'Some games you don't just play. You survive them.',
           quoteAttribution: 'Store owner to Steve',
           thenAndNow: 'The Over World still operates as a working game store, with a dedicated Minecraft corner that attracts fans from around the world.',
           isMovie: false,
