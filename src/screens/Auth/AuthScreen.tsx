@@ -15,13 +15,18 @@ import { useAuth } from '../../context/AuthContext';
 
 type Step = 'signIn' | 'sent' | 'welcome' | 'error';
 
+const RESEND_COOLDOWN_MS = 5_000;
+
 export const AuthScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { user, sendMagicLink, magicLinkState, resetMagicLinkState } = useAuth();
   const [email, setEmail] = useState('');
   const [step, setStep] = useState<Step>('signIn');
   const [errorMessage, setErrorMessage] = useState('');
+  const [resendStatus, setResendStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+  const [resendCooldown, setResendCooldown] = useState(0);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const welcomeAnim = useRef(new Animated.Value(0)).current;
+  const cooldownRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // If already signed in, jump to welcome
   useEffect(() => {
@@ -64,35 +69,72 @@ export const AuthScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     }
   }, [step]);
 
+  // Resend cooldown countdown
+  useEffect(() => {
+    if (resendCooldown > 0) {
+      cooldownRef.current = setInterval(() => {
+        setResendCooldown((prev) => {
+          if (prev <= 1) {
+            if (cooldownRef.current) clearInterval(cooldownRef.current);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      return () => {
+        if (cooldownRef.current) clearInterval(cooldownRef.current);
+      };
+    }
+  }, [resendCooldown > 0]);
+
+  // Watch magicLinkState: only advance to 'sent' when the API confirms success
+  useEffect(() => {
+    if (magicLinkState.status === 'sent') {
+      setStep('sent');
+    } else if (magicLinkState.status === 'error' || magicLinkState.status === 'invalid') {
+      const isVerifying = step === 'sent'; // deep-link verification error
+      setErrorMessage(
+        magicLinkState.error ||
+          (isVerifying
+            ? 'Could not verify sign-in link.'
+            : 'Could not send link. Check your email and try again.')
+      );
+      setStep('error');
+    }
+  }, [magicLinkState.status, magicLinkState.error]);
+
   const handleSendLink = useCallback(async () => {
     const trimmed = email.trim();
     if (!trimmed) return;
     setErrorMessage('');
     await sendMagicLink(trimmed);
-    setStep('sent');
+    // Don't setStep here — the useEffect above watches magicLinkState.status
   }, [email, sendMagicLink]);
 
   const handleResend = useCallback(async () => {
-    await sendMagicLink(email.trim());
-  }, [email, sendMagicLink]);
+    if (resendCooldown > 0 || resendStatus === 'sending') return;
+    setResendStatus('sending');
+    setErrorMessage('');
+    try {
+      await sendMagicLink(email.trim());
+      setResendStatus('sent');
+      setResendCooldown(RESEND_COOLDOWN_MS / 1000);
+      // Auto-clear "New link sent" after 3 seconds
+      setTimeout(() => setResendStatus('idle'), 3000);
+    } catch {
+      setResendStatus('error');
+      setTimeout(() => setResendStatus('idle'), 3000);
+    }
+  }, [email, sendMagicLink, resendCooldown, resendStatus]);
 
   const handleGoBack = useCallback(() => {
     resetMagicLinkState();
     setEmail('');
     setStep('signIn');
     setErrorMessage('');
+    setResendStatus('idle');
+    setResendCooldown(0);
   }, [resetMagicLinkState]);
-
-  // Watch for link verification errors from context
-  useEffect(() => {
-    if (magicLinkState.status === 'invalid') {
-      setErrorMessage(magicLinkState.error || 'This sign-in link has expired. Please request a new one.');
-      setStep('error');
-    } else if (magicLinkState.status === 'error' && step !== 'signIn') {
-      setErrorMessage(magicLinkState.error || 'Could not verify sign-in link.');
-      setStep('error');
-    }
-  }, [magicLinkState.status]);
 
   // ── Step 1: Welcome / Sign In ──
   if (step === 'signIn') {
@@ -134,6 +176,10 @@ export const AuthScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
               <Text style={styles.buttonText}>🟡 Send Magic Link</Text>
             )}
           </TouchableOpacity>
+
+          {magicLinkState.status === 'error' && (
+            <Text style={styles.inlineError}>{magicLinkState.error}</Text>
+          )}
         </Animated.View>
       </KeyboardAvoidingView>
     );
@@ -147,13 +193,30 @@ export const AuthScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         <Text style={styles.title}>Check your email</Text>
         <Text style={styles.subtitle}>
           We sent a secure sign-in link to{' '}
-          <Text style={styles.emailHighlight}>{email.trim()}</Text>.
+          <Text style={styles.emailHighlight}>{magicLinkState.email || email.trim()}</Text>.
         </Text>
         <Text style={styles.expiryNote}>It expires in 15 minutes.</Text>
 
-        <TouchableOpacity onPress={handleResend} style={styles.linkButton}>
-          <Text style={styles.resendText}>Resend Link</Text>
+        <TouchableOpacity
+          onPress={handleResend}
+          style={styles.linkButton}
+          disabled={resendCooldown > 0 || resendStatus === 'sending'}
+        >
+          {resendStatus === 'sending' ? (
+            <ActivityIndicator size="small" color={theme.colors.gold} />
+          ) : (
+            <Text style={[styles.resendText, resendCooldown > 0 && styles.resendTextMuted]}>
+              {resendCooldown > 0 ? `Resend Link (${resendCooldown}s)` : 'Resend Link'}
+            </Text>
+          )}
         </TouchableOpacity>
+
+        {resendStatus === 'sent' && (
+          <Text style={styles.resendConfirmation}>✓ New link sent</Text>
+        )}
+        {resendStatus === 'error' && (
+          <Text style={styles.resendError}>Could not resend. Try again.</Text>
+        )}
 
         <TouchableOpacity onPress={handleGoBack} style={styles.linkButton}>
           <Text style={styles.goBackText}>Wrong email? Go back</Text>
@@ -287,6 +350,19 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: theme.colors.gold,
   },
+  resendTextMuted: {
+    color: theme.colors.textTertiary,
+  },
+  resendConfirmation: {
+    fontSize: 13,
+    color: theme.colors.gold,
+    marginBottom: 4,
+  },
+  resendError: {
+    fontSize: 13,
+    color: theme.colors.error,
+    marginBottom: 4,
+  },
   goBackText: {
     fontSize: 14,
     color: theme.colors.textTertiary,
@@ -299,6 +375,12 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     marginBottom: 32,
     paddingHorizontal: 20,
+  },
+  inlineError: {
+    fontSize: 13,
+    color: theme.colors.error,
+    textAlign: 'center',
+    marginTop: 16,
   },
   welcomeCard: {
     alignItems: 'center',

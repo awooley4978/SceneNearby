@@ -72,48 +72,7 @@ export function getCurrentUser(): User | null {
 export async function sendMagicLink(email: string): Promise<void> {
   // Store email so we can retrieve it when the link is clicked
   await AsyncStorage.setItem(MAGIC_LINK_STORAGE_KEY, email);
-
-  // ── Diagnostic: call the REST API directly to see the raw response ──
-  const apiKey = auth.app.options.apiKey;
-  const restUrl = `https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${apiKey}`;
-  const restBody = {
-    requestType: 'EMAIL_SIGNIN',
-    email,
-    continueUrl: actionCodeSettings.url,
-    canHandleCodeInApp: true,
-    iOSBundleId: actionCodeSettings.iOS?.bundleId,
-    androidPackageName: actionCodeSettings.android?.packageName,
-    androidInstallApp: actionCodeSettings.android?.installApp,
-  };
-
-  try {
-    const restRes = await fetch(restUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(restBody),
-    });
-    const restJson = await restRes.json();
-    console.log('[auth] REST API response status:', restRes.status);
-    console.log('[auth] REST API response body:', JSON.stringify(restJson, null, 2));
-  } catch (restErr: any) {
-    console.error('[auth] REST API fetch failed:', restErr?.message);
-  }
-
-  // ── Original SDK call ──
-  try {
-    await sendSignInLinkToEmail(auth, email, actionCodeSettings);
-    console.log('[auth] sendSignInLinkToEmail succeeded');
-  } catch (err: any) {
-    const detail = {
-      code: err?.code,
-      message: err?.message,
-      name: err?.name,
-      customData: err?.customData,
-      email: err?.email,
-    };
-    console.error('[auth] sendSignInLinkToEmail failed:', JSON.stringify(detail, null, 2));
-    throw err;
-  }
+  await sendSignInLinkToEmail(auth, email, actionCodeSettings);
 }
 
 /** Complete magic link sign-in using the URL from the deep link */
