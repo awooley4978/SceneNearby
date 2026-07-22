@@ -173,11 +173,6 @@ export const LocationCard: React.FC<LocationCardProps> = ({
                 movieOrShow={location.movieOrShow}
               />
             )}
-            {/* Gradient overlay (always present for fallback) */}
-            <View style={[styles.heroGradientOverlay, heroGradient]} />
-            {/* Subtle gradient overlay at bottom of hero */}
-            <View style={styles.heroOverlayGradient} />
-
             {/* Category badge — top left */}
             <View style={styles.heroBadgeTopLeft}>
               <CategoryBadge category={location.category} />

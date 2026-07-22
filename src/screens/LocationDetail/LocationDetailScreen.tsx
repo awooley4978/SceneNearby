@@ -220,7 +220,6 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
             movieOrShow={location.movieOrShow}
           />
         )}
-        <View style={[styles.heroGradientOverlay, { backgroundColor: catColor + 'AA' }]} />
         <View style={styles.heroContent}>
           <TouchableOpacity onPress={handleViewMovie}>
             <Text style={styles.showName}>{location.movieOrShow} ›</Text>
