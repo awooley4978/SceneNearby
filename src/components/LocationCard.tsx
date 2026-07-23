@@ -379,9 +379,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     zIndex: 5,
+    paddingHorizontal: 14,
+    paddingBottom: 10,
   },
   heroCity: {
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '600',
     color: '#FFFFFF',
     letterSpacing: 0.5,
@@ -395,7 +397,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   heroYear: {
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '600',
     color: 'rgba(255,255,255,0.8)',
     textShadowColor: 'rgba(0,0,0,0.5)',
@@ -403,7 +405,7 @@ const styles = StyleSheet.create({
     textShadowRadius: 4,
   },
   heroType: {
-    fontSize: 12,
+    fontSize: 14,
   },
 
   // ── Content ──
