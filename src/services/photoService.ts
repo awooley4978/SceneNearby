@@ -63,3 +63,15 @@ export async function uploadPhoto(request: PhotoUploadRequest): Promise<PhotoUpl
 
   return data as PhotoUploadResponse;
 }
+
+/** Check how many approved photos exist for a location */
+export async function getApprovedPhotoCount(locationId: string): Promise<number> {
+  try {
+    const response = await fetch(`${API_BASE}/api/gallery/${encodeURIComponent(locationId)}`);
+    if (!response.ok) return 0;
+    const data = await response.json();
+    return Array.isArray(data) ? data.length : data.photos?.length || 0;
+  } catch {
+    return 0;
+  }
+}

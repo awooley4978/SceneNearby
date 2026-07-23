@@ -7,9 +7,10 @@ const PLACEHOLDER_IMAGE = require('../../assets/missing-photo-placeholder.png');
 interface MapPlaceholderProps {
   locationId?: string;
   locationName?: string;
+  hasPhotos?: boolean;
 }
 
-export const MapPlaceholder: React.FC<MapPlaceholderProps> = ({ locationId, locationName }) => {
+export const MapPlaceholder: React.FC<MapPlaceholderProps> = ({ locationId, locationName, hasPhotos }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const navigation = useNavigation<any>();
 
@@ -35,11 +36,15 @@ export const MapPlaceholder: React.FC<MapPlaceholderProps> = ({ locationId, loca
       <View style={styles.overlay} />
       <View style={styles.copyContainer}>
         <TouchableOpacity
-          style={styles.pill}
+          style={[styles.pill, hasPhotos && styles.pillWide]}
           onPress={handleUpload}
           activeOpacity={0.7}
         >
-          <Text style={styles.pillText}>📸 Be the first to upload a photo</Text>
+          <Text style={[styles.pillText, hasPhotos && styles.pillTextSmall]}>
+            {hasPhotos
+              ? "Someone already submitted the first photo — we'd still love yours! More angles help future travelers."
+              : '📸 Be the first to upload a photo'}
+          </Text>
         </TouchableOpacity>
       </View>
     </Animated.View>
@@ -95,5 +100,15 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: 'rgba(245,197,24,0.9)',
     letterSpacing: 0.2,
+    textAlign: 'center',
+  },
+  pillTextSmall: {
+    fontSize: 12,
+    lineHeight: 18,
+  },
+  pillWide: {
+    maxWidth: '85%',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
   },
 });
