@@ -54,32 +54,66 @@ export const MapPlaceholder: React.FC = () => {
         <View style={[styles.cloudShape, { top: 2, left: -8, width: 20 }]} />
       </Animated.View>
 
-      {/* Landmark silhouette — Eiffel Tower */}
-      <View style={styles.landmark}>
-        {/* Base legs */}
-        <View style={styles.towerLegL} />
-        <View style={styles.towerLegR} />
-        {/* Main body */}
-        <View style={styles.towerBody} />
-        {/* Platform 1 */}
-        <View style={styles.towerPlatform1} />
-        {/* Upper section */}
-        <View style={styles.towerUpper} />
-        {/* Platform 2 */}
-        <View style={styles.towerPlatform2} />
-        {/* Spire */}
-        <View style={styles.towerSpire} />
-        {/* Antenna */}
-        <View style={styles.towerAntenna} />
-        {/* Arch */}
-        <View style={styles.towerArch} />
-      </View>
+      {/* Skyline — mix of iconic landmarks */}
+      <View style={styles.skyline}>
 
-      {/* Secondary silhouette — dome */}
-      <View style={styles.dome}>
-        <View style={styles.domeBase} />
-        <View style={styles.domeCurve} />
-        <View style={styles.domeSpire} />
+        {/* Big Ben */}
+        <View style={styles.skItem}>
+          <View style={styles.bbBody} />
+          <View style={styles.bbClock} />
+          <View style={styles.bbSpire} />
+        </View>
+
+        {/* Eiffel Tower */}
+        <View style={styles.skItem}>
+          <View style={styles.etLegL} />
+          <View style={styles.etLegR} />
+          <View style={styles.etBody} />
+          <View style={styles.etPlatform1} />
+          <View style={styles.etUpper} />
+          <View style={styles.etPlatform2} />
+          <View style={styles.etSpire} />
+          <View style={styles.etAntenna} />
+        </View>
+
+        {/* Empire State */}
+        <View style={styles.skItem}>
+          <View style={styles.esBase} />
+          <View style={styles.esTier1} />
+          <View style={styles.esTier2} />
+          <View style={styles.esSpire} />
+        </View>
+
+        {/* Colosseum */}
+        <View style={styles.skItem}>
+          <View style={styles.colBody}>
+            <View style={styles.colArch1} />
+            <View style={styles.colArch2} />
+            <View style={styles.colArch3} />
+          </View>
+        </View>
+
+        {/* Taj Mahal */}
+        <View style={styles.skItem}>
+          <View style={styles.tajBase} />
+          <View style={styles.tajDome} />
+          <View style={styles.tajSpire} />
+        </View>
+
+        {/* Sydney Opera House */}
+        <View style={styles.skItem}>
+          <View style={styles.sydneySail1} />
+          <View style={styles.sydneySail2} />
+          <View style={styles.sydneyBase} />
+        </View>
+
+        {/* Tower blocks */}
+        <View style={styles.skItem}>
+          <View style={styles.towerBlock1} />
+        </View>
+        <View style={styles.skItem}>
+          <View style={styles.towerBlock2} />
+        </View>
       </View>
 
       {/* Horizon line */}
@@ -211,129 +245,255 @@ const styles = StyleSheet.create({
     backgroundColor: '#040610',
   },
 
-  // ── Landmark: Eiffel Tower ──
-  landmark: {
+  // ── Skyline ──
+  skyline: {
     position: 'absolute',
-    top: '24%',
-    left: '14%',
-    width: 36,
-    height: 130,
+    top: '28%',
+    left: 10,
+    right: 10,
+    height: 120,
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-evenly',
+    opacity: 0.12,
+  },
+  skItem: {
+    position: 'relative',
     alignItems: 'center',
-    opacity: 0.14,
+    justifyContent: 'flex-end',
+    height: '100%',
+    minWidth: 20,
   },
-  towerLegL: {
-    position: 'absolute',
-    bottom: 0,
-    left: 4,
-    width: 3,
-    height: 80,
-    backgroundColor: 'rgba(245,197,24,0.5)',
-    transform: [{ rotate: '-8deg' }],
-    transformOrigin: 'bottom left',
-    borderRadius: 1,
-  },
-  towerLegR: {
-    position: 'absolute',
-    bottom: 0,
-    right: 4,
-    width: 3,
-    height: 80,
-    backgroundColor: 'rgba(245,197,24,0.5)',
-    transform: [{ rotate: '8deg' }],
-    transformOrigin: 'bottom right',
-    borderRadius: 1,
-  },
-  towerBody: {
-    position: 'absolute',
-    bottom: 55,
-    width: 20,
+
+  // Big Ben
+  bbBody: {
+    width: 12,
     height: 40,
     backgroundColor: 'rgba(245,197,24,0.5)',
   },
-  towerPlatform1: {
-    position: 'absolute',
-    bottom: 88,
-    width: 28,
-    height: 3,
-    backgroundColor: 'rgba(245,197,24,0.5)',
+  bbClock: {
+    width: 16,
+    height: 10,
+    backgroundColor: 'rgba(245,197,24,0.6)',
+    borderRadius: 2,
   },
-  towerUpper: {
+  bbSpire: {
+    width: 3,
+    height: 22,
+    backgroundColor: 'rgba(245,197,24,0.4)',
+    borderTopLeftRadius: 1,
+    borderTopRightRadius: 1,
+  },
+
+  // Eiffel Tower
+  etLegL: {
+    width: 2,
+    height: 55,
+    backgroundColor: 'rgba(245,197,24,0.5)',
     position: 'absolute',
-    bottom: 91,
+    bottom: 0,
+    left: 4,
+    transform: [{ rotate: '-6deg' }],
+    transformOrigin: 'bottom left',
+    borderRadius: 1,
+  },
+  etLegR: {
+    width: 2,
+    height: 55,
+    backgroundColor: 'rgba(245,197,24,0.5)',
+    position: 'absolute',
+    bottom: 0,
+    right: 4,
+    transform: [{ rotate: '6deg' }],
+    transformOrigin: 'bottom right',
+    borderRadius: 1,
+  },
+  etBody: {
     width: 12,
     height: 28,
     backgroundColor: 'rgba(245,197,24,0.5)',
-  },
-  towerPlatform2: {
     position: 'absolute',
-    bottom: 116,
+    bottom: 38,
+    alignSelf: 'center',
+  },
+  etPlatform1: {
     width: 18,
     height: 2,
     backgroundColor: 'rgba(245,197,24,0.5)',
-  },
-  towerSpire: {
     position: 'absolute',
-    bottom: 118,
-    width: 6,
-    height: 12,
+    bottom: 64,
+    alignSelf: 'center',
+  },
+  etUpper: {
+    width: 7,
+    height: 18,
     backgroundColor: 'rgba(245,197,24,0.5)',
-    borderTopLeftRadius: 3,
-    borderTopRightRadius: 3,
-  },
-  towerAntenna: {
     position: 'absolute',
-    bottom: 129,
-    width: 1.5,
-    height: 6,
-    backgroundColor: 'rgba(245,197,24,0.4)',
+    bottom: 66,
+    alignSelf: 'center',
   },
-  towerArch: {
+  etPlatform2: {
+    width: 11,
+    height: 1.5,
+    backgroundColor: 'rgba(245,197,24,0.5)',
     position: 'absolute',
-    bottom: 62,
-    width: 16,
-    height: 10,
-    borderLeftWidth: 2,
-    borderRightWidth: 2,
-    borderBottomWidth: 2,
-    borderLeftColor: 'transparent',
-    borderRightColor: 'transparent',
-    borderBottomColor: 'rgba(245,197,24,0.5)',
-    borderBottomLeftRadius: 8,
-    borderBottomRightRadius: 8,
+    bottom: 82,
+    alignSelf: 'center',
+  },
+  etSpire: {
+    width: 4,
+    height: 8,
+    backgroundColor: 'rgba(245,197,24,0.5)',
+    position: 'absolute',
+    bottom: 83,
+    alignSelf: 'center',
+    borderTopLeftRadius: 2,
+    borderTopRightRadius: 2,
+  },
+  etAntenna: {
+    width: 1,
+    height: 5,
+    backgroundColor: 'rgba(245,197,24,0.35)',
+    position: 'absolute',
+    bottom: 91,
+    alignSelf: 'center',
   },
 
-  // ── Silhouette: dome ──
-  dome: {
-    position: 'absolute',
-    top: '32%',
-    right: '18%',
-    width: 30,
-    height: 50,
-    alignItems: 'center',
-    opacity: 0.1,
-  },
-  domeBase: {
+  // Empire State
+  esBase: {
+    width: 18,
+    height: 30,
+    backgroundColor: 'rgba(255,255,255,0.45)',
     position: 'absolute',
     bottom: 0,
+    alignSelf: 'center',
+  },
+  esTier1: {
+    width: 12,
+    height: 18,
+    backgroundColor: 'rgba(255,255,255,0.45)',
+    position: 'absolute',
+    bottom: 30,
+    alignSelf: 'center',
+  },
+  esTier2: {
+    width: 6,
+    height: 14,
+    backgroundColor: 'rgba(255,255,255,0.45)',
+    position: 'absolute',
+    bottom: 48,
+    alignSelf: 'center',
+  },
+  esSpire: {
+    width: 1.5,
+    height: 16,
+    backgroundColor: 'rgba(255,255,255,0.35)',
+    position: 'absolute',
+    bottom: 62,
+    alignSelf: 'center',
+  },
+
+  // Colosseum
+  colBody: {
+    width: 26,
+    height: 28,
+    backgroundColor: 'rgba(245,197,24,0.4)',
+    borderTopLeftRadius: 4,
+    borderTopRightRadius: 4,
+    alignItems: 'center',
+    justifyContent: 'space-evenly',
+    flexDirection: 'row',
+    paddingTop: 4,
+  },
+  colArch1: {
+    width: 4,
+    height: 14,
+    borderRadius: 2,
+    backgroundColor: '#060912',
+  },
+  colArch2: {
+    width: 4,
+    height: 14,
+    borderRadius: 2,
+    backgroundColor: '#060912',
+  },
+  colArch3: {
+    width: 4,
+    height: 14,
+    borderRadius: 2,
+    backgroundColor: '#060912',
+  },
+
+  // Taj Mahal
+  tajBase: {
+    width: 22,
+    height: 16,
+    backgroundColor: 'rgba(255,255,255,0.45)',
+    position: 'absolute',
+    bottom: 0,
+    alignSelf: 'center',
+  },
+  tajDome: {
+    width: 20,
+    height: 14,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    backgroundColor: 'rgba(255,255,255,0.45)',
+    position: 'absolute',
+    bottom: 16,
+    alignSelf: 'center',
+  },
+  tajSpire: {
+    width: 1.5,
+    height: 10,
+    backgroundColor: 'rgba(255,255,255,0.3)',
+    position: 'absolute',
+    bottom: 30,
+    alignSelf: 'center',
+  },
+
+  // Sydney Opera House
+  sydneySail1: {
+    width: 16,
+    height: 20,
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
+    backgroundColor: 'rgba(245,197,24,0.4)',
+    position: 'absolute',
+    bottom: 6,
+    left: 8,
+  },
+  sydneySail2: {
+    width: 12,
+    height: 14,
+    borderTopLeftRadius: 6,
+    borderTopRightRadius: 6,
+    backgroundColor: 'rgba(245,197,24,0.35)',
+    position: 'absolute',
+    bottom: 6,
+    right: 8,
+  },
+  sydneyBase: {
     width: 30,
-    height: 14,
-    backgroundColor: 'rgba(255,255,255,0.5)',
-  },
-  domeCurve: {
+    height: 6,
+    backgroundColor: 'rgba(245,197,24,0.3)',
     position: 'absolute',
-    bottom: 14,
-    width: 28,
+    bottom: 0,
+    alignSelf: 'center',
+  },
+
+  // Tower blocks
+  towerBlock1: {
+    width: 10,
     height: 22,
-    borderTopLeftRadius: 14,
-    borderTopRightRadius: 14,
-    backgroundColor: 'rgba(255,255,255,0.5)',
-  },
-  domeSpire: {
-    position: 'absolute',
-    bottom: 36,
-    width: 2,
-    height: 14,
     backgroundColor: 'rgba(255,255,255,0.4)',
+    borderTopLeftRadius: 1,
+    borderTopRightRadius: 1,
+  },
+  towerBlock2: {
+    width: 8,
+    height: 34,
+    backgroundColor: 'rgba(255,255,255,0.35)',
     borderTopLeftRadius: 1,
     borderTopRightRadius: 1,
   },
