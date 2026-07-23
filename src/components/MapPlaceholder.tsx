@@ -2,106 +2,122 @@ import React, { useEffect, useRef } from 'react';
 import { View, Text, Animated, StyleSheet } from 'react-native';
 import { theme } from '../theme';
 
-interface MapPlaceholderProps {
-  tintColor?: string;
-}
-
-export const MapPlaceholder: React.FC<MapPlaceholderProps> = ({
-  tintColor = theme.colors.gold,
-}) => {
+export const MapPlaceholder: React.FC = () => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const floatAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 700,
-      useNativeDriver: true,
-    }).start();
-  }, [fadeAnim]);
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }),
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(floatAnim, {
+            toValue: 1,
+            duration: 4000,
+            useNativeDriver: true,
+          }),
+          Animated.timing(floatAnim, {
+            toValue: 0,
+            duration: 4000,
+            useNativeDriver: true,
+          }),
+        ]),
+      ),
+    ]).start();
+  }, [fadeAnim, floatAnim]);
 
-  const gold05 = 'rgba(245,197,24,0.05)';
-  const gold08 = 'rgba(245,197,24,0.08)';
-  const gridColor = 'rgba(255,255,255,0.03)';
-  const contourColor = 'rgba(255,255,255,0.035)';
+  const cloudDrift = floatAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, -20],
+  });
 
   return (
     <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
-      {/* Base map tone */}
-      <View style={styles.baseMap} />
+      {/* Sky gradient layers */}
+      <View style={styles.sky} />
+      <View style={styles.skyGradient} />
 
-      {/* Latitude / longitude grid */}
-      {[0.06, 0.14, 0.22, 0.30, 0.38, 0.46, 0.54, 0.62, 0.70, 0.78, 0.86, 0.94].map((pct, i) => (
-        <View
-          key={`lat-${i}`}
-          style={[styles.gridLineH, { top: `${pct * 100}%`, height: i === 5 ? 1 : 0.5 }]}
-        />
-      ))}
-      {[0.05, 0.11, 0.18, 0.24, 0.30, 0.36, 0.42, 0.48, 0.55, 0.61, 0.67, 0.73, 0.79, 0.86, 0.92].map((pct, i) => (
-        <View
-          key={`lon-${i}`}
-          style={[styles.gridLineV, { left: `${pct * 100}%`, width: i === 7 ? 1 : 0.5 }]}
-        />
-      ))}
+      {/* Stars / sparkles */}
+      <View style={[styles.star, { top: '12%', left: '15%' }]} />
+      <View style={[styles.star, { top: '8%', left: '72%' }]} />
+      <View style={[styles.starSmall, { top: '18%', left: '55%' }]} />
+      <View style={[styles.starSmall, { top: '6%', left: '38%' }]} />
 
-      {/* Major roads — thicker horizontal lines */}
-      <View style={[styles.roadH, { top: '32%' }]} />
-      <View style={[styles.roadH, { top: '56%' }]} />
-      <View style={[styles.roadV, { left: '28%' }]} />
-      <View style={[styles.roadV, { left: '68%' }]} />
+      {/* Distant clouds */}
+      <Animated.View style={[styles.cloud, { top: '22%', left: '10%', transform: [{ translateX: cloudDrift }] }]}>
+        <View style={styles.cloudShape} />
+        <View style={[styles.cloudShape, { top: -6, left: 14, width: 30 }]} />
+        <View style={[styles.cloudShape, { top: 2, left: -8, width: 20 }]} />
+      </Animated.View>
 
-      {/* Contour rings — elliptical, off-center */}
-      <View style={[styles.contourRing, styles.contour1]} />
-      <View style={[styles.contourRing, styles.contour2]} />
-      <View style={[styles.contourRing, styles.contour3]} />
-
-      {/* Small park / green area */}
-      <View style={styles.parkArea}>
-        <View style={styles.parkStipple} />
+      {/* Landmark silhouette — Eiffel Tower */}
+      <View style={styles.landmark}>
+        {/* Base legs */}
+        <View style={styles.towerLegL} />
+        <View style={styles.towerLegR} />
+        {/* Main body */}
+        <View style={styles.towerBody} />
+        {/* Platform 1 */}
+        <View style={styles.towerPlatform1} />
+        {/* Upper section */}
+        <View style={styles.towerUpper} />
+        {/* Platform 2 */}
+        <View style={styles.towerPlatform2} />
+        {/* Spire */}
+        <View style={styles.towerSpire} />
+        {/* Antenna */}
+        <View style={styles.towerAntenna} />
+        {/* Arch */}
+        <View style={styles.towerArch} />
       </View>
 
-      {/* Water feature */}
-      <View style={styles.waterBody}>
-        <View style={styles.waterShimmer} />
+      {/* Secondary silhouette — dome */}
+      <View style={styles.dome}>
+        <View style={styles.domeBase} />
+        <View style={styles.domeCurve} />
+        <View style={styles.domeSpire} />
       </View>
 
-      {/* Compass — top right */}
-      <View style={styles.compass}>
-        <View style={styles.compassNeedleN} />
-        <View style={styles.compassNeedleS} />
-        <View style={styles.compassNeedleH} />
-        <View style={styles.compassCenter} />
-        <Text style={styles.compassN}>N</Text>
-      </View>
+      {/* Horizon line */}
+      <View style={styles.horizon} />
+      <View style={styles.horizonGlow} />
 
-      {/* Lat/Lon labels — bottom left */}
-      <View style={styles.coordLabel}>
-        <Text style={styles.coordText}>40.7128° N</Text>
-        <Text style={styles.coordText}>74.0060° W</Text>
-      </View>
+      {/* Ground */}
+      <View style={styles.ground} />
 
-      {/* Gold accent glow under pin */}
-      <View style={styles.pinGlow} />
+      {/* Camera on tripod */}
+      <View style={styles.tripodContainer}>
+        {/* Tripod legs */}
+        <View style={styles.tripodLegC} />
+        <View style={styles.tripodLegL} />
+        <View style={styles.tripodLegR} />
 
-      {/* Pin shadow */}
-      <View style={styles.pinShadow} />
-
-      {/* Pin body — inverted teardrop (wide top, tapered to point at bottom) */}
-      <View style={styles.pinWrapper}>
-        {/* Teardrop body */}
-        <View style={[styles.pinTeardrop, { backgroundColor: tintColor }]}>
-          {/* Highlight streak */}
-          <View style={styles.pinHighlight} />
-          {/* Inner ring */}
-          <View style={styles.pinInnerRing}>
-            <View style={[styles.pinInnerDot, { backgroundColor: tintColor }]} />
+        {/* Camera body */}
+        <View style={styles.cameraBody}>
+          {/* Lens */}
+          <View style={styles.cameraLensOuter}>
+            <View style={styles.cameraLensMid}>
+              <View style={styles.cameraLensInner} />
+            </View>
+            {/* Lens glint */}
+            <View style={styles.lensGlint} />
           </View>
+          {/* Viewfinder */}
+          <View style={styles.viewfinder} />
+          {/* Flash */}
+          <View style={styles.flash} />
         </View>
-        {/* Sharp point */}
-        <View style={[styles.pinNeedle, { borderTopColor: tintColor }]} />
       </View>
 
-      {/* Subtle gold rim light around pin */}
-      <View style={styles.pinRimLight} />
+      {/* Copy */}
+      <View style={styles.copyContainer}>
+        <Text style={styles.copyText}>This scene is waiting</Text>
+        <Text style={styles.copyText}>for its first photo.</Text>
+      </View>
     </Animated.View>
   );
 };
@@ -113,286 +129,336 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: '#080c14',
+    backgroundColor: '#060912',
     overflow: 'hidden',
   },
 
-  // ── Base map ──
-  baseMap: {
+  // ── Sky ──
+  sky: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
-    bottom: 0,
-    backgroundColor: '#080c14',
+    height: '68%',
+    backgroundColor: '#080c1a',
   },
-
-  // ── Grid ──
-  gridLineH: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    backgroundColor: 'rgba(255,255,255,0.025)',
-  },
-  gridLineV: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(255,255,255,0.025)',
-  },
-
-  // ── Major roads ──
-  roadH: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    height: 1.5,
-    backgroundColor: 'rgba(245,197,24,0.08)',
-  },
-  roadV: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    width: 1.5,
-    backgroundColor: 'rgba(245,197,24,0.08)',
-  },
-
-  // ── Contour rings ──
-  contourRing: {
-    position: 'absolute',
-    borderRadius: 999,
-    borderWidth: 0.5,
-    borderColor: 'rgba(255,255,255,0.03)',
-  },
-  contour1: {
-    width: 200,
-    height: 140,
-    top: '34%',
-    left: '32%',
-  },
-  contour2: {
-    width: 280,
-    height: 200,
-    top: '28%',
-    left: '22%',
-  },
-  contour3: {
-    width: 360,
-    height: 260,
-    top: '22%',
-    left: '12%',
-  },
-
-  // ── Park ──
-  parkArea: {
-    position: 'absolute',
-    top: '15%',
-    left: '62%',
-    width: 60,
-    height: 40,
-    borderRadius: 8,
-    backgroundColor: 'rgba(34,139,34,0.06)',
-    borderWidth: 0.5,
-    borderColor: 'rgba(34,139,34,0.1)',
-  },
-  parkStipple: {
-    position: 'absolute',
-    top: '20%',
-    left: '25%',
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: 'rgba(34,139,34,0.15)',
-  },
-
-  // ── Water ──
-  waterBody: {
-    position: 'absolute',
-    top: '65%',
-    left: '10%',
-    width: 90,
-    height: 25,
-    borderRadius: 12,
-    backgroundColor: 'rgba(30,80,140,0.06)',
-    borderWidth: 0.5,
-    borderColor: 'rgba(30,80,140,0.1)',
-  },
-  waterShimmer: {
+  skyGradient: {
     position: 'absolute',
     top: '30%',
-    left: '20%',
-    width: 30,
-    height: 1,
-    backgroundColor: 'rgba(255,255,255,0.04)',
+    left: 0,
+    right: 0,
+    height: '38%',
+    backgroundColor: '#0a1024',
+    opacity: 0.6,
   },
 
-  // ── Compass ──
-  compass: {
+  // ── Stars ──
+  star: {
     position: 'absolute',
-    top: 16,
-    right: 16,
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    borderWidth: 0.5,
-    borderColor: 'rgba(245,197,24,0.15)',
-    backgroundColor: 'rgba(0,0,0,0.2)',
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: 3,
+    height: 3,
+    borderRadius: 1.5,
+    backgroundColor: 'rgba(245,197,24,0.25)',
   },
-  compassNeedleN: {
+  starSmall: {
     position: 'absolute',
     width: 2,
-    height: 13,
+    height: 2,
     borderRadius: 1,
-    backgroundColor: 'rgba(245,197,24,0.45)',
-    bottom: '50%',
-  },
-  compassNeedleS: {
-    position: 'absolute',
-    width: 2,
-    height: 9,
-    borderRadius: 1,
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    top: '50%',
-  },
-  compassNeedleH: {
-    position: 'absolute',
-    width: 22,
-    height: 1,
-    borderRadius: 0.5,
-    backgroundColor: 'rgba(255,255,255,0.08)',
-  },
-  compassCenter: {
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: 'rgba(245,197,24,0.4)',
-    position: 'absolute',
-  },
-  compassN: {
-    position: 'absolute',
-    top: 2,
-    fontSize: 8,
-    fontWeight: '700',
-    color: 'rgba(245,197,24,0.6)',
+    backgroundColor: 'rgba(255,255,255,0.15)',
   },
 
-  // ── Coordinates ──
-  coordLabel: {
+  // ── Clouds ──
+  cloud: {
     position: 'absolute',
-    bottom: 12,
-    left: 14,
+    opacity: 0.12,
   },
-  coordText: {
-    fontSize: 9,
-    fontFamily: 'monospace',
-    color: 'rgba(255,255,255,0.12)',
-    letterSpacing: 1,
-    lineHeight: 14,
-  },
-
-  // ── Pin glow ──
-  pinGlow: {
-    position: 'absolute',
-    top: '38%',
-    alignSelf: 'center',
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: 'rgba(245,197,24,0.04)',
-  },
-
-  // ── Pin shadow ──
-  pinShadow: {
-    position: 'absolute',
-    top: '54%',
-    alignSelf: 'center',
-    width: 20,
-    height: 6,
-    borderRadius: 10,
-    backgroundColor: '#000',
-    opacity: 0.35,
-  },
-
-  // ── Pin wrapper (centering) ──
-  pinWrapper: {
+  cloudShape: {
     position: 'absolute',
     top: 0,
     left: 0,
-    right: 0,
-    bottom: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: -8,
+    width: 40,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#fff',
   },
 
-  // ── Teardrop body ──
-  pinTeardrop: {
-    width: 44,
-    height: 38,
-    borderTopLeftRadius: 22,
-    borderTopRightRadius: 22,
-    borderBottomLeftRadius: 22,
-    borderBottomRightRadius: 6,
+  // ── Horizon ──
+  horizon: {
+    position: 'absolute',
+    top: '62%',
+    left: 0,
+    right: 0,
+    height: 1,
+    backgroundColor: 'rgba(245,197,24,0.1)',
+  },
+  horizonGlow: {
+    position: 'absolute',
+    top: '58%',
+    left: 0,
+    right: 0,
+    height: 30,
+    backgroundColor: 'rgba(245,197,24,0.02)',
+  },
+
+  // ── Ground ──
+  ground: {
+    position: 'absolute',
+    top: '63%',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#040610',
+  },
+
+  // ── Landmark: Eiffel Tower ──
+  landmark: {
+    position: 'absolute',
+    top: '24%',
+    left: '14%',
+    width: 36,
+    height: 130,
+    alignItems: 'center',
+    opacity: 0.14,
+  },
+  towerLegL: {
+    position: 'absolute',
+    bottom: 0,
+    left: 4,
+    width: 3,
+    height: 80,
+    backgroundColor: 'rgba(245,197,24,0.5)',
+    transform: [{ rotate: '-8deg' }],
+    transformOrigin: 'bottom left',
+    borderRadius: 1,
+  },
+  towerLegR: {
+    position: 'absolute',
+    bottom: 0,
+    right: 4,
+    width: 3,
+    height: 80,
+    backgroundColor: 'rgba(245,197,24,0.5)',
+    transform: [{ rotate: '8deg' }],
+    transformOrigin: 'bottom right',
+    borderRadius: 1,
+  },
+  towerBody: {
+    position: 'absolute',
+    bottom: 55,
+    width: 20,
+    height: 40,
+    backgroundColor: 'rgba(245,197,24,0.5)',
+  },
+  towerPlatform1: {
+    position: 'absolute',
+    bottom: 88,
+    width: 28,
+    height: 3,
+    backgroundColor: 'rgba(245,197,24,0.5)',
+  },
+  towerUpper: {
+    position: 'absolute',
+    bottom: 91,
+    width: 12,
+    height: 28,
+    backgroundColor: 'rgba(245,197,24,0.5)',
+  },
+  towerPlatform2: {
+    position: 'absolute',
+    bottom: 116,
+    width: 18,
+    height: 2,
+    backgroundColor: 'rgba(245,197,24,0.5)',
+  },
+  towerSpire: {
+    position: 'absolute',
+    bottom: 118,
+    width: 6,
+    height: 12,
+    backgroundColor: 'rgba(245,197,24,0.5)',
+    borderTopLeftRadius: 3,
+    borderTopRightRadius: 3,
+  },
+  towerAntenna: {
+    position: 'absolute',
+    bottom: 129,
+    width: 1.5,
+    height: 6,
+    backgroundColor: 'rgba(245,197,24,0.4)',
+  },
+  towerArch: {
+    position: 'absolute',
+    bottom: 62,
+    width: 16,
+    height: 10,
+    borderLeftWidth: 2,
+    borderRightWidth: 2,
+    borderBottomWidth: 2,
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+    borderBottomColor: 'rgba(245,197,24,0.5)',
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
+  },
+
+  // ── Silhouette: dome ──
+  dome: {
+    position: 'absolute',
+    top: '32%',
+    right: '18%',
+    width: 30,
+    height: 50,
+    alignItems: 'center',
+    opacity: 0.1,
+  },
+  domeBase: {
+    position: 'absolute',
+    bottom: 0,
+    width: 30,
+    height: 14,
+    backgroundColor: 'rgba(255,255,255,0.5)',
+  },
+  domeCurve: {
+    position: 'absolute',
+    bottom: 14,
+    width: 28,
+    height: 22,
+    borderTopLeftRadius: 14,
+    borderTopRightRadius: 14,
+    backgroundColor: 'rgba(255,255,255,0.5)',
+  },
+  domeSpire: {
+    position: 'absolute',
+    bottom: 36,
+    width: 2,
+    height: 14,
+    backgroundColor: 'rgba(255,255,255,0.4)',
+    borderTopLeftRadius: 1,
+    borderTopRightRadius: 1,
+  },
+
+  // ── Camera Tripod ──
+  tripodContainer: {
+    position: 'absolute',
+    top: '58%',
+    alignSelf: 'center',
+    alignItems: 'center',
+  },
+  tripodLegC: {
+    position: 'absolute',
+    top: 22,
+    width: 2,
+    height: 50,
+    backgroundColor: 'rgba(245,197,24,0.25)',
+  },
+  tripodLegL: {
+    position: 'absolute',
+    top: 22,
+    left: -20,
+    width: 1.5,
+    height: 48,
+    backgroundColor: 'rgba(245,197,24,0.18)',
+    transform: [{ rotate: '15deg' }],
+    transformOrigin: 'top right',
+  },
+  tripodLegR: {
+    position: 'absolute',
+    top: 22,
+    right: -20,
+    width: 1.5,
+    height: 48,
+    backgroundColor: 'rgba(245,197,24,0.18)',
+    transform: [{ rotate: '-15deg' }],
+    transformOrigin: 'top left',
+  },
+
+  // ── Camera body ──
+  cameraBody: {
+    width: 42,
+    height: 30,
+    borderRadius: 6,
+    backgroundColor: 'rgba(245,197,24,0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(245,197,24,0.2)',
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.4,
-    shadowRadius: 4,
-    elevation: 6,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 4,
   },
-
-  // ── Highlight on pin ──
-  pinHighlight: {
-    position: 'absolute',
-    top: 6,
-    left: 10,
+  cameraLensOuter: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: 'rgba(245,197,24,0.07)',
+    borderWidth: 2,
+    borderColor: 'rgba(245,197,24,0.35)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cameraLensMid: {
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-  },
-
-  // ── Sharp point at bottom ──
-  pinNeedle: {
-    width: 0,
-    height: 0,
-    borderLeftWidth: 7,
-    borderRightWidth: 7,
-    borderTopWidth: 14,
-    borderLeftColor: 'transparent',
-    borderRightColor: 'transparent',
-    marginTop: -3,
-  },
-
-  // ── Inner ring ──
-  pinInnerRing: {
-    width: 14,
-    height: 14,
-    borderRadius: 7,
-    backgroundColor: theme.colors.background,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    borderWidth: 1,
+    borderColor: 'rgba(245,197,24,0.25)',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: -2,
   },
-  pinInnerDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    opacity: 0.9,
+  cameraLensInner: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: 'rgba(245,197,24,0.6)',
+  },
+  lensGlint: {
+    position: 'absolute',
+    top: 3,
+    right: 4,
+    width: 4,
+    height: 2,
+    borderRadius: 1,
+    backgroundColor: 'rgba(255,255,255,0.3)',
+    transform: [{ rotate: '-30deg' }],
+  },
+  viewfinder: {
+    position: 'absolute',
+    top: 4,
+    left: 8,
+    width: 6,
+    height: 4,
+    borderRadius: 1,
+    backgroundColor: 'rgba(245,197,24,0.15)',
+    borderWidth: 0.5,
+    borderColor: 'rgba(245,197,24,0.25)',
+  },
+  flash: {
+    position: 'absolute',
+    top: 3,
+    right: 7,
+    width: 5,
+    height: 3,
+    borderRadius: 1,
+    backgroundColor: 'rgba(245,197,24,0.08)',
   },
 
-  // ── Gold rim light ──
-  pinRimLight: {
+  // ── Copy ──
+  copyContainer: {
     position: 'absolute',
-    top: '44%',
+    bottom: 28,
     alignSelf: 'center',
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    borderWidth: 1,
-    borderColor: 'rgba(245,197,24,0.06)',
+    alignItems: 'center',
+  },
+  copyText: {
+    fontSize: 13,
+    color: 'rgba(255,255,255,0.25)',
+    fontWeight: '400',
+    letterSpacing: 0.3,
+    lineHeight: 20,
+    textAlign: 'center',
   },
 });
