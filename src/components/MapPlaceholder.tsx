@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { View, Text, Image, Animated, StyleSheet } from 'react-native';
 import { theme } from '../theme';
 
-const PLACEHOLDER_IMAGE = require('../assets/missing-photo-placeholder.png');
+const PLACEHOLDER_IMAGE = require('../../assets/missing-photo-placeholder.png');
 
 export const MapPlaceholder: React.FC = () => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
