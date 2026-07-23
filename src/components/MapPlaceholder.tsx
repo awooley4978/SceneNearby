@@ -23,8 +23,9 @@ export const MapPlaceholder: React.FC = () => {
       />
       <View style={styles.overlay} />
       <View style={styles.copyContainer}>
-        <Text style={styles.copyText}>This scene is waiting</Text>
-        <Text style={styles.copyText}>for its first photo.</Text>
+        <View style={styles.pill}>
+          <Text style={styles.pillText}>Be the first to upload a photo</Text>
+        </View>
       </View>
     </Animated.View>
   );
@@ -59,16 +60,25 @@ const styles = StyleSheet.create({
   },
   copyContainer: {
     position: 'absolute',
-    top: '25%',
-    alignSelf: 'center',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  copyText: {
+  pill: {
+    backgroundColor: 'rgba(245,197,24,0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(245,197,24,0.3)',
+    borderRadius: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  pillText: {
     fontSize: 13,
-    color: 'rgba(255,255,255,0.3)',
-    fontWeight: '400',
-    letterSpacing: 0.3,
-    lineHeight: 20,
-    textAlign: 'center',
+    fontWeight: '600',
+    color: 'rgba(245,197,24,0.9)',
+    letterSpacing: 0.2,
   },
 });
