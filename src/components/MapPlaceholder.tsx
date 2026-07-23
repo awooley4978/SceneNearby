@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
   },
   copyContainer: {
     position: 'absolute',
-    bottom: 28,
+    top: '25%',
     alignSelf: 'center',
     alignItems: 'center',
   },
