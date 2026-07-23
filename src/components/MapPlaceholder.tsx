@@ -57,6 +57,12 @@ export const MapPlaceholder: React.FC = () => {
       {/* Skyline — mix of iconic landmarks */}
       <View style={styles.skyline}>
 
+        {/* Pyramids */}
+        <View style={styles.skItem}>
+          <View style={styles.pyramidLarge} />
+          <View style={styles.pyramidSmall} />
+        </View>
+
         {/* Big Ben */}
         <View style={styles.skItem}>
           <View style={styles.bbBody} />
@@ -84,6 +90,14 @@ export const MapPlaceholder: React.FC = () => {
           <View style={styles.esSpire} />
         </View>
 
+        {/* St Basil's Cathedral */}
+        <View style={styles.skItem}>
+          <View style={styles.stBasilBase} />
+          <View style={styles.stBasilDome} />
+          <View style={styles.stBasilLeft} />
+          <View style={styles.stBasilRight} />
+        </View>
+
         {/* Colosseum */}
         <View style={styles.skItem}>
           <View style={styles.colBody}>
@@ -93,11 +107,26 @@ export const MapPlaceholder: React.FC = () => {
           </View>
         </View>
 
+        {/* Chrysler Building */}
+        <View style={styles.skItem}>
+          <View style={styles.chryslerBase} />
+          <View style={styles.chryslerCrown} />
+          <View style={styles.chryslerSpire} />
+        </View>
+
         {/* Taj Mahal */}
         <View style={styles.skItem}>
           <View style={styles.tajBase} />
           <View style={styles.tajDome} />
+          <View style={styles.tajMinaret1} />
+          <View style={styles.tajMinaret2} />
           <View style={styles.tajSpire} />
+        </View>
+
+        {/* Leaning Tower */}
+        <View style={styles.skItem}>
+          <View style={styles.pisaBody} />
+          <View style={styles.pisaTop} />
         </View>
 
         {/* Sydney Opera House */}
@@ -107,12 +136,33 @@ export const MapPlaceholder: React.FC = () => {
           <View style={styles.sydneyBase} />
         </View>
 
-        {/* Tower blocks */}
+        {/* Space Needle */}
         <View style={styles.skItem}>
-          <View style={styles.towerBlock1} />
+          <View style={styles.needleStem} />
+          <View style={styles.needleSaucer} />
+          <View style={styles.needleSpire} />
         </View>
+
+        {/* Burj Khalifa */}
         <View style={styles.skItem}>
-          <View style={styles.towerBlock2} />
+          <View style={styles.burjTier1} />
+          <View style={styles.burjTier2} />
+          <View style={styles.burjSpire} />
+        </View>
+
+        {/* Windmill */}
+        <View style={styles.skItem}>
+          <View style={styles.windmillBody} />
+          <View style={styles.windmillRoof} />
+          <View style={styles.windmillBlade1} />
+          <View style={styles.windmillBlade2} />
+        </View>
+
+        {/* Golden Gate tower */}
+        <View style={styles.skItem}>
+          <View style={styles.ggLeg1} />
+          <View style={styles.ggLeg2} />
+          <View style={styles.ggBeam} />
         </View>
       </View>
 
@@ -482,20 +532,264 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 
-  // Tower blocks
-  towerBlock1: {
-    width: 10,
-    height: 22,
-    backgroundColor: 'rgba(255,255,255,0.4)',
-    borderTopLeftRadius: 1,
-    borderTopRightRadius: 1,
+  // ── Pyramids ──
+  pyramidLarge: {
+    width: 0,
+    height: 0,
+    borderLeftWidth: 14,
+    borderRightWidth: 14,
+    borderBottomWidth: 30,
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+    borderBottomColor: 'rgba(245,197,24,0.4)',
+    position: 'absolute',
+    bottom: 0,
+    left: 2,
   },
-  towerBlock2: {
+  pyramidSmall: {
+    width: 0,
+    height: 0,
+    borderLeftWidth: 9,
+    borderRightWidth: 9,
+    borderBottomWidth: 20,
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+    borderBottomColor: 'rgba(245,197,24,0.35)',
+    position: 'absolute',
+    bottom: 0,
+    right: 2,
+  },
+
+  // ── St Basil's ──
+  stBasilBase: {
+    width: 16,
+    height: 18,
+    backgroundColor: 'rgba(245,197,24,0.4)',
+    position: 'absolute',
+    bottom: 0,
+    alignSelf: 'center',
+  },
+  stBasilDome: {
+    width: 12,
+    height: 10,
+    borderTopLeftRadius: 6,
+    borderTopRightRadius: 6,
+    backgroundColor: 'rgba(245,197,24,0.35)',
+    position: 'absolute',
+    bottom: 18,
+    alignSelf: 'center',
+  },
+  stBasilLeft: {
     width: 8,
-    height: 34,
+    height: 8,
+    borderTopLeftRadius: 4,
+    borderTopRightRadius: 4,
+    backgroundColor: 'rgba(245,197,24,0.3)',
+    position: 'absolute',
+    bottom: 14,
+    left: 2,
+  },
+  stBasilRight: {
+    width: 8,
+    height: 8,
+    borderTopLeftRadius: 4,
+    borderTopRightRadius: 4,
+    backgroundColor: 'rgba(245,197,24,0.3)',
+    position: 'absolute',
+    bottom: 14,
+    right: 2,
+  },
+
+  // ── Chrysler Building ──
+  chryslerBase: {
+    width: 14,
+    height: 24,
+    backgroundColor: 'rgba(255,255,255,0.4)',
+    position: 'absolute',
+    bottom: 0,
+    alignSelf: 'center',
+  },
+  chryslerCrown: {
+    width: 14,
+    height: 10,
+    position: 'absolute',
+    bottom: 24,
+    alignSelf: 'center',
+    borderTopWidth: 0,
+    borderLeftWidth: 3,
+    borderRightWidth: 3,
+    borderBottomWidth: 10,
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+    borderBottomColor: 'rgba(255,255,255,0.4)',
+  },
+  chryslerSpire: {
+    width: 1.5,
+    height: 24,
+    backgroundColor: 'rgba(255,255,255,0.3)',
+    position: 'absolute',
+    bottom: 34,
+    alignSelf: 'center',
+  },
+
+  // ── Taj Mahal minarets ──
+  tajMinaret1: {
+    width: 3,
+    height: 26,
     backgroundColor: 'rgba(255,255,255,0.35)',
-    borderTopLeftRadius: 1,
-    borderTopRightRadius: 1,
+    position: 'absolute',
+    bottom: 2,
+    left: 2,
+  },
+  tajMinaret2: {
+    width: 3,
+    height: 26,
+    backgroundColor: 'rgba(255,255,255,0.35)',
+    position: 'absolute',
+    bottom: 2,
+    right: 2,
+  },
+
+  // ── Leaning Tower of Pisa ──
+  pisaBody: {
+    width: 7,
+    height: 34,
+    backgroundColor: 'rgba(245,197,24,0.4)',
+    borderRadius: 2,
+    position: 'absolute',
+    bottom: 0,
+    alignSelf: 'center',
+    transform: [{ rotate: '5deg' }],
+  },
+  pisaTop: {
+    width: 10,
+    height: 8,
+    backgroundColor: 'rgba(245,197,24,0.35)',
+    borderRadius: 3,
+    position: 'absolute',
+    bottom: 34,
+    alignSelf: 'center',
+    transform: [{ rotate: '5deg' }],
+  },
+
+  // ── Space Needle ──
+  needleStem: {
+    width: 2,
+    height: 30,
+    backgroundColor: 'rgba(255,255,255,0.4)',
+    position: 'absolute',
+    bottom: 0,
+    alignSelf: 'center',
+  },
+  needleSaucer: {
+    width: 12,
+    height: 4,
+    backgroundColor: 'rgba(255,255,255,0.4)',
+    position: 'absolute',
+    bottom: 30,
+    alignSelf: 'center',
+    borderRadius: 2,
+  },
+  needleSpire: {
+    width: 1.5,
+    height: 18,
+    backgroundColor: 'rgba(255,255,255,0.3)',
+    position: 'absolute',
+    bottom: 34,
+    alignSelf: 'center',
+  },
+
+  // ── Burj Khalifa ──
+  burjTier1: {
+    width: 8,
+    height: 26,
+    backgroundColor: 'rgba(255,255,255,0.4)',
+    position: 'absolute',
+    bottom: 0,
+    alignSelf: 'center',
+  },
+  burjTier2: {
+    width: 4,
+    height: 16,
+    backgroundColor: 'rgba(255,255,255,0.4)',
+    position: 'absolute',
+    bottom: 26,
+    alignSelf: 'center',
+  },
+  burjSpire: {
+    width: 1,
+    height: 36,
+    backgroundColor: 'rgba(255,255,255,0.25)',
+    position: 'absolute',
+    bottom: 42,
+    alignSelf: 'center',
+  },
+
+  // ── Windmill ──
+  windmillBody: {
+    width: 8,
+    height: 20,
+    backgroundColor: 'rgba(245,197,24,0.35)',
+    position: 'absolute',
+    bottom: 0,
+    alignSelf: 'center',
+  },
+  windmillRoof: {
+    width: 0,
+    height: 0,
+    borderLeftWidth: 6,
+    borderRightWidth: 6,
+    borderBottomWidth: 10,
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+    borderBottomColor: 'rgba(245,197,24,0.3)',
+    position: 'absolute',
+    bottom: 20,
+    alignSelf: 'center',
+  },
+  windmillBlade1: {
+    width: 16,
+    height: 1.5,
+    backgroundColor: 'rgba(245,197,24,0.2)',
+    position: 'absolute',
+    bottom: 28,
+    left: 4,
+    transform: [{ rotate: '30deg' }],
+  },
+  windmillBlade2: {
+    width: 16,
+    height: 1.5,
+    backgroundColor: 'rgba(245,197,24,0.2)',
+    position: 'absolute',
+    bottom: 28,
+    left: 4,
+    transform: [{ rotate: '-30deg' }],
+  },
+
+  // ── Golden Gate ──
+  ggLeg1: {
+    width: 2,
+    height: 36,
+    backgroundColor: 'rgba(245,197,24,0.4)',
+    position: 'absolute',
+    bottom: 0,
+    left: 4,
+  },
+  ggLeg2: {
+    width: 2,
+    height: 36,
+    backgroundColor: 'rgba(245,197,24,0.4)',
+    position: 'absolute',
+    bottom: 0,
+    right: 4,
+  },
+  ggBeam: {
+    width: 14,
+    height: 2,
+    backgroundColor: 'rgba(245,197,24,0.35)',
+    position: 'absolute',
+    bottom: 33,
+    alignSelf: 'center',
   },
 
   // ── Camera Tripod ──
