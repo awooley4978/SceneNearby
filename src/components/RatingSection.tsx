@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Linking } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import * as WebBrowser from 'expo-web-browser';
 import { theme } from '../theme';
 import type { GooglePlaceRating } from '../models';
 
@@ -14,9 +15,9 @@ export const RatingSection: React.FC<RatingSectionProps> = ({
   localRating,
   userRating,
 }) => {
-  const openGoogleReviews = () => {
+  const openGoogleReviews = async () => {
     if (googleRating?.placeId) {
-      Linking.openURL(
+      await WebBrowser.openBrowserAsync(
         `https://www.google.com/maps/place/?q=place_id:${googleRating.placeId}`
       );
     }
