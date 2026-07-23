@@ -39,7 +39,7 @@ const newYorkLocations: FilmingLocation[] = [
   },
   {
     id: 'nyc-002', title: "Katz's Delicatessen", movieOrShow: 'When Harry Met Sally...', year: 1989,
-    imageUrl: '',
+    imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Katz's_Deli.jpg',
     category: LocationCategory.comedy, latitude: 40.7223, longitude: -73.9873,
     address: '205 E Houston St', city: 'New York City', country: 'USA',
     sceneDescription: "The iconic 'I'll have what she's having' scene where Sally demonstrates — very publicly — how to fake a woman's pleasure in a deli.",
@@ -126,7 +126,7 @@ const newYorkLocations: FilmingLocation[] = [
   },
   {
     id: 'nyc-009', title: "St. Paul's Chapel", movieOrShow: 'National Treasure', year: 2004,
-    imageUrl: '',
+    imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Trinity_Church.jpg',
     category: LocationCategory.action, latitude: 40.7114, longitude: -74.0069,
     address: '209 Broadway', city: 'New York City', country: 'USA',
     sceneDescription: 'Benjamin Franklin Gates follows a clue hidden in the church\'s architecture.',
@@ -252,7 +252,7 @@ const losAngelesLocations: FilmingLocation[] = [
   },
   {
     id: 'la-009', title: 'Venice Beach Boardwalk', movieOrShow: "White Men Can't Jump", year: 1992,
-    imageUrl: '',
+    imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Venice_Boardwalk.jpg',
     category: LocationCategory.comedy, latitude: 33.9862, longitude: -118.4720,
     address: 'Venice Beach Boardwalk', city: 'Los Angeles', country: 'USA',
     sceneDescription: 'Billy Hoyle and Sidney Deane engage in a high-stakes basketball game on the legendary Venice Beach courts.',
@@ -266,7 +266,8 @@ const losAngelesLocations: FilmingLocation[] = [
 
 const londonLocations: FilmingLocation[] = [
   {
-    id: 'ldn-001', title: "King's Cross Station — Platform 9¾", movieOrShow: 'Harry Potter and the Sorcerer\'s Stone', year: 2001,
+    id: 'ldn-001', title: "King's Cross Station — Platform 9¾", movieOrShow: 'Harry Potter and the Sorcerer's Stone', year: 2001,
+    imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Platform_9_3-4%2C_King's_Cross.jpg',
     imageUrl: '',
     category: LocationCategory.sciFi, latitude: 51.5348, longitude: -0.1238,
     address: "King's Cross Station, Euston Rd", city: 'London', country: 'UK',
@@ -339,7 +340,7 @@ const londonLocations: FilmingLocation[] = [
   },
   {
     id: 'ldn-007', title: 'Borough Market', movieOrShow: "Bridget Jones's Diary", year: 2001,
-    imageUrl: '',
+    imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Borough_Market.jpg',
     category: LocationCategory.comedy, latitude: 51.5055, longitude: -0.0910,
     address: '8 Southwark St', city: 'London', country: 'UK',
     sceneDescription: 'Bridget Jones rushes through Borough Market in her signature reindeer sweater.',
@@ -442,7 +443,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'atl-002', title: 'Piedmont Park', movieOrShow: 'The Walking Dead', year: 2010,
-          imageUrl: '',
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/PiedmontPark.jpg',
           category: LocationCategory.drama, latitude: 33.7866, longitude: -84.3730,
           address: 'Piedmont Park, Atlanta', city: 'Atlanta', country: 'USA',
           sceneDescription: 'Rick Grimes rides through a post-apocalyptic Atlanta, navigating deserted streets overrun by walkers.',
@@ -626,7 +627,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'sea-004', title: 'Suzzallo Library, UW', movieOrShow: 'The Handmaid\'s Tale', year: 2017,
-          imageUrl: '',
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Suzzallo_Library.jpg',
           category: LocationCategory.drama, latitude: 47.6555, longitude: -122.3100,
           address: 'Suzzallo Library, UW Campus', city: 'Seattle', country: 'USA',
           sceneDescription: 'The stunning Gothic reading room stands in for the oppressive architecture of Gilead.',

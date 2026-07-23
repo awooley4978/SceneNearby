@@ -1,6 +1,10 @@
 import { Platform } from 'react-native';
 
-const API_BASE = 'http://localhost:3000';
+// Public API base URL — port 3000 is the team's public surface
+// API must run on port 3000 for external access
+const API_BASE = __DEV__
+  ? 'http://localhost:3000'
+  : 'https://b118a520627ac1a10a1362a93ff3b3f5.ctonew.app';
 
 export interface PhotoUploadRequest {
   app_name: string;

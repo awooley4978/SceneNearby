@@ -1,5 +1,6 @@
 // ── New City Data ──
 
+import { FilmingLocation, LocationCategory } from '../models';
 const chicagoLocations: FilmingLocation[] = [
   {
     id: 'chi-001', title: 'Wrigley Field', movieOrShow: 'The Blues Brothers', year: 1980,

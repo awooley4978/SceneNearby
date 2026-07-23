@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useCallback } from 'react';
 import { View, Text, Image, Animated, StyleSheet, TouchableOpacity } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 
 const PLACEHOLDER_IMAGE = require('../../assets/missing-photo-placeholder.png');
@@ -33,7 +34,10 @@ export const MapPlaceholder: React.FC<MapPlaceholderProps> = ({ locationId, loca
         style={styles.image}
         resizeMode="cover"
       />
-      <View style={styles.overlay} />
+      <LinearGradient
+        colors={['rgba(6,9,18,0.10)', 'rgba(6,9,18,0.25)']}
+        style={styles.overlay}
+      />
       <View style={styles.copyContainer}>
         <TouchableOpacity
           style={[styles.pill, hasPhotos && styles.pillWide]}

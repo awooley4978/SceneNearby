@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   ScrollView,
   Alert,
+  Linking,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { theme } from '../../theme';
@@ -31,12 +32,38 @@ export const UploadPhotoScreen: React.FC<{ route: any; navigation: any }> = ({
   const pickPhoto = useCallback(async (useCamera: boolean) => {
     setStatus('picking');
     try {
+      // Check current permission status first
+      const permStatus = useCamera
+        ? await ImagePicker.getCameraPermissionsAsync()
+        : await ImagePicker.getMediaLibraryPermissionsAsync();
+
+      // If previously denied with canAskAgain: false, go straight to Settings
+      if (!permStatus.granted && !permStatus.canAskAgain) {
+        Alert.alert(
+          'Permission needed',
+          `Photo access was previously denied. Please enable it in Settings.`,
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Open Settings', onPress: () => Linking.openSettings() },
+          ],
+        );
+        setStatus('idle');
+        return;
+      }
+
       const permResult = useCamera
         ? await ImagePicker.requestCameraPermissionsAsync()
         : await ImagePicker.requestMediaLibraryPermissionsAsync();
 
       if (!permResult.granted) {
-        Alert.alert('Permission needed', `Please grant ${useCamera ? 'camera' : 'photo library'} access in Settings.`);
+        Alert.alert(
+          'Permission needed',
+          `Please grant ${useCamera ? 'camera' : 'photo library'} access in Settings.`,
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Open Settings', onPress: () => Linking.openSettings() },
+          ],
+        );
         setStatus('idle');
         return;
       }

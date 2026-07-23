@@ -6,6 +6,7 @@ let analyticsModule: any = null;
 async function getAnalytics() {
   if (analyticsModule !== null) return analyticsModule;
   try {
+    // @ts-ignore - optional analytics dependency
     const expoFirebase = await import("expo-firebase-analytics");
     analyticsModule = expoFirebase;
     return analyticsModule;

@@ -49,7 +49,7 @@ export const NotificationPreferencesScreen: React.FC = () => {
     }));
   };
 
-  const frequencyOptions = Object.entries(DISCOVERY_FREQUENCIES) as [DiscoveryFrequency, typeof DISCOVERY_FREQUENCIES['calm']][];
+  const frequencyOptions = Object.entries(DISCOVERY_FREQUENCIES) as [DiscoveryFrequency, typeof DISCOVERY_FREQUENCIES[DiscoveryFrequency]][];
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>

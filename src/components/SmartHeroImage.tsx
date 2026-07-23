@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Image, StyleSheet, ViewStyle, ImageStyle } from "react-native";
+import { View, Image, StyleSheet, ViewStyle, ImageStyle, DimensionValue } from "react-native";
 
 interface SmartHeroImageProps {
   imageUrl: string;
@@ -35,8 +35,8 @@ export const SmartHeroImage: React.FC<SmartHeroImageProps> = ({
         style={[
           styles.image,
           {
-            width: (scale * 100).toFixed(0) + "%",
-            height: (scale * 100).toFixed(0) + "%",
+            width: ((scale * 100).toFixed(0) + "%") as DimensionValue,
+            height: ((scale * 100).toFixed(0) + "%") as DimensionValue,
             left: leftOffset as any,
             top: topOffset as any,
           },

@@ -78,27 +78,27 @@ const sharedScreens = (
     <Stack.Screen
       name="LocationDetail"
       component={LocationDetailScreen}
-      options={{ title: 'Details', ...stackOptions, cardStyleInterpolator }}
+      options={{ title: 'Details', ...stackOptions, cardStyleInterpolator } as any}
     />
     <Stack.Screen
       name="MovieDetail"
       component={MovieDetailScreen}
-      options={{ title: 'Film & TV', ...stackOptions, cardStyleInterpolator }}
+      options={{ title: 'Film & TV', ...stackOptions, cardStyleInterpolator } as any}
     />
     <Stack.Screen
       name="Filmography"
       component={FilmographyScreen}
-      options={{ title: 'Filmography', ...stackOptions, cardStyleInterpolator }}
+      options={{ title: 'Filmography', ...stackOptions, cardStyleInterpolator } as any}
     />
     <Stack.Screen
       name="PhotoGallery"
       component={PhotoGalleryScreen}
-      options={{ title: 'Photos', ...stackOptions, cardStyleInterpolator }}
+      options={{ title: 'Photos', ...stackOptions, cardStyleInterpolator } as any}
     />
     <Stack.Screen
       name="ActorDetail"
       component={ActorDetailScreen}
-      options={{ title: 'Actor', ...stackOptions, cardStyleInterpolator }}
+      options={{ title: 'Actor', ...stackOptions, cardStyleInterpolator } as any}
     />
     <Stack.Screen
       name="Upload"
@@ -110,7 +110,7 @@ const sharedScreens = (
 
 function DiscoverStack() {
   return (
-    <Stack.Navigator screenOptions={{ ...stackOptions, cardStyleInterpolator }}>
+    <Stack.Navigator screenOptions={{ ...stackOptions, cardStyleInterpolator } as any}>
       <Stack.Screen name="DiscoverList" component={DiscoverScreen} options={{ title: 'Discover' }} />
       {sharedScreens}
     </Stack.Navigator>
@@ -119,7 +119,7 @@ function DiscoverStack() {
 
 function SavedStack() {
   return (
-    <Stack.Navigator screenOptions={{ ...stackOptions, cardStyleInterpolator }}>
+    <Stack.Navigator screenOptions={{ ...stackOptions, cardStyleInterpolator } as any}>
       <Stack.Screen name="SavedList" component={SavedScreen} options={{ title: 'Saved' }} />
       {sharedScreens}
     </Stack.Navigator>
@@ -128,7 +128,7 @@ function SavedStack() {
 
 function NearbyStack() {
   return (
-    <Stack.Navigator screenOptions={{ ...stackOptions, cardStyleInterpolator, headerShown: false }}>
+    <Stack.Navigator screenOptions={{ ...stackOptions, cardStyleInterpolator, headerShown: false } as any}>
       <Stack.Screen name="NearbyMap" component={NearbyMapScreen} options={{ headerShown: false }} />
       {sharedScreens}
     </Stack.Navigator>
@@ -137,7 +137,7 @@ function NearbyStack() {
 
 function ProfileStack() {
   return (
-    <Stack.Navigator screenOptions={{ ...stackOptions, cardStyleInterpolator }}>
+    <Stack.Navigator screenOptions={{ ...stackOptions, cardStyleInterpolator } as any}>
       <Stack.Screen name="ProfileHome" component={ProfileScreen} options={{ title: 'Profile', headerShown: false }} />
       <Stack.Screen name="NotificationPreferences" component={NotificationPreferencesScreen} options={{ title: 'Notifications' }} />
       <Stack.Screen name="Album" component={AlbumScreen} options={{ title: 'Album' }} />

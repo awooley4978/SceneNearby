@@ -206,7 +206,7 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
                   await setUserSettings(updated);
                   setNavApp(a.value);
                 },
-              })).concat([{ text: 'Cancel', style: 'cancel' as const }]),
+              })).concat([{ text: 'Cancel' } as any]),
             );
           }}
         >

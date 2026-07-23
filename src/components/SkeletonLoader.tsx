@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { View, Animated, StyleSheet, Dimensions } from 'react-native';
 import { theme } from '../theme';
 
-const { width } = Dimensions.get('window');
+const { width: screenWidth } = Dimensions.get('window');
 
 interface SkeletonLoaderProps {
   height?: number;
@@ -40,7 +40,7 @@ export const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({
 
   const translateX = shimmerAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [-width, width],
+    outputRange: [-screenWidth, screenWidth],
   });
 
   return (
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     backgroundColor: 'rgba(255,255,255,0.08)',
-    width: width * 0.5,
+    width: screenWidth * 0.5,
   },
   card: {
     marginBottom: 16,

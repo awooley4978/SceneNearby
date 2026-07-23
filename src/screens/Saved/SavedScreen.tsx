@@ -39,7 +39,7 @@ export const SavedScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     if (userLocation.latitude !== null && userLocation.longitude !== null) {
       result = result.map((loc) => ({
         ...loc,
-        distanceFromUser: calculateDistance(userLocation.latitude, userLocation.longitude, loc.latitude, loc.longitude) / 1609.34,
+        distanceFromUser: calculateDistance(userLocation.latitude!, userLocation.longitude!, loc.latitude, loc.longitude) / 1609.34,
       }));
     }
 

@@ -255,9 +255,7 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
         {location.imageUrl ? (
           <SmartHeroImage
             imageUrl={location.imageUrl}
-            localAsset={location.imageUrl.startsWith('asset://') ? getLocalAsset(location.imageUrl.replace('asset://', '')) : undefined}
             focalPoint={location.focalPoint}
-            height={360}
           />
         ) : (
           <MapPlaceholder locationId={location.id} locationName={location.title} hasPhotos={galleryPhotos.length > 0} />
@@ -349,7 +347,14 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
       ) : (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>📸 Community Photos</Text>
-          <Text style={styles.emptyStateText}>No community photos yet. Check back soon.</Text>
+          <Text style={styles.emptyStateText}>No community photos yet.</Text>
+          <TouchableOpacity
+            style={styles.uploadPill}
+            onPress={() => navigation.navigate('Upload', { locationId: location.id, locationName: location.title })}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.uploadPillText}>📸 Upload the first photo</Text>
+          </TouchableOpacity>
         </View>
       )}
 
@@ -430,6 +435,22 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 20, fontWeight: '700', color: theme.colors.textPrimary, marginBottom: 10 },
   bodyText: { fontSize: 15, color: theme.colors.textSecondary, lineHeight: 24 },
   emptyStateText: { fontSize: 15, color: theme.colors.textTertiary, lineHeight: 24, fontStyle: 'italic' },
+  uploadPill: {
+    marginTop: 12,
+    backgroundColor: 'rgba(245,197,24,0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(245,197,24,0.3)',
+    borderRadius: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    alignSelf: 'flex-start',
+  },
+  uploadPillText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: 'rgba(245,197,24,0.9)',
+    letterSpacing: 0.2,
+  },
   coords: { fontSize: 12, color: theme.colors.textTertiary, marginTop: 6, fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace' },
   quoteSection: { marginHorizontal: 20, marginTop: 24, padding: 20, backgroundColor: theme.colors.surface, borderRadius: 16, borderLeftWidth: 3, borderLeftColor: theme.colors.gold },
   quoteIcon: { fontSize: 20, marginBottom: 8 },

@@ -200,7 +200,7 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
     if (userLocation.latitude !== null && userLocation.longitude !== null) {
       result = result.map((loc) => ({
         ...loc,
-        distanceFromUser: calculateDistance(userLocation.latitude, userLocation.longitude, loc.latitude, loc.longitude) / 1609.34, // meters to miles
+        distanceFromUser: calculateDistance(userLocation.latitude!, userLocation.longitude!, loc.latitude, loc.longitude) / 1609.34, // meters to miles
       }));
       // Filter to within radius
       const radius = activeRadius ?? RADIUS_STAGES[RADIUS_STAGES.length - 1];
@@ -225,7 +225,7 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
     if (userLocation.latitude === null || userLocation.longitude === null) return [];
     const withDist = allLocations.map((loc) => ({
       ...loc,
-      distanceFromUser: calculateDistance(userLocation.latitude, userLocation.longitude, loc.latitude, loc.longitude) / 1609.34,
+      distanceFromUser: calculateDistance(userLocation.latitude!, userLocation.longitude!, loc.latitude, loc.longitude) / 1609.34,
     })).filter((loc) => loc.distanceFromUser! <= (activeRadius ?? RADIUS_STAGES[RADIUS_STAGES.length - 1]));
     return withDist.sort((a, b) => (a.distanceFromUser || 0) - (b.distanceFromUser || 0)).slice(0, 5);
   }, [userLocation.latitude, userLocation.longitude, activeRadius]);
