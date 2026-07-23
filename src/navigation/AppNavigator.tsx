@@ -20,6 +20,7 @@ import { ActorDetailScreen } from '../screens/Discover/ActorDetailScreen';
 import { AlbumScreen } from '../screens/Album/AlbumScreen';
 import { LocationAlbumScreen } from '../screens/Album/LocationAlbumScreen';
 import { AuthScreen } from '../screens/Auth/AuthScreen';
+import { UploadPhotoScreen } from '../screens/Upload/UploadPhotoScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -98,6 +99,11 @@ const sharedScreens = (
       name="ActorDetail"
       component={ActorDetailScreen}
       options={{ title: 'Actor', ...stackOptions, cardStyleInterpolator }}
+    />
+    <Stack.Screen
+      name="Upload"
+      component={UploadPhotoScreen}
+      options={{ title: 'Upload Photo', headerShown: false, animation: 'fade' as any, presentation: 'modal' as any }}
     />
   </>
 );

@@ -1,10 +1,17 @@
-import React, { useEffect, useRef } from 'react';
-import { View, Text, Image, Animated, StyleSheet } from 'react-native';
+import React, { useEffect, useRef, useCallback } from 'react';
+import { View, Text, Image, Animated, StyleSheet, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const PLACEHOLDER_IMAGE = require('../../assets/missing-photo-placeholder.png');
 
-export const MapPlaceholder: React.FC = () => {
+interface MapPlaceholderProps {
+  locationId?: string;
+  locationName?: string;
+}
+
+export const MapPlaceholder: React.FC<MapPlaceholderProps> = ({ locationId, locationName }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const navigation = useNavigation<any>();
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -13,6 +20,10 @@ export const MapPlaceholder: React.FC = () => {
       useNativeDriver: true,
     }).start();
   }, [fadeAnim]);
+
+  const handleUpload = useCallback(() => {
+    navigation.navigate('Upload', { locationId, locationName });
+  }, [navigation, locationId, locationName]);
 
   return (
     <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
@@ -23,9 +34,13 @@ export const MapPlaceholder: React.FC = () => {
       />
       <View style={styles.overlay} />
       <View style={styles.copyContainer}>
-        <View style={styles.pill}>
-          <Text style={styles.pillText}>Be the first to upload a photo</Text>
-        </View>
+        <TouchableOpacity
+          style={styles.pill}
+          onPress={handleUpload}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.pillText}>📸 Be the first to upload a photo</Text>
+        </TouchableOpacity>
       </View>
     </Animated.View>
   );

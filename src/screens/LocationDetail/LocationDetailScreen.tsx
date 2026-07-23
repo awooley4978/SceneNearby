@@ -260,7 +260,7 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
             height={360}
           />
         ) : (
-          <MapPlaceholder />
+          <MapPlaceholder locationId={location.id} locationName={location.title} />
         )}
         <View style={styles.heroContent}>
           <TouchableOpacity onPress={handleViewMovie}>

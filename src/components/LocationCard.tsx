@@ -167,7 +167,7 @@ export const LocationCard: React.FC<LocationCardProps> = ({
                 style={styles.heroImage}
               />
             ) : (
-              <MapPlaceholder />
+              <MapPlaceholder locationId={location.id} locationName={location.title} />
             )}
             {/* Category badge — top left */}
             <View style={styles.heroBadgeTopLeft}>
