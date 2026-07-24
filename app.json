@@ -16,6 +16,9 @@
       "supportsTablet": false,
       "bundleIdentifier": "com.cairn.scenenearby",
       "buildNumber": "1.0.0",
+      "config": {
+        "googleMapsApiKey": "AIzaSyBLUZWpL5Z0S2_G_tcddtInru-KFeMivLs"
+      },
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Scene Nearby uses your location to show you nearby filming locations.",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "Scene Nearby uses your location to alert you when you're near a filming location.",
