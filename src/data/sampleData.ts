@@ -547,7 +547,7 @@ const londonLocations: FilmingLocation[] = [
           quote: 'It\'s not your fault.',
           quoteAttribution: 'Sean Maguire',
           estimatedVisitTime: 'Short Visit (15-30 min)\nVisitor Tip: The bench is unmarked and can be busy during peak tourist season.',
-          thenAndNow: 'The Boston Public Garden' is America\'s first public botanical garden, dating back to 1837.',
+          thenAndNow: "The Boston Public Garden is America's first public botanical garden, dating back to 1837.",
           isMovie: true,
         },
         {
