@@ -338,7 +338,7 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
       {/* Community Photos */}
       {galleryPhotos.length > 0 ? (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>📸 Community Photos</Text>
+          <Text style={styles.sectionTitle}>Community Photos</Text>
           <LocationPhotoGallery
             photos={galleryPhotos}
             showAddButton={false}
@@ -346,7 +346,7 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
         </View>
       ) : (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>📸 Community Photos</Text>
+          <Text style={styles.sectionTitle}>Community Photos</Text>
           <Text style={styles.emptyStateText}>No community photos yet.</Text>
           <TouchableOpacity
             style={styles.uploadPill}
