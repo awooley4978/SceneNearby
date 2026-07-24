@@ -10,6 +10,7 @@ import {
   signInWithMagicLink,
   isMagicLink,
   getPendingMagicLinkEmail,
+  signInAnonymously,
   MagicLinkState,
 } from '../services/auth';
 
@@ -76,6 +77,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setMagicLinkState({ status: 'sent', email });
       }
     });
+  }, []);
+
+  // Auto-sign-in anonymously for dev testing
+  useEffect(() => {
+    if (DEV_BYPASS) return;
+    const u = getCurrentUser();
+    if (!u) {
+      signInAnonymously().then((user) => {
+        setUser(user);
+        setLoading(false);
+      }).catch(() => {
+        setLoading(false);
+      });
+    }
   }, []);
 
   useEffect(() => {
