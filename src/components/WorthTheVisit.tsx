@@ -45,7 +45,21 @@ export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes,
   if (!hasData && !user) {
     return (
       <View style={styles.container}>
-        <Text style={styles.emptyText}>👍 No votes yet</Text>
+        <Text style={styles.emptyText}>👍 No votes yet — sign in to vote</Text>
+      </View>
+    );
+  }
+
+  if (!user) {
+    return (
+      <View style={styles.container}>
+        {hasData ? (
+          <Text style={styles.summaryText}>
+            👍 {liveStats!.worthItPercent}% Worth the Visit · {liveStats!.total.toLocaleString()} votes
+          </Text>
+        ) : (
+          <Text style={styles.emptyText}>👍 No votes yet — sign in to vote</Text>
+        )}
       </View>
     );
   }
