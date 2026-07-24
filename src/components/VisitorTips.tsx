@@ -67,7 +67,7 @@ export const VisitorTips: React.FC<VisitorTipsProps> = ({
   }, [locationId, user, newTipText, isSubmitting]);
 
   // Nothing to show
-  if (!embeddedTip && tips.length === 0) return null;
+  // Always show the section — it has the Add Tip button
 
   return (
     <View style={styles.container}>
