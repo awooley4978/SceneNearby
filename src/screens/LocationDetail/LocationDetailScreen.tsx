@@ -377,11 +377,8 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
 
       {/* Actions */}
       <View style={styles.actions}>
-        <TouchableOpacity style={styles.primaryButton} onPress={() => navigation.navigate('NearbyMap', { centerLat: location.latitude, centerLng: location.longitude })}>
-          <Text style={styles.primaryButtonText}>🗺️ View on Map</Text>
-        </TouchableOpacity>
         <TouchableOpacity style={styles.primaryButton} onPress={handleNavigate}>
-          <Text style={styles.primaryButtonText}>🧭 Get Directions</Text>
+          <Text style={styles.primaryButtonText}>🗺️ Directions</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.secondaryButton, saved && styles.savedButton]}

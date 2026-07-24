@@ -42,7 +42,7 @@ export const RatingSection: React.FC<RatingSectionProps> = ({
   const openGoogleReviews = async () => {
     if (effectivePlaceId) {
       await WebBrowser.openBrowserAsync(
-        `https://www.google.com/maps/place/?q=place_id:${effectivePlaceId}`
+        `https://search.google.com/local/reviews?placeid=${effectivePlaceId}`
       );
     }
   };
