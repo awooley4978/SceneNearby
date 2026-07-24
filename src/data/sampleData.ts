@@ -410,7 +410,7 @@ const londonLocations: FilmingLocation[] = [
           funFact: 'Glenbrook North High School was director John Hughes\'s alma mater.',
           quote: 'Life moves pretty fast. If you don\'t stop and look around once in a while, you could miss it.',
           quoteAttribution: 'Ferris Bueller',
-          estimatedVisitTime: 'Quick Stop (< 15 min)\nVisitor Tip: This is an active high school. If you visit, please be respectful of students and staff, and avoid visiting during school hours whenever possible.',
+          estimatedVisitTime: 'Quick Stop (< 15 min) ',
           thenAndNow: 'Glenbrook North remains a functioning high school and popular pilgrimage site for Ferris Bueller fans.',
           isMovie: true,
         },
