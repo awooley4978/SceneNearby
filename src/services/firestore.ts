@@ -124,3 +124,36 @@ export async function getVisitTimeStats(
   });
   return Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
 }
+
+// ── Visitor Tips ──
+
+export interface VisitorTip {
+  id: string;
+  text: string;
+  userId: string;
+  createdAt: number;
+}
+
+export async function submitVisitorTip(
+  locationId: string,
+  userId: string,
+  text: string
+): Promise<void> {
+  const ref = doc(collection(db, 'visitorTips', locationId, 'tips'));
+  await setDoc(ref, {
+    text,
+    userId,
+    createdAt: Date.now(),
+  });
+}
+
+export async function fetchVisitorTips(
+  locationId: string
+): Promise<VisitorTip[]> {
+  const colRef = collection(db, 'visitorTips', locationId, 'tips');
+  const snaps = await getDocs(colRef);
+  if (snaps.empty) return [];
+  return snaps.docs
+    .map((d) => ({ id: d.id, ...d.data() } as VisitorTip))
+    .sort((a, b) => b.createdAt - a.createdAt);
+}

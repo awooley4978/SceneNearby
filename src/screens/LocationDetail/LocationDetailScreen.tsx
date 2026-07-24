@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { theme } from '../../theme';
 import { locationById, photosByLocation, calculateDistance } from '../../data/sampleData';
-import { categoryColors, STORAGE_KEYS, defaultUserSettings } from '../../models';
+import { categoryColors, STORAGE_KEYS, defaultUserSettings, communityPhotoToGallery } from '../../models';
 import { getUserSettings, setUserSettings } from '../../services/StorageService';
 import { useSaved } from '../../context/SavedContext';
 import { useUserLocation } from '../../hooks/useUserLocation';
@@ -24,6 +24,7 @@ import { getLocalAsset } from '../../data/assetMap';
 import { RatingSection } from '../../components/RatingSection';
 import { WorthTheVisit } from '../../components/WorthTheVisit';
 import { EstimatedVisitTime } from '../../components/EstimatedVisitTime';
+import { VisitorTips } from '../../components/VisitorTips';
 import { RemoteDestinationBadge } from '../../components/RemoteDestinationBadge';
 import { LocationPhotoGallery, GalleryPhoto } from '../../components/LocationPhotoGallery';
 import { logLocationViewed, logLocationSaved, logLocationUnsaved, logLocationNavigate, logLocationShared, logUserRating } from '../../services/analytics';
@@ -45,17 +46,12 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
     return calculateDistance(userLocation.latitude, userLocation.longitude, location.latitude, location.longitude) / 1609.34;
   }, [userLocation.latitude, userLocation.longitude, location]);
 
-  // Map community photos to gallery format
+  // Map community photos to gallery format with location hero as fallback
   const galleryPhotos: GalleryPhoto[] = React.useMemo(() => {
-    return communityPhotos.map((p) => ({
-      id: p.id,
-      imageUrl: '',
-      caption: p.caption,
-      submittedBy: p.username,
-      submittedAt: new Date(p.timestamp).toISOString(),
-      locationId: p.locationId,
-    }));
-  }, [communityPhotos]);
+    return communityPhotos
+      .map((p) => communityPhotoToGallery(p, location?.imageUrl))
+      .filter((p) => p.imageUrl);
+  }, [communityPhotos, location?.imageUrl]);
 
   if (!location) {
     return (
@@ -305,6 +301,11 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
       {/* Estimated Visit Time */}
       <View style={styles.compactSection}>
         <EstimatedVisitTime time={location.estimatedVisitTime} locationId={location.id} />
+      </View>
+
+      {/* Visitor Tips */}
+      <View style={styles.compactSection}>
+        <VisitorTips locationId={location.id} estimatedVisitTime={location.estimatedVisitTime} />
       </View>
 
       {/* What Happened Here */}
