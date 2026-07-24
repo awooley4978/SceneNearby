@@ -15,7 +15,7 @@ export function useMagicLink() {
 
   useEffect(() => {
     // Dev bypass: skip magic link handling entirely
-    if (__DEV__) return;
+    if (true) return;
     let mounted = true;
 
     // ── Cold start: check initial URL ──
