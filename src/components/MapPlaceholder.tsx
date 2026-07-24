@@ -3,7 +3,7 @@ import { View, Text, Image, Animated, StyleSheet, TouchableOpacity } from 'react
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 
-const PLACEHOLDER_IMAGE = require('../../assets/missing-photo-placeholder.png');
+const PLACEHOLDER_IMAGE = require('../../assets/missing-photo-filler.png');
 
 interface MapPlaceholderProps {
   locationId?: string;
