@@ -22,7 +22,7 @@ import type { FilmingLocation } from '../../models';
 
 const { width, height } = Dimensions.get('window');
 
-export const NearbyMapScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
+export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ navigation, route }) => {
   const [selectedLocation, setSelectedLocation] = useState<FilmingLocation | null>(null);
   const [showList, setShowList] = useState(false);
   const { savedIds, toggleSave: toggleSaved } = useSaved();
@@ -30,27 +30,49 @@ export const NearbyMapScreen: React.FC<{ navigation: any }> = ({ navigation }) =
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [region, setRegion] = useState<Region | null>(null);
   const [userCity, setUserCity] = useState<string>('');
+  const [userCoords, setUserCoords] = useState<{ lat: number; lng: number } | null>(null);
 
-  // Load user coordinates from onboarding data + saved IDs
+  // If navigated from location detail, center on that location
+  const targetLat = route?.params?.centerLat;
+  const targetLng = route?.params?.centerLng;
+
+  // Load user coordinates from onboarding data
   useEffect(() => {
     (async () => {
       try {
         const data = await getOnboardingData();
         if (data?.activeCityLat && data?.activeCityLng) {
-          const newRegion: Region = {
-            latitude: data.activeCityLat,
-            longitude: data.activeCityLng,
-            latitudeDelta: 0.5,
-            longitudeDelta: 0.5,
-          };
-          setRegion(newRegion);
-        }
-        if (data?.activeCity) {
-          setUserCity(data.activeCity);
+          setUserCoords({ lat: data.activeCityLat, lng: data.activeCityLng });
+          setUserCity(data.activeCity || '');
+          // If no target provided, center on user
+          if (!targetLat) {
+            setRegion({
+              latitude: data.activeCityLat,
+              longitude: data.activeCityLng,
+              latitudeDelta: 0.5,
+              longitudeDelta: 0.5,
+            });
+          }
         }
       } catch {}
     })();
   }, []);
+
+  // If target location provided, center map on it
+  useEffect(() => {
+    if (targetLat && targetLng) {
+      const targetRegion = {
+        latitude: targetLat,
+        longitude: targetLng,
+        latitudeDelta: 0.05,
+        longitudeDelta: 0.05,
+      };
+      setRegion(targetRegion);
+      setTimeout(() => {
+        mapRef.current?.animateToRegion(targetRegion, 500);
+      }, 300);
+    }
+  }, [targetLat, targetLng]);
 
   // Filter locations by current city
   const cityLocations = useMemo(() => {
