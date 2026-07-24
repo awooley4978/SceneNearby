@@ -1,8 +1,7 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { theme } from '../theme';
-import { useAuth } from '../context/AuthContext';
-import { submitVisitTime, getVisitTimeStats } from '../services/firestore';
+import { BottomSheet } from './BottomSheet';
 
 interface EstimatedVisitTimeProps {
   time?: string;
@@ -17,85 +16,65 @@ const TIME_OPTIONS = [
   { key: 'halfday', label: 'Half Day', detail: '2–4 hrs' },
 ];
 
-export const EstimatedVisitTime: React.FC<EstimatedVisitTimeProps> = ({ time, locationId }) => {
-  const { user } = useAuth();
-  const [liveTime, setLiveTime] = useState<string | null>(null);
-  const [userSelection, setUserSelection] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export const EstimatedVisitTime: React.FC<EstimatedVisitTimeProps> = ({ time }) => {
+  const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [sheetVisible, setSheetVisible] = useState(false);
 
-  useEffect(() => {
-    if (!locationId) return;
-    getVisitTimeStats(locationId).then((t) => {
-      if (t) setLiveTime(t);
-    }).catch(() => {});
-  }, [locationId]);
-
-  const handleSelect = useCallback(async (timeRange: string) => {
-    if (!locationId || !user || isSubmitting) return;
-    setIsSubmitting(true);
-    try {
-      const mostCommon = await submitVisitTime(locationId, user.uid, timeRange);
-      setLiveTime(mostCommon);
-      setUserSelection(timeRange);
-    } catch {}
-    setIsSubmitting(false);
-  }, [locationId, user, isSubmitting]);
-
-  const display = liveTime ?? time;
+  const display = selectedTime ?? time;
 
   return (
     <View style={styles.container}>
-      {display ? (
-        <View>
-          <Text style={styles.timeText}>⏱️ {display}</Text>
-          <Text style={styles.subtext}>based on travelers</Text>
-        </View>
-      ) : (
-        <Text style={styles.emptyText}>⏱️ No visit time data</Text>
-      )}
+      {/* Compact summary row */}
+      <TouchableOpacity
+        style={styles.summaryRow}
+        onPress={() => setSheetVisible(true)}
+        activeOpacity={0.7}
+      >
+        <Text style={styles.timeText}>
+          {display ? `⏱️ ${display} · based on travelers` : '⏱️ Add visit time'}
+        </Text>
+      </TouchableOpacity>
 
-      {/* Time selector */}
-      <View style={styles.buttons}>
-        {TIME_OPTIONS.map((opt) => {
-          const isSelected = userSelection === opt.detail;
-          return (
-            <TouchableOpacity
-              key={opt.key}
-              style={[styles.timePill, isSelected && styles.timePillSelected]}
-              onPress={() => handleSelect(opt.detail)}
-              activeOpacity={0.7}
-              disabled={isSubmitting}
-            >
-              <Text style={[styles.timePillText, isSelected && styles.timePillTextSelected]}>
-                {opt.label}
-              </Text>
-              <Text style={[styles.timePillDetail, isSelected && styles.timePillTextSelected]}>
-                {opt.detail}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
-      </View>
+      {/* Bottom Sheet */}
+      <BottomSheet
+        visible={sheetVisible}
+        onClose={() => setSheetVisible(false)}
+        title="How Long to Spend?"
+      >
+        <View style={styles.buttons}>
+          {TIME_OPTIONS.map((opt) => {
+            const isSelected = selectedTime === opt.detail;
+            return (
+              <TouchableOpacity
+                key={opt.key}
+                style={[styles.timePill, isSelected && styles.timePillSelected]}
+                onPress={() => setSelectedTime(opt.detail)}
+                activeOpacity={0.7}
+              >
+                <Text style={[styles.timePillText, isSelected && styles.timePillTextSelected]}>
+                  {opt.label}
+                </Text>
+                <Text style={[styles.timePillDetail, isSelected && styles.timePillTextSelected]}>
+                  {opt.detail}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </BottomSheet>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { gap: 10 },
+  container: {},
+  summaryRow: {
+    paddingVertical: 4,
+  },
   timeText: {
     fontSize: 14,
     fontWeight: '500',
-    color: theme.colors.textPrimary,
-  },
-  subtext: {
-    fontSize: 10,
-    color: theme.colors.textTertiary,
-    marginTop: 2,
-  },
-  emptyText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: theme.colors.textTertiary,
+    color: theme.colors.gold,
   },
   buttons: {
     flexDirection: 'row',
@@ -108,7 +87,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(245,197,24,0.25)',
     borderRadius: 16,
     paddingHorizontal: 14,
-    paddingVertical: 7,
+    paddingVertical: 8,
     alignItems: 'center',
   },
   timePillSelected: {
@@ -116,7 +95,7 @@ const styles = StyleSheet.create({
     borderColor: theme.colors.gold,
   },
   timePillText: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '600',
     color: 'rgba(245,197,24,0.85)',
   },

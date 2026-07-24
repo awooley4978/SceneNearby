@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { theme } from '../theme';
 import { useAuth } from '../context/AuthContext';
 import { submitWorthItVote, getWorthItStats, WorthItVote, WorthItStats } from '../services/firestore';
+import { BottomSheet } from './BottomSheet';
 
 interface WorthTheVisitProps {
   percentage?: number;
@@ -21,6 +22,7 @@ export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes,
   const [liveStats, setLiveStats] = useState<WorthItStats | null>(null);
   const [userVote, setUserVote] = useState<WorthItVote | null>(null);
   const [isVoting, setIsVoting] = useState(false);
+  const [sheetVisible, setSheetVisible] = useState(false);
 
   useEffect(() => {
     if (!locationId) return;
@@ -44,77 +46,79 @@ export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes,
 
   return (
     <View style={styles.container}>
-      {/* Summary line */}
-      {hasData ? (
+      {/* Compact summary row */}
+      <TouchableOpacity
+        style={styles.summaryRow}
+        onPress={() => setSheetVisible(true)}
+        activeOpacity={0.7}
+      >
         <Text style={styles.summaryText}>
-          👍 {liveStats!.worthItPercent}% Worth the Visit · {liveStats!.total.toLocaleString()} votes
+          {hasData
+            ? `👍 ${liveStats!.worthItPercent}% worth it · ${liveStats!.total.toLocaleString()} votes`
+            : '👍 No ratings yet · Tap to rate'}
         </Text>
-      ) : (
-        <Text style={styles.emptyText}>👍 No votes yet</Text>
-      )}
+      </TouchableOpacity>
 
-      {/* Breakdown */}
-      {hasData && (
-        <View style={styles.breakdown}>
-          <Text style={styles.breakdownText}>
-            🌟 {liveStats!.absolutely}% Absolutely
-          </Text>
-          <Text style={styles.breakdownText}>
-            👍 {liveStats!.nearby}% Worth It If Nearby
-          </Text>
-          <Text style={styles.breakdownText}>
-            🎬 {liveStats!.bigFan}% Only If a Big Fan
-          </Text>
+      {/* Bottom Sheet */}
+      <BottomSheet
+        visible={sheetVisible}
+        onClose={() => setSheetVisible(false)}
+        title="Is This Worth the Visit?"
+      >
+        {hasData && (
+          <View style={styles.breakdown}>
+            <Text style={styles.breakdownText}>🌟 {liveStats!.absolutely}% Absolutely</Text>
+            <Text style={styles.breakdownText}>👍 {liveStats!.nearby}% Worth It If Nearby</Text>
+            <Text style={styles.breakdownText}>🎬 {liveStats!.bigFan}% Only If a Big Fan</Text>
+          </View>
+        )}
+        <View style={styles.buttons}>
+          {VOTE_OPTIONS.map((opt) => {
+            const isSelected = userVote === opt.key;
+            return (
+              <TouchableOpacity
+                key={opt.key}
+                style={[styles.votePill, isSelected && styles.votePillSelected]}
+                onPress={() => handleVote(opt.key)}
+                activeOpacity={0.7}
+                disabled={isVoting}
+              >
+                <Text style={[styles.votePillText, isSelected && styles.votePillTextSelected]}>
+                  {opt.emoji} {opt.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
         </View>
-      )}
-
-      {/* Vote buttons */}
-      <View style={styles.buttons}>
-        {VOTE_OPTIONS.map((opt) => {
-          const isSelected = userVote === opt.key;
-          return (
-            <TouchableOpacity
-              key={opt.key}
-              style={[styles.votePill, isSelected && styles.votePillSelected]}
-              onPress={() => handleVote(opt.key)}
-              activeOpacity={0.7}
-              disabled={isVoting}
-            >
-              <Text style={[styles.votePillText, isSelected && styles.votePillTextSelected]}>
-                {opt.emoji} {opt.label}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
-      </View>
+      </BottomSheet>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { gap: 10 },
+  container: {},
+  summaryRow: {
+    paddingVertical: 4,
+  },
   summaryText: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '500',
     color: theme.colors.gold,
   },
-  emptyText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: theme.colors.textTertiary,
-  },
   breakdown: {
-    gap: 3,
+    gap: 4,
+    marginBottom: 4,
   },
   breakdownText: {
-    fontSize: 13,
+    fontSize: 14,
     color: theme.colors.textSecondary,
-    lineHeight: 20,
+    lineHeight: 22,
   },
   buttons: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
+    marginTop: 4,
   },
   votePill: {
     backgroundColor: 'rgba(245,197,24,0.12)',
@@ -122,14 +126,14 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(245,197,24,0.25)',
     borderRadius: 16,
     paddingHorizontal: 14,
-    paddingVertical: 7,
+    paddingVertical: 8,
   },
   votePillSelected: {
     backgroundColor: 'rgba(245,197,24,0.25)',
     borderColor: theme.colors.gold,
   },
   votePillText: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '600',
     color: 'rgba(245,197,24,0.85)',
   },
