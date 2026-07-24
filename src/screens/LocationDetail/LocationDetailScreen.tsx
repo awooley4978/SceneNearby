@@ -37,6 +37,7 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
   const communityPhotos = location ? photosByLocation(location.id) : [];
   const { isSaved: checkSaved, toggleSave: toggleSaved } = useSaved();
   const saved = checkSaved(locationId);
+  const [imageError, setImageError] = useState(false);
   const userLocation = useUserLocation();
 
   const distanceFromUser = React.useMemo(() => {
@@ -252,10 +253,11 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       {/* Hero */}
       <View style={styles.hero}>
-        {location.imageUrl ? (
+        {location.imageUrl && !imageError ? (
           <SmartHeroImage
             imageUrl={location.imageUrl}
             focalPoint={location.focalPoint}
+            onError={() => setImageError(true)}
           />
         ) : (
           <MapPlaceholder locationId={location.id} locationName={location.title} hasPhotos={galleryPhotos.length > 0} />
@@ -283,14 +285,12 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
 
       {/* Ratings & Reviews */}
       <View style={styles.compactSection}>
-        <RatingSection googleRating={location.googleRating} />
+        <RatingSection googleRating={location.googleRating} placeId={location.googleRating?.placeId} />
       </View>
 
       {/* Remote Destination Warning */}
       {location.remoteDestination && (
-        <View style={styles.remoteWarningSection}>
-          <RemoteDestinationBadge info={location.remoteDestination} />
-        </View>
+        <RemoteDestinationBadge info={location.remoteDestination} />
       )}
 
       {/* Worth the Visit — Scene Nearby community */}

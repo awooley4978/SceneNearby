@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Image, StyleSheet, ViewStyle, ImageStyle, DimensionValue } from "react-native";
 
 interface SmartHeroImageProps {
@@ -7,6 +7,7 @@ interface SmartHeroImageProps {
   style?: ViewStyle;
   imageStyle?: ImageStyle;
   scale?: number;
+  onError?: () => void;
 }
 
 export const SmartHeroImage: React.FC<SmartHeroImageProps> = ({
@@ -15,12 +16,20 @@ export const SmartHeroImage: React.FC<SmartHeroImageProps> = ({
   style,
   imageStyle,
   scale = 1.3,
+  onError,
 }) => {
+  const [hasError, setHasError] = useState(false);
+
+  const handleError = () => {
+    setHasError(true);
+    onError?.();
+  };
+
+  if (hasError) return null;
+
   const fx = focalPoint?.x ?? 0.5;
   const fy = focalPoint?.y ?? 0.5;
 
-  // Position image so focal point aligns with center of container
-  // At scale 1.3: center→-15%, top-focused(0.25)→+17.5%, bottom-focused(0.6)→-28%
   const leftOffset = ((0.5 - fx * scale) * 100).toFixed(1) + "%";
   const topOffset = ((0.5 - fy * scale) * 100).toFixed(1) + "%";
 
@@ -43,6 +52,7 @@ export const SmartHeroImage: React.FC<SmartHeroImageProps> = ({
           imageStyle,
         ]}
         resizeMode="cover"
+        onError={handleError}
       />
     </View>
   );

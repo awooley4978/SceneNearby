@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useCallback } from 'react';
+import React, { useRef, useEffect, useCallback, useState } from 'react';
 import {
   View,
   Text,
@@ -45,6 +45,7 @@ export const LocationCard: React.FC<LocationCardProps> = ({
   const rating = mockRatings[location.id];
   const { isSaved: checkSaved, toggleSave: contextToggle } = useSaved();
   const isSaved = checkSaved(location.id);
+  const [imageError, setImageError] = useState(false);
   const heartScale = useRef(new Animated.Value(1)).current;
   const pressAnim = useRef(new Animated.Value(0)).current;
   const entranceAnim = useRef(new Animated.Value(0)).current;
@@ -160,11 +161,12 @@ export const LocationCard: React.FC<LocationCardProps> = ({
           {/* ── Hero Image Area ── */}
           <View style={styles.hero}>
             {/* Location image with gradient fallback */}
-            {location.imageUrl ? (
+            {location.imageUrl && !imageError ? (
               <SmartHeroImage
                 imageUrl={location.imageUrl}
                 focalPoint={location.focalPoint}
                 style={styles.heroImage}
+                onError={() => setImageError(true)}
               />
             ) : (
               <MapPlaceholder locationId={location.id} locationName={location.title} />

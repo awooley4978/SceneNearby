@@ -60,9 +60,9 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
   const [refreshing, setRefreshing] = useState(false);
   const prevQuery = useRef('');
 
-  // Search results with grouping — MUST be before the useEffect that references it
-  const searchResults = useMemo((): SearchResultItem[] => {
-    const q = searchQuery.trim().toLowerCase();
+  // Search results with grouping — computed on every render for reliability
+  const q = searchQuery.trim().toLowerCase();
+  const searchResults = ((): SearchResultItem[] => {
     if (!q) return [];
 
     const results: SearchResultItem[] = [];
@@ -119,7 +119,7 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
     }
 
     return results;
-  }, [searchQuery]);
+  })();
 
   useEffect(() => {
     if (searchQuery.trim() && searchQuery !== prevQuery.current) {
@@ -173,7 +173,7 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
   }, [userLocation.latitude, userLocation.longitude, searchQuery, selectedCategory, selectedType]);
 
   // Filtered locations (for the main feed)
-  const filteredLocations = useMemo(() => {
+  const filteredLocations = (() => {
     // If searching with actor results, still show filtered feed below
     let result = selectedCategory === 'all'
       ? allLocations
@@ -202,9 +202,11 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
         ...loc,
         distanceFromUser: calculateDistance(userLocation.latitude!, userLocation.longitude!, loc.latitude, loc.longitude) / 1609.34, // meters to miles
       }));
-      // Filter to within radius
-      const radius = activeRadius ?? RADIUS_STAGES[RADIUS_STAGES.length - 1];
-      result = result.filter((loc) => loc.distanceFromUser! <= radius);
+      // Filter to within radius — skip when searching so all matching results show
+      if (!searchQuery.trim()) {
+        const radius = activeRadius ?? RADIUS_STAGES[RADIUS_STAGES.length - 1];
+        result = result.filter((loc) => loc.distanceFromUser! <= radius);
+      }
     }
 
     // Sort by nearest (always, since we have distance data)
@@ -219,7 +221,7 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
     }
 
     return result;
-  }, [selectedCategory, selectedType, searchQuery, sortMode, userLocation.latitude, userLocation.longitude, activeRadius]);
+  })();
 
   const nearYou = useMemo(() => {
     if (userLocation.latitude === null || userLocation.longitude === null) return [];
@@ -466,12 +468,14 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
             keyExtractor={(item) => item.id}
             renderItem={renderSearchResult}
             scrollEnabled={false}
+            extraData={searchQuery}
           />
         </View>
       )}
       <FlatList
         data={filteredLocations}
         keyExtractor={(item) => item.id}
+        extraData={searchQuery}
         renderItem={({ item }) => (
           <LocationCard
             location={item}
