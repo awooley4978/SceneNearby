@@ -40,7 +40,7 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 // Dev bypass: skip Firebase auth entirely during development
-const DEV_BYPASS = __DEV__;
+const DEV_BYPASS = true; // Always on for dev client testing
 
 const DEV_USER = {
   uid: 'dev-user-001',
