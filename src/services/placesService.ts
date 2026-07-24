@@ -9,6 +9,7 @@ export interface PlaceRating {
   reviewCount: number;
   placeId: string;
   displayName: string | null;
+  googleMapsUri: string | null;
 }
 
 /**

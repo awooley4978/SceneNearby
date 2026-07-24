@@ -39,7 +39,6 @@ export const RatingSection: React.FC<RatingSectionProps> = ({
   const displayCount = liveRating?.reviewCount ?? googleRating?.reviewCount;
   const effectivePlaceId = placeId || googleRating?.placeId;
 
-  // Reviews link removed — no reliable cross-platform URL format
 
   const hasGoogle = !!displayRating;
   const hasLocal = !!localRating;
@@ -66,7 +65,11 @@ export const RatingSection: React.FC<RatingSectionProps> = ({
               Google ★ {displayRating} ({displayCount?.toLocaleString()} reviews)
             </Text>
           </View>
-          <Text style={styles.viewButtonText}>📍 Google rating — informational only</Text>
+          {liveRating?.googleMapsUri ? (
+            <TouchableOpacity onPress={() => WebBrowser.openBrowserAsync(liveRating.googleMapsUri!)} activeOpacity={0.7} style={styles.viewButton}>
+              <Text style={styles.viewButtonText}>📍 View on Google Maps</Text>
+            </TouchableOpacity>
+          ) : null}
           <Text style={styles.attribution}>Powered by Google</Text>
         </View>
       )}
