@@ -72,6 +72,7 @@ export function getCurrentUser(): User | null {
 export async function sendMagicLink(email: string): Promise<void> {
   // Store email so we can retrieve it when the link is clicked
   await AsyncStorage.setItem(MAGIC_LINK_STORAGE_KEY, email);
+  // Let the Firebase error propagate with its code intact
   await sendSignInLinkToEmail(auth, email, actionCodeSettings);
 }
 

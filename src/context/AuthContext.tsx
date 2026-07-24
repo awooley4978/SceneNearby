@@ -72,13 +72,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setMagicLinkState({ status: 'sent', email });
     } catch (err: any) {
       const code = err?.code || '';
+      const msg = err?.message || '';
+      console.error('Magic link error:', code, msg);
       const isQuota = code.includes('quota') || code.includes('too-many');
       setMagicLinkState({
         status: 'error',
         email,
         error: isQuota
-          ? "Email temporarily unavailable\n\nWe've reached today's email sign-in limit for our testing environment. Please try again tomorrow."
-          : err?.message || 'Could not send link. Check your email and try again.',
+          ? `[${code}] Firebase daily email quota exceeded. Upgrade to Blaze plan or try again tomorrow.\n\n${msg}`
+          : `[${code}] ${msg}`,
       });
     }
   }, []);
