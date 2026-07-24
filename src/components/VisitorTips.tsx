@@ -163,6 +163,12 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: theme.colors.textPrimary,
     marginBottom: 2,
+  emptyText: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: theme.colors.textTertiary,
+    fontStyle: 'italic',
+  },
   },
   tipCard: {
     backgroundColor: theme.colors.surface,
