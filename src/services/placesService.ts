@@ -1,8 +1,7 @@
-// Places service — fetches live Google Places ratings via the nearby API proxy
+// Places service — fetches live Google Places ratings directly from Places API (New)
 
-const API_BASE = __DEV__
-  ? 'http://localhost:3000'
-  : 'https://b118a520627ac1a10a1362a93ff3b3f5.ctonew.app';
+const GOOGLE_PLACES_API_KEY = 'AIzaSyBLUZWpL5Z0S2_G_tcddtInru-KFeMivLs';
+const PLACES_API_BASE = 'https://places.googleapis.com/v1/places';
 
 export interface PlaceRating {
   rating: number | null;
@@ -13,15 +12,22 @@ export interface PlaceRating {
 }
 
 /**
- * Fetch live rating from Google Places via the nearby API proxy.
- * Endpoint: GET /api/places/:placeId
+ * Fetch live rating from Google Places API (New).
+ * Uses the googleMapsUri returned by Google — never constructs fallback URLs.
  */
 export async function fetchPlaceRating(placeId: string): Promise<PlaceRating | null> {
   try {
-    const response = await fetch(`${API_BASE}/api/places/${encodeURIComponent(placeId)}`);
+    const url = `${PLACES_API_BASE}/${encodeURIComponent(placeId)}?fields=rating,userRatingCount,displayName,googleMapsUri&key=${GOOGLE_PLACES_API_KEY}`;
+    const response = await fetch(url);
     if (!response.ok) return null;
-    const data = await response.json();
-    return data as PlaceRating;
+    const data: any = await response.json();
+    return {
+      rating: data.rating ?? null,
+      reviewCount: data.userRatingCount ?? 0,
+      placeId,
+      displayName: data.displayName?.text ?? null,
+      googleMapsUri: data.googleMapsUri ?? null,
+    };
   } catch {
     return null;
   }
