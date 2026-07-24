@@ -28,7 +28,7 @@ export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes,
     if (!locationId) return;
     getWorthItStats(locationId).then((stats) => {
       if (stats) setLiveStats(stats);
-    }).catch(() => {});
+    }).catch((e) => { console.error('WorthIt stats:', e); });
   }, [locationId]);
 
   const handleVote = useCallback(async (vote: WorthItVote) => {
@@ -38,7 +38,7 @@ export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes,
       const stats = await submitWorthItVote(locationId, user.uid, vote);
       setLiveStats(stats);
       setUserVote(vote);
-    } catch {}
+    } catch (e) { console.error('WorthIt vote:', e); }
     setIsVoting(false);
   }, [locationId, user, isVoting]);
 
