@@ -8,7 +8,7 @@ import {
   FlatList,
   Animated,
 } from 'react-native';
-import MapView, { Marker, Region } from 'react-native-maps';
+import MapView, { Marker, Region, PROVIDER_GOOGLE } from 'react-native-maps';
 import { theme } from '../../theme';
 import { allLocations, mockRatings } from '../../data/sampleData';
 import { categoryColors } from '../../models';
@@ -117,6 +117,7 @@ export const NearbyMapScreen: React.FC<{ navigation: any }> = ({ navigation }) =
       {/* Map — only render once region is loaded */}
       {region ? (
       <MapView
+        provider={PROVIDER_GOOGLE}
         ref={mapRef}
         style={styles.map}
         region={region}
