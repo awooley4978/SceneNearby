@@ -67,7 +67,7 @@ export const VisitorTips: React.FC<VisitorTipsProps> = ({
   }, [locationId, user, newTipText, isSubmitting]);
 
   // Nothing to show
-  if (!embeddedTip && tips.length === 0 && !user) return null;
+  if (!embeddedTip && tips.length === 0) return null;
 
   return (
     <View style={styles.container}>
@@ -96,19 +96,13 @@ export const VisitorTips: React.FC<VisitorTipsProps> = ({
       )}
 
       {/* Add Tip button */}
-      {locationId ? (
-        user ? (
-        <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => setModalVisible(true)}
-          activeOpacity={0.7}
-        >
-          <Text style={styles.addButtonText}>✏️ Add a Tip</Text>
-        </TouchableOpacity>
-        ) : (
-          <Text style={styles.emptyText}>Sign in to add a tip</Text>
-        )
-      ) : null}
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={() => setModalVisible(true)}
+        activeOpacity={0.7}
+      >
+        <Text style={styles.addButtonText}>✏️ Add a Tip</Text>
+      </TouchableOpacity>
 
       {/* Modal */}
       <Modal visible={modalVisible} animationType="slide" transparent>

@@ -55,33 +55,27 @@ export const EstimatedVisitTime: React.FC<EstimatedVisitTimeProps> = ({ time, lo
       )}
 
       {/* Time selector */}
-      {locationId ? (
-        user ? (
-        <View style={styles.buttons}>
-          {TIME_OPTIONS.map((opt) => {
-            const isSelected = userSelection === opt.detail;
-            return (
-              <TouchableOpacity
-                key={opt.key}
-                style={[styles.timePill, isSelected && styles.timePillSelected]}
-                onPress={() => handleSelect(opt.detail)}
-                activeOpacity={0.7}
-                disabled={isSubmitting}
-              >
-                <Text style={[styles.timePillText, isSelected && styles.timePillTextSelected]}>
-                  {opt.label}
-                </Text>
-                <Text style={[styles.timePillDetail, isSelected && styles.timePillTextSelected]}>
-                  {opt.detail}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-        ) : (
-          <Text style={styles.emptyText}>Sign in to set visit time</Text>
-        )
-      ) : null}
+      <View style={styles.buttons}>
+        {TIME_OPTIONS.map((opt) => {
+          const isSelected = userSelection === opt.detail;
+          return (
+            <TouchableOpacity
+              key={opt.key}
+              style={[styles.timePill, isSelected && styles.timePillSelected]}
+              onPress={() => handleSelect(opt.detail)}
+              activeOpacity={0.7}
+              disabled={isSubmitting}
+            >
+              <Text style={[styles.timePillText, isSelected && styles.timePillTextSelected]}>
+                {opt.label}
+              </Text>
+              <Text style={[styles.timePillDetail, isSelected && styles.timePillTextSelected]}>
+                {opt.detail}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
     </View>
   );
 };

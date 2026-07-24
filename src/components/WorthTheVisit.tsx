@@ -42,28 +42,6 @@ export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes,
 
   const hasData = liveStats && liveStats.total > 0;
 
-  if (!hasData && !user) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.emptyText}>👍 No votes yet — sign in to vote</Text>
-      </View>
-    );
-  }
-
-  if (!user) {
-    return (
-      <View style={styles.container}>
-        {hasData ? (
-          <Text style={styles.summaryText}>
-            👍 {liveStats!.worthItPercent}% Worth the Visit · {liveStats!.total.toLocaleString()} votes
-          </Text>
-        ) : (
-          <Text style={styles.emptyText}>👍 No votes yet — sign in to vote</Text>
-        )}
-      </View>
-    );
-  }
-
   return (
     <View style={styles.container}>
       {/* Summary line */}
@@ -91,26 +69,24 @@ export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes,
       )}
 
       {/* Vote buttons */}
-      {user && locationId && (
-        <View style={styles.buttons}>
-          {VOTE_OPTIONS.map((opt) => {
-            const isSelected = userVote === opt.key;
-            return (
-              <TouchableOpacity
-                key={opt.key}
-                style={[styles.votePill, isSelected && styles.votePillSelected]}
-                onPress={() => handleVote(opt.key)}
-                activeOpacity={0.7}
-                disabled={isVoting}
-              >
-                <Text style={[styles.votePillText, isSelected && styles.votePillTextSelected]}>
-                  {opt.emoji} {opt.label}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-      )}
+      <View style={styles.buttons}>
+        {VOTE_OPTIONS.map((opt) => {
+          const isSelected = userVote === opt.key;
+          return (
+            <TouchableOpacity
+              key={opt.key}
+              style={[styles.votePill, isSelected && styles.votePillSelected]}
+              onPress={() => handleVote(opt.key)}
+              activeOpacity={0.7}
+              disabled={isVoting}
+            >
+              <Text style={[styles.votePillText, isSelected && styles.votePillTextSelected]}>
+                {opt.emoji} {opt.label}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
     </View>
   );
 };
