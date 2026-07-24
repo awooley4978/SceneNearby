@@ -55,7 +55,8 @@ export const EstimatedVisitTime: React.FC<EstimatedVisitTimeProps> = ({ time, lo
       )}
 
       {/* Time selector */}
-      {user && locationId && (
+      {locationId ? (
+        user ? (
         <View style={styles.buttons}>
           {TIME_OPTIONS.map((opt) => {
             const isSelected = userSelection === opt.detail;
@@ -77,7 +78,10 @@ export const EstimatedVisitTime: React.FC<EstimatedVisitTimeProps> = ({ time, lo
             );
           })}
         </View>
-      )}
+        ) : (
+          <Text style={styles.emptyText}>Sign in to set visit time</Text>
+        )
+      ) : null}
     </View>
   );
 };

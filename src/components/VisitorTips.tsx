@@ -96,7 +96,8 @@ export const VisitorTips: React.FC<VisitorTipsProps> = ({
       )}
 
       {/* Add Tip button */}
-      {user && locationId && (
+      {locationId ? (
+        user ? (
         <TouchableOpacity
           style={styles.addButton}
           onPress={() => setModalVisible(true)}
@@ -104,7 +105,10 @@ export const VisitorTips: React.FC<VisitorTipsProps> = ({
         >
           <Text style={styles.addButtonText}>✏️ Add a Tip</Text>
         </TouchableOpacity>
-      )}
+        ) : (
+          <Text style={styles.emptyText}>Sign in to add a tip</Text>
+        )
+      ) : null}
 
       {/* Modal */}
       <Modal visible={modalVisible} animationType="slide" transparent>
