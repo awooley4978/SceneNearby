@@ -39,9 +39,34 @@ const AuthContext = createContext<AuthContextType>({
   resetMagicLinkState: () => {},
 });
 
+// Dev bypass: skip Firebase auth entirely during development
+const DEV_BYPASS = __DEV__;
+
+const DEV_USER = {
+  uid: 'dev-user-001',
+  email: 'dev@scenenearby.app',
+  emailVerified: true,
+  isAnonymous: false,
+  metadata: {},
+  providerData: [],
+  refreshToken: '',
+  tenantId: null,
+  delete: async () => {},
+  getIdToken: async () => 'dev-token',
+  getIdTokenResult: async () => ({ token: 'dev-token', claims: {}, authTime: '', issuedAtTime: '', expirationTime: '', signInProvider: null, signInSecondFactor: null }),
+  reload: async () => {},
+  toJSON: () => ({}),
+  displayName: 'Dev Tester',
+  phoneNumber: null,
+  photoURL: null,
+  providerId: 'password',
+} as unknown as User;
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(getCurrentUser());
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(
+    DEV_BYPASS ? DEV_USER : getCurrentUser()
+  );
+  const [loading, setLoading] = useState(DEV_BYPASS ? false : true);
   const [magicLinkState, setMagicLinkState] = useState<MagicLinkState>({ status: 'idle' });
 
   // Restore pending email on mount
@@ -54,6 +79,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   useEffect(() => {
+    if (DEV_BYPASS) return;
     const unsub = onAuthChange((u) => {
       setUser(u);
       setLoading(false);
