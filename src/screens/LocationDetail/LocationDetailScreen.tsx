@@ -25,7 +25,6 @@ import { RatingSection } from '../../components/RatingSection';
 import { WorthTheVisit } from '../../components/WorthTheVisit';
 import { EstimatedVisitTime } from '../../components/EstimatedVisitTime';
 import { VisitorTips } from '../../components/VisitorTips';
-import { VisitorTipsInline } from '../../components/VisitorTipsInline';
 import { RemoteDestinationBadge } from '../../components/RemoteDestinationBadge';
 import { LocationPhotoGallery, GalleryPhoto } from '../../components/LocationPhotoGallery';
 import { logLocationViewed, logLocationSaved, logLocationUnsaved, logLocationNavigate, logLocationShared, logUserRating } from '../../services/analytics';
@@ -305,11 +304,6 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
         <EstimatedVisitTime time={location.estimatedVisitTime} locationId={location.id} />
       </View>
 
-      {/* Visitor Tips */}
-      <View style={styles.compactSection}>
-        <VisitorTips locationId={location.id} estimatedVisitTime={location.estimatedVisitTime} />
-      </View>
-
       {/* What Happened Here */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>🎬 What Happened Here</Text>
@@ -339,18 +333,6 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>🤔 Did You Know?</Text>
         <Text style={styles.bodyText}>{location.funFact}</Text>
-        <VisitorTipsInline
-          locationId={location.id}
-          embeddedTip={(() => {
-            if (!location.estimatedVisitTime) return null;
-            const parts = location.estimatedVisitTime.split('\nVisitor Tip:');
-            if (parts.length > 1) return parts[1].trim();
-            const parts2 = location.estimatedVisitTime.split('\nVisitor Tip: ');
-            if (parts2.length > 1) return parts2[1].trim();
-            return null;
-          })()}
-          showAddButton={false}
-        />
       </View>
 
       {/* Community Photos */}
@@ -373,6 +355,13 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
           >
             <Text style={styles.uploadPillText}>📸 Upload the first photo</Text>
           </TouchableOpacity>
+        </View>
+      )}
+
+      {/* Visitor Tips */}
+      {location && (
+        <View style={styles.section}>
+          <VisitorTips locationId={location.id} estimatedVisitTime={location.estimatedVisitTime} />
         </View>
       )}
 

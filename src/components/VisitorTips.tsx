@@ -74,11 +74,8 @@ export const VisitorTips: React.FC<VisitorTipsProps> = ({
       <Text style={styles.sectionTitle}>💡 Visitor Tips</Text>
 
       {/* Embedded tip from data */}
-      {embeddedTip && tips.length === 0 && (
-        <View style={styles.tipCard}>
-          <Text style={styles.tipText}>{embeddedTip}</Text>
-          <Text style={styles.tipAttribution}>from the Scene Nearby community</Text>
-        </View>
+      {embeddedTip && (
+        <Text style={styles.bullet}>• {embeddedTip}</Text>
       )}
 
       {/* Firestore tips */}
@@ -86,12 +83,7 @@ export const VisitorTips: React.FC<VisitorTipsProps> = ({
         <ActivityIndicator size="small" color={theme.colors.gold} style={{ marginVertical: 8 }} />
       ) : (
         tips.map((tip) => (
-          <View key={tip.id} style={styles.tipCard}>
-            <Text style={styles.tipText}>{tip.text}</Text>
-            <Text style={styles.tipAttribution}>
-              {new Date(tip.createdAt).toLocaleDateString()}
-            </Text>
-          </View>
+          <Text key={tip.id} style={styles.bullet}>• {tip.text}</Text>
         ))
       )}
 
@@ -163,106 +155,9 @@ const styles = StyleSheet.create({
     color: theme.colors.textTertiary,
     fontStyle: 'italic',
   },
-  },
-  tipCard: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: 'rgba(245,197,24,0.15)',
-    padding: 14,
-    gap: 6,
-  },
-  tipText: {
+  bullet: {
     fontSize: 14,
     color: theme.colors.textPrimary,
-    lineHeight: 21,
+    lineHeight: 22,
+    paddingLeft: 4,
   },
-  tipAttribution: {
-    fontSize: 11,
-    color: theme.colors.textTertiary,
-    fontStyle: 'italic',
-  },
-  addButton: {
-    backgroundColor: 'rgba(245,197,24,0.15)',
-    borderWidth: 1,
-    borderColor: 'rgba(245,197,24,0.3)',
-    borderRadius: 20,
-    paddingHorizontal: 18,
-    paddingVertical: 9,
-    alignSelf: 'flex-start',
-  },
-  addButtonText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: 'rgba(245,197,24,0.9)',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    justifyContent: 'center',
-    padding: 24,
-  },
-  modalContainer: {
-    backgroundColor: theme.colors.background,
-    borderRadius: 20,
-    padding: 24,
-    borderWidth: 1,
-    borderColor: 'rgba(245,197,24,0.2)',
-    gap: 14,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: theme.colors.gold,
-    textAlign: 'center',
-  },
-  modalSubtitle: {
-    fontSize: 13,
-    color: theme.colors.textSecondary,
-    textAlign: 'center',
-    lineHeight: 19,
-  },
-  modalInput: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 15,
-    color: theme.colors.textPrimary,
-    borderWidth: 1,
-    borderColor: theme.colors.surface3,
-    minHeight: 100,
-    textAlignVertical: 'top',
-  },
-  modalButtons: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  cancelButton: {
-    flex: 1,
-    paddingVertical: 12,
-    alignItems: 'center',
-    borderRadius: 12,
-    backgroundColor: theme.colors.surface2,
-  },
-  cancelButtonText: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: theme.colors.textSecondary,
-  },
-  submitButton: {
-    flex: 1,
-    paddingVertical: 12,
-    alignItems: 'center',
-    borderRadius: 12,
-    backgroundColor: theme.colors.gold,
-  },
-  submitButtonDisabled: {
-    opacity: 0.5,
-  },
-  submitButtonText: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: theme.colors.black,
-  },
-});
