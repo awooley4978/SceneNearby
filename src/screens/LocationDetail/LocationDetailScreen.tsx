@@ -250,6 +250,7 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       {/* Hero */}
       <View style={styles.hero}>
+        <Text style={{color:"gold",fontSize:10,textAlign:"center",paddingTop:4}}>build: 064328</Text>
         {location.imageUrl && !imageError ? (
           <SmartHeroImage
             imageUrl={location.imageUrl}

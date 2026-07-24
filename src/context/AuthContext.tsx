@@ -94,13 +94,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // onAuthChange will handle clearing state when user updates
       return true;
     } catch (err: any) {
+      const code = err?.code || '';
       const msg = err?.message || '';
-      if (msg.includes('expired') || msg.includes('already used')) {
+      if (code === 'auth/missing-email' || msg.includes('missing-email') || msg.includes('Could not find the email')) {
+        setMagicLinkState({ status: 'needEmail', error: 'Please enter the email you used to request the link.' });
+      } else if (msg.includes('expired') || msg.includes('already used')) {
         setMagicLinkState({ status: 'invalid', error: 'This sign-in link has expired or was already used.' });
       } else if (msg.includes('different device')) {
         setMagicLinkState({ status: 'error', error: 'Open this link on the same device where you requested it.' });
       } else {
-        setMagicLinkState({ status: 'error', error: msg || 'Could not verify sign-in link.' });
+        setMagicLinkState({ status: 'error', error: `[${code}] ${msg}` || 'Could not verify sign-in link.' });
       }
       return false;
     }

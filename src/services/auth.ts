@@ -17,7 +17,7 @@ import { auth } from './firebase';
 export type AuthMethod = 'magicLink' | 'otp' | 'password';
 
 export interface MagicLinkState {
-  status: 'idle' | 'sending' | 'sent' | 'error' | 'verifying' | 'invalid';
+  status: 'idle' | 'sending' | 'sent' | 'error' | 'verifying' | 'invalid' | 'needEmail';
   email?: string;
   error?: string;
 }
@@ -70,10 +70,11 @@ export function getCurrentUser(): User | null {
 
 /** Send a sign-in link to the user's email */
 export async function sendMagicLink(email: string): Promise<void> {
-  // Store email so we can retrieve it when the link is clicked
-  await AsyncStorage.setItem(MAGIC_LINK_STORAGE_KEY, email);
+  // Normalize and store email so we can retrieve it when the link is clicked
+  const normalized = email.trim().toLowerCase();
+  await AsyncStorage.setItem(MAGIC_LINK_STORAGE_KEY, normalized);
   // Let the Firebase error propagate with its code intact
-  await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+  await sendSignInLinkToEmail(auth, normalized, actionCodeSettings);
 }
 
 /** Complete magic link sign-in using the URL from the deep link */

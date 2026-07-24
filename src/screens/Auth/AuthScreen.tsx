@@ -13,13 +13,14 @@ import {
 import { theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
 
-type Step = 'signIn' | 'sent' | 'welcome' | 'error';
+type Step = 'signIn' | 'sent' | 'welcome' | 'error' | 'needEmail';
 
 const RESEND_COOLDOWN_MS = 5_000;
 
 export const AuthScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { user, sendMagicLink, magicLinkState, resetMagicLinkState } = useAuth();
   const [email, setEmail] = useState('');
+  const [needEmailInput, setNeedEmailInput] = useState('');
   const [step, setStep] = useState<Step>('signIn');
   const [errorMessage, setErrorMessage] = useState('');
   const [resendStatus, setResendStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
@@ -91,6 +92,10 @@ export const AuthScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   useEffect(() => {
     if (magicLinkState.status === 'sent') {
       setStep('sent');
+    } else if (magicLinkState.status === 'needEmail') {
+      // Email wasn't stored — prompt user to re-enter it
+      setErrorMessage(magicLinkState.error || 'Please enter your email to complete sign-in.');
+      setStep('needEmail');
     } else if (magicLinkState.status === 'error' || magicLinkState.status === 'invalid') {
       const isVerifying = step === 'sent'; // deep-link verification error
       setErrorMessage(
@@ -126,6 +131,12 @@ export const AuthScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       setTimeout(() => setResendStatus('idle'), 3000);
     }
   }, [email, sendMagicLink, resendCooldown, resendStatus]);
+
+  const handleNeedEmailSubmit = useCallback(async () => {
+    const trimmed = needEmailInput.trim();
+    if (!trimmed) return;
+    await sendMagicLink(trimmed);
+  }, [needEmailInput, sendMagicLink]);
 
   const handleGoBack = useCallback(() => {
     resetMagicLinkState();
@@ -220,6 +231,37 @@ export const AuthScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
         <TouchableOpacity onPress={handleGoBack} style={styles.linkButton}>
           <Text style={styles.goBackText}>Wrong email? Go back</Text>
+        </TouchableOpacity>
+      </Animated.View>
+    );
+  }
+
+  // ── Need Email state ──
+  if (step === 'needEmail') {
+    return (
+      <Animated.View style={[styles.container, styles.centered, { opacity: fadeAnim }]}>
+        <Text style={styles.heroEmoji}>📧</Text>
+        <Text style={styles.title}>Confirm your email</Text>
+        <Text style={styles.errorText}>{errorMessage}</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter your email"
+          placeholderTextColor={theme.colors.textTertiary}
+          value={needEmailInput}
+          onChangeText={setNeedEmailInput}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoFocus
+        />
+        <TouchableOpacity
+          style={[styles.primaryButton, !needEmailInput.trim() && styles.primaryButtonDisabled]}
+          onPress={handleNeedEmailSubmit}
+          disabled={!needEmailInput.trim()}
+        >
+          <Text style={styles.primaryButtonText}>Continue</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handleGoBack} style={styles.linkButton}>
+          <Text style={styles.goBackText}>Go back</Text>
         </TouchableOpacity>
       </Animated.View>
     );
