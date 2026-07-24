@@ -34,13 +34,18 @@ export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes,
   const handleVote = useCallback(async (vote: WorthItVote) => {
     if (!locationId || !user || isVoting) return;
     setIsVoting(true);
+    // Optimistic: update UI instantly
+    setUserVote(vote);
+    const optimisticStats = liveStats
+      ? { ...liveStats, total: liveStats.total + 1, worthItPercent: Math.round(((liveStats.absolutely + liveStats.nearby + (vote === 'absolutely' ? 1 : vote === 'nearby' ? 1 : 0)) / (liveStats.total + 1)) * 100) }
+      : { absolutely: vote === 'absolutely' ? 100 : 0, nearby: vote === 'nearby' ? 100 : 0, bigFan: vote === 'big_fan' ? 100 : 0, total: 1, worthItPercent: vote === 'big_fan' ? 0 : 100 };
+    setLiveStats(optimisticStats);
     try {
       const stats = await submitWorthItVote(locationId, user.uid, vote);
       setLiveStats(stats);
-      setUserVote(vote);
     } catch (e) { console.error('WorthIt vote:', e); }
     setIsVoting(false);
-  }, [locationId, user, isVoting]);
+  }, [locationId, user, isVoting, liveStats]);
 
   const hasData = liveStats && liveStats.total > 0;
 
