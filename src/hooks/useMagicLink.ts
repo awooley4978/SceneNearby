@@ -14,6 +14,8 @@ export function useMagicLink() {
   const lastUrlRef = useRef<string | null>(null);
 
   useEffect(() => {
+    // Dev bypass: skip magic link handling entirely
+    if (__DEV__) return;
     let mounted = true;
 
     // ── Cold start: check initial URL ──
