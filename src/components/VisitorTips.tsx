@@ -36,10 +36,12 @@ export const VisitorTips: React.FC<VisitorTipsProps> = ({
   // Parse embedded tip from estimatedVisitTime
   const embeddedTip = React.useMemo(() => {
     if (!estimatedVisitTime) return null;
-    const parts = estimatedVisitTime.split('\nVisitor Tip:');
+    // Try both real newline and literal backslash-n
+    let parts = estimatedVisitTime.split('\nVisitor Tip:');
+    if (parts.length === 1) parts = estimatedVisitTime.split('\\nVisitor Tip:');
+    if (parts.length === 1) parts = estimatedVisitTime.split('\nVisitor Tip: ');
+    if (parts.length === 1) parts = estimatedVisitTime.split('\\nVisitor Tip: ');
     if (parts.length > 1) return parts[1].trim();
-    const parts2 = estimatedVisitTime.split('\nVisitor Tip: ');
-    if (parts2.length > 1) return parts2[1].trim();
     return null;
   }, [estimatedVisitTime]);
 
