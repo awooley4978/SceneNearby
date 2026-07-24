@@ -20,7 +20,17 @@ export const EstimatedVisitTime: React.FC<EstimatedVisitTimeProps> = ({ time }) 
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [sheetVisible, setSheetVisible] = useState(false);
 
-  const display = selectedTime ?? time;
+  // Strip embedded tip from display — only show time portion
+  const cleanTime = (t?: string) => {
+    if (!t) return t;
+    const idx = t.indexOf('\nVisitor Tip:');
+    if (idx >= 0) return t.substring(0, idx).trim();
+    const idx2 = t.indexOf('\\nVisitor Tip:');
+    if (idx2 >= 0) return t.substring(0, idx2).trim();
+    return t;
+  };
+
+  const display = selectedTime ?? cleanTime(time);
 
   return (
     <View style={styles.container}>
