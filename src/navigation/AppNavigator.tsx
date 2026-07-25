@@ -13,10 +13,10 @@ import { SavedScreen } from '../screens/Saved/SavedScreen';
 import { ProfileScreen } from '../screens/Profile/ProfileScreen';
 import { NotificationPreferencesScreen } from '../screens/Profile/NotificationPreferencesScreen';
 import { LocationDetailScreen } from '../screens/LocationDetail/LocationDetailScreen';
-import { MovieDetailScreen } from '../screens/MovieDetail/MovieDetailScreen';
-import { FilmographyScreen } from '../screens/MovieDetail/FilmographyScreen';
+import { MusicDetailScreen } from '../screens/MusicDetail/MusicDetailScreen';
+import { MusicCatalogScreen } from '../screens/MusicCatalog/MusicCatalogScreen';
 import { PhotoGalleryScreen } from '../screens/PhotoGallery/PhotoGalleryScreen';
-import { ActorDetailScreen } from '../screens/Discover/ActorDetailScreen';
+import { ArtistDetailScreen } from '../screens/ArtistDetail/ArtistDetailScreen';
 import { AlbumScreen } from '../screens/Album/AlbumScreen';
 import { LocationAlbumScreen } from '../screens/Album/LocationAlbumScreen';
 import { AuthScreen } from '../screens/Auth/AuthScreen';
@@ -81,14 +81,14 @@ const sharedScreens = (
       options={{ title: 'Details', ...stackOptions, cardStyleInterpolator } as any}
     />
     <Stack.Screen
-      name="MovieDetail"
-      component={MovieDetailScreen}
-      options={{ title: 'Film & TV', ...stackOptions, cardStyleInterpolator } as any}
+      name="MusicDetail"
+      component={MusicDetailScreen}
+      options={{ title: 'Artist/Album', ...stackOptions, cardStyleInterpolator } as any}
     />
     <Stack.Screen
-      name="Filmography"
-      component={FilmographyScreen}
-      options={{ title: 'Filmography', ...stackOptions, cardStyleInterpolator } as any}
+      name="MusicCatalog"
+      component={MusicCatalogScreen}
+      options={{ title: 'Music Catalog', ...stackOptions, cardStyleInterpolator } as any}
     />
     <Stack.Screen
       name="PhotoGallery"
@@ -96,9 +96,9 @@ const sharedScreens = (
       options={{ title: 'Photos', ...stackOptions, cardStyleInterpolator } as any}
     />
     <Stack.Screen
-      name="ActorDetail"
-      component={ActorDetailScreen}
-      options={{ title: 'Actor', ...stackOptions, cardStyleInterpolator } as any}
+      name="ArtistDetail"
+      component={ArtistDetailScreen}
+      options={{ title: 'Artist', ...stackOptions, cardStyleInterpolator } as any}
     />
     <Stack.Screen
       name="Upload"

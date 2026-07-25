@@ -1,29 +1,29 @@
 import React, { useMemo } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { theme } from '../../theme';
-import { movieGroupByTitle, locationsByMovie, mockRatings } from '../../data/sampleData';
+import { albumGroupByName, locationsByArtist, mockRatings } from '../../data/sampleData';
 import { categoryColors } from '../../models';
 import { LocationCard } from '../../components/LocationCard';
 import { StarRating } from '../../components/StarRating';
 import { MusicArtwork } from '../../components/MusicArtwork';
 
-export const MovieDetailScreen: React.FC<{ route: any; navigation: any }> = ({
+export const MusicDetailScreen: React.FC<{ route: any; navigation: any }> = ({
   route,
   navigation,
 }) => {
-  const { movieTitle } = route.params;
-  const movieGroup = movieGroupByTitle(movieTitle);
-  const locations = locationsByMovie(movieTitle);
+  const { artistName } = route.params;
+  const albumGroup = albumGroupByName(artistName);
+  const locations = locationsByArtist(artistName);
 
-  if (!movieGroup || locations.length === 0) {
+  if (!albumGroup || locations.length === 0) {
     return (
       <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>Film/TV not found</Text>
+        <Text style={styles.errorText}>Artist/Album not found</Text>
       </View>
     );
   }
 
-  const catColor = categoryColors[movieGroup.category];
+  const catColor = categoryColors[albumGroup.category];
   const avgRating =
     locations.reduce((sum, loc) => {
       const r = mockRatings[loc.id];
@@ -34,36 +34,36 @@ export const MovieDetailScreen: React.FC<{ route: any; navigation: any }> = ({
     <View style={styles.container}>
       {/* Hero header */}
       <View style={[styles.hero, { backgroundColor: catColor + '25' }]}>
-        {/* Poster */}
-        <MusicArtwork title={movieGroup.title} isAlbum={movieGroup.isMovie} size="hero" category={movieGroup.category} />
+        {/* Artwork */}
+        <MusicArtwork title={albumGroup.name} isAlbum={albumGroup.isAlbum} size="hero" category={albumGroup.category} />
 
         <View style={styles.heroInfo}>
-          <Text style={styles.movieTitle}>{movieGroup.title}</Text>
+          <Text style={styles.albumName}>{albumGroup.name}</Text>
           <View style={styles.metaRow}>
             <View style={[styles.categoryBadge, { backgroundColor: catColor + '30' }]}>
-              <Text style={[styles.categoryText, { color: catColor }]}>{movieGroup.category}</Text>
+              <Text style={[styles.categoryText, { color: catColor }]}>{albumGroup.category}</Text>
             </View>
-            <Text style={styles.yearText}>{movieGroup.year}</Text>
-            <Text style={styles.typeText}>{movieGroup.isMovie ? 'Movie' : 'TV Series'}</Text>
+            <Text style={styles.yearText}>{albumGroup.year}</Text>
+            <Text style={styles.typeText}>{albumGroup.isAlbum ? 'Album' : 'EP/Single'}</Text>
           </View>
           <StarRating rating={avgRating} size={14} showCount={false} />
           <Text style={styles.locationCount}>
-            🎥 {movieGroup.locationCount} filming location{movieGroup.locationCount !== 1 ? 's' : ''}
+            🎵 {albumGroup.locationCount} location{albumGroup.locationCount !== 1 ? 's' : ''}
           </Text>
         </View>
       </View>
 
-      {/* See all films link (Filmography) */}
+      {/* See all artists link (Music Catalog) */}
       <TouchableOpacity
-        style={styles.filmographyLink}
-        onPress={() => navigation.navigate('Filmography')}
+        style={styles.catalogLink}
+        onPress={() => navigation.navigate('MusicCatalog')}
       >
-        <Text style={styles.filmographyText}>📋 View Filmography</Text>
+        <Text style={styles.catalogText}>📋 View Music Catalog</Text>
         <Text style={styles.chevron}>›</Text>
       </TouchableOpacity>
 
       {/* Locations list */}
-      <Text style={styles.sectionTitle}>📍 Filming Locations</Text>
+      <Text style={styles.sectionTitle}>📍 Locations</Text>
       <FlatList
         data={locations}
         keyExtractor={(item) => item.id}
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 6,
   },
-  movieTitle: {
+  albumName: {
     fontSize: 22,
     fontWeight: '700',
     color: theme.colors.textPrimary,
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     marginTop: 2,
   },
-  filmographyLink: {
+  catalogLink: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.surface,
     borderRadius: 12,
   },
-  filmographyText: {
+  catalogText: {
     fontSize: 14,
     fontWeight: '600',
     color: theme.colors.gold,

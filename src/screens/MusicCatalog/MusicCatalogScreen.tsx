@@ -1,34 +1,34 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
 import { theme } from '../../theme';
-import { movieGroups } from '../../data/sampleData';
+import { albumGroups } from '../../data/sampleData';
 import { categoryColors } from '../../models';
 import { StarRating } from '../../components/StarRating';
 import { MusicArtwork } from '../../components/MusicArtwork';
-import type { MovieGroup } from '../../models';
+import type { AlbumGroup } from '../../models';
 
-export const FilmographyScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
+export const MusicCatalogScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [search, setSearch] = useState('');
 
   const filtered = useMemo(() => {
-    if (!search.trim()) return movieGroups;
+    if (!search.trim()) return albumGroups;
     const q = search.toLowerCase();
-    return movieGroups.filter((g) => g.title.toLowerCase().includes(q));
+    return albumGroups.filter((g) => g.name.toLowerCase().includes(q));
   }, [search]);
 
-  const renderMovie = ({ item }: { item: MovieGroup }) => {
+  const renderItem = ({ item }: { item: AlbumGroup }) => {
     const catColor = categoryColors[item.category];
     return (
       <TouchableOpacity
-        style={styles.movieCard}
+        style={styles.itemCard}
         onPress={() =>
-          navigation.navigate('MovieDetail', { movieTitle: item.title })
+          navigation.navigate('MusicDetail', { artistName: item.name })
         }
         activeOpacity={0.7}
       >
-        <MusicArtwork title={item.title} isAlbum={item.isMovie} size="mini" category={item.category} />
-        <View style={styles.movieInfo}>
-          <Text style={styles.movieTitle}>{item.title}</Text>
+        <MusicArtwork title={item.name} isAlbum={item.isAlbum} size="mini" category={item.category} />
+        <View style={styles.itemInfo}>
+          <Text style={styles.itemName}>{item.name}</Text>
           <View style={styles.metaRow}>
             <View style={[styles.catDot, { backgroundColor: catColor }]} />
             <Text style={styles.metaText}>{item.category}</Text>
@@ -49,7 +49,7 @@ export const FilmographyScreen: React.FC<{ navigation: any }> = ({ navigation })
         <Text style={styles.searchIcon}>🔍</Text>
         <TextInput
           style={styles.searchInput}
-          placeholder="Search movies & shows..."
+          placeholder="Search artists & albums..."
           placeholderTextColor={theme.colors.textTertiary}
           value={search}
           onChangeText={setSearch}
@@ -57,13 +57,13 @@ export const FilmographyScreen: React.FC<{ navigation: any }> = ({ navigation })
       </View>
       <FlatList
         data={filtered}
-        keyExtractor={(item) => item.title}
-        renderItem={renderMovie}
+        keyExtractor={(item) => item.name}
+        renderItem={renderItem}
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <View style={styles.empty}>
-            <Text style={styles.emptyText}>No movies found</Text>
+            <Text style={styles.emptyText}>No artists found</Text>
           </View>
         }
       />
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
   searchIcon: { fontSize: 14, marginRight: 8 },
   searchInput: { flex: 1, color: theme.colors.textPrimary, fontSize: 14 },
   list: { paddingHorizontal: 16, paddingBottom: 40 },
-  movieCard: {
+  itemCard: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: theme.colors.surface,
@@ -101,8 +101,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     gap: 12,
   },
-  movieInfo: { flex: 1 },
-  movieTitle: { fontSize: 16, fontWeight: '600', color: theme.colors.textPrimary, marginBottom: 4 },
+  itemInfo: { flex: 1 },
+  itemName: { fontSize: 16, fontWeight: '600', color: theme.colors.textPrimary, marginBottom: 4 },
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   catDot: { width: 8, height: 8, borderRadius: 4 },
   metaText: { fontSize: 12, color: theme.colors.textSecondary },
