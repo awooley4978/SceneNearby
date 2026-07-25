@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { BackButton } from '../../components/BackButton';
 import { theme } from '../../theme';
 import { movieGroupByTitle, locationsByMovie, mockRatings } from '../../data/sampleData';
 import { categoryColors } from '../../models';
@@ -32,6 +33,7 @@ export const MovieDetailScreen: React.FC<{ route: any; navigation: any }> = ({
 
   return (
     <View style={styles.container}>
+      <BackButton />
       {/* Hero header */}
       <View style={[styles.hero, { backgroundColor: catColor + '25' }]}>
         {/* Poster */}

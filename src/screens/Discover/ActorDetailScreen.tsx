@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { BackButton } from '../../components/BackButton';
 import { theme } from '../../theme';
 import { locationsByActor, actorGroups, movieGroups } from '../../data/sampleData';
 import { LocationCard } from '../../components/LocationCard';
@@ -23,6 +24,7 @@ export const ActorDetailScreen: React.FC<{ route: any; navigation: any }> = ({
 
   return (
     <View style={styles.container}>
+      <BackButton />
       {/* Actor header */}
       <View style={styles.header}>
         <Text style={styles.avatar}>🎭</Text>

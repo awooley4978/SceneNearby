@@ -8,6 +8,7 @@ import {
   Image,
   ActivityIndicator,
 } from 'react-native';
+import { BackButton } from '../../components/BackButton';
 import { theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
 import { EmptyState } from '../../components/EmptyState';
@@ -121,6 +122,7 @@ export const AlbumScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <BackButton />
       <FlatList
         data={groups}
         keyExtractor={(item) => item.locationId}

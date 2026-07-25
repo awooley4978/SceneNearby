@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
   Platform,
 } from 'react-native';
+import { BackButton } from '../../components/BackButton';
 import { theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
 import { EmptyState } from '../../components/EmptyState';
@@ -101,6 +102,7 @@ export const LocationAlbumScreen: React.FC<{ route: any; navigation: any }> = ({
 
   return (
     <View style={styles.container}>
+      <BackButton />
       {/* Header info */}
       <View style={styles.header}>
         <Text style={styles.city}>{city}</Text>

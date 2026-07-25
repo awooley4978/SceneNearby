@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { BackButton } from '../../components/BackButton';
 import { theme } from '../../theme';
 import { photosByLocation, locationById } from '../../data/sampleData';
 import { LocationPhotoGallery, GalleryPhoto } from '../../components/LocationPhotoGallery';
@@ -21,6 +22,7 @@ export const PhotoGalleryScreen: React.FC<{ route: any }> = ({ route }) => {
 
   return (
     <View style={styles.container}>
+      <BackButton />
       {location?.imageUrl ? (
         <LocationPhotoGallery
           photos={galleryPhotos}

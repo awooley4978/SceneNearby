@@ -27,6 +27,7 @@ import { RemoteDestinationBadge } from '../../components/RemoteDestinationBadge'
 import { LocationPhotoGallery, GalleryPhoto } from '../../components/LocationPhotoGallery';
 import { SectionCard } from '../../components/SectionCard';
 import { SpotlightOverlay, LocationFrame, BrandDivider } from '../../components/BrandElements';
+import { BackButton } from '../../components/BackButton';
 import { logLocationViewed, logLocationSaved, logLocationUnsaved, logLocationNavigate, logLocationShared, logUserRating } from '../../services/analytics';
 
 const HERO_HEIGHT = 420;
@@ -230,6 +231,7 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
       >
         {/* ── Hero ── */}
         <View style={styles.hero}>
+          <BackButton />
           <View style={styles.heroImageWrap}>
             {location.imageUrl && !imageError ? (
               <SmartHeroImage

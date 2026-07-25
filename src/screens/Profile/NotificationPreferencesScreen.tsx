@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
+import { BackButton } from '../../components/BackButton';
 import { theme } from '../../theme';
 import { logNotificationPrefsUpdated } from '../../services/analytics';
 import {
@@ -53,6 +54,7 @@ export const NotificationPreferencesScreen: React.FC = () => {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      <BackButton />
       {/* ──── Notification Types ──── */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>🔔 Notification Types</Text>

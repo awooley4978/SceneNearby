@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
+import { BackButton } from '../../components/BackButton';
 import { theme } from '../../theme';
 import { movieGroups } from '../../data/sampleData';
 import { categoryColors } from '../../models';
@@ -45,6 +46,7 @@ export const FilmographyScreen: React.FC<{ navigation: any }> = ({ navigation })
 
   return (
     <View style={styles.container}>
+      <BackButton />
       <View style={styles.searchBar}>
         <Text style={styles.searchIcon}>🔍</Text>
         <TextInput
