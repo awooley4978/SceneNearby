@@ -8,7 +8,7 @@ import {
   FlatList,
   Animated,
 } from 'react-native';
-import MapView, { Marker, Region, PROVIDER_GOOGLE, PROVIDER_DEFAULT } from 'react-native-maps';
+import MapView, { Marker, Region } from 'react-native-maps';
 import { theme } from '../../theme';
 import { allLocations, mockRatings } from '../../data/sampleData';
 import { categoryColors } from '../../models';
@@ -28,8 +28,8 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
   const { savedIds, toggleSave: toggleSaved } = useSaved();
   const mapRef = useRef<MapView>(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const [region, setRegion] = useState<Region | null>({
-    // Default to a reasonable global view — replaced by user city once loaded
+  const [region, setRegion] = useState<Region>({
+    // Default world view — replaced by user city once loaded
     latitude: 34.0522,
     longitude: -118.2437,
     latitudeDelta: 40,
@@ -144,7 +144,6 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
     <View style={styles.container}>
       {/* Map — renders immediately with default region */}
       <MapView
-        provider={PROVIDER_GOOGLE ?? PROVIDER_DEFAULT}
         ref={mapRef}
         style={styles.map}
         region={region}
