@@ -73,8 +73,6 @@ export const VisitorTips: React.FC<VisitorTipsProps> = ({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.sectionTitle}>💡 Visitor Tips</Text>
-
       {/* Embedded tip from data */}
       {embeddedTip && (
         <Text style={styles.bullet}>• {embeddedTip}</Text>
@@ -87,6 +85,15 @@ export const VisitorTips: React.FC<VisitorTipsProps> = ({
         tips.map((tip) => (
           <Text key={tip.id} style={styles.bullet}>• {tip.text}</Text>
         ))
+      )}
+
+      {/* Empty state */}
+      {!isLoading && tips.length === 0 && !embeddedTip && (
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyIcon}>💡</Text>
+          <Text style={styles.emptyTitle}>Nobody has shared a tip yet</Text>
+          <Text style={styles.emptySub}>Help the next traveler.</Text>
+        </View>
       )}
 
       {/* Add Tip button */}
@@ -146,17 +153,26 @@ const styles = StyleSheet.create({
     marginTop: 4,
     gap: 10,
   },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: theme.colors.textPrimary,
-    marginBottom: 2,
-  emptyText: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: theme.colors.textTertiary,
-    fontStyle: 'italic',
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: 8,
   },
+  emptyIcon: {
+    fontSize: 28,
+    marginBottom: 8,
+  },
+  emptyTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: theme.colors.textPrimary,
+    textAlign: 'center',
+    marginBottom: 4,
+  },
+  emptySub: {
+    fontSize: 13,
+    color: theme.colors.textTertiary,
+    textAlign: 'center',
+    fontStyle: 'italic',
   },
   bullet: {
     fontSize: 14,

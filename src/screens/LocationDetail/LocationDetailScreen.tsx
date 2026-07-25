@@ -1,16 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
-  ScrollView,
+  Animated,
   TouchableOpacity,
+  Pressable,
   StyleSheet,
   Linking,
   Share,
   Platform,
   Alert,
-  Image,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../../theme';
 import { locationById, photosByLocation, calculateDistance } from '../../data/sampleData';
 import { categoryColors, STORAGE_KEYS, defaultUserSettings, communityPhotoToGallery } from '../../models';
@@ -20,7 +21,6 @@ import { useUserLocation } from '../../hooks/useUserLocation';
 import { CategoryBadge } from '../../components/CategoryBadge';
 import { MapPlaceholder } from '../../components/MapPlaceholder';
 import { SmartHeroImage } from '../../components/SmartHeroImage';
-import { getLocalAsset } from '../../data/assetMap';
 import { RatingSection } from '../../components/RatingSection';
 import { WorthTheVisit } from '../../components/WorthTheVisit';
 import { EstimatedVisitTime } from '../../components/EstimatedVisitTime';
@@ -29,6 +29,9 @@ import { RemoteDestinationBadge } from '../../components/RemoteDestinationBadge'
 import { LocationPhotoGallery, GalleryPhoto } from '../../components/LocationPhotoGallery';
 import { SectionCard } from '../../components/SectionCard';
 import { logLocationViewed, logLocationSaved, logLocationUnsaved, logLocationNavigate, logLocationShared, logUserRating } from '../../services/analytics';
+
+const HERO_HEIGHT = 420;
+const PARALLAX_FACTOR = 0.4;
 
 export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = ({
   route,
@@ -41,13 +44,13 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
   const saved = checkSaved(locationId);
   const [imageError, setImageError] = useState(false);
   const userLocation = useUserLocation();
+  const scrollY = useRef(new Animated.Value(0)).current;
 
   const distanceFromUser = React.useMemo(() => {
     if (userLocation.latitude === null || userLocation.longitude === null || !location) return undefined;
     return calculateDistance(userLocation.latitude, userLocation.longitude, location.latitude, location.longitude) / 1609.34;
   }, [userLocation.latitude, userLocation.longitude, location]);
 
-  // Map community photos to gallery format with location hero as fallback
   const galleryPhotos: GalleryPhoto[] = React.useMemo(() => {
     return communityPhotos
       .map((p) => communityPhotoToGallery(p, location?.imageUrl))
@@ -62,8 +65,6 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
     );
   }
 
-  const catColor = categoryColors[location.category];
-
   const handleNavigate = async () => {
     const lat = location.latitude;
     const lng = location.longitude;
@@ -75,12 +76,10 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
     const googleMapsUrl = `comgooglemaps://?daddr=${lat},${lng}&directionsmode=driving`;
     const googleMapsFallback = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
 
-    // Check availability
     const canOpenGoogleMaps = await Linking.canOpenURL('comgooglemaps://');
     const canOpenWaze = await Linking.canOpenURL('waze://');
     const canOpenAppleMaps = await Linking.canOpenURL('maps://');
 
-    // Check saved preference
     const settings = await getUserSettings(defaultUserSettings);
     const pref = settings.navApp;
 
@@ -90,7 +89,6 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
       else if (app === 'waze') Linking.openURL(canOpenWaze ? wazeUrl : wazeFallback);
     };
 
-    // Direct open if preference is set and available
     if (pref && (
       (pref === 'googlemaps' && canOpenGoogleMaps) ||
       (pref === 'applemaps' && canOpenAppleMaps) ||
@@ -101,7 +99,6 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
       return;
     }
 
-    // Show action sheet
     const options: { label: string; app: string; available: boolean }[] = [
       { label: '📍 Google Maps', app: 'googlemaps', available: canOpenGoogleMaps },
       { label: '🗺️ Apple Maps', app: 'applemaps', available: canOpenAppleMaps },
@@ -118,11 +115,9 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
       ...options.map((o) => () => {
         logLocationNavigate({ locationId: location.id, appName: o.app });
         openApp(o.app);
-        // Save selection as preference
         setUserSettings({ ...settings, navApp: o.app });
       }),
       ...(pref ? [() => {
-        // "Choose another app" — show full picker without saving
         const pickerOptions: string[] = options.map((o) => o.available ? o.label : o.label + ' (web)');
         pickerOptions.push('Cancel');
         const pickerActions: (() => void)[] = [
@@ -162,32 +157,23 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
     await toggleSaved(locationId);
   };
 
-
   const handleViewMovie = () => {
     navigation.navigate('MovieDetail', { movieTitle: location.movieOrShow });
   };
-
 
   const handleCorrection = () => {
     const subject = encodeURIComponent('Location Correction');
     const body = encodeURIComponent(
       'Hello Scene Nearby Team,%0D%0A%0D%0AI found something that may need updating.%0D%0A%0D%0A' +
-      '--- Location ---%0D%0A' +
-      `${location.title}%0D%0A%0D%0A` +
-      '--- Movie/TV ---%0D%0A' +
-      `${location.movieOrShow}%0D%0A%0D%0A` +
-      '--- City ---%0D%0A' +
-      `${location.city}, ${location.country}%0D%0A%0D%0A` +
-      '--- Location ID ---%0D%0A' +
-      `${location.id}%0D%0A%0D%0A` +
-      '--- Issue ---%0D%0A' +
-      '(e.g. Incorrect location, Incorrect photo, Duplicate location, Closed location)%0D%0A%0D%0A' +
-      '--- Details ---%0D%0A%0D%0A%0D%0A' +
-      '--- Supporting source (optional) ---%0D%0A%0D%0A%0D%0A' +
+      '--- Location ---%0D%0A' + `${location.title}%0D%0A%0D%0A` +
+      '--- Movie/TV ---%0D%0A' + `${location.movieOrShow}%0D%0A%0D%0A` +
+      '--- City ---%0D%0A' + `${location.city}, ${location.country}%0D%0A%0D%0A` +
+      '--- Location ID ---%0D%0A' + `${location.id}%0D%0A%0D%0A` +
+      '--- Issue ---%0D%0A(e.g. Incorrect location, Incorrect photo, Duplicate location, Closed location)%0D%0A%0D%0A' +
+      '--- Details ---%0D%0A%0D%0A%0D%0A--- Supporting source (optional) ---%0D%0A%0D%0A%0D%0A' +
       'Thank you for helping keep Scene Nearby accurate!'
     );
-    const mailto = `mailto:scenenearbysupport@gmail.com?subject=${subject}&body=${body}`;
-    Linking.openURL(mailto).catch(() => {
+    Linking.openURL(`mailto:scenenearbysupport@gmail.com?subject=${subject}&body=${body}`).catch(() => {
       Alert.alert('Error', 'Could not open email app. Please contact scenenearbysupport@gmail.com directly.');
     });
   };
@@ -197,16 +183,12 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
     const body = encodeURIComponent(
       'Hello Scene Nearby Team,%0D%0A%0D%0A' +
       'I would like to suggest adding a new filming location.%0D%0A%0D%0A' +
-      '--- Location ---%0D%0A%0D%0A%0D%0A' +
-      '--- Movie/TV Show ---%0D%0A%0D%0A%0D%0A' +
-      '--- City / Country ---%0D%0A%0D%0A%0D%0A' +
-      '--- Scene Description ---%0D%0A%0D%0A%0D%0A' +
-      '--- Why it should be featured ---%0D%0A%0D%0A%0D%0A' +
-      '--- Supporting source (link) ---%0D%0A%0D%0A%0D%0A' +
+      '--- Location ---%0D%0A%0D%0A%0D%0A--- Movie/TV Show ---%0D%0A%0D%0A%0D%0A' +
+      '--- City / Country ---%0D%0A%0D%0A%0D%0A--- Scene Description ---%0D%0A%0D%0A%0D%0A' +
+      '--- Why it should be featured ---%0D%0A%0D%0A%0D%0A--- Supporting source (link) ---%0D%0A%0D%0A%0D%0A' +
       'Thank you for considering my request!'
     );
-    const mailto = `mailto:scenenearbysupport@gmail.com?subject=${subject}&body=${body}`;
-    Linking.openURL(mailto).catch(() => {
+    Linking.openURL(`mailto:scenenearbysupport@gmail.com?subject=${subject}&body=${body}`).catch(() => {
       Alert.alert('Error', 'Could not open email app. Please contact scenenearbysupport@gmail.com directly.');
     });
   };
@@ -216,13 +198,11 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
     const body = encodeURIComponent(
       'Hello Scene Nearby Team,%0D%0A%0D%0A' +
       'I have an idea for a feature!%0D%0A%0D%0A' +
-      '--- Feature Description ---%0D%0A%0D%0A%0D%0A' +
-      '--- How it would work ---%0D%0A%0D%0A%0D%0A' +
+      '--- Feature Description ---%0D%0A%0D%0A%0D%0A--- How it would work ---%0D%0A%0D%0A%0D%0A' +
       '--- Why it would be useful ---%0D%0A%0D%0A%0D%0A' +
       'Thank you for making Scene Nearby better!'
     );
-    const mailto = `mailto:scenenearbysupport@gmail.com?subject=${subject}&body=${body}`;
-    Linking.openURL(mailto).catch(() => {
+    Linking.openURL(`mailto:scenenearbysupport@gmail.com?subject=${subject}&body=${body}`).catch(() => {
       Alert.alert('Error', 'Could not open email app. Please contact scenenearbysupport@gmail.com directly.');
     });
   };
@@ -232,241 +212,461 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
     const body = encodeURIComponent(
       'Hello Scene Nearby Team,%0D%0A%0D%0A' +
       'I encountered a bug while using the app.%0D%0A%0D%0A' +
-      '--- What happened ---%0D%0A%0D%0A%0D%0A' +
-      '--- Steps to reproduce ---%0D%0A%0D%0A%0D%0A' +
-      '--- What I expected to happen ---%0D%0A%0D%0A%0D%0A' +
-      '--- Device / OS ---%0D%0A%0D%0A%0D%0A' +
+      '--- What happened ---%0D%0A%0D%0A%0D%0A--- Steps to reproduce ---%0D%0A%0D%0A%0D%0A' +
+      '--- What I expected to happen ---%0D%0A%0D%0A%0D%0A--- Device / OS ---%0D%0A%0D%0A%0D%0A' +
       '--- App version ---%0D%0A1.0.0%0D%0A%0D%0A' +
       'Thank you for your help!'
     );
-    const mailto = `mailto:scenenearbysupport@gmail.com?subject=${subject}&body=${body}`;
-    Linking.openURL(mailto).catch(() => {
+    Linking.openURL(`mailto:scenenearbysupport@gmail.com?subject=${subject}&body=${body}`).catch(() => {
       Alert.alert('Error', 'Could not open email app. Please contact scenenearbysupport@gmail.com directly.');
     });
   };
 
+  // ── Parallax transforms ──
+  const heroTranslateY = scrollY.interpolate({
+    inputRange: [-HERO_HEIGHT, 0, HERO_HEIGHT],
+    outputRange: [-HERO_HEIGHT * PARALLAX_FACTOR * 0.5, 0, HERO_HEIGHT * PARALLAX_FACTOR],
+    extrapolate: 'clamp',
+  });
+
+  const heroOpacity = scrollY.interpolate({
+    inputRange: [0, HERO_HEIGHT * 0.6],
+    outputRange: [1, 0.3],
+    extrapolate: 'clamp',
+  });
+
+  const overlayOpacity = scrollY.interpolate({
+    inputRange: [0, HERO_HEIGHT * 0.3, HERO_HEIGHT * 0.6],
+    outputRange: [0.55, 0.75, 0.95],
+    extrapolate: 'clamp',
+  });
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* Hero */}
-      <View style={styles.hero}>
-        <Text style={{color:"gold",fontSize:10,textAlign:"center",paddingTop:4}}>build: 064328</Text>
-        {location.imageUrl && !imageError ? (
-          <SmartHeroImage
-            imageUrl={location.imageUrl}
-            focalPoint={location.focalPoint}
-            onError={() => setImageError(true)}
-          />
-        ) : (
-          <MapPlaceholder locationId={location.id} locationName={location.title} hasPhotos={galleryPhotos.length > 0} />
+    <View style={styles.container}>
+      <Animated.ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+        scrollEventThrottle={16}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: true },
         )}
-        <View style={styles.heroContent}>
-          <TouchableOpacity onPress={handleViewMovie}>
-            <Text style={styles.showName}>{location.movieOrShow} ›</Text>
-          </TouchableOpacity>
-          <Text style={styles.locationTitle}>{location.title}</Text>
-          <View style={styles.badges}>
-            <CategoryBadge category={location.category} />
-            <View style={styles.yearBadge}><Text style={styles.yearText}>{location.year}</Text></View>
-            {distanceFromUser !== undefined && (
-              <View style={styles.distanceBadge}>
-                <Text style={styles.distanceText}>
-                  📍 {distanceFromUser < 1
-                    ? `${(distanceFromUser * 5280).toFixed(0)}ft`
-                    : `${distanceFromUser.toFixed(1)}mi`} away
-                </Text>
-              </View>
+      >
+        {/* ── Hero ── */}
+        <View style={styles.hero}>
+          <Animated.View style={[styles.heroImageWrap, { transform: [{ translateY: heroTranslateY }], opacity: heroOpacity }]}>
+            {location.imageUrl && !imageError ? (
+              <SmartHeroImage
+                imageUrl={location.imageUrl}
+                focalPoint={location.focalPoint}
+                onError={() => setImageError(true)}
+              />
+            ) : (
+              <MapPlaceholder locationId={location.id} locationName={location.title} hasPhotos={galleryPhotos.length > 0} />
             )}
+          </Animated.View>
+
+          {/* Gradient overlay: dark at bottom, fading into page */}
+          <Animated.View style={[styles.heroOverlay, { opacity: overlayOpacity }]}>
+            <LinearGradient
+              colors={['transparent', 'rgba(10,10,10,0.4)', theme.colors.background]}
+              locations={[0, 0.45, 1]}
+              style={StyleSheet.absoluteFill}
+            />
+          </Animated.View>
+
+          {/* Hero content */}
+          <View style={styles.heroContent}>
+            <Pressable onPress={handleViewMovie} style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}>
+              <Text style={styles.showName}>{location.movieOrShow}</Text>
+            </Pressable>
+            <Text style={styles.locationTitle}>{location.title}</Text>
+
+            {/* Glass chips for metadata */}
+            <View style={styles.chips}>
+              <View style={styles.glassChip}>
+                <CategoryBadge category={location.category} />
+              </View>
+              <View style={styles.glassChip}>
+                <Text style={styles.chipText}>{location.year}</Text>
+              </View>
+              {distanceFromUser !== undefined && (
+                <View style={styles.glassChip}>
+                  <Text style={styles.chipTextGold}>
+                    {distanceFromUser < 1
+                      ? `${(distanceFromUser * 5280).toFixed(0)}ft`
+                      : `${distanceFromUser.toFixed(1)} mi`}
+                  </Text>
+                </View>
+              )}
+            </View>
           </View>
         </View>
-      </View>
 
-      {/* Ratings & Reviews */}
-      <SectionCard>
-        <RatingSection googleRating={location.googleRating} placeId={location.googleRating?.placeId} />
-      </SectionCard>
+        {/* ── Cards — staggered fade-in cascade ── */}
 
-      {/* Remote Destination Warning */}
-      {location.remoteDestination && (
-        <RemoteDestinationBadge info={location.remoteDestination} />
-      )}
+        {/* Ratings */}
+        <SectionCard fadeDelay={80}>
+          <RatingSection googleRating={location.googleRating} placeId={location.googleRating?.placeId} />
+        </SectionCard>
 
-      {/* Worth the Visit */}
-      <SectionCard icon="⭐" title="Worth the Visit">
-        <WorthTheVisit
-          percentage={location.worthItPercentage}
-          votes={location.worthItVotes}
-          locationId={location.id}
-        />
-      </SectionCard>
+        {/* Remote Destination Warning */}
+        {location.remoteDestination && (
+          <RemoteDestinationBadge info={location.remoteDestination} />
+        )}
 
-      {/* Estimated Visit Time */}
-      <SectionCard icon="⏱️" title="Visit Time">
-        <EstimatedVisitTime time={location.estimatedVisitTime} locationId={location.id} />
-      </SectionCard>
+        {/* Worth the Visit */}
+        <SectionCard icon="⭐" title="Worth the Visit" fadeDelay={120}>
+          <WorthTheVisit
+            percentage={location.worthItPercentage}
+            votes={location.worthItVotes}
+            locationId={location.id}
+          />
+        </SectionCard>
 
-      {/* What Happened Here */}
-      <SectionCard icon="🎬" title="What Happened Here" variant="story">
-        <Text style={styles.bodyText}>{location.sceneDescription}</Text>
-      </SectionCard>
+        {/* Estimated Visit Time */}
+        <SectionCard icon="⏱️" title="Visit Time" fadeDelay={160}>
+          <EstimatedVisitTime time={location.estimatedVisitTime} locationId={location.id} />
+        </SectionCard>
 
-      {/* Iconic Quote */}
-      {location.quote && (
-        <SectionCard icon="💬" title="Iconic Quote" variant="quote">
-          <Text style={styles.quoteText}>"{location.quote}"</Text>
-          {location.quoteAttribution && (
-            <Text style={styles.quoteAttr}>— {location.quoteAttribution}</Text>
+        {/* What Happened Here — story variant */}
+        <SectionCard icon="🎬" title="What Happened Here" variant="story" fadeDelay={200}>
+          <Text style={styles.storyText}>{location.sceneDescription}</Text>
+        </SectionCard>
+
+        {/* Iconic Quote — quote variant */}
+        {location.quote && (
+          <SectionCard title="ICONIC QUOTE" variant="quote" fadeDelay={240}>
+            <Text style={styles.quoteText}>"{location.quote}"</Text>
+            {location.quoteAttribution && (
+              <Text style={styles.quoteAttr}>— {location.quoteAttribution}</Text>
+            )}
+          </SectionCard>
+        )}
+
+        {/* Then & Now — fact variant */}
+        {location.thenAndNow && (
+          <SectionCard icon="📸" title="Then & Now" variant="fact" fadeDelay={280}>
+            <Text style={styles.bodyText}>{location.thenAndNow}</Text>
+          </SectionCard>
+        )}
+
+        {/* Fun Fact — fact variant */}
+        <SectionCard icon="✨" title="Did You Know?" variant="fact" fadeDelay={320}>
+          <Text style={styles.bodyText}>{location.funFact}</Text>
+        </SectionCard>
+
+        {/* Community Photos — gallery variant */}
+        <SectionCard icon="📷" title="Community Photos" variant="gallery" fadeDelay={360}>
+          {galleryPhotos.length > 0 ? (
+            <LocationPhotoGallery photos={galleryPhotos} showAddButton={false} />
+          ) : (
+            <View style={styles.emptyCommunity}>
+              <Text style={styles.emptyCommunityIcon}>🎬</Text>
+              <Text style={styles.emptyCommunityTitle}>Be the first visitor to recreate this scene</Text>
+              <Text style={styles.emptyCommunitySub}>
+                Snap a photo from the same angle and share your moment with fellow film lovers.
+              </Text>
+              <Pressable
+                style={({ pressed }) => [styles.uploadPill, pressed && { opacity: 0.7, transform: [{ scale: 0.97 }] }]}
+                onPress={() => navigation.navigate('Upload', { locationId: location.id, locationName: location.title })}
+              >
+                <Text style={styles.uploadPillText}>📸 Upload your photo</Text>
+              </Pressable>
+            </View>
           )}
         </SectionCard>
-      )}
 
-      {/* Then & Now */}
-      {location.thenAndNow && (
-        <SectionCard icon="📸" title="Then &amp; Now" variant="fact">
-          <Text style={styles.bodyText}>{location.thenAndNow}</Text>
-        </SectionCard>
-      )}
-
-      {/* Fun Fact */}
-      <SectionCard icon="🤔" title="Did You Know?" variant="fact">
-        <Text style={styles.bodyText}>{location.funFact}</Text>
-      </SectionCard>
-
-      {/* Community Photos */}
-      <SectionCard icon="📷" title="Community Photos">
-        {galleryPhotos.length > 0 ? (
-          <LocationPhotoGallery
-            photos={galleryPhotos}
-            showAddButton={false}
-          />
-        ) : (
-          <>
-            <Text style={styles.emptyStateText}>No community photos yet.</Text>
-            <TouchableOpacity
-              style={styles.uploadPill}
-              onPress={() => navigation.navigate('Upload', { locationId: location.id, locationName: location.title })}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.uploadPillText}>📸 Upload the first photo</Text>
-            </TouchableOpacity>
-          </>
+        {/* Visitor Tips */}
+        {location && (
+          <SectionCard icon="💡" title="Visitor Tips" fadeDelay={400}>
+            <VisitorTips locationId={location.id} estimatedVisitTime={location.estimatedVisitTime} />
+          </SectionCard>
         )}
-      </SectionCard>
 
-      {/* Visitor Tips */}
-      {location && (
-        <SectionCard icon="💡" title="Visitor Tips">
-          <VisitorTips locationId={location.id} estimatedVisitTime={location.estimatedVisitTime} />
-        </SectionCard>
-      )}
-
-      {/* Location info */}
-      <SectionCard icon="📍" title="Location" elevated>
-        <Text style={styles.bodyText}>{location.address}</Text>
-        <Text style={styles.bodyText}>{location.city}, {location.country}</Text>
-        <Text style={styles.coords}>
-          {location.latitude.toFixed(4)}, {location.longitude.toFixed(4)}
-        </Text>
-      </SectionCard>
-
-      {/* Actions */}
-      <View style={styles.actions}>
-        <TouchableOpacity style={styles.primaryButton} onPress={handleNavigate}>
-          <Text style={styles.primaryButtonText}>🗺️ Directions</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.secondaryButton, saved && styles.savedButton]}
-          onPress={handleSave}
-        >
-          <Text style={[styles.secondaryButtonText, saved && styles.savedButtonText]}>
-            {saved ? '✅ Saved' : '💾 Save'}
+        {/* Location info */}
+        <SectionCard icon="📍" title="Location" elevated fadeDelay={440}>
+          <Text style={styles.bodyText}>{location.address}</Text>
+          <Text style={styles.bodyText}>{location.city}, {location.country}</Text>
+          <Text style={styles.coords}>
+            {location.latitude.toFixed(4)}, {location.longitude.toFixed(4)}
           </Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.secondaryButton} onPress={handleShare}>
-          <Text style={styles.secondaryButtonText}>📤 Share</Text>
-        </TouchableOpacity>
-      </View>
+        </SectionCard>
 
-      {/* Support section */}
-      <SectionCard>
-        <Text style={styles.supportTitle}>📬 Support</Text>
-        <View style={styles.supportLinks}>
-          <TouchableOpacity style={styles.supportLink} onPress={handleCorrection}>
-            <Text style={styles.supportLinkText}>📍 Location Correction</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.supportLink} onPress={handleContentRequest}>
-            <Text style={styles.supportLinkText}>➕ Suggest a Location</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.supportLink} onPress={handleFeatureSuggestion}>
-            <Text style={styles.supportLinkText}>💡 Feature Suggestion</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.supportLink} onPress={handleBugReport}>
-            <Text style={styles.supportLinkText}>🐛 Report a Bug</Text>
-          </TouchableOpacity>
+        {/* Actions — Pressable with scale */}
+        <View style={styles.actions}>
+          <Pressable
+            style={({ pressed }) => [styles.primaryButton, pressed && styles.buttonPressed]}
+            onPress={handleNavigate}
+          >
+            <Text style={styles.primaryButtonText}>🗺️ Directions</Text>
+          </Pressable>
+          <Pressable
+            style={({ pressed }) => [
+              styles.secondaryButton,
+              saved && styles.savedButton,
+              pressed && styles.buttonPressed,
+            ]}
+            onPress={handleSave}
+          >
+            <Text style={[styles.secondaryButtonText, saved && styles.savedButtonText]}>
+              {saved ? '✅ Saved' : '💾 Save'}
+            </Text>
+          </Pressable>
+          <Pressable
+            style={({ pressed }) => [styles.secondaryButton, pressed && styles.buttonPressed]}
+            onPress={handleShare}
+          >
+            <Text style={styles.secondaryButtonText}>📤 Share</Text>
+          </Pressable>
         </View>
-        <Text style={styles.supportFooter}>scenenearbysupport@gmail.com</Text>
-      </SectionCard>
-    </ScrollView>
+
+        {/* Support section */}
+        <SectionCard fadeDelay={480}>
+          <Text style={styles.supportTitle}>📬 Support</Text>
+          <View style={styles.supportLinks}>
+            <TouchableOpacity style={styles.supportLink} onPress={handleCorrection}>
+              <Text style={styles.supportLinkText}>📍 Location Correction</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.supportLink} onPress={handleContentRequest}>
+              <Text style={styles.supportLinkText}>➕ Suggest a Location</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.supportLink} onPress={handleFeatureSuggestion}>
+              <Text style={styles.supportLinkText}>💡 Feature Suggestion</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.supportLink} onPress={handleBugReport}>
+              <Text style={styles.supportLinkText}>🐛 Report a Bug</Text>
+            </TouchableOpacity>
+          </View>
+          <Text style={styles.supportFooter}>scenenearbysupport@gmail.com</Text>
+        </SectionCard>
+      </Animated.ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background },
+  scroll: { flex: 1 },
   content: { paddingBottom: 40 },
   errorContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.background },
   errorText: { fontSize: 18, color: theme.colors.textSecondary },
-  hero: { height: 360, justifyContent: 'flex-end', paddingBottom: 20, position: 'relative', overflow: 'hidden' },
-  heroContent: { paddingHorizontal: 20, position: 'relative', zIndex: 2 },
-  showName: { fontSize: 16, fontWeight: '700', color: theme.colors.gold, marginBottom: 4 },
-  locationTitle: { fontSize: 26, fontWeight: '700', color: theme.colors.white, marginBottom: 12 },
-  badges: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
-  yearBadge: { paddingHorizontal: 10, paddingVertical: 5, backgroundColor: theme.colors.surface3 + 'CC', borderRadius: 8 },
-  yearText: { fontSize: 12, color: theme.colors.textSecondary, fontWeight: '500' },
-  distanceBadge: { paddingHorizontal: 10, paddingVertical: 5, backgroundColor: theme.colors.surface3 + 'CC', borderRadius: 8 },
-  distanceText: { fontSize: 12, color: theme.colors.gold, fontWeight: '500' },
-  bodyText: { fontSize: 15, color: theme.colors.textSecondary, lineHeight: 24 },
-  emptyStateText: { fontSize: 15, color: theme.colors.textTertiary, lineHeight: 24, fontStyle: 'italic' },
-  uploadPill: {
-    marginTop: 12,
-    backgroundColor: 'rgba(245,197,24,0.15)',
-    borderWidth: 1,
-    borderColor: 'rgba(245,197,24,0.3)',
-    borderRadius: 20,
+
+  // ── Hero ──
+  hero: { height: HERO_HEIGHT, justifyContent: 'flex-end', overflow: 'hidden', position: 'relative' },
+  heroImageWrap: {
+    ...StyleSheet.absoluteFillObject,
+    height: HERO_HEIGHT * 1.3,
+    top: -HERO_HEIGHT * 0.15,
+  },
+  heroOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 1,
+  },
+  heroContent: {
     paddingHorizontal: 20,
-    paddingVertical: 10,
-    alignSelf: 'flex-start',
+    paddingBottom: 28,
+    position: 'relative',
+    zIndex: 3,
+  },
+  showName: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: theme.colors.gold,
+    marginBottom: 6,
+    letterSpacing: 0.3,
+  },
+  locationTitle: {
+    fontSize: 32,
+    fontWeight: '800',
+    color: theme.colors.white,
+    marginBottom: 16,
+    letterSpacing: -0.5,
+    textShadowColor: 'rgba(0,0,0,0.6)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 8,
+  },
+
+  // ── Glass chips ──
+  chips: {
+    flexDirection: 'row',
+    gap: 8,
+    flexWrap: 'wrap',
+  },
+  glassChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: 'rgba(255,255,255,0.10)',
+    borderRadius: 20,
+    borderWidth: 0.5,
+    borderColor: 'rgba(255,255,255,0.15)',
+    backdropFilter: 'blur(8px)',
+  },
+  chipText: {
+    fontSize: 13,
+    color: theme.colors.textSecondary,
+    fontWeight: '500',
+  },
+  chipTextGold: {
+    fontSize: 13,
+    color: theme.colors.gold,
+    fontWeight: '600',
+  },
+
+  // ── Story text (larger, more spaced) ──
+  storyText: {
+    fontSize: 17,
+    color: theme.colors.textSecondary,
+    lineHeight: 28,
+    letterSpacing: 0.1,
+  },
+
+  // ── Body text ──
+  bodyText: {
+    fontSize: 15,
+    color: theme.colors.textSecondary,
+    lineHeight: 24,
+  },
+
+  // ── Quote ──
+  quoteText: {
+    fontSize: 20,
+    fontStyle: 'italic',
+    color: theme.colors.textPrimary,
+    lineHeight: 30,
+    marginTop: 4,
+  },
+  quoteAttr: {
+    fontSize: 14,
+    color: theme.colors.textTertiary,
+    marginTop: 10,
+    fontWeight: '500',
+  },
+
+  // ── Empty Community ──
+  emptyCommunity: {
+    alignItems: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 8,
+  },
+  emptyCommunityIcon: {
+    fontSize: 40,
+    marginBottom: 12,
+  },
+  emptyCommunityTitle: {
+    fontSize: 17,
+    fontWeight: '700',
+    color: theme.colors.textPrimary,
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  emptyCommunitySub: {
+    fontSize: 14,
+    color: theme.colors.textSecondary,
+    textAlign: 'center',
+    lineHeight: 20,
+    marginBottom: 16,
+  },
+  uploadPill: {
+    backgroundColor: 'rgba(245,197,24,0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(245,197,24,0.30)',
+    borderRadius: 24,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
   },
   uploadPillText: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '600',
-    color: 'rgba(245,197,24,0.9)',
+    color: theme.colors.gold,
     letterSpacing: 0.2,
   },
-  coords: { fontSize: 12, color: theme.colors.textTertiary, marginTop: 6, fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace' },
-  quoteText: { fontSize: 17, fontStyle: 'italic', color: theme.colors.textPrimary, lineHeight: 26 },
-  quoteAttr: { fontSize: 13, color: theme.colors.textTertiary, marginTop: 8 },
-  actions: { flexDirection: 'row', paddingHorizontal: 20, paddingTop: 28, gap: 10 },
-  primaryButton: { flex: 1, backgroundColor: theme.colors.gold, paddingVertical: 10, borderRadius: 10, alignItems: 'center' },
-  primaryButtonText: { color: theme.colors.black, fontWeight: '700', fontSize: 12 },
-  secondaryButton: { flex: 1, paddingVertical: 10, borderRadius: 10, alignItems: 'center', backgroundColor: theme.colors.surface3, borderWidth: 1, borderColor: 'transparent' },
-  secondaryButtonText: { color: theme.colors.gold, fontWeight: '600', fontSize: 12 },
-  savedButton: { backgroundColor: theme.colors.gold + '20', borderColor: theme.colors.gold },
-  savedButtonText: { color: theme.colors.gold },
+
+  // ── Coords ──
+  coords: {
+    fontSize: 12,
+    color: theme.colors.textTertiary,
+    marginTop: 8,
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+  },
+
+  // ── Actions ──
+  actions: {
+    flexDirection: 'row',
+    paddingHorizontal: 20,
+    paddingTop: 28,
+    gap: 10,
+  },
+  primaryButton: {
+    flex: 1,
+    backgroundColor: theme.colors.gold,
+    paddingVertical: 14,
+    borderRadius: 14,
+    alignItems: 'center',
+  },
+  primaryButtonText: {
+    color: theme.colors.black,
+    fontWeight: '700',
+    fontSize: 14,
+  },
+  secondaryButton: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 14,
+    alignItems: 'center',
+    backgroundColor: theme.colors.surface3,
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
+  secondaryButtonText: {
+    color: theme.colors.gold,
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  savedButton: {
+    backgroundColor: theme.colors.gold + '20',
+    borderColor: theme.colors.gold,
+  },
+  savedButtonText: {
+    color: theme.colors.gold,
+  },
+  buttonPressed: {
+    transform: [{ scale: 0.96 }],
+    opacity: 0.85,
+  },
+
+  // ── Support ──
   supportLinks: {
     alignItems: 'center',
   },
-  supportTitle: { fontSize: 14, fontWeight: '600', color: theme.colors.textTertiary, marginBottom: 12, textAlign: 'center' },
+  supportTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: theme.colors.textTertiary,
+    marginBottom: 12,
+    textAlign: 'center',
+  },
   supportLink: { paddingVertical: 8 },
-  supportLinkText: { fontSize: 13, color: theme.colors.textTertiary, textDecorationLine: 'underline' },
-  supportFooter: { fontSize: 11, color: theme.colors.textTertiary + '60', marginTop: 12, textAlign: 'center' },
+  supportLinkText: {
+    fontSize: 13,
+    color: theme.colors.textTertiary,
+    textDecorationLine: 'underline',
+  },
+  supportFooter: {
+    fontSize: 11,
+    color: theme.colors.textTertiary + '60',
+    marginTop: 12,
+    textAlign: 'center',
+  },
 
   remoteWarningSection: {
     marginHorizontal: 20,
     marginTop: 12,
     padding: 14,
-    backgroundColor: "#F5C5180c",
+    backgroundColor: '#F5C5180c',
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#F5C51830",
+    borderColor: '#F5C51830',
   },
 });
