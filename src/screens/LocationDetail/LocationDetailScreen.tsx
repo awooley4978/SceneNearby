@@ -14,11 +14,10 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../../theme';
 import { locationById, photosByLocation, calculateDistance } from '../../data/sampleData';
-import { categoryColors, STORAGE_KEYS, defaultUserSettings, communityPhotoToGallery } from '../../models';
+import { STORAGE_KEYS, defaultUserSettings, communityPhotoToGallery } from '../../models';
 import { getUserSettings, setUserSettings } from '../../services/StorageService';
 import { useSaved } from '../../context/SavedContext';
 import { useUserLocation } from '../../hooks/useUserLocation';
-import { CategoryBadge } from '../../components/CategoryBadge';
 import { MapPlaceholder } from '../../components/MapPlaceholder';
 import { SmartHeroImage } from '../../components/SmartHeroImage';
 import { RatingSection } from '../../components/RatingSection';
@@ -28,7 +27,6 @@ import { VisitorTips } from '../../components/VisitorTips';
 import { RemoteDestinationBadge } from '../../components/RemoteDestinationBadge';
 import { LocationPhotoGallery, GalleryPhoto } from '../../components/LocationPhotoGallery';
 import { SectionCard } from '../../components/SectionCard';
-import { MetadataToken } from '../../components/MetadataToken';
 import { SpotlightOverlay, LocationFrame, BrandDivider } from '../../components/BrandElements';
 import { logLocationViewed, logLocationSaved, logLocationUnsaved, logLocationNavigate, logLocationShared, logUserRating } from '../../services/analytics';
 
@@ -269,20 +267,25 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
               <Text style={styles.showName}>{location.movieOrShow}</Text>
             </Pressable>
             <Text style={styles.locationTitle}>{location.title}</Text>
+          </View>
 
-            {/* Metadata tokens */}
-            <View style={styles.chips}>
-              <CategoryBadge category={location.category} />
-              <MetadataToken variant="slate" value={String(location.year)} />
+          {/* Clean metadata row — dark strip at hero bottom */}
+          <View style={styles.metadataStrip}>
+            <Text style={styles.metadataRow}>
+              <Text style={styles.metadataItem}>{location.category}</Text>
+              <Text style={styles.metadataSep}>  •  </Text>
+              <Text style={styles.metadataItem}>{location.year}</Text>
               {distanceFromUser !== undefined && (
-                <MetadataToken
-                  variant="pin"
-                  value={distanceFromUser < 1
-                    ? `${(distanceFromUser * 5280).toFixed(0)}ft`
-                    : `${distanceFromUser.toFixed(1)} mi`}
-                />
+                <>
+                  <Text style={styles.metadataSep}>  •  </Text>
+                  <Text style={styles.metadataDistance}>
+                    {distanceFromUser < 1
+                      ? `${(distanceFromUser * 5280).toFixed(0)} ft`
+                      : `${distanceFromUser.toFixed(1)} mi`}
+                  </Text>
+                </>
               )}
-            </View>
+            </Text>
           </View>
         </View>
 
@@ -472,7 +475,38 @@ const styles = StyleSheet.create({
     textShadowRadius: 8,
   },
 
-  // ── Chips row ──
+  // ── Metadata strip ──
+  metadataStrip: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    zIndex: 4,
+  },
+  metadataRow: {
+    textAlign: 'center',
+  },
+  metadataItem: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: 'rgba(255,255,255,0.70)',
+    letterSpacing: 0.2,
+  },
+  metadataSep: {
+    fontSize: 13,
+    color: 'rgba(255,255,255,0.25)',
+  },
+  metadataDistance: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: 'rgba(255,255,255,0.90)',
+    letterSpacing: 0.2,
+  },
+
+  // ── Chips row (unused — retained for MetadataToken elsewhere) ──
   chips: {
     flexDirection: 'row',
     gap: 8,
