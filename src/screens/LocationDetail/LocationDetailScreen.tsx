@@ -27,6 +27,7 @@ import { EstimatedVisitTime } from '../../components/EstimatedVisitTime';
 import { VisitorTips } from '../../components/VisitorTips';
 import { RemoteDestinationBadge } from '../../components/RemoteDestinationBadge';
 import { LocationPhotoGallery, GalleryPhoto } from '../../components/LocationPhotoGallery';
+import { SectionCard } from '../../components/SectionCard';
 import { logLocationViewed, logLocationSaved, logLocationUnsaved, logLocationNavigate, logLocationShared, logUserRating } from '../../services/analytics';
 
 export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = ({
@@ -281,99 +282,92 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
       </View>
 
       {/* Ratings & Reviews */}
-      <View style={styles.compactSection}>
+      <SectionCard>
         <RatingSection googleRating={location.googleRating} placeId={location.googleRating?.placeId} />
-      </View>
+      </SectionCard>
 
       {/* Remote Destination Warning */}
       {location.remoteDestination && (
         <RemoteDestinationBadge info={location.remoteDestination} />
       )}
 
-      {/* Worth the Visit — Scene Nearby community */}
-      <View style={styles.compactSection}>
+      {/* Worth the Visit */}
+      <SectionCard icon="⭐" title="Worth the Visit">
         <WorthTheVisit
           percentage={location.worthItPercentage}
           votes={location.worthItVotes}
           locationId={location.id}
         />
-      </View>
+      </SectionCard>
 
       {/* Estimated Visit Time */}
-      <View style={styles.compactSection}>
+      <SectionCard icon="⏱️" title="Visit Time">
         <EstimatedVisitTime time={location.estimatedVisitTime} locationId={location.id} />
-      </View>
+      </SectionCard>
 
       {/* What Happened Here */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>🎬 What Happened Here</Text>
+      <SectionCard icon="🎬" title="What Happened Here">
         <Text style={styles.bodyText}>{location.sceneDescription}</Text>
-      </View>
+      </SectionCard>
 
       {/* Iconic Quote */}
       {location.quote && (
-        <View style={styles.quoteSection}>
-          <Text style={styles.quoteIcon}>💬</Text>
+        <SectionCard icon="💬" title="Iconic Quote">
           <Text style={styles.quoteText}>"{location.quote}"</Text>
           {location.quoteAttribution && (
             <Text style={styles.quoteAttr}>— {location.quoteAttribution}</Text>
           )}
-        </View>
+        </SectionCard>
       )}
 
       {/* Then & Now */}
       {location.thenAndNow && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>📸 Then & Now</Text>
+        <SectionCard icon="📸" title="Then &amp; Now">
           <Text style={styles.bodyText}>{location.thenAndNow}</Text>
-        </View>
+        </SectionCard>
       )}
 
       {/* Fun Fact */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>🤔 Did You Know?</Text>
+      <SectionCard icon="🤔" title="Did You Know?">
         <Text style={styles.bodyText}>{location.funFact}</Text>
-      </View>
+      </SectionCard>
 
       {/* Community Photos */}
-      {galleryPhotos.length > 0 ? (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Community Photos</Text>
+      <SectionCard icon="📷" title="Community Photos">
+        {galleryPhotos.length > 0 ? (
           <LocationPhotoGallery
             photos={galleryPhotos}
             showAddButton={false}
           />
-        </View>
-      ) : (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Community Photos</Text>
-          <Text style={styles.emptyStateText}>No community photos yet.</Text>
-          <TouchableOpacity
-            style={styles.uploadPill}
-            onPress={() => navigation.navigate('Upload', { locationId: location.id, locationName: location.title })}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.uploadPillText}>📸 Upload the first photo</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+        ) : (
+          <>
+            <Text style={styles.emptyStateText}>No community photos yet.</Text>
+            <TouchableOpacity
+              style={styles.uploadPill}
+              onPress={() => navigation.navigate('Upload', { locationId: location.id, locationName: location.title })}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.uploadPillText}>📸 Upload the first photo</Text>
+            </TouchableOpacity>
+          </>
+        )}
+      </SectionCard>
 
       {/* Visitor Tips */}
       {location && (
-        <View style={styles.section}>
+        <SectionCard icon="💡" title="Visitor Tips">
           <VisitorTips locationId={location.id} estimatedVisitTime={location.estimatedVisitTime} />
-        </View>
+        </SectionCard>
       )}
 
       {/* Location info */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>📍 Location</Text>
+      <SectionCard icon="📍" title="Location" elevated>
         <Text style={styles.bodyText}>{location.address}</Text>
         <Text style={styles.bodyText}>{location.city}, {location.country}</Text>
         <Text style={styles.coords}>
           {location.latitude.toFixed(4)}, {location.longitude.toFixed(4)}
         </Text>
-      </View>
+      </SectionCard>
 
       {/* Actions */}
       <View style={styles.actions}>
@@ -394,22 +388,24 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
       </View>
 
       {/* Support section */}
-      <View style={styles.supportSection}>
+      <SectionCard>
         <Text style={styles.supportTitle}>📬 Support</Text>
-        <TouchableOpacity style={styles.supportLink} onPress={handleCorrection}>
-          <Text style={styles.supportLinkText}>📍 Location Correction</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.supportLink} onPress={handleContentRequest}>
-          <Text style={styles.supportLinkText}>➕ Suggest a Location</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.supportLink} onPress={handleFeatureSuggestion}>
-          <Text style={styles.supportLinkText}>💡 Feature Suggestion</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.supportLink} onPress={handleBugReport}>
-          <Text style={styles.supportLinkText}>🐛 Report a Bug</Text>
-        </TouchableOpacity>
+        <View style={styles.supportLinks}>
+          <TouchableOpacity style={styles.supportLink} onPress={handleCorrection}>
+            <Text style={styles.supportLinkText}>📍 Location Correction</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.supportLink} onPress={handleContentRequest}>
+            <Text style={styles.supportLinkText}>➕ Suggest a Location</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.supportLink} onPress={handleFeatureSuggestion}>
+            <Text style={styles.supportLinkText}>💡 Feature Suggestion</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.supportLink} onPress={handleBugReport}>
+            <Text style={styles.supportLinkText}>🐛 Report a Bug</Text>
+          </TouchableOpacity>
+        </View>
         <Text style={styles.supportFooter}>scenenearbysupport@gmail.com</Text>
-      </View>
+      </SectionCard>
     </ScrollView>
   );
 };
@@ -421,10 +417,6 @@ const styles = StyleSheet.create({
   errorText: { fontSize: 18, color: theme.colors.textSecondary },
   hero: { height: 360, justifyContent: 'flex-end', paddingBottom: 20, position: 'relative', overflow: 'hidden' },
   heroContent: { paddingHorizontal: 20, position: 'relative', zIndex: 2 },
-  heroGradientOverlay: {
-    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-    opacity: 0.12,
-  },
   showName: { fontSize: 16, fontWeight: '700', color: theme.colors.gold, marginBottom: 4 },
   locationTitle: { fontSize: 26, fontWeight: '700', color: theme.colors.white, marginBottom: 12 },
   badges: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
@@ -432,14 +424,6 @@ const styles = StyleSheet.create({
   yearText: { fontSize: 12, color: theme.colors.textSecondary, fontWeight: '500' },
   distanceBadge: { paddingHorizontal: 10, paddingVertical: 5, backgroundColor: theme.colors.surface3 + 'CC', borderRadius: 8 },
   distanceText: { fontSize: 12, color: theme.colors.gold, fontWeight: '500' },
-  ratingSection: { paddingHorizontal: 20, paddingTop: 20 },
-  ratingRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
-  ratingAverage: { fontSize: 22, fontWeight: '700', color: theme.colors.gold },
-  ratingCount: { fontSize: 13, color: theme.colors.textTertiary },
-  ratePrompt: { fontSize: 13, color: theme.colors.textSecondary, marginBottom: 4 },
-  section: { paddingHorizontal: 20, paddingTop: 24 },
-  compactSection: { paddingHorizontal: 20, paddingTop: 12 },
-  sectionTitle: { fontSize: 20, fontWeight: '700', color: theme.colors.textPrimary, marginBottom: 10 },
   bodyText: { fontSize: 15, color: theme.colors.textSecondary, lineHeight: 24 },
   emptyStateText: { fontSize: 15, color: theme.colors.textTertiary, lineHeight: 24, fontStyle: 'italic' },
   uploadPill: {
@@ -459,8 +443,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.2,
   },
   coords: { fontSize: 12, color: theme.colors.textTertiary, marginTop: 6, fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace' },
-  quoteSection: { marginHorizontal: 20, marginTop: 24, padding: 20, backgroundColor: theme.colors.surface, borderRadius: 16, borderLeftWidth: 3, borderLeftColor: theme.colors.gold },
-  quoteIcon: { fontSize: 20, marginBottom: 8 },
   quoteText: { fontSize: 17, fontStyle: 'italic', color: theme.colors.textPrimary, lineHeight: 26 },
   quoteAttr: { fontSize: 13, color: theme.colors.textTertiary, marginTop: 8 },
   actions: { flexDirection: 'row', paddingHorizontal: 20, paddingTop: 28, gap: 10 },
@@ -470,18 +452,13 @@ const styles = StyleSheet.create({
   secondaryButtonText: { color: theme.colors.gold, fontWeight: '600', fontSize: 12 },
   savedButton: { backgroundColor: theme.colors.gold + '20', borderColor: theme.colors.gold },
   savedButtonText: { color: theme.colors.gold },
-  supportSection: {
-    paddingVertical: 24,
-    paddingHorizontal: 20,
+  supportLinks: {
     alignItems: 'center',
-    borderTopWidth: 1,
-    borderTopColor: theme.colors.surface3 + '40',
-    marginTop: 12,
   },
-  supportTitle: { fontSize: 14, fontWeight: '600', color: theme.colors.textTertiary, marginBottom: 12 },
+  supportTitle: { fontSize: 14, fontWeight: '600', color: theme.colors.textTertiary, marginBottom: 12, textAlign: 'center' },
   supportLink: { paddingVertical: 8 },
   supportLinkText: { fontSize: 13, color: theme.colors.textTertiary, textDecorationLine: 'underline' },
-  supportFooter: { fontSize: 11, color: theme.colors.textTertiary + '60', marginTop: 12 },
+  supportFooter: { fontSize: 11, color: theme.colors.textTertiary + '60', marginTop: 12, textAlign: 'center' },
 
   remoteWarningSection: {
     marginHorizontal: 20,
