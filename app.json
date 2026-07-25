@@ -1,0 +1,59 @@
+{
+  "expo": {
+    "name": "Music Nearby",
+    "slug": "music-nearby",
+    "version": "1.0.0",
+    "scheme": "musicnearby",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "backgroundColor": "#1a1a2e",
+      "resizeMode": "contain"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.cairn.musicnearby",
+      "buildNumber": "1.0.0",
+      "config": {
+        "googleMapsApiKey": "AIzaSyBLUZWpL5Z0S2_G_tcddtInru-KFeMivLs"
+      },
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Music Nearby uses your location to show you nearby music locations.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Music Nearby uses your location to alert you when you're near a music location.",
+        "LSApplicationQueriesSchemes": [
+          "waze",
+          "maps",
+          "comgooglemaps"
+        ]
+      }
+    },
+    "android": {
+      "package": "com.cairn.musicnearby",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0a0a0a"
+      },
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ]
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Music Nearby uses your location to alert you when you're near a music location.",
+          "locationWhenInUsePermission": "Music Nearby uses your location to show you nearby music locations."
+        }
+      ],
+      "expo-dev-client"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "0e688584-d597-4110-bef7-13784736463e"
+      }
+    }
+  }
+}
