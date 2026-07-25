@@ -20,7 +20,6 @@ import { useSaved } from '../../context/SavedContext';
 import { useUserLocation } from '../../hooks/useUserLocation';
 import { MapPlaceholder } from '../../components/MapPlaceholder';
 import { SmartHeroImage } from '../../components/SmartHeroImage';
-import { RatingSection } from '../../components/RatingSection';
 import { WorthTheVisit } from '../../components/WorthTheVisit';
 import { EstimatedVisitTime } from '../../components/EstimatedVisitTime';
 import { VisitorTips } from '../../components/VisitorTips';
@@ -290,15 +289,6 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
         </View>
 
         {/* ── Cards — staggered fade-in cascade ── */}
-
-        {location.googleRating?.placeId && (
-          <>
-            <BrandDivider />
-            <SectionCard fadeDelay={80}>
-              <RatingSection googleRating={location.googleRating} placeId={location.googleRating.placeId} />
-            </SectionCard>
-          </>
-        )}
 
         {/* Remote Destination Warning */}
         {location.remoteDestination && (
