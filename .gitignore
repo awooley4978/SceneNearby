@@ -1,5 +1,7 @@
 node_modules/
+node_modules
 .expo/
+bun.lock
 dist/
 *.jks
 *.p8
