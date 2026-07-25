@@ -182,7 +182,8 @@ const divStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginHorizontal: 24,
-    marginVertical: 16,
+    marginTop: 4,
+    marginBottom: 8,
     gap: 10,
   },
   line: {
