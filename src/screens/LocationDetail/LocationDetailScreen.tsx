@@ -29,6 +29,7 @@ import { RemoteDestinationBadge } from '../../components/RemoteDestinationBadge'
 import { LocationPhotoGallery, GalleryPhoto } from '../../components/LocationPhotoGallery';
 import { SectionCard } from '../../components/SectionCard';
 import { MetadataToken } from '../../components/MetadataToken';
+import { SpotlightOverlay, LocationFrame, BrandDivider } from '../../components/BrandElements';
 import { logLocationViewed, logLocationSaved, logLocationUnsaved, logLocationNavigate, logLocationShared, logUserRating } from '../../services/analytics';
 
 const HERO_HEIGHT = 420;
@@ -244,6 +245,12 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
             )}
           </View>
 
+          {/* Spotlight glow — follows image focal point */}
+          <SpotlightOverlay
+            focalPoint={location.focalPoint ?? { x: 0.5, y: 0.4 }}
+            intensity={0.04}
+          />
+
           {/* Gradient overlay: dark at bottom, fading into page */}
           <View style={styles.heroOverlay}>
             <LinearGradient
@@ -252,6 +259,9 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
               style={StyleSheet.absoluteFill}
             />
           </View>
+
+          {/* Corner brackets — featured-location frame */}
+          <LocationFrame />
 
           {/* Hero content */}
           <View style={styles.heroContent}>
@@ -277,6 +287,8 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
         </View>
 
         {/* ── Cards — staggered fade-in cascade ── */}
+
+        <BrandDivider />
 
         {/* Ratings */}
         <SectionCard fadeDelay={80}>
@@ -393,6 +405,8 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
             <Text style={styles.secondaryButtonText}>📤 Share</Text>
           </Pressable>
         </View>
+
+        <BrandDivider opacity={0.08} />
 
         {/* Support section */}
         <SectionCard fadeDelay={480}>
