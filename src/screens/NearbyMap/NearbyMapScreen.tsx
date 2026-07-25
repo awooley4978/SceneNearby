@@ -18,6 +18,8 @@ import { CategoryBadge } from '../../components/CategoryBadge';
 import { MoviePoster } from '../../components/MoviePoster';
 import { getOnboardingData } from '../../services/StorageService';
 import { useSaved } from '../../context/SavedContext';
+import { useCityDetection } from '../../hooks/useCityDetection';
+import { CityWelcomeModal } from '../../components/CityWelcomeModal';
 import type { FilmingLocation } from '../../models';
 
 const { width, height } = Dimensions.get('window');
@@ -37,6 +39,16 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
   });
   const [userCity, setUserCity] = useState<string>('');
   const [userCoords, setUserCoords] = useState<{ lat: number; lng: number } | null>(null);
+
+  // City welcome detection
+  const { showWelcome, cityName, savedCount, dismiss } = useCityDetection({
+    latitude: region.latitude,
+    longitude: region.longitude,
+    isGps: !!userCoords,
+    isLoading: false,
+    permissionDenied: false,
+    error: null,
+  });
 
   // If navigated from location detail, center on that location
   const targetLat = route?.params?.centerLat;
@@ -241,6 +253,25 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
           />
         </View>
       )}
+
+      {/* City Welcome Modal */}
+      <CityWelcomeModal
+        visible={showWelcome}
+        cityName={cityName}
+        savedCount={savedCount}
+        onSavedPlaces={() => {
+          dismiss();
+          navigation.navigate('Saved');
+        }}
+        onSavedDiscover={() => {
+          dismiss();
+          // Stay on map — saved locations are already visible as markers
+        }}
+        onDiscoverAll={() => {
+          dismiss();
+          // Stay on map — all locations are already shown
+        }}
+      />
     </View>
   );
 };

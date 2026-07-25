@@ -6,6 +6,7 @@ const KEYS = {
   SAVED_IDS: '@scenenearby/saved_ids',
   NOTIFICATION_PREFS: '@scenenearby/notification_prefs',
   USER_SETTINGS: '@scenenearby/settings',
+  LAST_CITY: '@scenenearby/last_city',
 };
 
 // ── Onboarding ──
@@ -75,4 +76,14 @@ export async function getUserSettings<T>(defaults: T): Promise<T> {
 
 export async function setUserSettings(settings: any): Promise<void> {
   try { await AsyncStorage.setItem(KEYS.USER_SETTINGS, JSON.stringify(settings)); } catch {}
+}
+
+// ── City Detection ──
+
+export async function getLastCity(): Promise<string | null> {
+  try { return await AsyncStorage.getItem(KEYS.LAST_CITY); } catch { return null; }
+}
+
+export async function setLastCity(city: string): Promise<void> {
+  try { await AsyncStorage.setItem(KEYS.LAST_CITY, city); } catch {}
 }
