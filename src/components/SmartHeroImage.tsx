@@ -15,7 +15,7 @@ export const SmartHeroImage: React.FC<SmartHeroImageProps> = ({
   focalPoint,
   style,
   imageStyle,
-  scale = 1.3,
+  scale = 1.15,
   onError,
 }) => {
   const [hasError, setHasError] = useState(false);
