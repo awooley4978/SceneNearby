@@ -203,9 +203,9 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
         ))}
 
         <View style={styles.logoCircle}>
-          <Text style={styles.logoIcon}>🎬</Text>
+          <Text style={styles.logoIcon}>🎵</Text>
         </View>
-        <Text style={styles.appName}>Scene Nearby</Text>
+        <Text style={styles.appName}>Music Nearby</Text>
       </Animated.View>
 
       {/* Tagline */}
@@ -223,7 +223,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
             },
           ]}
         >
-          Discover the movies{'\n'}
+          Discover the music{'\n'}
           <Text style={styles.taglineGold}>playing all around you</Text>
         </Animated.Text>
       </Animated.View>

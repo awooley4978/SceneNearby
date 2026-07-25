@@ -56,7 +56,7 @@ const GENRES = Object.keys(GENRE_GRADIENTS).map((label) => ({
 const TRAVEL_STYLES: { key: DiscoveryFrequency; emoji: string; label: string; desc: string }[] = [
   { key: 'essentials', emoji: '🌿', label: 'Essentials', desc: 'Only the must-see locations.' },
   { key: 'explorer', emoji: '🌟', label: 'Explorer', desc: 'Popular places plus hidden gems.' },
-  { key: 'completionist', emoji: '🎬', label: 'Completionist', desc: 'Show me every verified filming location.' },
+  { key: 'completionist', emoji: '🎵', label: 'Completionist', desc: 'Show me every verified music location.' },
 ];
 
 const TRAVEL_MODES = [
@@ -66,9 +66,9 @@ const TRAVEL_MODES = [
 ];
 
 const MEDIA_INTERESTS = [
-  { key: 'movies', emoji: '🎬', label: 'Movies', desc: 'Film locations' },
-  { key: 'tv', emoji: '📺', label: 'TV', desc: 'TV show locations' },
-  { key: 'music', emoji: '🎵', label: 'Music', desc: 'Music video spots', comingSoon: true },
+  { key: 'albums', emoji: '🎵', label: 'Albums', desc: 'Album locations' },
+  { key: 'singles', emoji: '🎤', label: 'Singles', desc: 'Single/EP locations' },
+  { key: 'live', emoji: '🎸', label: 'Live Music', desc: 'Concert venues', comingSoon: true },
 ];
 
 export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
@@ -76,7 +76,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
   const [travelStyle, setTravelStyle] = useState<DiscoveryFrequency>('essentials');
   const [contentLoves, setContentLoves] = useState<string[]>([]); // now genres
   const [travelMode, setTravelMode] = useState<string>('walking');
-  const [mediaInterests, setMediaInterests] = useState<string[]>(['movies', 'tv']);
+  const [mediaInterests, setMediaInterests] = useState<string[]>(['albums', 'singles']);
   const flatListRef = useRef<FlatList>(null);
   const scrollX = useRef(new Animated.Value(0)).current;
 
@@ -147,10 +147,10 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
         case 0: return (
           <View style={styles.page}>
             <View style={styles.gradientBg} />
-            <Text style={styles.welcomeEmoji}>🎬</Text>
+            <Text style={styles.welcomeEmoji}>🎵</Text>
             <Text style={styles.welcomeTitle}>Your favorite scenes are closer than you think.</Text>
             <View style={styles.welcomeAccentLine} />
-            <Text style={styles.welcomeSub}>Discover filming locations while you travel.</Text>
+            <Text style={styles.welcomeSub}>Discover music locations while you travel.</Text>
           </View>
         );
         case 1: return (

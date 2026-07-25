@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { theme } from '../theme';
-import { FilmingLocation } from '../models';
+import { MusicLocation } from '../models';
 import { CategoryBadge } from './CategoryBadge';
 import { MapPlaceholder } from './MapPlaceholder';
 import { SmartHeroImage } from './SmartHeroImage';
@@ -18,26 +18,26 @@ import { mockRatings } from '../data/sampleData';
 import { useSaved } from '../context/SavedContext';
 
 interface LocationCardProps {
-  location: FilmingLocation;
+  location: MusicLocation;
   onPress: () => void;
-  onMoviePress?: () => void;
+  onArtistPress?: () => void;
   onUnsave?: (id: string) => void;
   showRating?: boolean;
   index?: number;
 }
 
 const GRADIENT_PAIRS: Record<string, string[]> = {
-  Drama: ['#2D1B69', '#1a1a2e'],
-  Comedy: ['#B8860B', '#2a2a1a'],
-  'Sci-Fi': ['#0E4D64', '#0a1a2e'],
-  Action: ['#7F1D1D', '#2a1a1a'],
-  Romance: ['#6B2142', '#2a1a2a'],
+  Rock: ['#2D1B69', '#1a1a2e'],
+  'Hip-Hop': ['#B8860B', '#2a2a1a'],
+  Electronic: ['#0E4D64', '#0a1a2e'],
+  Jazz: ['#7F1D1D', '#2a1a1a'],
+  'R&B': ['#6B2142', '#2a1a2a'],
 };
 
 export const LocationCard: React.FC<LocationCardProps> = ({
   location,
   onPress,
-  onMoviePress,
+  onArtistPress,
   onUnsave,
   showRating = true,
   index = 0,
@@ -253,17 +253,17 @@ export const LocationCard: React.FC<LocationCardProps> = ({
               <Text style={styles.heroCity}>{location.city}</Text>
               <View style={styles.heroMetaRight}>
                 <Text style={styles.heroYear}>{location.year}</Text>
-                <Text style={styles.heroType}>{location.isMovie ? '🎬' : '📺'}</Text>
+                <Text style={styles.heroType}>{location.isAlbum ? '🎵' : '🎤'}</Text>
               </View>
             </View>
           </View>
 
           {/* ── Content Area ── */}
           <View style={styles.content}>
-            {/* Movie/Show name */}
-            <TouchableOpacity onPress={onMoviePress} disabled={!onMoviePress}>
+            {/* Artist/Album name */}
+            <TouchableOpacity onPress={onArtistPress} disabled={!onArtistPress}>
               <Text style={styles.movieName} numberOfLines={1}>
-                {location.movieOrShow}
+                {location.artistName}
               </Text>
             </TouchableOpacity>
 
@@ -272,9 +272,9 @@ export const LocationCard: React.FC<LocationCardProps> = ({
               {location.title}
             </Text>
 
-            {/* Scene description */}
+            {/* Significance */}
             <Text style={styles.description} numberOfLines={2}>
-              {location.sceneDescription}
+              {location.significance}
             </Text>
 
             {/* Bottom row: rating + address */}

@@ -16,8 +16,8 @@ import {
   allLocations,
   locationsByCategory,
   mockRatings,
-  actorGroups,
-  allLocationsWithActors,
+  artistGroups,
+  allLocationsWithMembers,
   calculateDistance,
 } from '../../data/sampleData';
 import { LocationCard } from '../../components/LocationCard';
@@ -25,28 +25,28 @@ import { CardSkeleton } from '../../components/SkeletonLoader';
 import { EmptyState } from '../../components/EmptyState';
 import { useUserLocation } from '../../hooks/useUserLocation';
 import { logSearchPerformed, logMovieTapped, logActorTapped } from '../../services/analytics';
-import type { FilmingLocation, ActorGroup } from '../../models';
+import type { MusicLocation, ArtistGroup } from '../../models';
 
 const categories = [
   { key: 'all', label: 'All' },
-  { key: LocationCategory.drama, label: 'Drama' },
-  { key: LocationCategory.comedy, label: 'Comedy' },
-  { key: LocationCategory.sciFi, label: 'Sci-Fi' },
-  { key: LocationCategory.action, label: 'Action' },
-  { key: LocationCategory.romance, label: 'Romance' },
+  { key: LocationCategory.rock, label: 'Rock' },
+  { key: LocationCategory.hipHop, label: 'Hip-Hop' },
+  { key: LocationCategory.electronic, label: 'Electronic' },
+  { key: LocationCategory.jazz, label: 'Jazz' },
+  { key: LocationCategory.rnb, label: 'R&B' },
 ];
 
 const typeFilters = [
   { key: 'all', label: 'All' },
-  { key: 'movies', label: '🎬 Movies' },
-  { key: 'shows', label: '📺 TV Shows' },
+  { key: 'albums', label: '🎵 Albums' },
+  { key: 'singles', label: '🎤 Singles/EPs' },
 ];
 
 type SortMode = 'default' | 'rating' | 'nearest';
 type SearchMode = 'all' | 'actor';
 
 interface SearchResultItem {
-  type: 'location' | 'movie' | 'show' | 'actor';
+  type: 'location' | 'album' | 'single' | 'artist';
   id: string;
   label: string;
   subtitle: string;
@@ -66,54 +66,54 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
     if (!q) return [];
 
     const results: SearchResultItem[] = [];
-    const addedMovies = new Set<string>();
-    const addedActors = new Set<string>();
+    const addedAlbums = new Set<string>();
+    const addedArtists = new Set<string>();
 
     // Search locations
-    const matchedLocs = allLocationsWithActors.filter(
+    const matchedLocs = allLocationsWithMembers.filter(
       (loc) =>
         loc.title.toLowerCase().includes(q) ||
-        loc.movieOrShow.toLowerCase().includes(q) ||
+        loc.artistName.toLowerCase().includes(q) ||
         loc.city.toLowerCase().includes(q) ||
-        loc.actors?.some((a) => a.toLowerCase().includes(q)),
+        loc.bandMembers?.some((a) => a.toLowerCase().includes(q)),
     );
 
-    // Extract movie/show matches
-    const movieMap = new Map<string, FilmingLocation[]>();
+    // Extract album/single matches
+    const albumMap = new Map<string, MusicLocation[]>();
     for (const loc of matchedLocs) {
-      const key = `${loc.movieOrShow}||${loc.year}`;
-      if (!movieMap.has(key)) movieMap.set(key, []);
-      movieMap.get(key)!.push(loc);
+      const key = `${loc.artistName}||${loc.year}`;
+      if (!albumMap.has(key)) albumMap.set(key, []);
+      albumMap.get(key)!.push(loc);
     }
 
-    for (const [, locs] of movieMap) {
+    for (const [, locs] of albumMap) {
       const first = locs[0];
-      const key = `${first.movieOrShow}||${first.year}`;
-      if (!addedMovies.has(key)) {
-        addedMovies.add(key);
+      const key = `${first.artistName}||${first.year}`;
+      if (!addedAlbums.has(key)) {
+        addedAlbums.add(key);
         results.push({
-          type: first.isMovie ? 'movie' : 'show',
-          id: `movie-${key}`,
-          label: first.movieOrShow,
+          type: first.isAlbum ? 'album' : 'single',
+          id: `album-${key}`,
+          label: first.artistName,
           subtitle: `${first.year} • ${locs.length} location${locs.length !== 1 ? 's' : ''}`,
-          data: { movieTitle: first.movieOrShow },
+          data: { artistName: first.artistName },
         });
       }
     }
 
-    // Extract actor matches
-    const matchedActors = actorGroups.filter((a) =>
+    // Extract artist matches
+    const matchedArtists = artistGroups.filter((a) =>
       a.name.toLowerCase().includes(q),
     );
-    for (const actor of matchedActors) {
-      if (!addedActors.has(actor.name)) {
-        addedActors.add(actor.name);
+    for (const artist of matchedArtists) {
+      if (!addedArtists.has(artist.name)) {
+        addedArtists.add(artist.name);
         results.push({
-          type: 'actor',
-          id: `actor-${actor.name}`,
-          label: actor.name,
-          subtitle: `🎭 Appears in ${actor.showTitles.length} film${actor.showTitles.length !== 1 ? 's/TV' : ''}`,
-          data: { actorName: actor.name },
+          type: 'artist',
+          id: `artist-${artist.name}`,
+          label: artist.name,
+          subtitle: `🎤 Appears in ${artist.notableWorks.length} album${artist.notableWorks.length !== 1 ? 's/work' : ''}`,
+          data: { actorName: artist.name },
         });
       }
     }
@@ -158,8 +158,8 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
     let base = selectedCategory === 'all'
       ? allLocations
       : locationsByCategory(selectedCategory as LocationCategory);
-    if (selectedType === 'movies') base = base.filter((l) => l.isMovie);
-    else if (selectedType === 'shows') base = base.filter((l) => !l.isMovie);
+    if (selectedType === 'albums') base = base.filter((l) => l.isAlbum);
+    else if (selectedType === 'singles') base = base.filter((l) => !l.isAlbum);
 
     const withDist = base.map((loc) => ({
       ...loc,
@@ -174,16 +174,16 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
 
   // Filtered locations (for the main feed)
   const filteredLocations = (() => {
-    // If searching with actor results, still show filtered feed below
+    // If searching with artist results, still show filtered feed below
     let result = selectedCategory === 'all'
       ? allLocations
       : locationsByCategory(selectedCategory as LocationCategory);
 
     // Apply type filter
-    if (selectedType === 'movies') {
-      result = result.filter((l) => l.isMovie);
-    } else if (selectedType === 'shows') {
-      result = result.filter((l) => !l.isMovie);
+    if (selectedType === 'albums') {
+      result = result.filter((l) => l.isAlbum);
+    } else if (selectedType === 'singles') {
+      result = result.filter((l) => !l.isAlbum);
     }
 
     if (searchQuery.trim()) {
@@ -191,7 +191,7 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
       result = result.filter(
         (loc) =>
           loc.title.toLowerCase().includes(q) ||
-          loc.movieOrShow.toLowerCase().includes(q) ||
+          loc.artistName.toLowerCase().includes(q) ||
           loc.city.toLowerCase().includes(q),
       );
     }
@@ -250,15 +250,15 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
 
     outer = outer.filter((loc) => loc.distanceFromUser! <= outerCap);
 
-    const movieMap = new Map<string, typeof outer[0]>();
+    const artistMap = new Map<string, typeof outer[0]>();
     for (const loc of outer) {
-      const key = loc.movieOrShow;
-      if (!movieMap.has(key) || movieMap.get(key)!.distanceFromUser! > loc.distanceFromUser!) {
-        movieMap.set(key, loc);
+      const key = loc.artistName;
+      if (!artistMap.has(key) || artistMap.get(key)!.distanceFromUser! > loc.distanceFromUser!) {
+        artistMap.set(key, loc);
       }
     }
 
-    return Array.from(movieMap.values())
+    return Array.from(artistMap.values())
       .sort((a, b) => (a.distanceFromUser || 0) - (b.distanceFromUser || 0))
       .slice(0, 20);
   }, [userLocation.latitude, userLocation.longitude, activeRadius]);
@@ -269,17 +269,17 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
   };
 
   const handleSearchResultPress = (item: SearchResultItem) => {
-    if (item.type === 'actor') logActorTapped({ actorName: item.data.actorName });
-    else if (item.type === 'movie' || item.type === 'show') logMovieTapped({ movieTitle: item.data.movieTitle, source: 'search' });
-    if (item.type === 'actor') {
-      navigation.navigate('ActorDetail', { actorName: item.data.actorName });
-    } else if (item.type === 'movie' || item.type === 'show') {
-      navigation.navigate('MovieDetail', { movieTitle: item.data.movieTitle });
+    if (item.type === 'artist') logActorTapped({ actorName: item.data.actorName });
+    else if (item.type === 'album' || item.type === 'single') logMovieTapped({ movieTitle: item.data.artistName, source: 'search' });
+    if (item.type === 'artist') {
+      navigation.navigate('ArtistDetail', { actorName: item.data.actorName });
+    } else if (item.type === 'album' || item.type === 'single') {
+      navigation.navigate('MusicDetail', { artistName: item.data.artistName });
     }
   };
 
   const renderSearchResult = ({ item }: { item: SearchResultItem }) => {
-    const emoji = item.type === 'movie' ? '🎬' : item.type === 'show' ? '📺' : '🎭';
+    const emoji = item.type === 'album' ? '🎵' : item.type === 'single' ? '🎤' : '🎤';
     return (
       <TouchableOpacity
         style={styles.searchResultRow}
@@ -335,12 +335,12 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
         })}
       </ScrollView>
 
-      {/* Filmography link */}
+      {/* Music Catalog link */}
       <TouchableOpacity
         style={styles.filmographyLink}
-        onPress={() => navigation.navigate('Filmography')}
+        onPress={() => navigation.navigate('MusicCatalog')}
       >
-        <Text style={styles.filmographyText}>🎬 Browse Filmography — All Movies & Shows</Text>
+        <Text style={styles.filmographyText}>🎵 Browse Music Catalog — All Artists & Albums</Text>
         <Text style={styles.chevron}>›</Text>
       </TouchableOpacity>
 
@@ -386,7 +386,7 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
               key={loc.id}
               location={loc}
               onPress={() => navigation.navigate('LocationDetail', { locationId: loc.id })}
-              onMoviePress={() => navigation.navigate('MovieDetail', { movieTitle: loc.movieOrShow })}
+              onArtistPress={() => navigation.navigate('MusicDetail', { artistName: loc.artistName })}
             />
           ))}
         </View>
@@ -404,7 +404,7 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
               activeOpacity={0.7}
             >
               <Text style={styles.moreMovie} numberOfLines={1}>
-                🎬 {loc.movieOrShow}
+                🎵 {loc.artistName}
               </Text>
               <Text style={styles.moreDistance}>
                 {loc.distanceFromUser! <= 50
@@ -449,7 +449,7 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
         <Text style={styles.searchIcon}>🔍</Text>
         <TextInput
           style={styles.searchInput}
-          placeholder="Search movies, shows, actors..."
+          placeholder="Search artists, albums, genres..."
           placeholderTextColor={theme.colors.textTertiary}
           value={searchQuery}
           onChangeText={setSearchQuery}
@@ -480,17 +480,17 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
           <LocationCard
             location={item}
             onPress={() => navigation.navigate('LocationDetail', { locationId: item.id })}
-            onMoviePress={() => navigation.navigate('MovieDetail', { movieTitle: item.movieOrShow })}
+            onArtistPress={() => navigation.navigate('MusicDetail', { artistName: item.artistName })}
           />
         )}
         ListHeaderComponent={renderHeader}
         ListEmptyComponent={
           isLoading ? null : (
             <EmptyState
-              emoji="🎬"
+              emoji="🎵"
               title="No locations found"
               subtitle={activeRadius === 50 && !searchQuery
-                ? `No filming locations within ${RADIUS_STAGES[RADIUS_STAGES.length - 1]} miles`
+                ? `No music locations within ${RADIUS_STAGES[RADIUS_STAGES.length - 1]} miles`
                 : "Try adjusting your search or filters"}
             />
           )

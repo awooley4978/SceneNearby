@@ -155,8 +155,8 @@ export const AuthScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <Animated.View style={[styles.inner, { opacity: fadeAnim }]}>
-          <Text style={styles.heroEmoji}>🎬</Text>
-          <Text style={styles.title}>Sign in to Scene Nearby</Text>
+          <Text style={styles.heroEmoji}>🎵</Text>
+          <Text style={styles.title}>Sign in to Music Nearby</Text>
           <Text style={styles.subtitle}>
             Save your discoveries, photos, and progress across devices.
           </Text>

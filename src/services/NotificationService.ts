@@ -70,7 +70,7 @@ export const NotificationService = {
   // Fire a soft-prompt notification (gentle nudge)
   fireNotification: (
     locationName: string,
-    movieOrShow: string,
+    artistName: string,
     locationId: string,
     extraData?: {
       city?: string;
@@ -83,8 +83,8 @@ export const NotificationService = {
   ) => {
     const notification: NotificationEvent = {
       id: `notif-${Date.now()}`,
-      title: '📍 Scene Nearby',
-      body: `You're near ${locationName} from ${movieOrShow}. Would you like to explore?`,
+      title: '📍 Music Nearby',
+      body: `You're near ${locationName} from ${artistName}. Would you like to explore?`,
       locationId,
       timestamp: Date.now(),
       read: false,
@@ -92,7 +92,7 @@ export const NotificationService = {
         { label: 'View Details', action: 'view' },
         { label: 'Navigate', action: 'navigate' },
       ],
-      movieTitle: movieOrShow,
+      movieTitle: artistName,
       locationName,
       city: extraData?.city,
       description: extraData?.description,
@@ -112,7 +112,7 @@ export const NotificationService = {
   checkProximity: (
     userLat: number,
     userLng: number,
-    savedLocations: { id: string; title: string; movieOrShow: string; latitude: number; longitude: number; city?: string }[],
+    savedLocations: { id: string; title: string; artistName: string; latitude: number; longitude: number; city?: string }[],
     thresholdMeters?: number,
   ): NotificationEvent | null => {
     const threshold = thresholdMeters ?? currentThreshold;
@@ -125,7 +125,7 @@ export const NotificationService = {
       if (distance <= threshold) {
         return NotificationService.fireNotification(
           loc.title,
-          loc.movieOrShow,
+          loc.artistName,
           loc.id,
         );
       }

@@ -102,7 +102,7 @@ export const UploadPhotoScreen: React.FC<{ route: any; navigation: any }> = ({
       const mimeType = photo.mimeType || `image/${ext === 'png' ? 'png' : 'jpeg'}`;
 
       await uploadPhoto({
-        app_name: 'Scene Nearby',
+        app_name: 'Music Nearby',
         location_id: locationId || 'unknown',
         location_name: locationName || 'Unknown location',
         user_info: user?.email || 'anonymous',

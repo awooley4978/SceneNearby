@@ -47,7 +47,7 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
       {/* Profile header */}
       <View style={styles.header}>
         <View style={styles.avatar}>
-          <Text style={styles.avatarText}>🎬</Text>
+          <Text style={styles.avatarText}>🎵</Text>
         </View>
         <Text style={styles.username}>Film Explorer</Text>
         <Text style={styles.bio}>Discovering the cinematic world around you</Text>
@@ -102,7 +102,7 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
           onPress={() => navigation.navigate('Album')}
         >
           <View style={styles.navLinkInfo}>
-            <Text style={styles.navLinkDesc}>Photos you've taken at filming locations</Text>
+            <Text style={styles.navLinkDesc}>Photos you've taken at music locations</Text>
           </View>
           <Text style={styles.navLinkChevron}>›</Text>
         </TouchableOpacity>
@@ -250,7 +250,7 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
 
       {/* App info */}
       <View style={styles.footer}>
-        <Text style={styles.version}>Scene Nearby v1.0.0</Text>
+        <Text style={styles.version}>Music Nearby v1.0.0</Text>
         <Text style={styles.copyright}>© 2026 Cairn Studios. All rights reserved.</Text>
       </View>
     </ScrollView>

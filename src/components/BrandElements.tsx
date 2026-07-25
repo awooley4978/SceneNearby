@@ -3,7 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { theme } from '../theme';
 
 // ═══════════════════════════════════════════════
-//  Scene Nearby Design Language
+//  Music Nearby Design Language
 //  Premium travel-guide aesthetic — lightweight,
 //  no heavy effects, every location is the star.
 // ═══════════════════════════════════════════════

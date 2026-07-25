@@ -47,10 +47,10 @@ export const RatingSection: React.FC<RatingSectionProps> = ({
 
   return (
     <View style={styles.container}>
-      {/* Scene Nearby local rating — primary when both exist */}
+      {/* Music Nearby local rating — primary when both exist */}
       {hasLocal && (
         <Text style={styles.localRow}>
-          ⭐ {localRating!.average.toFixed(1)} · {localRating!.count} Scene Nearby reviews
+          ⭐ {localRating!.average.toFixed(1)} · {localRating!.count} Music Nearby reviews
         </Text>
       )}
 

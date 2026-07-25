@@ -18,12 +18,12 @@ import { CategoryBadge } from '../../components/CategoryBadge';
 import { MusicArtwork } from '../../components/MusicArtwork';
 import { getOnboardingData } from '../../services/StorageService';
 import { useSaved } from '../../context/SavedContext';
-import type { FilmingLocation } from '../../models';
+import type { MusicLocation } from '../../models';
 
 const { width, height } = Dimensions.get('window');
 
 export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ navigation, route }) => {
-  const [selectedLocation, setSelectedLocation] = useState<FilmingLocation | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<MusicLocation | null>(null);
   const [showList, setShowList] = useState(false);
   const { savedIds, toggleSave: toggleSaved } = useSaved();
   const mapRef = useRef<MapView>(null);
@@ -87,7 +87,7 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
     return allLocations.filter((l) => l.city.toLowerCase().includes(cityName) || cityName.includes(l.city.toLowerCase()));
   }, [userCity]);
 
-  const handleMarkerPress = (location: FilmingLocation) => {
+  const handleMarkerPress = (location: MusicLocation) => {
     setSelectedLocation(location);
     // Animated region transition
     mapRef.current?.animateToRegion(
@@ -107,7 +107,7 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
     }).start();
   };
 
-  const handleViewDetails = (location: FilmingLocation) => {
+  const handleViewDetails = (location: MusicLocation) => {
     navigation.navigate('LocationDetail', { locationId: location.id });
   };
 
@@ -126,7 +126,7 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
     setSelectedLocation(null);
   };
 
-  const renderCluster = (loc: FilmingLocation, index: number) => {
+  const renderCluster = (loc: MusicLocation, index: number) => {
     const catColor = categoryColors[loc.category];
     const rating = mockRatings[loc.id];
     const isSaved = savedIds.has(loc.id);
@@ -160,7 +160,7 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
         {userCity ? (
           <Text style={styles.headerSubtitle}>Exploring locations near {userCity}</Text>
         ) : (
-          <Text style={styles.headerSubtitle}>{allLocations.length} filming locations worldwide</Text>
+          <Text style={styles.headerSubtitle}>{allLocations.length} music locations worldwide</Text>
         )}
       </View>
 
@@ -178,9 +178,9 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
             <Text style={styles.calloutCloseText}>✕</Text>
           </TouchableOpacity>
           <View style={styles.calloutContentRow}>
-            <MusicArtwork title={selectedLocation.movieOrShow} size="small" />
+            <MusicArtwork title={selectedLocation.artistName} size="small" />
             <TouchableOpacity style={styles.calloutTextContent} onPress={() => handleViewDetails(selectedLocation)}>
-            <Text style={styles.calloutShow}>{selectedLocation.movieOrShow}</Text>
+            <Text style={styles.calloutShow}>{selectedLocation.artistName}</Text>
             <Text style={styles.calloutTitle}>{selectedLocation.title}</Text>
             <View style={styles.calloutTags}>
               <CategoryBadge category={selectedLocation.category} />

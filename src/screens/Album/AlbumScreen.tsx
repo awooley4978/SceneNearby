@@ -71,7 +71,7 @@ export const AlbumScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       <EmptyState
         emoji="📸"
         title="Your Album is waiting"
-        subtitle="Photos you add at filming locations will appear here."
+        subtitle="Photos you add at music locations will appear here."
       />
     );
   }

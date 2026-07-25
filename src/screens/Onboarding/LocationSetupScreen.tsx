@@ -20,7 +20,7 @@ interface LocationSetupScreenProps {
 }
 
 const POPULAR_CITIES = [
-  { name: 'Los Angeles', emoji: '🎬' },
+  { name: 'Los Angeles', emoji: '🎵' },
   { name: 'New York', emoji: '🗽' },
   { name: 'Chicago', emoji: '🏙️' },
   { name: 'London', emoji: '🎭' },
@@ -102,7 +102,7 @@ export const LocationSetupScreen: React.FC<LocationSetupScreenProps> = ({
       <View style={styles.container}>
         <View style={styles.content}>
           <Text style={styles.emoji}>📍</Text>
-          <Text style={styles.title}>Welcome to Scene Nearby!</Text>
+          <Text style={styles.title}>Welcome to Music Nearby!</Text>
           <Text style={styles.subtitle}>
             We'd love to show you what's nearby.
           </Text>
@@ -164,7 +164,7 @@ export const LocationSetupScreen: React.FC<LocationSetupScreenProps> = ({
       <View style={styles.container}>
         <View style={styles.content}>
           <Text style={styles.emoji}>🗺️</Text>
-          <Text style={styles.title}>Welcome to Scene Nearby!</Text>
+          <Text style={styles.title}>Welcome to Music Nearby!</Text>
           {isLocating ? (
             <Text style={styles.locationText}>Detecting your location...</Text>
           ) : (

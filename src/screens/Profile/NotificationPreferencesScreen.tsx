@@ -60,7 +60,7 @@ export const NotificationPreferencesScreen: React.FC = () => {
         <View style={styles.toggleRow}>
           <View style={styles.toggleInfo}>
             <Text style={styles.toggleLabel}>Saved Locations</Text>
-            <Text style={styles.toggleDesc}>Alert when near a filming location on your watchlist</Text>
+            <Text style={styles.toggleDesc}>Alert when near a music location on your watchlist</Text>
           </View>
           <Switch
             value={prefs.savedLocationsEnabled}

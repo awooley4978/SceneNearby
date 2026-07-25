@@ -14,7 +14,7 @@ interface WorthTheVisitProps {
 const VOTE_OPTIONS: { key: WorthItVote; label: string; emoji: string }[] = [
   { key: 'absolutely', label: 'Absolutely!', emoji: '🌟' },
   { key: 'nearby', label: 'Worth It If Nearby', emoji: '👍' },
-  { key: 'big_fan', label: 'Only If a Big Fan', emoji: '🎬' },
+  { key: 'big_fan', label: 'Only If a Big Fan', emoji: '🎵' },
 ];
 
 export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes, locationId }) => {
@@ -74,7 +74,7 @@ export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes,
           <View style={styles.breakdown}>
             <Text style={styles.breakdownText}>🌟 {liveStats!.absolutely}% Absolutely</Text>
             <Text style={styles.breakdownText}>👍 {liveStats!.nearby}% Worth It If Nearby</Text>
-            <Text style={styles.breakdownText}>🎬 {liveStats!.bigFan}% Only If a Big Fan</Text>
+            <Text style={styles.breakdownText}>🎵 {liveStats!.bigFan}% Only If a Big Fan</Text>
           </View>
         )}
         <View style={styles.buttons}>

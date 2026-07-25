@@ -143,10 +143,10 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
   };
 
   const handleShare = async () => {
-    logLocationShared({ locationId: location.id, movieTitle: location.movieOrShow });
+    logLocationShared({ locationId: location.id, movieTitle: location.artistName });
     try {
       await Share.share({
-        message: `🎬 Check out ${location.movieOrShow} filming location: ${location.title}\n${location.address}, ${location.city}\n\nvia Scene Nearby`,
+        message: `🎵 Check out ${location.artistName} music location: ${location.title}\n${location.address}, ${location.city}\n\nvia Music Nearby`,
       });
     } catch {}
   };
@@ -155,21 +155,21 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
     await toggleSaved(locationId);
   };
 
-  const handleViewMovie = () => {
-    navigation.navigate('MovieDetail', { movieTitle: location.movieOrShow });
+  const handleViewArtist = () => {
+    navigation.navigate('MusicDetail', { artistName: location.artistName });
   };
 
   const handleCorrection = () => {
     const subject = encodeURIComponent('Location Correction');
     const body = encodeURIComponent(
-      'Hello Scene Nearby Team,%0D%0A%0D%0AI found something that may need updating.%0D%0A%0D%0A' +
+      'Hello Music Nearby Team,%0D%0A%0D%0AI found something that may need updating.%0D%0A%0D%0A' +
       '--- Location ---%0D%0A' + `${location.title}%0D%0A%0D%0A` +
-      '--- Movie/TV ---%0D%0A' + `${location.movieOrShow}%0D%0A%0D%0A` +
+      '--- Artist/Album ---%0D%0A' + `${location.artistName}%0D%0A%0D%0A` +
       '--- City ---%0D%0A' + `${location.city}, ${location.country}%0D%0A%0D%0A` +
       '--- Location ID ---%0D%0A' + `${location.id}%0D%0A%0D%0A` +
       '--- Issue ---%0D%0A(e.g. Incorrect location, Incorrect photo, Duplicate location, Closed location)%0D%0A%0D%0A' +
       '--- Details ---%0D%0A%0D%0A%0D%0A--- Supporting source (optional) ---%0D%0A%0D%0A%0D%0A' +
-      'Thank you for helping keep Scene Nearby accurate!'
+      'Thank you for helping keep Music Nearby accurate!'
     );
     Linking.openURL(`mailto:scenenearbysupport@gmail.com?subject=${subject}&body=${body}`).catch(() => {
       Alert.alert('Error', 'Could not open email app. Please contact scenenearbysupport@gmail.com directly.');
@@ -179,10 +179,10 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
   const handleContentRequest = () => {
     const subject = encodeURIComponent('Content Request');
     const body = encodeURIComponent(
-      'Hello Scene Nearby Team,%0D%0A%0D%0A' +
-      'I would like to suggest adding a new filming location.%0D%0A%0D%0A' +
-      '--- Location ---%0D%0A%0D%0A%0D%0A--- Movie/TV Show ---%0D%0A%0D%0A%0D%0A' +
-      '--- City / Country ---%0D%0A%0D%0A%0D%0A--- Scene Description ---%0D%0A%0D%0A%0D%0A' +
+      'Hello Music Nearby Team,%0D%0A%0D%0A' +
+      'I would like to suggest adding a new music location.%0D%0A%0D%0A' +
+      '--- Location ---%0D%0A%0D%0A%0D%0A--- Artist/Album ---%0D%0A%0D%0A%0D%0A' +
+      '--- City / Country ---%0D%0A%0D%0A%0D%0A--- Significance ---%0D%0A%0D%0A%0D%0A' +
       '--- Why it should be featured ---%0D%0A%0D%0A%0D%0A--- Supporting source (link) ---%0D%0A%0D%0A%0D%0A' +
       'Thank you for considering my request!'
     );
@@ -194,11 +194,11 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
   const handleFeatureSuggestion = () => {
     const subject = encodeURIComponent('Feature Suggestion');
     const body = encodeURIComponent(
-      'Hello Scene Nearby Team,%0D%0A%0D%0A' +
+      'Hello Music Nearby Team,%0D%0A%0D%0A' +
       'I have an idea for a feature!%0D%0A%0D%0A' +
       '--- Feature Description ---%0D%0A%0D%0A%0D%0A--- How it would work ---%0D%0A%0D%0A%0D%0A' +
       '--- Why it would be useful ---%0D%0A%0D%0A%0D%0A' +
-      'Thank you for making Scene Nearby better!'
+      'Thank you for making Music Nearby better!'
     );
     Linking.openURL(`mailto:scenenearbysupport@gmail.com?subject=${subject}&body=${body}`).catch(() => {
       Alert.alert('Error', 'Could not open email app. Please contact scenenearbysupport@gmail.com directly.');
@@ -208,7 +208,7 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
   const handleBugReport = () => {
     const subject = encodeURIComponent('Bug Report');
     const body = encodeURIComponent(
-      'Hello Scene Nearby Team,%0D%0A%0D%0A' +
+      'Hello Music Nearby Team,%0D%0A%0D%0A' +
       'I encountered a bug while using the app.%0D%0A%0D%0A' +
       '--- What happened ---%0D%0A%0D%0A%0D%0A--- Steps to reproduce ---%0D%0A%0D%0A%0D%0A' +
       '--- What I expected to happen ---%0D%0A%0D%0A%0D%0A--- Device / OS ---%0D%0A%0D%0A%0D%0A' +
@@ -263,8 +263,8 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
 
           {/* Hero content */}
           <View style={styles.heroContent}>
-            <Pressable onPress={handleViewMovie} style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}>
-              <Text style={styles.showName}>{location.movieOrShow}</Text>
+            <Pressable onPress={handleViewArtist} style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}>
+              <Text style={styles.showName}>{location.artistName}</Text>
             </Pressable>
             <Text style={styles.locationTitle}>{location.title}</Text>
           </View>
@@ -317,25 +317,25 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
           <EstimatedVisitTime time={location.estimatedVisitTime} locationId={location.id} />
         </SectionCard>
 
-        {/* What Happened Here — story variant */}
-        <SectionCard icon="🎬" title="What Happened Here" variant="story" fadeDelay={200}>
-          <Text style={styles.storyText}>{location.sceneDescription}</Text>
+        {/* Why It Matters — story variant */}
+        <SectionCard icon="🎵" title="Why It Matters" variant="story" fadeDelay={200}>
+          <Text style={styles.storyText}>{location.significance}</Text>
         </SectionCard>
 
-        {/* Iconic Quote — quote variant */}
-        {location.quote && (
-          <SectionCard title="Iconic Quote" variant="quote" fadeDelay={240}>
-            <Text style={styles.quoteText}>"{location.quote}"</Text>
-            {location.quoteAttribution && (
-              <Text style={styles.quoteAttr}>— {location.quoteAttribution}</Text>
+        {/* Iconic Lyric — quote variant */}
+        {location.lyricSnippet && (
+          <SectionCard title="Iconic Lyric" variant="quote" fadeDelay={240}>
+            <Text style={styles.quoteText}>"{location.lyricSnippet}"</Text>
+            {location.lyricAttribution && (
+              <Text style={styles.quoteAttr}>— {location.lyricAttribution}</Text>
             )}
           </SectionCard>
         )}
 
-        {/* Then & Now — fact variant */}
-        {location.thenAndNow && (
-          <SectionCard icon="📸" title="Then & Now" variant="fact" fadeDelay={280}>
-            <Text style={styles.bodyText}>{location.thenAndNow}</Text>
+        {/* History Note — fact variant */}
+        {location.historyNote && (
+          <SectionCard icon="📸" title="History Note" variant="fact" fadeDelay={280}>
+            <Text style={styles.bodyText}>{location.historyNote}</Text>
           </SectionCard>
         )}
 
@@ -350,10 +350,10 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
             <LocationPhotoGallery photos={galleryPhotos} showAddButton={false} />
           ) : (
             <View style={styles.emptyCommunity}>
-              <Text style={styles.emptyCommunityIcon}>🎬</Text>
-              <Text style={styles.emptyCommunityTitle}>Be the first visitor to recreate this scene</Text>
+              <Text style={styles.emptyCommunityIcon}>🎵</Text>
+              <Text style={styles.emptyCommunityTitle}>Be the first visitor to recreate this moment</Text>
               <Text style={styles.emptyCommunitySub}>
-                Snap a photo from the same angle and share your moment with fellow film lovers.
+                Snap a photo from the same angle and share your moment with fellow music lovers.
               </Text>
               <Pressable
                 style={({ pressed }) => [styles.uploadPill, pressed && { opacity: 0.7, transform: [{ scale: 0.97 }] }]}

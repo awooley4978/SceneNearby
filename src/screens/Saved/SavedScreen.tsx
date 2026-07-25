@@ -46,7 +46,7 @@ export const SavedScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       result = result.filter(
-        (loc) => loc.title.toLowerCase().includes(q) || loc.movieOrShow.toLowerCase().includes(q),
+        (loc) => loc.title.toLowerCase().includes(q) || loc.artistName.toLowerCase().includes(q),
       );
     }
 
@@ -118,7 +118,7 @@ export const SavedScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         <EmptyState
           emoji="💾"
           title="No saved locations"
-          subtitle="Start exploring and save the filming locations you love to revisit them here."
+          subtitle="Start exploring and save the music locations you love to revisit them here."
           actionLabel="Discover Locations"
           onAction={() => navigation.navigate('Discover')}
         />
@@ -130,7 +130,7 @@ export const SavedScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
             <LocationCard
               location={item}
               onPress={() => navigation.navigate('LocationDetail', { locationId: item.id })}
-              onMoviePress={() => navigation.navigate('MovieDetail', { movieTitle: item.movieOrShow })}
+              onArtistPress={() => navigation.navigate('MusicDetail', { artistName: item.artistName })}
               onUnsave={(id) => {
                 setLocalRemoved((prev) => new Set(prev).add(id));
               }}

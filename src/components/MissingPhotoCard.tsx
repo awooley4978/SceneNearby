@@ -6,21 +6,21 @@ import { LocationCategory } from '../models';
 interface MissingPhotoCardProps {
   locationName: string;
   category: LocationCategory;
-  movieOrShow: string;
+  artistName: string;
 }
 
 const GRADIENT_PAIRS: Record<string, string[]> = {
-  Drama: ['#2D1B69', '#1a1a2e'],
-  Comedy: ['#B8860B', '#2a2a1a'],
-  'Sci-Fi': ['#0E4D64', '#0a1a2e'],
-  Action: ['#7F1D1D', '#2a1a1a'],
-  Romance: ['#6B2142', '#2a1a2a'],
+  Rock: ['#2D1B69', '#1a1a2e'],
+  'Hip-Hop': ['#B8860B', '#2a2a1a'],
+  Electronic: ['#0E4D64', '#0a1a2e'],
+  Jazz: ['#7F1D1D', '#2a1a1a'],
+  'R&B': ['#6B2142', '#2a1a2a'],
 };
 
 export const MissingPhotoCard: React.FC<MissingPhotoCardProps> = ({
   locationName,
   category,
-  movieOrShow,
+  artistName,
 }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -79,8 +79,8 @@ export const MissingPhotoCard: React.FC<MissingPhotoCardProps> = ({
 
       {/* Body text */}
       <Text style={styles.bodyText}>
-        Help complete Scene Nearby.{'\n'}
-        Be the first to contribute a photo of this filming location. After review, your image could become the featured photo seen by movie and TV fans around the world.
+        Help complete Music Nearby.{'\n'}
+        Be the first to contribute a photo of this music location. After review, your image could become the featured photo seen by music lovers around the world.
       </Text>
 
       {/* Disabled Submit button */}

@@ -153,7 +153,7 @@ export const DiscoveryNotificationCard: React.FC<DiscoveryNotificationProps> = (
               />
             ) : (
               <View style={[styles.heroImage, styles.heroPlaceholder]}>
-                <Text style={styles.heroPlaceholderText}>🎬</Text>
+                <Text style={styles.heroPlaceholderText}>🎵</Text>
               </View>
             )}
             {/* Gradient overlay */}
@@ -161,7 +161,7 @@ export const DiscoveryNotificationCard: React.FC<DiscoveryNotificationProps> = (
             {/* Hero text overlay */}
             <View style={styles.heroOverlay}>
               <Text style={styles.heroMovieTitle} numberOfLines={1}>
-                🎬 {movieTitle}
+                🎵 {movieTitle}
               </Text>
               <Text style={styles.heroLocation} numberOfLines={1}>
                 {locationName} • {city}

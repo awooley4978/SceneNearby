@@ -1,5 +1,5 @@
 // ── RemoteDestinationBadge ──
-// Warning badge for isolated/difficult-to-reach filming locations.
+// Warning badge for isolated/difficult-to-reach music locations.
 // Tap to open an info sheet with location-specific guidance.
 import React, { useState } from 'react';
 import {
