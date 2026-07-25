@@ -3,7 +3,7 @@ import { View, Text, FlatList, StyleSheet } from 'react-native';
 import { theme } from '../../theme';
 import { locationsByActor, actorGroups, movieGroups } from '../../data/sampleData';
 import { LocationCard } from '../../components/LocationCard';
-import { MoviePoster } from '../../components/MoviePoster';
+import { MusicArtwork } from '../../components/MusicArtwork';
 
 export const ActorDetailScreen: React.FC<{ route: any; navigation: any }> = ({
   route,
@@ -45,7 +45,7 @@ export const ActorDetailScreen: React.FC<{ route: any; navigation: any }> = ({
             return (
               <View key={title} style={styles.showChip}>
                 {mg ? (
-                  <MoviePoster title={title} isMovie={mg.isMovie} size="mini" />
+                  <MusicArtwork title={title} isAlbum={mg.isMovie} size="mini" />
                 ) : (
                   <Text style={styles.showChipEmoji}>🎬</Text>
                 )}

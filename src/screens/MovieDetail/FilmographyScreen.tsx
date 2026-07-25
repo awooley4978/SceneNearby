@@ -4,7 +4,7 @@ import { theme } from '../../theme';
 import { movieGroups } from '../../data/sampleData';
 import { categoryColors } from '../../models';
 import { StarRating } from '../../components/StarRating';
-import { MoviePoster } from '../../components/MoviePoster';
+import { MusicArtwork } from '../../components/MusicArtwork';
 import type { MovieGroup } from '../../models';
 
 export const FilmographyScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
@@ -26,7 +26,7 @@ export const FilmographyScreen: React.FC<{ navigation: any }> = ({ navigation })
         }
         activeOpacity={0.7}
       >
-        <MoviePoster title={item.title} isMovie={item.isMovie} size="mini" category={item.category} />
+        <MusicArtwork title={item.title} isAlbum={item.isMovie} size="mini" category={item.category} />
         <View style={styles.movieInfo}>
           <Text style={styles.movieTitle}>{item.title}</Text>
           <View style={styles.metaRow}>

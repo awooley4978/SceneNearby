@@ -15,7 +15,7 @@ import { categoryColors } from '../../models';
 import { LocationCard } from '../../components/LocationCard';
 import { StarRating } from '../../components/StarRating';
 import { CategoryBadge } from '../../components/CategoryBadge';
-import { MoviePoster } from '../../components/MoviePoster';
+import { MusicArtwork } from '../../components/MusicArtwork';
 import { getOnboardingData } from '../../services/StorageService';
 import { useSaved } from '../../context/SavedContext';
 import type { FilmingLocation } from '../../models';
@@ -178,7 +178,7 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
             <Text style={styles.calloutCloseText}>✕</Text>
           </TouchableOpacity>
           <View style={styles.calloutContentRow}>
-            <MoviePoster title={selectedLocation.movieOrShow} size="small" />
+            <MusicArtwork title={selectedLocation.movieOrShow} size="small" />
             <TouchableOpacity style={styles.calloutTextContent} onPress={() => handleViewDetails(selectedLocation)}>
             <Text style={styles.calloutShow}>{selectedLocation.movieOrShow}</Text>
             <Text style={styles.calloutTitle}>{selectedLocation.title}</Text>

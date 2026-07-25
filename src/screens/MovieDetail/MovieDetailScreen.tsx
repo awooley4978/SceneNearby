@@ -5,7 +5,7 @@ import { movieGroupByTitle, locationsByMovie, mockRatings } from '../../data/sam
 import { categoryColors } from '../../models';
 import { LocationCard } from '../../components/LocationCard';
 import { StarRating } from '../../components/StarRating';
-import { MoviePoster } from '../../components/MoviePoster';
+import { MusicArtwork } from '../../components/MusicArtwork';
 
 export const MovieDetailScreen: React.FC<{ route: any; navigation: any }> = ({
   route,
@@ -35,7 +35,7 @@ export const MovieDetailScreen: React.FC<{ route: any; navigation: any }> = ({
       {/* Hero header */}
       <View style={[styles.hero, { backgroundColor: catColor + '25' }]}>
         {/* Poster */}
-        <MoviePoster title={movieGroup.title} isMovie={movieGroup.isMovie} size="hero" category={movieGroup.category} />
+        <MusicArtwork title={movieGroup.title} isAlbum={movieGroup.isMovie} size="hero" category={movieGroup.category} />
 
         <View style={styles.heroInfo}>
           <Text style={styles.movieTitle}>{movieGroup.title}</Text>
