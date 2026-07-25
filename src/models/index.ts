@@ -1,33 +1,39 @@
 // ── Category Enum ──
 export enum LocationCategory {
-  drama = 'Drama',
-  comedy = 'Comedy',
-  sciFi = 'Sci-Fi',
-  action = 'Action',
-  romance = 'Romance',
+  rock = 'Rock',
+  hipHop = 'Hip-Hop',
+  electronic = 'Electronic',
+  jazz = 'Jazz',
+  rnb = 'R&B',
+  folk = 'Folk',
+  classical = 'Classical',
 }
 
 export const categoryColors: Record<LocationCategory, string> = {
-  [LocationCategory.drama]: '#8B5CF6',
-  [LocationCategory.comedy]: '#EAB308',
-  [LocationCategory.sciFi]: '#06B6D4',
-  [LocationCategory.action]: '#EF4444',
-  [LocationCategory.romance]: '#EC4899',
+  [LocationCategory.rock]: '#EF4444',
+  [LocationCategory.hipHop]: '#8B5CF6',
+  [LocationCategory.electronic]: '#06B6D4',
+  [LocationCategory.jazz]: '#EAB308',
+  [LocationCategory.rnb]: '#EC4899',
+  [LocationCategory.folk]: '#22C55E',
+  [LocationCategory.classical]: '#F97316',
 };
 
 export const categoryIcons: Record<LocationCategory, string> = {
-  [LocationCategory.drama]: 'theater-masks',
-  [LocationCategory.comedy]: 'smile',
-  [LocationCategory.sciFi]: 'sparkles',
-  [LocationCategory.action]: 'flame',
-  [LocationCategory.romance]: 'heart',
+  [LocationCategory.rock]: '🎸',
+  [LocationCategory.hipHop]: '🎤',
+  [LocationCategory.electronic]: '🎹',
+  [LocationCategory.jazz]: '🎷',
+  [LocationCategory.rnb]: '🎵',
+  [LocationCategory.folk]: '🪕',
+  [LocationCategory.classical]: '🎻',
 };
 
 // ── Core Model ──
-export interface FilmingLocation {
+export interface MusicLocation {
   id: string;
   title: string;
-  movieOrShow: string;
+  artistName: string;
   year: number;
   category: LocationCategory;
   latitude: number;
@@ -35,23 +41,23 @@ export interface FilmingLocation {
   address: string;
   city: string;
   country: string;
-  sceneDescription: string;
+  significance: string;
   funFact: string;
-  quote: string | null;
-  quoteAttribution: string | null;
-  thenAndNow: string | null;
-  isMovie: boolean;
+  lyricSnippet: string | null;
+  lyricAttribution: string | null;
+  historyNote: string | null;
+  isAlbum: boolean;
   distanceFromUser?: number;
   rating?: LocationRating;
   photoCount?: number;
   imageUrl?: string;
-  actors?: string[];
+  bandMembers?: string[];
   remoteDestination?: RemoteDestinationInfo;
   /** Google Places rating data */
   googleRating?: GooglePlaceRating;
-  /** Scene Nearby community: percentage who say this location is worth a visit */
+  /** Music Nearby community: percentage who say this location is worth a visit */
   worthItPercentage?: number;
-  /** Scene Nearby community: number of votes on worth-it question */
+  /** Music Nearby community: number of votes on worth-it question */
   worthItVotes?: number;
   /** Estimated time to spend at this location (e.g. "5-10 min", "1-2 hrs") */
   estimatedVisitTime?: string;
@@ -60,10 +66,10 @@ export interface FilmingLocation {
   focalPoint?: { x: number; y: number };
 }
 
-export interface ActorGroup {
+export interface ArtistGroup {
   name: string;
   locationIds: string[];
-  showTitles: string[];
+  notableWorks: string[];
 }
 
 export const formatDistance = (meters: number): string => {
@@ -160,10 +166,10 @@ export const PROXIMITY_PRESETS: Record<ProximityMode, { label: string; meters: n
 };
 
 export const DISCOVERY_FREQUENCIES: Record<DiscoveryFrequency, { label: string; emoji: string; shortDesc: string; fullDesc: string; minRating: number }> = {
-  essentials: { label: 'Essentials', emoji: '🌿', shortDesc: 'Iconic locations & community favorites', fullDesc: 'Show me iconic locations and community favorites only. 90%+ Worth the Stop. Major landmarks. Few notifications.', minRating: 4.5 },
+  essentials: { label: 'Essentials', emoji: '🌿', shortDesc: 'Iconic locations & community favorites', fullDesc: 'Show me iconic music locations and community favorites only. 90%+ Worth the Stop. Major landmarks. Few notifications.', minRating: 4.5 },
   explorer: { label: 'Explorer', emoji: '🌟', shortDesc: 'Popular spots & hidden gems', fullDesc: 'Show me the popular spots and some hidden gems. 75%+. More variety. Moderate notifications.', minRating: 3.75 },
-  completionist: { label: 'Completionist', emoji: '🎬', shortDesc: 'Everything with community data', fullDesc: "I don't want to miss anything. Everything with community data. Even obscure filming locations. Frequent notifications.", minRating: 0 },
-  archivist: { label: 'Archivist', emoji: '🗺️', shortDesc: 'Every known filming location', fullDesc: 'Show me every known filming location. Every verified location. No rating filter. Tiny cameos. One-scene appearances. Alternate angles.', minRating: 0 },
+  completionist: { label: 'Completionist', emoji: '🎵', shortDesc: 'Everything with community data', fullDesc: "I don't want to miss anything. Everything with community data. Even obscure music locations. Frequent notifications.", minRating: 0 },
+  archivist: { label: 'Archivist', emoji: '🗺️', shortDesc: 'Every known music location', fullDesc: 'Show me every known music location. Every verified location. No rating filter. Demo recordings. One-night shows. Alternate covers.', minRating: 0 },
 };
 
 export interface QuietHours {
@@ -229,18 +235,18 @@ export interface CityPack {
 }
 
 export const availableCityPacks: CityPack[] = [
-  { id: 'nyc-deep', cityName: 'New York City', emoji: '🗽', price: 1.99, locationCount: 15, description: "Dive deeper into NYC's most iconic film locations" },
-  { id: 'la-deep', cityName: 'Los Angeles', emoji: '🎬', price: 1.99, locationCount: 15, description: "Explore Hollywood's backyard like never before" },
-  { id: 'london-deep', cityName: 'London', emoji: '🎭', price: 1.99, locationCount: 15, description: "From Baker Street to Hogwarts — London's cinematic soul" },
-  { id: 'paris', cityName: 'Paris', emoji: '🗼', price: 1.99, locationCount: 12, description: 'Amour, cinéma, et la ville lumière' },
-  { id: 'tokyo', cityName: 'Tokyo', emoji: '🗾', price: 1.99, locationCount: 12, description: 'Neon-lit streets from your favorite films' },
+  { id: 'nyc-deep', cityName: 'New York City', emoji: '🗽', price: 1.99, locationCount: 15, description: "Explore NYC's most iconic music landmarks" },
+  { id: 'la-deep', cityName: 'Los Angeles', emoji: '🎸', price: 1.99, locationCount: 15, description: "From the Sunset Strip to Laurel Canyon — LA's musical soul" },
+  { id: 'london-deep', cityName: 'London', emoji: '🎹', price: 1.99, locationCount: 15, description: "From Abbey Road to the 100 Club — London's musical legacy" },
+  { id: 'paris', cityName: 'Paris', emoji: '🗼', price: 1.99, locationCount: 12, description: 'Amour, musique, et la ville lumière' },
+  { id: 'tokyo', cityName: 'Tokyo', emoji: '🗾', price: 1.99, locationCount: 12, description: 'Neon-lit venues from legendary live houses' },
 ];
 
-// ── Movie/Show Grouping ──
-export interface MovieGroup {
-  title: string;
+// ── Album Grouping ──
+export interface AlbumGroup {
+  name: string;
   year: number;
-  isMovie: boolean;
+  isAlbum: boolean;
   category: LocationCategory;
   locationIds: string[];
   locationCount: number;
@@ -248,12 +254,12 @@ export interface MovieGroup {
 
 // ── Local Storage Keys ──
 export const STORAGE_KEYS = {
-  USER_RATINGS: '@scenenearby/ratings',
-  SAVED_PHOTOS: '@scenenearby/saved_photos',
-  USER_SETTINGS: '@scenenearby/settings',
-  NOTIFICATION_HISTORY: '@scenenearby/notifications',
-  ONBOARDING_COMPLETE: '@scenenearby/onboarding_complete',
-  ONBOARDING_DATA: '@scenenearby/onboarding_data',
+  USER_RATINGS: '@musicnearby/ratings',
+  SAVED_PHOTOS: '@musicnearby/saved_photos',
+  USER_SETTINGS: '@musicnearby/settings',
+  NOTIFICATION_HISTORY: '@musicnearby/notifications',
+  ONBOARDING_COMPLETE: '@musicnearby/onboarding_complete',
+  ONBOARDING_DATA: '@musicnearby/onboarding_data',
 };
 
 // ── Onboarding Data ──
