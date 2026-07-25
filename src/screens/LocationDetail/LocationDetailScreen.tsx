@@ -291,8 +291,6 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
 
         {/* ── Cards — staggered fade-in cascade ── */}
 
-        <BrandDivider />
-
         {/* Ratings */}
         <SectionCard fadeDelay={80}>
           <RatingSection googleRating={location.googleRating} placeId={location.googleRating?.placeId} />
