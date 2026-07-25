@@ -9,7 +9,9 @@ import {
   ScrollView,
   RefreshControl,
   Animated,
+  Platform,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '../../theme';
 import { LocationCategory, categoryColors } from '../../models';
 import {
@@ -54,6 +56,7 @@ interface SearchResultItem {
 }
 
 export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
+  const insets = useSafeAreaInsets();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedType, setSelectedType] = useState<string>('all');
@@ -435,7 +438,7 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
   );
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top + 8 }]}>
       {isLoading ? (
         <Animated.View style={styles.listContent}>
           <CardSkeleton />
