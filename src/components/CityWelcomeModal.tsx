@@ -32,7 +32,7 @@ export const CityWelcomeModal: React.FC<CityWelcomeModalProps> = ({
         <Text style={styles.savedInfo}>
           We see you've saved{' '}
           <Text style={styles.savedBold}>{savedCount} location{savedCount !== 1 ? 's' : ''}</Text>
-          {' '}nearby.
+          {' '}in this area.
         </Text>
 
         <Text style={styles.prompt}>How would you like to explore?</Text>
@@ -76,7 +76,7 @@ export const CityWelcomeModal: React.FC<CityWelcomeModalProps> = ({
         >
           <View style={styles.optionContent}>
             <Text style={styles.optionTitle}>🎬 Discover Everything</Text>
-            <Text style={styles.optionSub}>Show all nearby filming locations.</Text>
+            <Text style={styles.optionSub}>Show all filming locations in this area.</Text>
           </View>
           <Text style={styles.chevron}>›</Text>
         </TouchableOpacity>
