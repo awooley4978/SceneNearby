@@ -1,8 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
-  Animated,
+  ScrollView,
   TouchableOpacity,
   Pressable,
   StyleSheet,
@@ -31,7 +31,6 @@ import { SectionCard } from '../../components/SectionCard';
 import { logLocationViewed, logLocationSaved, logLocationUnsaved, logLocationNavigate, logLocationShared, logUserRating } from '../../services/analytics';
 
 const HERO_HEIGHT = 420;
-const PARALLAX_FACTOR = 0.4;
 
 export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = ({
   route,
@@ -44,7 +43,6 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
   const saved = checkSaved(locationId);
   const [imageError, setImageError] = useState(false);
   const userLocation = useUserLocation();
-  const scrollY = useRef(new Animated.Value(0)).current;
 
   const distanceFromUser = React.useMemo(() => {
     if (userLocation.latitude === null || userLocation.longitude === null || !location) return undefined;
@@ -222,40 +220,18 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
     });
   };
 
-  // ── Parallax transforms ──
-  const heroTranslateY = scrollY.interpolate({
-    inputRange: [-HERO_HEIGHT, 0, HERO_HEIGHT],
-    outputRange: [-HERO_HEIGHT * PARALLAX_FACTOR * 0.5, 0, HERO_HEIGHT * PARALLAX_FACTOR],
-    extrapolate: 'clamp',
-  });
-
-  const heroOpacity = scrollY.interpolate({
-    inputRange: [0, HERO_HEIGHT * 0.6],
-    outputRange: [1, 0.3],
-    extrapolate: 'clamp',
-  });
-
-  const overlayOpacity = scrollY.interpolate({
-    inputRange: [0, HERO_HEIGHT * 0.3, HERO_HEIGHT * 0.6],
-    outputRange: [0.55, 0.75, 0.95],
-    extrapolate: 'clamp',
-  });
+  // ── Static hero — no parallax ──
 
   return (
     <View style={styles.container}>
-      <Animated.ScrollView
+      <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
-        scrollEventThrottle={16}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: true },
-        )}
       >
         {/* ── Hero ── */}
         <View style={styles.hero}>
-          <Animated.View style={[styles.heroImageWrap, { transform: [{ translateY: heroTranslateY }], opacity: heroOpacity }]}>
+          <View style={styles.heroImageWrap}>
             {location.imageUrl && !imageError ? (
               <SmartHeroImage
                 imageUrl={location.imageUrl}
@@ -265,16 +241,16 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
             ) : (
               <MapPlaceholder locationId={location.id} locationName={location.title} hasPhotos={galleryPhotos.length > 0} />
             )}
-          </Animated.View>
+          </View>
 
           {/* Gradient overlay: dark at bottom, fading into page */}
-          <Animated.View style={[styles.heroOverlay, { opacity: overlayOpacity }]}>
+          <View style={styles.heroOverlay}>
             <LinearGradient
               colors={['transparent', 'rgba(10,10,10,0.4)', theme.colors.background]}
               locations={[0, 0.45, 1]}
               style={StyleSheet.absoluteFill}
             />
-          </Animated.View>
+          </View>
 
           {/* Hero content */}
           <View style={styles.heroContent}>
@@ -441,7 +417,7 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
           </View>
           <Text style={styles.supportFooter}>scenenearbysupport@gmail.com</Text>
         </SectionCard>
-      </Animated.ScrollView>
+      </ScrollView>
     </View>
   );
 };
@@ -457,8 +433,6 @@ const styles = StyleSheet.create({
   hero: { height: HERO_HEIGHT, justifyContent: 'flex-end', overflow: 'hidden', position: 'relative' },
   heroImageWrap: {
     ...StyleSheet.absoluteFillObject,
-    height: HERO_HEIGHT * 1.3,
-    top: -HERO_HEIGHT * 0.15,
   },
   heroOverlay: {
     ...StyleSheet.absoluteFillObject,
