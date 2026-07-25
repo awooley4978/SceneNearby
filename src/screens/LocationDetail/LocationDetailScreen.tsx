@@ -306,13 +306,13 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
       </SectionCard>
 
       {/* What Happened Here */}
-      <SectionCard icon="🎬" title="What Happened Here">
+      <SectionCard icon="🎬" title="What Happened Here" variant="story">
         <Text style={styles.bodyText}>{location.sceneDescription}</Text>
       </SectionCard>
 
       {/* Iconic Quote */}
       {location.quote && (
-        <SectionCard icon="💬" title="Iconic Quote">
+        <SectionCard icon="💬" title="Iconic Quote" variant="quote">
           <Text style={styles.quoteText}>"{location.quote}"</Text>
           {location.quoteAttribution && (
             <Text style={styles.quoteAttr}>— {location.quoteAttribution}</Text>
@@ -322,13 +322,13 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
 
       {/* Then & Now */}
       {location.thenAndNow && (
-        <SectionCard icon="📸" title="Then &amp; Now">
+        <SectionCard icon="📸" title="Then &amp; Now" variant="fact">
           <Text style={styles.bodyText}>{location.thenAndNow}</Text>
         </SectionCard>
       )}
 
       {/* Fun Fact */}
-      <SectionCard icon="🤔" title="Did You Know?">
+      <SectionCard icon="🤔" title="Did You Know?" variant="fact">
         <Text style={styles.bodyText}>{location.funFact}</Text>
       </SectionCard>
 
