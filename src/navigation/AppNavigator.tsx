@@ -68,7 +68,7 @@ const modalInterpolator = ({
 
 const stackOptions: NativeStackNavigationOptions = {
   headerStyle: { backgroundColor: theme.colors.background },
-  headerTintColor: theme.colors.textPrimary,
+  headerTintColor: theme.colors.gold,
   headerTitleStyle: { fontWeight: '700' as const },
   animation: 'slide_from_right' as any,
 };
@@ -128,7 +128,7 @@ function SavedStack() {
 
 function NearbyStack() {
   return (
-    <Stack.Navigator screenOptions={{ ...stackOptions, cardStyleInterpolator, headerShown: false } as any}>
+    <Stack.Navigator screenOptions={{ ...stackOptions, cardStyleInterpolator } as any}>
       <Stack.Screen name="NearbyMap" component={NearbyMapScreen} options={{ headerShown: false }} />
       {sharedScreens}
     </Stack.Navigator>
