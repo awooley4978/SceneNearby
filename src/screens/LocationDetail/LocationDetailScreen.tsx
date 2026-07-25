@@ -28,6 +28,7 @@ import { VisitorTips } from '../../components/VisitorTips';
 import { RemoteDestinationBadge } from '../../components/RemoteDestinationBadge';
 import { LocationPhotoGallery, GalleryPhoto } from '../../components/LocationPhotoGallery';
 import { SectionCard } from '../../components/SectionCard';
+import { MetadataToken } from '../../components/MetadataToken';
 import { logLocationViewed, logLocationSaved, logLocationUnsaved, logLocationNavigate, logLocationShared, logUserRating } from '../../services/analytics';
 
 const HERO_HEIGHT = 420;
@@ -259,22 +260,17 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
             </Pressable>
             <Text style={styles.locationTitle}>{location.title}</Text>
 
-            {/* Glass chips for metadata */}
+            {/* Metadata tokens */}
             <View style={styles.chips}>
-              <View style={styles.glassChip}>
-                <CategoryBadge category={location.category} />
-              </View>
-              <View style={styles.glassChip}>
-                <Text style={styles.chipText}>{location.year}</Text>
-              </View>
+              <CategoryBadge category={location.category} />
+              <MetadataToken variant="slate" value={String(location.year)} />
               {distanceFromUser !== undefined && (
-                <View style={styles.glassChip}>
-                  <Text style={styles.chipTextGold}>
-                    {distanceFromUser < 1
-                      ? `${(distanceFromUser * 5280).toFixed(0)}ft`
-                      : `${distanceFromUser.toFixed(1)} mi`}
-                  </Text>
-                </View>
+                <MetadataToken
+                  variant="pin"
+                  value={distanceFromUser < 1
+                    ? `${(distanceFromUser * 5280).toFixed(0)}ft`
+                    : `${distanceFromUser.toFixed(1)} mi`}
+                />
               )}
             </View>
           </View>
@@ -462,30 +458,12 @@ const styles = StyleSheet.create({
     textShadowRadius: 8,
   },
 
-  // ── Glass chips ──
+  // ── Chips row ──
   chips: {
     flexDirection: 'row',
     gap: 8,
     flexWrap: 'wrap',
-  },
-  glassChip: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    backgroundColor: 'rgba(255,255,255,0.10)',
-    borderRadius: 20,
-    borderWidth: 0.5,
-    borderColor: 'rgba(255,255,255,0.15)',
-    backdropFilter: 'blur(8px)',
-  },
-  chipText: {
-    fontSize: 13,
-    color: theme.colors.textSecondary,
-    fontWeight: '500',
-  },
-  chipTextGold: {
-    fontSize: 13,
-    color: theme.colors.gold,
-    fontWeight: '600',
+    alignItems: 'center',
   },
 
   // ── Story text (larger, more spaced) ──
