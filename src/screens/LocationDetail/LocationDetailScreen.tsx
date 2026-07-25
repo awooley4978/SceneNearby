@@ -290,6 +290,8 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
 
         {/* ── Cards — staggered fade-in cascade ── */}
 
+        <BrandDivider />
+
         {/* Remote Destination Warning */}
         {location.remoteDestination && (
           <RemoteDestinationBadge info={location.remoteDestination} />
