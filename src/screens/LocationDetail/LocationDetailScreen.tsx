@@ -313,7 +313,7 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
 
         {/* Iconic Quote — quote variant */}
         {location.quote && (
-          <SectionCard title="ICONIC QUOTE" variant="quote" fadeDelay={240}>
+          <SectionCard title="Iconic Quote" variant="quote" fadeDelay={240}>
             <Text style={styles.quoteText}>"{location.quote}"</Text>
             {location.quoteAttribution && (
               <Text style={styles.quoteAttr}>— {location.quoteAttribution}</Text>
@@ -328,8 +328,8 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
           </SectionCard>
         )}
 
-        {/* Fun Fact — fact variant */}
-        <SectionCard icon="✨" title="Did You Know?" variant="fact" fadeDelay={320}>
+        {/* Did You Know? — trivia variant */}
+        <SectionCard icon="✨" title="Did You Know?" variant="trivia" fadeDelay={320}>
           <Text style={styles.bodyText}>{location.funFact}</Text>
         </SectionCard>
 
