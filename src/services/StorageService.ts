@@ -7,7 +7,17 @@ const KEYS = {
   NOTIFICATION_PREFS: '@scenenearby/notification_prefs',
   USER_SETTINGS: '@scenenearby/settings',
   LAST_CITY: '@scenenearby/last_city',
+  VISITED_STATUS: '@scenenearby/visited_status',
 };
+
+export type VisitGateSection = 'worthTheVisit' | 'visitTime';
+export type VisitGateAnswer = 'visited' | 'not_visited';
+
+export interface VisitedStatusMap {
+  [locationId: string]: {
+    [section in VisitGateSection]?: VisitGateAnswer;
+  };
+}
 
 // ── Onboarding ──
 
@@ -86,4 +96,34 @@ export async function getLastCity(): Promise<string | null> {
 
 export async function setLastCity(city: string): Promise<void> {
   try { await AsyncStorage.setItem(KEYS.LAST_CITY, city); } catch {}
+}
+
+// ── Visited Status (Gate) ──
+
+export async function getVisitedStatus(): Promise<VisitedStatusMap> {
+  try {
+    const raw = await AsyncStorage.getItem(KEYS.VISITED_STATUS);
+    return raw ? JSON.parse(raw) : {};
+  } catch { return {}; }
+}
+
+export async function getVisitedGateAnswer(
+  locationId: string,
+  section: VisitGateSection,
+): Promise<VisitGateAnswer | undefined> {
+  const map = await getVisitedStatus();
+  return map[locationId]?.[section];
+}
+
+export async function setVisitedGateAnswer(
+  locationId: string,
+  section: VisitGateSection,
+  answer: VisitGateAnswer,
+): Promise<void> {
+  try {
+    const map = await getVisitedStatus();
+    if (!map[locationId]) map[locationId] = {};
+    map[locationId][section] = answer;
+    await AsyncStorage.setItem(KEYS.VISITED_STATUS, JSON.stringify(map));
+  } catch {}
 }
