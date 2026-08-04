@@ -2,9 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { theme } from '../theme';
 import { BottomSheet } from './BottomSheet';
-import { VisitGateSheet } from './VisitGateSheet';
-import { BucketListSheet } from './BucketListSheet';
-import { getVisitedGateAnswer, setVisitedGateAnswer, VisitGateAnswer } from '../services/StorageService';
+import { isLocationVisited, markLocationVisited, getUserVisitTime, setUserVisitTime } from '../services/StorageService';
 
 interface EstimatedVisitTimeProps {
   time?: string;
@@ -24,22 +22,27 @@ export const EstimatedVisitTime: React.FC<EstimatedVisitTimeProps> = ({ time, lo
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [sheetVisible, setSheetVisible] = useState(false);
 
-  // Gate state
-  const [gateLoaded, setGateLoaded] = useState(false);
-  const [gateAnswer, setGateAnswer] = useState<VisitGateAnswer | undefined>(undefined);
+  // Gate & time state
+  const [loaded, setLoaded] = useState(false);
+  const [hasVisited, setHasVisited] = useState(false);
+  const [savedTime, setSavedTime] = useState<string | null>(null);
   const [showGate, setShowGate] = useState(false);
-  const [showBucketList, setShowBucketList] = useState(false);
 
-  // Load gate answer on mount
   useEffect(() => {
     if (!locationId) return;
-    getVisitedGateAnswer(locationId, 'visitTime').then((answer) => {
-      setGateAnswer(answer);
-      setGateLoaded(true);
+    Promise.all([
+      isLocationVisited(locationId),
+      getUserVisitTime(locationId),
+    ]).then(([visited, visitTime]) => {
+      setHasVisited(visited);
+      if (visitTime) {
+        setSavedTime(visitTime);
+        setSelectedTime(visitTime);
+      }
+      setLoaded(true);
     });
   }, [locationId]);
 
-  // Strip embedded tip from display — only show time portion
   const cleanTime = (t?: string) => {
     if (!t) return t;
     const idx = t.indexOf('\nVisitor Tip:');
@@ -49,65 +52,80 @@ export const EstimatedVisitTime: React.FC<EstimatedVisitTimeProps> = ({ time, lo
     return t;
   };
 
-  const display = selectedTime ?? cleanTime(time);
+  const handleTimeSelect = (label: string) => {
+    setSelectedTime(label);
+    setSavedTime(label);
+    if (locationId) {
+      setUserVisitTime(locationId, label);
+    }
+  };
 
   const handleSummaryTap = () => {
-    if (!gateLoaded || !locationId) return;
-
-    if (gateAnswer === undefined) {
+    if (!loaded || !locationId) return;
+    if (!hasVisited) {
       setShowGate(true);
-    } else if (gateAnswer === 'visited') {
-      setSheetVisible(true);
     } else {
-      setShowBucketList(true);
+      setSheetVisible(true);
     }
   };
 
   const handleVisited = () => {
     if (locationId) {
-      setVisitedGateAnswer(locationId, 'visitTime', 'visited');
-      setGateAnswer('visited');
+      markLocationVisited(locationId);
+      setHasVisited(true);
     }
+    setShowGate(false);
     setSheetVisible(true);
   };
 
   const handleNotVisited = () => {
-    if (locationId) {
-      setVisitedGateAnswer(locationId, 'visitTime', 'not_visited');
-      setGateAnswer('not_visited');
-    }
-    setShowBucketList(true);
+    // Never persist — gate re-appears next tap
+    setShowGate(false);
   };
+
+  // Summary: user time → default time → prompt
+  const summaryText = savedTime
+    ? `⏱ You suggested: ${savedTime}`
+    : cleanTime(time)
+      ? `⏱️ ${cleanTime(time)} · based on travelers`
+      : '⏱️ Add visit time';
 
   return (
     <View style={styles.container}>
-      {/* Compact summary row */}
       <TouchableOpacity
         style={styles.summaryRow}
         onPress={handleSummaryTap}
         activeOpacity={0.7}
       >
-        <Text style={styles.timeText}>
-          {display ? `⏱️ ${display} · based on travelers` : '⏱️ Add visit time'}
-        </Text>
+        <Text style={styles.timeText}>{summaryText}</Text>
       </TouchableOpacity>
 
-      {/* Gate Sheet */}
-      <VisitGateSheet
+      {/* Gate sheet */}
+      <BottomSheet
         visible={showGate}
         onClose={() => setShowGate(false)}
         title="Visit Time"
-        onVisited={handleVisited}
-        onNotVisited={handleNotVisited}
-      />
+      >
+        <View style={styles.gateBody}>
+          <Text style={styles.gateText}>Share your experience to help future travelers.</Text>
+          <TouchableOpacity
+            style={styles.gateVisitedBtn}
+            onPress={handleVisited}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.gateVisitedBtnText}>✅ I've Visited</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.gateNotVisitedBtn}
+            onPress={handleNotVisited}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.gateNotVisitedBtnText}>🔮 Haven't Been Yet</Text>
+          </TouchableOpacity>
+        </View>
+      </BottomSheet>
 
-      {/* Bucket List Sheet */}
-      <BucketListSheet
-        visible={showBucketList}
-        onClose={() => setShowBucketList(false)}
-      />
-
-      {/* Content Bottom Sheet */}
+      {/* Content sheet */}
       <BottomSheet
         visible={sheetVisible}
         onClose={() => setSheetVisible(false)}
@@ -120,7 +138,7 @@ export const EstimatedVisitTime: React.FC<EstimatedVisitTimeProps> = ({ time, lo
               <TouchableOpacity
                 key={opt.key}
                 style={[styles.timePill, isSelected && styles.timePillSelected]}
-                onPress={() => setSelectedTime(opt.label)}
+                onPress={() => handleTimeSelect(opt.label)}
                 activeOpacity={0.7}
               >
                 <Text style={styles.timePillEmoji}>{opt.emoji}</Text>
@@ -138,19 +156,17 @@ export const EstimatedVisitTime: React.FC<EstimatedVisitTimeProps> = ({ time, lo
 
 const styles = StyleSheet.create({
   container: {},
-  summaryRow: {
-    paddingVertical: 4,
-  },
-  timeText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: theme.colors.gold,
-  },
-  buttons: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
+  summaryRow: { paddingVertical: 4 },
+  timeText: { fontSize: 14, fontWeight: '500', color: theme.colors.gold },
+  // Gate
+  gateBody: { alignItems: 'center', gap: 16 },
+  gateText: { fontSize: 15, color: theme.colors.textSecondary, textAlign: 'center', lineHeight: 22 },
+  gateVisitedBtn: { backgroundColor: theme.colors.gold, paddingVertical: 14, borderRadius: 14, alignItems: 'center', width: '100%' },
+  gateVisitedBtnText: { color: theme.colors.black, fontWeight: '700', fontSize: 14 },
+  gateNotVisitedBtn: { backgroundColor: theme.colors.surface3, paddingVertical: 14, borderRadius: 14, alignItems: 'center', width: '100%', borderWidth: 1, borderColor: 'rgba(245,197,24,0.2)' },
+  gateNotVisitedBtnText: { color: theme.colors.gold, fontWeight: '600', fontSize: 14 },
+  // Content
+  buttons: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   timePill: {
     backgroundColor: 'rgba(245,197,24,0.12)',
     borderWidth: 1,
@@ -161,20 +177,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     minWidth: 100,
   },
-  timePillSelected: {
-    backgroundColor: 'rgba(245,197,24,0.25)',
-    borderColor: theme.colors.gold,
-  },
-  timePillEmoji: {
-    fontSize: 18,
-    marginBottom: 4,
-  },
-  timePillText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: 'rgba(245,197,24,0.85)',
-  },
-  timePillTextSelected: {
-    color: theme.colors.gold,
-  },
+  timePillSelected: { backgroundColor: 'rgba(245,197,24,0.25)', borderColor: theme.colors.gold },
+  timePillEmoji: { fontSize: 18, marginBottom: 4 },
+  timePillText: { fontSize: 12, fontWeight: '600', color: 'rgba(245,197,24,0.85)' },
+  timePillTextSelected: { color: theme.colors.gold },
 });
