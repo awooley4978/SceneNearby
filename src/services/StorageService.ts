@@ -7,17 +7,10 @@ const KEYS = {
   NOTIFICATION_PREFS: '@scenenearby/notification_prefs',
   USER_SETTINGS: '@scenenearby/settings',
   LAST_CITY: '@scenenearby/last_city',
-  VISITED_STATUS: '@scenenearby/visited_status',
+  VISITED_LOCATIONS: '@scenenearby/visited_locations',
+  USER_WORTHIT_VOTE: '@scenenearby/user_worthit_vote',
+  USER_VISIT_TIME: '@scenenearby/user_visit_time',
 };
-
-export type VisitGateSection = 'worthTheVisit' | 'visitTime';
-export type VisitGateAnswer = 'visited' | 'not_visited';
-
-export interface VisitedStatusMap {
-  [locationId: string]: {
-    [section in VisitGateSection]?: VisitGateAnswer;
-  };
-}
 
 // ── Onboarding ──
 
@@ -98,32 +91,73 @@ export async function setLastCity(city: string): Promise<void> {
   try { await AsyncStorage.setItem(KEYS.LAST_CITY, city); } catch {}
 }
 
-// ── Visited Status (Gate) ──
+// ── Gate: visited locations ──
+// Only 'visited' is persisted. 'not_visited' never stored → gate re-appears.
 
-export async function getVisitedStatus(): Promise<VisitedStatusMap> {
+export async function isLocationVisited(locationId: string): Promise<boolean> {
   try {
-    const raw = await AsyncStorage.getItem(KEYS.VISITED_STATUS);
-    return raw ? JSON.parse(raw) : {};
-  } catch { return {}; }
+    const raw = await AsyncStorage.getItem(KEYS.VISITED_LOCATIONS);
+    if (!raw) return false;
+    const visited: string[] = JSON.parse(raw);
+    return visited.includes(locationId);
+  } catch { return false; }
 }
 
-export async function getVisitedGateAnswer(
-  locationId: string,
-  section: VisitGateSection,
-): Promise<VisitGateAnswer | undefined> {
-  const map = await getVisitedStatus();
-  return map[locationId]?.[section];
+export async function markLocationVisited(locationId: string): Promise<void> {
+  try {
+    const raw = await AsyncStorage.getItem(KEYS.VISITED_LOCATIONS);
+    const visited: string[] = raw ? JSON.parse(raw) : [];
+    if (!visited.includes(locationId)) {
+      visited.push(locationId);
+      await AsyncStorage.setItem(KEYS.VISITED_LOCATIONS, JSON.stringify(visited));
+    }
+  } catch {}
 }
 
-export async function setVisitedGateAnswer(
-  locationId: string,
-  section: VisitGateSection,
-  answer: VisitGateAnswer,
-): Promise<void> {
+// ── User Worth-It Vote ──
+// { [locationId]: { key, label, emoji } }
+
+export interface WorthItVoteData {
+  key: string;
+  label: string;
+  emoji: string;
+}
+
+export async function getUserWorthItVote(locationId: string): Promise<WorthItVoteData | null> {
   try {
-    const map = await getVisitedStatus();
-    if (!map[locationId]) map[locationId] = {};
-    map[locationId][section] = answer;
-    await AsyncStorage.setItem(KEYS.VISITED_STATUS, JSON.stringify(map));
+    const raw = await AsyncStorage.getItem(KEYS.USER_WORTHIT_VOTE);
+    if (!raw) return null;
+    const all: Record<string, WorthItVoteData> = JSON.parse(raw);
+    return all[locationId] ?? null;
+  } catch { return null; }
+}
+
+export async function setUserWorthItVote(locationId: string, data: WorthItVoteData): Promise<void> {
+  try {
+    const raw = await AsyncStorage.getItem(KEYS.USER_WORTHIT_VOTE);
+    const all: Record<string, WorthItVoteData> = raw ? JSON.parse(raw) : {};
+    all[locationId] = data;
+    await AsyncStorage.setItem(KEYS.USER_WORTHIT_VOTE, JSON.stringify(all));
+  } catch {}
+}
+
+// ── User Visit Time ──
+// { [locationId]: string }
+
+export async function getUserVisitTime(locationId: string): Promise<string | null> {
+  try {
+    const raw = await AsyncStorage.getItem(KEYS.USER_VISIT_TIME);
+    if (!raw) return null;
+    const all: Record<string, string> = JSON.parse(raw);
+    return all[locationId] ?? null;
+  } catch { return null; }
+}
+
+export async function setUserVisitTime(locationId: string, time: string): Promise<void> {
+  try {
+    const raw = await AsyncStorage.getItem(KEYS.USER_VISIT_TIME);
+    const all: Record<string, string> = raw ? JSON.parse(raw) : {};
+    all[locationId] = time;
+    await AsyncStorage.setItem(KEYS.USER_VISIT_TIME, JSON.stringify(all));
   } catch {}
 }

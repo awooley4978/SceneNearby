@@ -4,9 +4,7 @@ import { theme } from '../theme';
 import { useAuth } from '../context/AuthContext';
 import { submitWorthItVote, getWorthItStats, WorthItVote, WorthItStats } from '../services/firestore';
 import { BottomSheet } from './BottomSheet';
-import { VisitGateSheet } from './VisitGateSheet';
-import { BucketListSheet } from './BucketListSheet';
-import { getVisitedGateAnswer, setVisitedGateAnswer, VisitGateAnswer } from '../services/StorageService';
+import { isLocationVisited, markLocationVisited, getUserWorthItVote, setUserWorthItVote, WorthItVoteData } from '../services/StorageService';
 
 interface WorthTheVisitProps {
   percentage?: number;
@@ -27,18 +25,24 @@ export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes,
   const [isVoting, setIsVoting] = useState(false);
   const [sheetVisible, setSheetVisible] = useState(false);
 
-  // Gate state
-  const [gateLoaded, setGateLoaded] = useState(false);
-  const [gateAnswer, setGateAnswer] = useState<VisitGateAnswer | undefined>(undefined);
+  // Gate & vote state
+  const [loaded, setLoaded] = useState(false);
+  const [hasVisited, setHasVisited] = useState(false);
+  const [savedVote, setSavedVote] = useState<WorthItVoteData | null>(null);
   const [showGate, setShowGate] = useState(false);
-  const [showBucketList, setShowBucketList] = useState(false);
 
-  // Load gate answer on mount
   useEffect(() => {
     if (!locationId) return;
-    getVisitedGateAnswer(locationId, 'worthTheVisit').then((answer) => {
-      setGateAnswer(answer);
-      setGateLoaded(true);
+    Promise.all([
+      isLocationVisited(locationId),
+      getUserWorthItVote(locationId),
+    ]).then(([visited, voteData]) => {
+      setHasVisited(visited);
+      if (voteData) {
+        setSavedVote(voteData);
+        setUserVote(voteData.key as WorthItVote);
+      }
+      setLoaded(true);
     });
   }, [locationId]);
 
@@ -52,8 +56,12 @@ export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes,
   const handleVote = useCallback(async (vote: WorthItVote) => {
     if (!locationId || !user || isVoting) return;
     setIsVoting(true);
-    // Optimistic: update UI instantly
+
+    const opt = VOTE_OPTIONS.find((o) => o.key === vote)!;
     setUserVote(vote);
+    setSavedVote({ key: opt.key, label: opt.label, emoji: opt.emoji });
+    setUserWorthItVote(locationId, { key: opt.key, label: opt.label, emoji: opt.emoji });
+
     const optimisticStats = liveStats
       ? { ...liveStats, total: liveStats.total + 1, worthItPercent: Math.round(((liveStats.absolutely + liveStats.nearby + (vote === 'absolutely' ? 1 : vote === 'nearby' ? 1 : 0)) / (liveStats.total + 1)) * 100) }
       : { absolutely: vote === 'absolutely' ? 100 : 0, nearby: vote === 'nearby' ? 100 : 0, bigFan: vote === 'big_fan' ? 100 : 0, total: 1, worthItPercent: vote === 'big_fan' ? 0 : 100 };
@@ -66,69 +74,73 @@ export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes,
   }, [locationId, user, isVoting, liveStats]);
 
   const handleSummaryTap = () => {
-    if (!gateLoaded || !locationId) return;
-
-    if (gateAnswer === undefined) {
-      // Never answered — show the gate
+    if (!loaded || !locationId) return;
+    if (!hasVisited) {
       setShowGate(true);
-    } else if (gateAnswer === 'visited') {
-      // Already visited — show content directly
-      setSheetVisible(true);
     } else {
-      // Not visited — show bucket list
-      setShowBucketList(true);
+      setSheetVisible(true);
     }
   };
 
   const handleVisited = () => {
     if (locationId) {
-      setVisitedGateAnswer(locationId, 'worthTheVisit', 'visited');
-      setGateAnswer('visited');
+      markLocationVisited(locationId);
+      setHasVisited(true);
     }
+    setShowGate(false);
     setSheetVisible(true);
   };
 
   const handleNotVisited = () => {
-    if (locationId) {
-      setVisitedGateAnswer(locationId, 'worthTheVisit', 'not_visited');
-      setGateAnswer('not_visited');
-    }
-    setShowBucketList(true);
+    // Never persist — gate re-appears next tap
+    setShowGate(false);
   };
 
   const hasData = liveStats && liveStats.total > 0;
 
+  // Summary: user vote → positive-only stat → empty state
+  const summaryText = savedVote
+    ? `👍 You voted: ${savedVote.label}`
+    : hasData
+      ? `⭐ ${liveStats!.absolutely}% say: Absolutely Worth It · ${liveStats!.total.toLocaleString()} votes`
+      : '⭐ Be the first to vote';
+
   return (
     <View style={styles.container}>
-      {/* Compact summary row */}
       <TouchableOpacity
         style={styles.summaryRow}
         onPress={handleSummaryTap}
         activeOpacity={0.7}
       >
-        <Text style={styles.summaryText}>
-          {hasData
-            ? `👍 ${liveStats!.worthItPercent}% worth it · ${liveStats!.total.toLocaleString()} votes`
-            : '👍 No ratings yet · Tap to rate'}
-        </Text>
+        <Text style={styles.summaryText}>{summaryText}</Text>
       </TouchableOpacity>
 
-      {/* Gate Sheet */}
-      <VisitGateSheet
+      {/* Gate sheet */}
+      <BottomSheet
         visible={showGate}
         onClose={() => setShowGate(false)}
         title="Worth the Visit"
-        onVisited={handleVisited}
-        onNotVisited={handleNotVisited}
-      />
+      >
+        <View style={styles.gateBody}>
+          <Text style={styles.gateText}>Share your experience to help future travelers.</Text>
+          <TouchableOpacity
+            style={styles.gateVisitedBtn}
+            onPress={handleVisited}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.gateVisitedBtnText}>✅ I've Visited</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.gateNotVisitedBtn}
+            onPress={handleNotVisited}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.gateNotVisitedBtnText}>🔮 Haven't Been Yet</Text>
+          </TouchableOpacity>
+        </View>
+      </BottomSheet>
 
-      {/* Bucket List Sheet */}
-      <BucketListSheet
-        visible={showBucketList}
-        onClose={() => setShowBucketList(false)}
-      />
-
-      {/* Content Bottom Sheet */}
+      {/* Content sheet */}
       <BottomSheet
         visible={sheetVisible}
         onClose={() => setSheetVisible(false)}
@@ -171,40 +183,21 @@ export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes,
 
 const styles = StyleSheet.create({
   container: {},
-  summaryRow: {
-    paddingVertical: 4,
-  },
-  summaryText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: theme.colors.gold,
-  },
-  breakdown: {
-    gap: 4,
-    marginBottom: 4,
-  },
-  breakdownText: {
-    fontSize: 14,
-    color: theme.colors.textSecondary,
-    lineHeight: 22,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: theme.colors.surface3,
-    marginVertical: 8,
-  },
-  rateLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: theme.colors.textPrimary,
-    marginBottom: 4,
-  },
-  buttons: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    marginTop: 4,
-  },
+  summaryRow: { paddingVertical: 4 },
+  summaryText: { fontSize: 14, fontWeight: '500', color: theme.colors.gold },
+  // Gate
+  gateBody: { alignItems: 'center', gap: 16 },
+  gateText: { fontSize: 15, color: theme.colors.textSecondary, textAlign: 'center', lineHeight: 22 },
+  gateVisitedBtn: { backgroundColor: theme.colors.gold, paddingVertical: 14, borderRadius: 14, alignItems: 'center', width: '100%' },
+  gateVisitedBtnText: { color: theme.colors.black, fontWeight: '700', fontSize: 14 },
+  gateNotVisitedBtn: { backgroundColor: theme.colors.surface3, paddingVertical: 14, borderRadius: 14, alignItems: 'center', width: '100%', borderWidth: 1, borderColor: 'rgba(245,197,24,0.2)' },
+  gateNotVisitedBtnText: { color: theme.colors.gold, fontWeight: '600', fontSize: 14 },
+  // Content
+  breakdown: { gap: 4, marginBottom: 4 },
+  breakdownText: { fontSize: 14, color: theme.colors.textSecondary, lineHeight: 22 },
+  divider: { height: 1, backgroundColor: theme.colors.surface3, marginVertical: 8 },
+  rateLabel: { fontSize: 14, fontWeight: '600', color: theme.colors.textPrimary, marginBottom: 4 },
+  buttons: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 4 },
   votePill: {
     backgroundColor: 'rgba(245,197,24,0.12)',
     borderWidth: 1,
@@ -213,16 +206,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 8,
   },
-  votePillSelected: {
-    backgroundColor: 'rgba(245,197,24,0.25)',
-    borderColor: theme.colors.gold,
-  },
-  votePillText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: 'rgba(245,197,24,0.85)',
-  },
-  votePillTextSelected: {
-    color: theme.colors.gold,
-  },
+  votePillSelected: { backgroundColor: 'rgba(245,197,24,0.25)', borderColor: theme.colors.gold },
+  votePillText: { fontSize: 13, fontWeight: '600', color: 'rgba(245,197,24,0.85)' },
+  votePillTextSelected: { color: theme.colors.gold },
 });
