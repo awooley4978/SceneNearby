@@ -4,6 +4,9 @@ import { theme } from '../theme';
 import { useAuth } from '../context/AuthContext';
 import { submitWorthItVote, getWorthItStats, WorthItVote, WorthItStats } from '../services/firestore';
 import { BottomSheet } from './BottomSheet';
+import { VisitGateSheet } from './VisitGateSheet';
+import { BucketListSheet } from './BucketListSheet';
+import { isLocationVisited, markLocationVisited, getUserWorthItVote, setUserWorthItVote, WorthItVoteData } from '../services/StorageService';
 
 interface WorthTheVisitProps {
   percentage?: number;
@@ -24,6 +27,28 @@ export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes,
   const [isVoting, setIsVoting] = useState(false);
   const [sheetVisible, setSheetVisible] = useState(false);
 
+  // Gate & vote state
+  const [gateLoaded, setGateLoaded] = useState(false);
+  const [hasVisited, setHasVisited] = useState(false);
+  const [savedVote, setSavedVote] = useState<WorthItVoteData | null>(null);
+  const [showGate, setShowGate] = useState(false);
+  const [showBucketList, setShowBucketList] = useState(false);
+
+  useEffect(() => {
+    if (!locationId) return;
+    Promise.all([
+      isLocationVisited(locationId),
+      getUserWorthItVote(locationId),
+    ]).then(([visited, voteData]) => {
+      setHasVisited(visited);
+      if (voteData) {
+        setSavedVote(voteData);
+        setUserVote(voteData.key as WorthItVote);
+      }
+      setGateLoaded(true);
+    });
+  }, [locationId]);
+
   useEffect(() => {
     if (!locationId) return;
     getWorthItStats(locationId).then((stats) => {
@@ -34,8 +59,12 @@ export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes,
   const handleVote = useCallback(async (vote: WorthItVote) => {
     if (!locationId || !user || isVoting) return;
     setIsVoting(true);
-    // Optimistic: update UI instantly
+
+    const opt = VOTE_OPTIONS.find((o) => o.key === vote)!;
     setUserVote(vote);
+    setSavedVote({ key: opt.key, label: opt.label, emoji: opt.emoji });
+    setUserWorthItVote(locationId, { key: opt.key, label: opt.label, emoji: opt.emoji });
+
     const optimisticStats = liveStats
       ? { ...liveStats, total: liveStats.total + 1, worthItPercent: Math.round(((liveStats.absolutely + liveStats.nearby + (vote === 'absolutely' ? 1 : vote === 'nearby' ? 1 : 0)) / (liveStats.total + 1)) * 100) }
       : { absolutely: vote === 'absolutely' ? 100 : 0, nearby: vote === 'nearby' ? 100 : 0, bigFan: vote === 'big_fan' ? 100 : 0, total: 1, worthItPercent: vote === 'big_fan' ? 0 : 100 };
@@ -47,24 +76,62 @@ export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes,
     setIsVoting(false);
   }, [locationId, user, isVoting, liveStats]);
 
+  const handleSummaryTap = () => {
+    if (!gateLoaded || !locationId) return;
+    if (!hasVisited) {
+      setShowGate(true);
+    } else {
+      setSheetVisible(true);
+    }
+  };
+
+  const handleVisited = () => {
+    if (locationId) {
+      markLocationVisited(locationId);
+      setHasVisited(true);
+    }
+    setSheetVisible(true);
+  };
+
+  const handleNotVisited = () => {
+    // Never persist — gate re-appears next time
+    setShowBucketList(true);
+  };
+
+  // Summary logic
   const hasData = liveStats && liveStats.total > 0;
+  let summaryText: string;
+  if (savedVote) {
+    summaryText = `👍 You voted: ${savedVote.label}`;
+  } else if (hasData) {
+    summaryText = `⭐ ${liveStats!.absolutely}% say: Absolutely Worth It · ${liveStats!.total.toLocaleString()} votes`;
+  } else {
+    summaryText = '⭐ Be the first to vote';
+  }
 
   return (
     <View style={styles.container}>
-      {/* Compact summary row */}
       <TouchableOpacity
         style={styles.summaryRow}
-        onPress={() => setSheetVisible(true)}
+        onPress={handleSummaryTap}
         activeOpacity={0.7}
       >
-        <Text style={styles.summaryText}>
-          {hasData
-            ? `👍 ${liveStats!.worthItPercent}% worth it · ${liveStats!.total.toLocaleString()} votes`
-            : '👍 No ratings yet · Tap to rate'}
-        </Text>
+        <Text style={styles.summaryText}>{summaryText}</Text>
       </TouchableOpacity>
 
-      {/* Bottom Sheet */}
+      <VisitGateSheet
+        visible={showGate}
+        onClose={() => setShowGate(false)}
+        title="Worth the Visit"
+        onVisited={handleVisited}
+        onNotVisited={handleNotVisited}
+      />
+
+      <BucketListSheet
+        visible={showBucketList}
+        onClose={() => setShowBucketList(false)}
+      />
+
       <BottomSheet
         visible={sheetVisible}
         onClose={() => setSheetVisible(false)}
@@ -77,6 +144,11 @@ export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes,
             <Text style={styles.breakdownText}>🎬 {liveStats!.bigFan}% Only If a Big Fan</Text>
           </View>
         )}
+
+        <View style={styles.divider} />
+
+        <Text style={styles.rateLabel}>How would YOU rate it?</Text>
+
         <View style={styles.buttons}>
           {VOTE_OPTIONS.map((opt) => {
             const isSelected = userVote === opt.key;
@@ -102,29 +174,30 @@ export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes,
 
 const styles = StyleSheet.create({
   container: {},
-  summaryRow: {
-    paddingVertical: 4,
-  },
+  summaryRow: { paddingVertical: 4 },
   summaryText: {
     fontSize: 14,
     fontWeight: '500',
     color: theme.colors.gold,
   },
-  breakdown: {
-    gap: 4,
-    marginBottom: 4,
-  },
+  breakdown: { gap: 4, marginBottom: 4 },
   breakdownText: {
     fontSize: 14,
     color: theme.colors.textSecondary,
     lineHeight: 22,
   },
-  buttons: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    marginTop: 4,
+  divider: {
+    height: 1,
+    backgroundColor: theme.colors.surface3,
+    marginVertical: 8,
   },
+  rateLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: theme.colors.textPrimary,
+    marginBottom: 4,
+  },
+  buttons: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 4 },
   votePill: {
     backgroundColor: 'rgba(245,197,24,0.12)',
     borderWidth: 1,
@@ -142,7 +215,5 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: 'rgba(245,197,24,0.85)',
   },
-  votePillTextSelected: {
-    color: theme.colors.gold,
-  },
+  votePillTextSelected: { color: theme.colors.gold },
 });
