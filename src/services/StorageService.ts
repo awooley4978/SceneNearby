@@ -7,7 +7,14 @@ const KEYS = {
   NOTIFICATION_PREFS: '@scenenearby/notification_prefs',
   USER_SETTINGS: '@scenenearby/settings',
   LAST_CITY: '@scenenearby/last_city',
+  VISITED_LOCATIONS: '@scenenearby/visited_locations',
 };
+
+export type VisitedStatus = 'visited' | 'not_visited';
+
+export interface VisitedLocationsMap {
+  [locationId: string]: VisitedStatus;
+}
 
 // ── Onboarding ──
 
@@ -86,4 +93,26 @@ export async function getLastCity(): Promise<string | null> {
 
 export async function setLastCity(city: string): Promise<void> {
   try { await AsyncStorage.setItem(KEYS.LAST_CITY, city); } catch {}
+}
+
+// ── Visited Locations (Gate) ──
+
+export async function getVisitedLocations(): Promise<VisitedLocationsMap> {
+  try {
+    const raw = await AsyncStorage.getItem(KEYS.VISITED_LOCATIONS);
+    return raw ? JSON.parse(raw) : {};
+  } catch { return {}; }
+}
+
+export async function getVisitedStatus(locationId: string): Promise<VisitedStatus | undefined> {
+  const map = await getVisitedLocations();
+  return map[locationId];
+}
+
+export async function setVisitedStatus(locationId: string, status: VisitedStatus): Promise<void> {
+  try {
+    const map = await getVisitedLocations();
+    map[locationId] = status;
+    await AsyncStorage.setItem(KEYS.VISITED_LOCATIONS, JSON.stringify(map));
+  } catch {}
 }

@@ -4,6 +4,9 @@ import { theme } from '../theme';
 import { useAuth } from '../context/AuthContext';
 import { submitWorthItVote, getWorthItStats, WorthItVote, WorthItStats } from '../services/firestore';
 import { BottomSheet } from './BottomSheet';
+import { VisitGateSheet } from './VisitGateSheet';
+import { BucketListSheet } from './BucketListSheet';
+import { getVisitedStatus, setVisitedStatus, VisitedStatus } from '../services/StorageService';
 
 interface WorthTheVisitProps {
   percentage?: number;
@@ -24,6 +27,21 @@ export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes,
   const [isVoting, setIsVoting] = useState(false);
   const [sheetVisible, setSheetVisible] = useState(false);
 
+  // Gate state
+  const [gateLoaded, setGateLoaded] = useState(false);
+  const [gateAnswer, setGateAnswer] = useState<VisitedStatus | undefined>(undefined);
+  const [showGate, setShowGate] = useState(false);
+  const [showBucketList, setShowBucketList] = useState(false);
+
+  // Load gate answer on mount
+  useEffect(() => {
+    if (!locationId) return;
+    getVisitedStatus(locationId).then((answer) => {
+      setGateAnswer(answer);
+      setGateLoaded(true);
+    });
+  }, [locationId]);
+
   useEffect(() => {
     if (!locationId) return;
     getWorthItStats(locationId).then((stats) => {
@@ -34,7 +52,6 @@ export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes,
   const handleVote = useCallback(async (vote: WorthItVote) => {
     if (!locationId || !user || isVoting) return;
     setIsVoting(true);
-    // Optimistic: update UI instantly
     setUserVote(vote);
     const optimisticStats = liveStats
       ? { ...liveStats, total: liveStats.total + 1, worthItPercent: Math.round(((liveStats.absolutely + liveStats.nearby + (vote === 'absolutely' ? 1 : vote === 'nearby' ? 1 : 0)) / (liveStats.total + 1)) * 100) }
@@ -47,14 +64,41 @@ export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes,
     setIsVoting(false);
   }, [locationId, user, isVoting, liveStats]);
 
+  const handleSummaryTap = () => {
+    if (!gateLoaded || !locationId) return;
+
+    if (gateAnswer === undefined) {
+      setShowGate(true);
+    } else if (gateAnswer === 'visited') {
+      setSheetVisible(true);
+    } else {
+      setShowBucketList(true);
+    }
+  };
+
+  const handleVisited = () => {
+    if (locationId) {
+      setVisitedStatus(locationId, 'visited');
+      setGateAnswer('visited');
+    }
+    setSheetVisible(true);
+  };
+
+  const handleNotVisited = () => {
+    if (locationId) {
+      setVisitedStatus(locationId, 'not_visited');
+      setGateAnswer('not_visited');
+    }
+    setShowBucketList(true);
+  };
+
   const hasData = liveStats && liveStats.total > 0;
 
   return (
     <View style={styles.container}>
-      {/* Compact summary row */}
       <TouchableOpacity
         style={styles.summaryRow}
-        onPress={() => setSheetVisible(true)}
+        onPress={handleSummaryTap}
         activeOpacity={0.7}
       >
         <Text style={styles.summaryText}>
@@ -64,7 +108,22 @@ export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes,
         </Text>
       </TouchableOpacity>
 
-      {/* Bottom Sheet */}
+      {/* Gate Sheet */}
+      <VisitGateSheet
+        visible={showGate}
+        onClose={() => setShowGate(false)}
+        title="Worth the Visit"
+        onVisited={handleVisited}
+        onNotVisited={handleNotVisited}
+      />
+
+      {/* Bucket List Sheet */}
+      <BucketListSheet
+        visible={showBucketList}
+        onClose={() => setShowBucketList(false)}
+      />
+
+      {/* Content Bottom Sheet */}
       <BottomSheet
         visible={sheetVisible}
         onClose={() => setSheetVisible(false)}
@@ -77,6 +136,11 @@ export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes,
             <Text style={styles.breakdownText}>🎬 {liveStats!.bigFan}% Only If a Big Fan</Text>
           </View>
         )}
+
+        <View style={styles.divider} />
+
+        <Text style={styles.rateLabel}>How would YOU rate it?</Text>
+
         <View style={styles.buttons}>
           {VOTE_OPTIONS.map((opt) => {
             const isSelected = userVote === opt.key;
@@ -118,6 +182,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: theme.colors.textSecondary,
     lineHeight: 22,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: theme.colors.surface3,
+    marginVertical: 8,
+  },
+  rateLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: theme.colors.textPrimary,
+    marginBottom: 4,
   },
   buttons: {
     flexDirection: 'row',
