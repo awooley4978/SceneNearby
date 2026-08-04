@@ -7,6 +7,8 @@ const KEYS = {
   NOTIFICATION_PREFS: '@scenenearby/notification_prefs',
   USER_SETTINGS: '@scenenearby/settings',
   LAST_CITY: '@scenenearby/last_city',
+  VISITED_LOCATIONS: '@scenenearby/visited_locations',
+  USER_VOTES: '@scenenearby/user_votes',
 };
 
 // ── Onboarding ──
@@ -86,4 +88,53 @@ export async function getLastCity(): Promise<string | null> {
 
 export async function setLastCity(city: string): Promise<void> {
   try { await AsyncStorage.setItem(KEYS.LAST_CITY, city); } catch {}
+}
+
+// ── Visited Locations (Gate) ──
+// Only 'visited' is persisted. 'not_visited' is never stored — gate re-appears.
+
+export async function isLocationVisited(locationId: string): Promise<boolean> {
+  try {
+    const raw = await AsyncStorage.getItem(KEYS.VISITED_LOCATIONS);
+    if (!raw) return false;
+    const visited: string[] = JSON.parse(raw);
+    return visited.includes(locationId);
+  } catch { return false; }
+}
+
+export async function markLocationVisited(locationId: string): Promise<void> {
+  try {
+    const raw = await AsyncStorage.getItem(KEYS.VISITED_LOCATIONS);
+    const visited: string[] = raw ? JSON.parse(raw) : [];
+    if (!visited.includes(locationId)) {
+      visited.push(locationId);
+      await AsyncStorage.setItem(KEYS.VISITED_LOCATIONS, JSON.stringify(visited));
+    }
+  } catch {}
+}
+
+// ── User Votes ──
+
+export interface UserVoteData {
+  worthItVote?: string;
+  worthItLabel?: string;
+  visitTime?: string;
+}
+
+export async function getUserVote(locationId: string): Promise<UserVoteData | null> {
+  try {
+    const raw = await AsyncStorage.getItem(KEYS.USER_VOTES);
+    if (!raw) return null;
+    const all: Record<string, UserVoteData> = JSON.parse(raw);
+    return all[locationId] ?? null;
+  } catch { return null; }
+}
+
+export async function setUserVote(locationId: string, data: Partial<UserVoteData>): Promise<void> {
+  try {
+    const raw = await AsyncStorage.getItem(KEYS.USER_VOTES);
+    const all: Record<string, UserVoteData> = raw ? JSON.parse(raw) : {};
+    all[locationId] = { ...all[locationId], ...data };
+    await AsyncStorage.setItem(KEYS.USER_VOTES, JSON.stringify(all));
+  } catch {}
 }
