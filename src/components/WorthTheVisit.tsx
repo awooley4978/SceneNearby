@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { submitWorthItVote, getWorthItStats, WorthItVote, WorthItStats } from '../services/firestore';
 import { BottomSheet } from './BottomSheet';
 import { isLocationVisited, markLocationVisited, getUserWorthItVote, setUserWorthItVote, WorthItVoteData } from '../services/StorageService';
+import { BucketListSheet } from './BucketListSheet';
 
 interface WorthTheVisitProps {
   percentage?: number;
@@ -30,6 +31,7 @@ export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes,
   const [hasVisited, setHasVisited] = useState(false);
   const [savedVote, setSavedVote] = useState<WorthItVoteData | null>(null);
   const [showGate, setShowGate] = useState(false);
+  const [showBucketList, setShowBucketList] = useState(false);
 
   useEffect(() => {
     if (!locationId) return;
@@ -94,6 +96,7 @@ export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes,
   const handleNotVisited = () => {
     // Never persist — gate re-appears next tap
     setShowGate(false);
+    setShowBucketList(true);
   };
 
   const hasData = liveStats && liveStats.total > 0;
@@ -139,6 +142,12 @@ export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes,
           </TouchableOpacity>
         </View>
       </BottomSheet>
+
+      {/* Bucket List Sheet */}
+      <BucketListSheet
+        visible={showBucketList}
+        onClose={() => setShowBucketList(false)}
+      />
 
       {/* Content sheet */}
       <BottomSheet
