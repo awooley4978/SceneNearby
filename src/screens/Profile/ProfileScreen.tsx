@@ -15,6 +15,8 @@ import { Linking, Platform } from 'react-native';
 import { logPremiumUpgrade } from '../../services/analytics';
 import { useAuth } from '../../context/AuthContext';
 
+const ADMIN_EMAILS = ['awooley4978@gmail.com', 'scenenearbysupport@gmail.com'];
+
 export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { user, signOut: authSignOut } = useAuth();
   const [settings, setSettings] = useState(defaultUserSettings);
@@ -167,6 +169,19 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
           </View>
           <Text style={styles.navLinkChevron}>›</Text>
         </TouchableOpacity>
+
+        {user?.email && ADMIN_EMAILS.includes(user.email) && (
+          <TouchableOpacity
+            style={styles.navLinkRow}
+            onPress={() => navigation.navigate('AdminDashboard')}
+          >
+            <View style={styles.navLinkInfo}>
+              <Text style={styles.navLinkLabel}>🔐 Admin Dashboard</Text>
+              <Text style={styles.navLinkDesc}>Content health, photo approvals, stats</Text>
+            </View>
+            <Text style={styles.navLinkChevron}>›</Text>
+          </TouchableOpacity>
+        )}
 
         <View style={styles.settingRow}>
           <Text style={styles.settingLabel}>Metric Units</Text>

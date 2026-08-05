@@ -21,6 +21,8 @@ import { AlbumScreen } from '../screens/Album/AlbumScreen';
 import { LocationAlbumScreen } from '../screens/Album/LocationAlbumScreen';
 import { AuthScreen } from '../screens/Auth/AuthScreen';
 import { UploadPhotoScreen } from '../screens/Upload/UploadPhotoScreen';
+import { AdminDashboardScreen } from '../screens/Admin/AdminDashboardScreen';
+import { AdminDetailScreen } from '../screens/Admin/AdminDetailScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -143,6 +145,8 @@ function ProfileStack() {
       <Stack.Screen name="Album" component={AlbumScreen} options={{ headerShown: false }} />
       <Stack.Screen name="LocationAlbum" component={LocationAlbumScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Auth" component={AuthScreen} options={{ title: 'Sign In', headerShown: false, animation: 'fade' as any, presentation: 'modal' as any }} />
+      <Stack.Screen name="AdminDashboard" component={AdminDashboardScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="AdminDetail" component={AdminDetailScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }
