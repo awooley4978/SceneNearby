@@ -910,7 +910,7 @@ const londonLocations: FilmingLocation[] = [
           isMovie: true,
         },
         {
-          id: 'syd-004', title: 'White Bay Power Station', movieOrShow: 'The Matrix Reloaded', year: 2003,
+          id: 'syd-004', title: 'White Bay Power Station', movieOrShow: 'The Matrix Reloaded / Red Planet / Water Rats / The Great Gatsby', year: 2003,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/White%20Bay%20Power%20Station.jpg',
           category: LocationCategory.action, latitude: -34.1230, longitude: 151.0640,
           address: 'Royal National Park, Sydney', city: 'Sydney', country: 'Australia',
