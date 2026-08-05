@@ -41,11 +41,11 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 // Dev bypass: skip Firebase auth entirely during development
-const DEV_BYPASS = false; // Always on for dev client testing
+const DEV_BYPASS = true; // Enabled for admin testing — uses owner email
 
 const DEV_USER = {
   uid: 'dev-user-001',
-  email: 'dev@scenenearby.app',
+  email: 'awooley4978@gmail.com',
   emailVerified: true,
   isAnonymous: false,
   metadata: {},
