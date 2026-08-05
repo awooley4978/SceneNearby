@@ -47,7 +47,7 @@ export const MapPlaceholder: React.FC<MapPlaceholderProps> = ({ locationId, loca
           <Text style={[styles.pillText, hasPhotos && styles.pillTextSmall]}>
             {hasPhotos
               ? "Someone already submitted the first photo — we'd still love yours! More angles help future travelers."
-              : '📸 Be the first to upload a photo'}
+              : '📸 Be the first to add a photo'}
           </Text>
         </TouchableOpacity>
       </View>
