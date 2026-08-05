@@ -918,6 +918,14 @@ const londonLocations: FilmingLocation[] = [
           isMovie: true,
         },
       ];
+        {
+          id: 'par-006', title: 'Café de Flore', movieOrShow: 'Emily in Paris', year: 2020,
+          category: LocationCategory.romance, latitude: 48.8540, longitude: 2.3325,
+          address: '172 Boulevard Saint-Germain, Paris', city: 'Paris', country: 'France',
+          sceneDescription: 'Emily Cooper\'s go-to café in Saint-Germain-des-Prés, where she sips espresso and navigates Parisian life between marketing campaigns.',
+          funFact: 'Café de Flore has been a Paris literary institution since the 1880s — Sartre and de Beauvoir wrote here daily, long before Emily ever ordered her first café crème.',
+          isMovie: false,
+        },
 
       const romeLocations: FilmingLocation[] = [
         {
@@ -1040,6 +1048,57 @@ const londonLocations: FilmingLocation[] = [
       ];
 
       const aucklandLocations: FilmingLocation[] = [
+      const wellingtonLocations: FilmingLocation[] = [
+        {
+          id: 'wlg-001', title: 'Weta Workshop', movieOrShow: 'The Lord of the Rings', year: 2001,
+          category: LocationCategory.action, latitude: -41.3481, longitude: 174.8164,
+          address: '1 Weka St, Miramar, Wellington', city: 'Wellington', country: 'New Zealand',
+          sceneDescription: 'The legendary creative studio where Middle-earth was brought to life — Weta crafted the One Ring, Aragorn\'s sword Andúril, and over 48,000 pieces of armor for the trilogy.',
+          funFact: 'Weta Workshop\'s artists handmade every single link in the chainmail worn by the actors — over 12.5 million links across all three films.',
+          isMovie: true,
+        },
+        {
+          id: 'wlg-002', title: 'Mount Victoria Lookout', movieOrShow: 'The Lord of the Rings', year: 2001,
+          category: LocationCategory.action, latitude: -41.2962, longitude: 174.7860,
+          address: 'Lookout Rd, Hataitai, Wellington', city: 'Wellington', country: 'New Zealand',
+          sceneDescription: 'The pine forest trails of Mount Victoria became the woods where Frodo and the hobbits hide from the Black Rider on their way to Bree. A short walk from downtown Wellington.',
+          funFact: 'Peter Jackson shot these scenes in 1999 during a single night — the famous "Get off the road!" scene was filmed just meters from a popular walking track.',
+          isMovie: true,
+        },
+        {
+          id: 'wlg-003', title: 'Kaitoke Regional Park', movieOrShow: 'The Lord of the Rings', year: 2001,
+          category: LocationCategory.action, latitude: -41.0623, longitude: 175.1941,
+          address: 'Kaitoke, Upper Hutt', city: 'Wellington', country: 'New Zealand',
+          sceneDescription: 'The lush beech forests of Kaitoke became Rivendell — the Elven sanctuary where Frodo awakens after his escape from the Nazgûl and the Fellowship is formed.',
+          funFact: 'A Rivendell signpost still stands in the park pointing visitors to the exact filming spots. The production built elaborate elven archways here that were later dismantled to restore the forest.',
+          isMovie: true,
+        },
+        {
+          id: 'wlg-004', title: 'Harcourt Park', movieOrShow: 'The Lord of the Rings', year: 2001,
+          category: LocationCategory.action, latitude: -41.1196, longitude: 175.1007,
+          address: 'Harcourt Park, Upper Hutt', city: 'Wellington', country: 'New Zealand',
+          sceneDescription: 'The manicured gardens of Harcourt Park doubled as the Gardens of Isengard, where Gandalf walks with Saruman before the wizard\'s betrayal is revealed.',
+          funFact: 'The giant tree in the park, visible in several shots, is a 150-year-old redwood — a species introduced to New Zealand from California in the 1870s.',
+          isMovie: true,
+        },
+        {
+          id: 'wlg-005', title: 'Putangirua Pinnacles', movieOrShow: 'The Lord of the Rings', year: 2003,
+          category: LocationCategory.action, latitude: -41.4502, longitude: 175.2412,
+          address: 'Cape Palliser Rd, Wairarapa', city: 'Wellington', country: 'New Zealand',
+          sceneDescription: 'These towering eroded rock formations became the Paths of the Dead in The Return of the King, where Aragorn, Legolas, and Gimli pass through the haunted mountain.',
+          funFact: 'The Pinnacles were formed over 120,000 years by rainwater eroding ancient gravel deposits — the same process that shaped Arizona\'s Bryce Canyon.',
+          isMovie: true,
+        },
+        {
+          id: 'wlg-006', title: 'Dry Creek Quarry', movieOrShow: 'The Lord of the Rings', year: 2001,
+          category: LocationCategory.action, latitude: -41.2245, longitude: 174.8982,
+          address: 'Dry Creek, Lower Hutt', city: 'Wellington', country: 'New Zealand',
+          sceneDescription: 'This unassuming quarry became the backdrop for two of Middle-earth\'s most iconic locations: Helm\'s Deep and Minas Tirith, built at massive scale by the Weta team.',
+          funFact: 'The Helm\'s Deep set measured 350 meters long and took 7 months to build. It was the largest set ever constructed in the Southern Hemisphere until it was dismantled.',
+          isMovie: true,
+        },
+      ];
+
         {
           id: 'akl-001', title: 'Hobbiton — Matamata', movieOrShow: 'The Lord of the Rings', year: 2001,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Hobbiton.jpg',
@@ -1101,6 +1160,15 @@ const londonLocations: FilmingLocation[] = [
           isMovie: false,
         },
       ];
+        {
+          id: 'akl-005', title: 'Elephant Rocks', movieOrShow: 'The Chronicles of Narnia', year: 2005,
+          category: LocationCategory.action, latitude: -44.8583, longitude: 170.6400,
+          address: 'Duntroon, Waitaki Valley', city: 'Auckland', country: 'New Zealand',
+          sceneDescription: 'These massive weathered limestone boulders became Aslan\'s Camp in The Lion, The Witch and The Wardrobe — the awe-inspiring field where the great lion\'s army gathers.',
+          funFact: 'The Elephant Rocks are natural limestone formations over 25 million years old, named for their resemblance to a herd of elephants.',
+          isMovie: true,
+          remoteDestination: { ocean: 'Pacific Ocean' },
+        },
 
       const tokyoLocations: FilmingLocation[] = [
         {
@@ -1295,6 +1363,78 @@ const londonLocations: FilmingLocation[] = [
           isMovie: false,
         },
       ];
+        {
+          id: 'nol-004', title: 'Lafayette Cemetery No. 1', movieOrShow: 'Interview with the Vampire', year: 1994,
+          category: LocationCategory.drama, latitude: 29.9340, longitude: -90.0850,
+          address: '1427 Washington Ave, New Orleans', city: 'New Orleans', country: 'USA',
+          sceneDescription: 'Louis wanders among the crumbling tombs in this haunting above-ground cemetery, where death and immortality meet in the moonlight.',
+          funFact: 'New Orleans\' unique above-ground burial tradition stems from the city\'s high water table — burying coffins underground would literally cause them to float up.',
+          isMovie: true,
+        },
+        {
+          id: 'nol-005', title: 'Oak Alley Plantation', movieOrShow: 'Interview with the Vampire', year: 1994,
+          category: LocationCategory.drama, latitude: 30.0039, longitude: -90.7762,
+          address: '3645 Highway 18, Vacherie, LA', city: 'New Orleans', country: 'USA',
+          sceneDescription: 'The iconic oak-lined drive and grand plantation house served as Louis\'s family estate, where he first encounters Lestat in a moment that changes his mortal life forever.',
+          funFact: 'The 28 oak trees lining the driveway were planted in the early 1700s — a century before the mansion was even built.',
+          isMovie: true,
+        },
+        {
+          id: 'nol-006', title: 'The Pontchartrain Hotel', movieOrShow: 'Interview with the Vampire', year: 1994,
+          category: LocationCategory.drama, latitude: 29.9288, longitude: -90.0804,
+          address: '2031 St Charles Ave, New Orleans', city: 'New Orleans', country: 'USA',
+          sceneDescription: 'The hotel lobby and rooftop bar served as the setting for the vampire coven\'s decadent gathering in modern-day New Orleans.',
+          funFact: 'The Pontchartrain\'s rooftop bar, Hot Tin, offers one of the best views of the New Orleans skyline.',
+          isMovie: true,
+        },
+        {
+          id: 'nol-007', title: 'Théâtre d\'Orléans', movieOrShow: 'Interview with the Vampire', year: 1994,
+          category: LocationCategory.drama, latitude: 29.9584, longitude: -90.0648,
+          address: '717 Orleans St, New Orleans', city: 'New Orleans', country: 'USA',
+          sceneDescription: 'The 19th-century theatre district stood in for the Théâtre des Vampires in Paris, where Santiago and his coven perform their deadly pantomime.',
+          funFact: 'The actual Théâtre des Vampires scenes were filmed on a soundstage, but the French Quarter exteriors were shot right here in New Orleans.',
+          isMovie: true,
+        },
+        {
+          id: 'nol-008', title: 'Madame John\'s Legacy', movieOrShow: 'Interview with the Vampire', year: 1994,
+          category: LocationCategory.drama, latitude: 29.9594, longitude: -90.0628,
+          address: '632 Dumaine St, New Orleans', city: 'New Orleans', country: 'USA',
+          sceneDescription: 'One of the oldest surviving structures in the French Quarter, this 1789 building stood in for 18th-century New Orleans, where Louis lived as a mortal.',
+          funFact: 'Madame John\'s is one of the few French Quarter buildings to survive the Great Fire of 1794.',
+          isMovie: true,
+        },
+        {
+          id: 'nol-009', title: 'St. Louis Cemetery No. 1', movieOrShow: 'Interview with the Vampire', year: 1994,
+          category: LocationCategory.drama, latitude: 29.9600, longitude: -90.0720,
+          address: '425 Basin St, New Orleans', city: 'New Orleans', country: 'USA',
+          sceneDescription: 'The oldest active cemetery in New Orleans, where the vampires lurk among rows of weathered tombs in the opening scenes of the film.',
+          funFact: 'This cemetery is now only accessible via guided tour — it houses the tomb of voodoo queen Marie Laveau.',
+          isMovie: true,
+        },
+        {
+          id: 'nol-010', title: 'Hotel Royal', movieOrShow: 'Interview with the Vampire', year: 1994,
+          category: LocationCategory.drama, latitude: 29.9576, longitude: -90.0687,
+          address: '1006 Royal St, New Orleans', city: 'New Orleans', country: 'USA',
+          sceneDescription: 'The historic hotel\'s ornate ironwork balconies and gas lamps created the perfect atmosphere for Lestat\'s seductive nighttime prowling.',
+          funFact: 'The Hotel Royal has been operating continuously since the 1830s and is considered one of the most haunted buildings in the French Quarter.',
+          isMovie: true,
+        },
+        {
+          id: 'nol-011', title: 'Pontalba Buildings', movieOrShow: 'Interview with the Vampire', year: 1994,
+          category: LocationCategory.drama, latitude: 29.9575, longitude: -90.0638,
+          address: 'Jackson Square, New Orleans', city: 'New Orleans', country: 'USA',
+          sceneDescription: 'These 1849 apartment buildings flanking Jackson Square appear in sweeping aerial shots of the city that establish the film\'s gothic mood.',
+          funFact: 'The Pontalba Buildings are the oldest continuously-rented apartment buildings in the United States.',
+          isMovie: true,
+        },
+        {
+          id: 'nol-012', title: 'The Myrtles Plantation', movieOrShow: 'Interview with the Vampire', year: 1994,
+          category: LocationCategory.drama, latitude: 30.8038, longitude: -91.3820,
+          address: '7747 US-61, St Francisville, LA', city: 'New Orleans', country: 'USA',
+          sceneDescription: 'Known as "one of America\'s most haunted homes," this 1796 plantation provided the eerie antebellum backdrop for Louis\'s final mortal memories.',
+          funFact: 'The Myrtles is rumored to be built on an ancient Tunica burial ground and is said to have seen at least 10 murders on the property.',
+          isMovie: true,
+        },
 
       const washingtonDCLocations: FilmingLocation[] = [
         {
@@ -1436,6 +1576,7 @@ export const allLocations: FilmingLocation[] = [
   ...parisLocations,
   ...romeLocations,
   ...sydneyLocations,
+  ...wellingtonLocations,
   ...aucklandLocations,
   ...tokyoLocations,
   ...berlinLocations,
@@ -1603,7 +1744,7 @@ export const locationById = (id: string): FilmingLocation | undefined => {
   return loc;
 };
 
-export const cities = ['New York City', 'Los Angeles', 'London', 'Chicago', 'Atlanta', 'San Francisco', 'Boston', 'Seattle', 'Vancouver', 'Toronto', 'Paris', 'Rome', 'Sydney', 'Auckland', 'Tokyo', 'Berlin', 'Dublin', 'New Orleans', 'Albuquerque', 'Washington DC', 'Dallas'] as const;
+export const cities = ['New York City', 'Los Angeles', 'London', 'Chicago', 'Atlanta', 'San Francisco', 'Boston', 'Seattle', 'Vancouver', 'Toronto', 'Paris', 'Rome', 'Sydney', 'Auckland', 'Wellington', 'Tokyo', 'Berlin', 'Dublin', 'New Orleans', 'Albuquerque', 'Washington DC', 'Dallas'] as const;
 
 // ── Mock Ratings ──
 
