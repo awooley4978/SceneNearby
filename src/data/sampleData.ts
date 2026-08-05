@@ -504,6 +504,15 @@ const londonLocations: FilmingLocation[] = [
           isMovie: false,
         },
         },
+        {
+          id: 'atl-008', title: 'Emory University Briarcliff Campus', movieOrShow: 'Stranger Things', year: 2016,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/%E2%80%9CHawkins_National_Labs%E2%80%9D_also_known_as_Emory_University%E2%80%99s_briarcliff_campus._(28903314358).jpg',
+          category: LocationCategory.drama, latitude: 33.7980, longitude: -84.3230,
+          address: '1256 Briarcliff Road, Atlanta, GA', city: 'Atlanta', country: 'USA',
+          sceneDescription: 'Stood in as Hawkins National Laboratory, the shadowy government facility where Eleven was experimented on and the gate to the Upside Down was opened.',
+          funFact: 'The brutalist architecture of Emory\'s Briarcliff campus made it the perfect stand-in for the fictional Hawkins Lab, requiring minimal set dressing.',
+          isMovie: false,
+        },
       ];
 
       const sanFranciscoLocations: FilmingLocation[] = [
