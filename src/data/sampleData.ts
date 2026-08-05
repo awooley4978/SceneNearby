@@ -559,6 +559,22 @@ const londonLocations: FilmingLocation[] = [
           sceneDescription: 'The haunted Creel House from Season 4, where Victor Creel\'s tragic family history unfolded and Vecna\'s origin was revealed.',
           funFact: 'This Victorian mansion in Rome, Georgia became one of the most chilling locations in the entire series after extensive production design.',
           isMovie: false,
+        {
+          id: 'atl-015', title: 'East Point First Baptist Church', movieOrShow: 'Stranger Things', year: 2016,
+          category: LocationCategory.drama, latitude: 33.6680, longitude: -84.4500,
+          address: '2813 East Point Street, East Point, GA', city: 'Atlanta', country: 'USA',
+          sceneDescription: 'Stood in for Hawkins church, where community gatherings and key emotional scenes unfolded against a classic Southern Gothic backdrop.',
+          funFact: 'The church building dates back to the early 20th century and its steeple makes it instantly recognizable to fans.',
+          isMovie: false,
+        },
+        {
+          id: 'atl-016', title: 'Jackson Drug', movieOrShow: 'Stranger Things', year: 2016,
+          category: LocationCategory.drama, latitude: 33.2950, longitude: -83.9660,
+          address: '4 2nd Street, Jackson, GA', city: 'Atlanta', country: 'USA',
+          sceneDescription: 'Stood in as Melvald\'s General Store, the classic small-town shop where Joyce Byers worked and where the Hawkins residents did their shopping.',
+          funFact: 'Jackson Drug is a real historic pharmacy building in downtown Jackson, Georgia, retrofitted by the production to look like a 1980s general store.',
+          isMovie: false,
+        },
         },
         },
       ];
@@ -1333,6 +1349,17 @@ const londonLocations: FilmingLocation[] = [
             ];
 
             const dallasLocations: FilmingLocation[] = [
+      const albuquerqueLocations: FilmingLocation[] = [
+        {
+          id: 'abq-001', title: 'Surfer Boy Pizza', movieOrShow: 'Stranger Things', year: 2016,
+          category: LocationCategory.drama, latitude: 34.8100, longitude: -106.7370,
+          address: '3476 NM-47, Los Lunas, NM', city: 'Albuquerque', country: 'USA',
+          sceneDescription: 'Stood in as the Surfer Boy Pizza restaurant, where the California crew works and where key Season 4 moments unfold.',
+          funFact: 'The production built the Surfer Boy Pizza interior on a soundstage, but the exterior shots used a real building along NM-47.',
+          isMovie: false,
+        },
+      ];
+
               {
                 id: 'dal-001', title: 'Dealey Plaza', movieOrShow: 'JFK', year: 1991,
                 imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/DealeyPlaza.jpeg',
@@ -1415,6 +1442,7 @@ export const allLocations: FilmingLocation[] = [
   ...dublinLocations,
   ...newOrleansLocations,
   ...washingtonDCLocations,
+  ...albuquerqueLocations,
   ...dallasLocations,
 ]; // distanceFromUser calculated at runtime from user GPS coordinates
 
@@ -1575,7 +1603,7 @@ export const locationById = (id: string): FilmingLocation | undefined => {
   return loc;
 };
 
-export const cities = ['New York City', 'Los Angeles', 'London', 'Chicago', 'Atlanta', 'San Francisco', 'Boston', 'Seattle', 'Vancouver', 'Toronto', 'Paris', 'Rome', 'Sydney', 'Auckland', 'Tokyo', 'Berlin', 'Dublin', 'New Orleans', 'Washington DC', 'Dallas'] as const;
+export const cities = ['New York City', 'Los Angeles', 'London', 'Chicago', 'Atlanta', 'San Francisco', 'Boston', 'Seattle', 'Vancouver', 'Toronto', 'Paris', 'Rome', 'Sydney', 'Auckland', 'Tokyo', 'Berlin', 'Dublin', 'New Orleans', 'Albuquerque', 'Washington DC', 'Dallas'] as const;
 
 // ── Mock Ratings ──
 
