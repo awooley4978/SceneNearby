@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { theme } from '../theme';
 import { BottomSheet } from './BottomSheet';
 import { isLocationVisited, markLocationVisited, getUserVisitTime, setUserVisitTime } from '../services/StorageService';
+import { BucketListSheet } from './BucketListSheet';
 
 interface EstimatedVisitTimeProps {
   time?: string;
@@ -27,6 +28,7 @@ export const EstimatedVisitTime: React.FC<EstimatedVisitTimeProps> = ({ time, lo
   const [hasVisited, setHasVisited] = useState(false);
   const [savedTime, setSavedTime] = useState<string | null>(null);
   const [showGate, setShowGate] = useState(false);
+  const [showBucketList, setShowBucketList] = useState(false);
 
   useEffect(() => {
     if (!locationId) return;
@@ -81,6 +83,7 @@ export const EstimatedVisitTime: React.FC<EstimatedVisitTimeProps> = ({ time, lo
   const handleNotVisited = () => {
     // Never persist — gate re-appears next tap
     setShowGate(false);
+    setShowBucketList(true);
   };
 
   // Summary: user time → default time → prompt
@@ -124,6 +127,12 @@ export const EstimatedVisitTime: React.FC<EstimatedVisitTimeProps> = ({ time, lo
           </TouchableOpacity>
         </View>
       </BottomSheet>
+
+      {/* Bucket List Sheet */}
+      <BucketListSheet
+        visible={showBucketList}
+        onClose={() => setShowBucketList(false)}
+      />
 
       {/* Content sheet */}
       <BottomSheet
