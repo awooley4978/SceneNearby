@@ -476,6 +476,33 @@ const londonLocations: FilmingLocation[] = [
           quoteAttribution: 'Rick Grimes',
           thenAndNow: 'The view from Jackson Street Bridge remains one of the best skyline views in Atlanta.',
           isMovie: false,
+        {
+          id: 'atl-005', title: 'Gwinnett Place Mall', movieOrShow: 'Stranger Things', year: 2016,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Gwinnett_Place_Mall_-_7730413316.jpg',
+          category: LocationCategory.drama, latitude: 33.9660, longitude: -84.1070,
+          address: '2100 Pleasant Hill Rd, Duluth, GA', city: 'Atlanta', country: 'USA',
+          sceneDescription: 'Served as Starcourt Mall in Season 3, where the Hawkins kids battle the Mind Flayer amid neon-lit food courts and storefronts.',
+          funFact: 'The production took over an entire wing of the largely abandoned mall, resurrecting dozens of storefronts with period-correct 1980s signage.',
+          isMovie: false,
+        },
+        {
+          id: 'atl-006', title: "Tiffany's Kitchen", movieOrShow: 'Stranger Things', year: 2016,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Tiffanys_Kitchen%2C_Lithia_Springs_GA.jpg',
+          category: LocationCategory.drama, latitude: 33.7710, longitude: -84.6490,
+          address: '7413 Lee Road, Lithia Springs, GA', city: 'Atlanta', country: 'USA',
+          sceneDescription: "Stood in as Benny's Burgers, the diner where Eleven first escapes in Season 1 before Benny meets his tragic end.",
+          funFact: "Tiffany's Kitchen is a real, beloved Southern meat-and-three diner that's been serving locals since the 1980s.",
+          isMovie: false,
+        },
+        {
+          id: 'atl-007', title: 'Bellwood Quarry', movieOrShow: 'Stranger Things', year: 2016,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Bellwood_Quarry.JPG',
+          category: LocationCategory.drama, latitude: 33.8000, longitude: -84.4500,
+          address: 'Chappell Rd NW, Atlanta, GA 30318', city: 'Atlanta', country: 'USA',
+          sceneDescription: 'Served as Sattler Quarry, where the boys hang out in Season 1 and where the fake body of Will Byers is discovered.',
+          funFact: "The quarry has since been transformed into Westside Park, Atlanta's largest green space, with a reservoir and miles of trails.",
+          isMovie: false,
+        },
         },
       ];
 
