@@ -31,6 +31,17 @@ export interface CompletionSnapshot {
   completedAt: number; // timestamp
 }
 
+/** V2-ready: enriched snapshot with movie metadata for Completed Collections page */
+export interface CompletedMovie {
+  movieTitle: string;
+  totalCount: number;
+  completedAt: number;
+  category: string;       // from movieGroupByTitle
+  year: number;
+  isMovie: boolean;
+  posterTitle: string;     // normalized for MoviePoster component
+}
+
 // ── Progress Calculation ──
 
 /** Group all locations by movie title */
@@ -96,7 +107,8 @@ export async function getMovieProgress(movieTitle: string): Promise<MovieProgres
 
 // ── Completion Snapshots ──
 
-async function getCompletionSnapshots(): Promise<CompletionSnapshot[]> {
+/** Public — V2 needs this for Completed Collections page queries */
+export async function getCompletionSnapshots(): Promise<CompletionSnapshot[]> {
   try {
     const raw = await AsyncStorage.getItem(STORAGE_KEYS.COMPLETION_SNAPSHOTS);
     if (!raw) return [];
@@ -104,6 +116,54 @@ async function getCompletionSnapshots(): Promise<CompletionSnapshot[]> {
   } catch {
     return [];
   }
+}
+
+/** V2-ready: get all completed movies enriched with metadata, newest first */
+export async function getCompletedMovies(): Promise<CompletedMovie[]> {
+  const snapshots = await getCompletionSnapshots();
+  return snapshots
+    .map((s) => {
+      const group = movieGroupByTitle(s.movieTitle);
+      return {
+        movieTitle: s.movieTitle,
+        totalCount: s.totalCount,
+        completedAt: s.completedAt,
+        category: group?.category ?? 'Unknown',
+        year: group?.year ?? 0,
+        isMovie: group?.isMovie ?? true,
+        posterTitle: s.movieTitle,
+      };
+    })
+    .sort((a, b) => b.completedAt - a.completedAt);
+}
+
+/** V2-ready: movies the user has started but not completed, sorted by progress */
+export async function getMoviesInProgress(): Promise<MovieProgress[]> {
+  const all = await getAllMovieProgress();
+  return all
+    .filter((p) => p.visitedCount > 0 && !p.isComplete)
+    .sort((a, b) => {
+      const pctA = a.visitedCount / a.totalCount;
+      const pctB = b.visitedCount / b.totalCount;
+      return pctB - pctA;
+    });
+}
+
+/** V2-ready: quick stats for the Completed Collections header */
+export async function getCollectionStats(): Promise<{
+  completedCount: number;
+  inProgressCount: number;
+  totalLocationsVisited: number;
+  totalMovies: number;
+}> {
+  const all = await getAllMovieProgress();
+  const visited = await getVisitedIds();
+  return {
+    completedCount: all.filter((p) => p.isComplete && p.totalCount >= 3).length,
+    inProgressCount: all.filter((p) => p.visitedCount > 0 && !p.isComplete).length,
+    totalLocationsVisited: visited.size,
+    totalMovies: all.length,
+  };
 }
 
 async function saveCompletionSnapshot(snapshot: CompletionSnapshot): Promise<void> {
