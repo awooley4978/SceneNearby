@@ -24,7 +24,6 @@ import { UploadPhotoScreen } from '../screens/Upload/UploadPhotoScreen';
 import { AdminDashboardScreen } from '../screens/Admin/AdminDashboardScreen';
 import { AdminDetailScreen } from '../screens/Admin/AdminDetailScreen';
 import { AchievementsScreen } from '../screens/Profile/AchievementsScreen';
-import { CreditsRollScreen } from '../screens/Profile/CreditsRollScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -150,7 +149,6 @@ function ProfileStack() {
       <Stack.Screen name="AdminDashboard" component={AdminDashboardScreen} options={{ headerShown: false }} />
       <Stack.Screen name="AdminDetail" component={AdminDetailScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Achievements" component={AchievementsScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="CreditsRoll" component={CreditsRollScreen} options={{ headerShown: false, animation: 'fade' as any, presentation: 'fullScreenModal' as any }} />
     </Stack.Navigator>
   );
 }
