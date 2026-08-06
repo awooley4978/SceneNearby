@@ -578,6 +578,18 @@ const londonLocations: FilmingLocation[] = [
         },
         },
       ];
+        {
+          id: 'chi-006', title: 'Maine North High School', movieOrShow: 'The Breakfast Club', year: 1985,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Maine%20North%20High%20School.jpg',
+          category: LocationCategory.comedy, latitude: 42.0333, longitude: -87.8833,
+          address: '9511 Harrison St, Des Plaines, IL 60016', city: 'Chicago', country: 'USA',
+          sceneDescription: 'The closed school became Shermer High School for The Breakfast Club. Since the actual library was too small, the production team built the famous library set inside the school\'s gymnasium — the room where five strangers became a family over the course of a Saturday detention.',
+          funFact: 'Maine North closed permanently in 1981 due to low attendance. John Hughes chose the shuttered school for its authentic, frozen-in-time feel. The building is now owned by the police department and used as an Illinois Lottery payment facility — the famous gym-turned-library is now a warehouse storing confiscated and lost items.',
+          quote: "We're all pretty bizarre. Some of us are just better at hiding it, that's all.",
+          quoteAttribution: 'John Bender',
+          thenAndNow: 'The building still stands at 9511 Harrison St in Des Plaines. While not open to the public, fans still drive by to see the exterior of the school where the Breakfast Club spent their Saturday.',
+          isMovie: true,
+        },
 
       const sanFranciscoLocations: FilmingLocation[] = [
         {
