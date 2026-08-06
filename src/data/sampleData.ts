@@ -602,6 +602,19 @@ const londonLocations: FilmingLocation[] = [
           thenAndNow: 'LaSalle Street remains a bustling financial corridor. The "canyon" effect is still dramatic, and the Board of Trade building at the south end anchors countless establishing shots.',
           isMovie: true,
         },
+        {
+          id: 'chi-008', title: 'Willis Tower (Sears Tower)', movieOrShow: 'Ferris Bueller\'s Day Off', year: 1986,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Sears_Tower%2C_Wacker_Drive_and_Jackson_Boulevard%2C_Chicago%2C_IL_-_54189600211.jpg',
+          focalPoint: { x: 0.5, y: 0.35 },
+          category: LocationCategory.comedy, latitude: 41.8789, longitude: -87.6359,
+          address: '233 S Wacker Dr, Chicago, IL 60606', city: 'Chicago', country: 'USA',
+          sceneDescription: 'Ferris, Sloane, and Cameron press their foreheads against the glass of the Skydeck, 1,353 feet above Chicago, gazing down at the city they\'ve just conquered in a single day. Two decades later, Christopher Nolan used the same tower as the dark centerpiece of Gotham\'s skyline in The Dark Knight — the Joker\'s final act played out in its long shadow.',
+          funFact: 'When Ferris Bueller opened in 1986, this was the tallest building in the world — a title it held for 25 years. The Skydeck\'s "Ledge" glass boxes (added later) extend 4.3 feet out from the 103rd floor, but the observation deck scenes use the original windows. John Hughes filmed the trio here on a real weekday, with actual tourists in the background.',
+          quote: "Life moves pretty fast. If you don't stop and look around once in a while, you could miss it.",
+          quoteAttribution: 'Ferris Bueller',
+          thenAndNow: 'Rebranded Willis Tower in 2009, but Chicagoans still call it Sears Tower. The Skydeck attracts over 1.7 million visitors a year — you can still press your forehead against the same glass.',
+          isMovie: true,
+        },
 
       const sanFranciscoLocations: FilmingLocation[] = [
         {
