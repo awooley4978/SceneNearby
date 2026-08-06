@@ -723,6 +723,15 @@ const londonLocations: FilmingLocation[] = [
           funFact: 'Though the film is set around Harvard, most \'Harvard\' interiors were actually shot elsewhere — but Harvard Square\'s exterior scenes are the real deal, including the iconic bench scene where Sean tells Will \'it\'s not your fault.\'',
           isMovie: true,
         },
+        {
+          id: 'bos-009', title: 'Erich Lindemann Health Center', movieOrShow: 'The Departed', year: 2006,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Erich%20Lindemann%20Health%20Center.jpg',
+          category: LocationCategory.drama, latitude: 42.3612, longitude: -71.0652,
+          address: '25 Staniford St, Boston, MA 02114', city: 'Boston', country: 'USA',
+          sceneDescription: 'The brutalist state government building stood in as the Massachusetts State Police headquarters where Martin Sheen\'s Captain Queenan runs the undercover operation.',
+          funFact: 'The building\'s imposing concrete architecture perfectly matched the film\'s gritty tone. Scorsese chose it for its institutional coldness — a visual foil to the warmth of the Irish pubs.',
+          isMovie: true,
+        },
 
       const seattleLocations: FilmingLocation[] = [
         {
