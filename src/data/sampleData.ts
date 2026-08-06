@@ -732,6 +732,24 @@ const londonLocations: FilmingLocation[] = [
           funFact: 'The building\'s imposing concrete architecture perfectly matched the film\'s gritty tone. Scorsese chose it for its institutional coldness — a visual foil to the warmth of the Irish pubs.',
           isMovie: true,
         },
+        {
+          id: 'bos-010', title: 'Suffolk University Law School', movieOrShow: 'The Departed', year: 2006,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Suffolk%20University%20Law%20School.jpg',
+          category: LocationCategory.drama, latitude: 42.3571, longitude: -71.0634,
+          address: '120 Tremont St, Boston, MA 02108', city: 'Boston', country: 'USA',
+          sceneDescription: 'The law school\'s modern atrium doubled as the Massachusetts State Police interior, where officers brief on the Costello investigation.',
+          funFact: 'Suffolk\'s Sargent Hall was chosen for its sleek glass-and-steel architecture, offering a sharp contrast to the gritty street-level world the characters inhabit.',
+          isMovie: true,
+        },
+        {
+          id: 'bos-011', title: 'Massachusetts State House', movieOrShow: 'The Departed', year: 2006,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Massachusetts_State_House_Boston_November_2016.jpg',
+          category: LocationCategory.drama, latitude: 42.3588, longitude: -71.0638,
+          address: '24 Beacon St, Boston, MA 02133', city: 'Boston', country: 'USA',
+          sceneDescription: 'The golden-domed State House appears in establishing shots of the power corridors that the undercover operation seeks to protect and infiltrate.',
+          funFact: 'The Massachusetts State House\'s dome was originally covered in copper by Paul Revere\'s company, then gilded in 23-karat gold in 1874.',
+          isMovie: true,
+        },
 
       const seattleLocations: FilmingLocation[] = [
         {
