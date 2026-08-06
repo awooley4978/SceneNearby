@@ -28,9 +28,8 @@ import { LocationPhotoGallery, GalleryPhoto } from '../../components/LocationPho
 import { SectionCard } from '../../components/SectionCard';
 import { SpotlightOverlay, LocationFrame, BrandDivider } from '../../components/BrandElements';
 import { BackButton } from '../../components/BackButton';
-import { AchievementModal } from '../../components/AchievementModal';
 import { markVisited, unmarkVisited, isVisited } from '../../services/VisitedService';
-import { detectCompletionChanges, checkAchievements } from '../../services/AchievementService';
+import { detectCompletionChanges, checkAchievements, getMovieProgress } from '../../services/AchievementService';
 import { logLocationViewed, logLocationSaved, logLocationUnsaved, logLocationNavigate, logLocationShared, logUserRating } from '../../services/analytics';
 
 const HERO_HEIGHT = 420;
@@ -46,8 +45,6 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
   const saved = checkSaved(locationId);
   const [imageError, setImageError] = useState(false);
   const [visited, setVisited] = useState(false);
-  const [showAchievement, setShowAchievement] = useState(false);
-  const [completedMovie, setCompletedMovie] = useState<string | null>(null);
   const userLocation = useUserLocation();
 
   // Load visited state on mount
@@ -175,12 +172,16 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
     } else {
       await markVisited(locationId);
       setVisited(true);
-      // Check for completions and achievements
       const { justCompleted } = await detectCompletionChanges();
       await checkAchievements();
       if (justCompleted.length > 0) {
-        setCompletedMovie(justCompleted[0]);
-        setShowAchievement(true);
+        const movie = justCompleted[0];
+        const progress = await getMovieProgress(movie);
+        navigation.navigate('CreditsRoll', {
+          movieTitle: movie,
+          visitedCount: progress?.totalCount ?? 0,
+          totalCount: progress?.totalCount ?? 0,
+        });
       }
     }
   };
@@ -469,13 +470,6 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
           <Text style={styles.supportFooter}>scenenearbysupport@gmail.com</Text>
         </SectionCard>
       </ScrollView>
-
-      {/* Achievement celebration modal */}
-      <AchievementModal
-        visible={showAchievement}
-        movieTitle={completedMovie ?? ''}
-        onDismiss={() => setShowAchievement(false)}
-      />
     </View>
   );
 };
