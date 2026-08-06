@@ -106,7 +106,7 @@ export const AdminDashboardScreen: React.FC<{ navigation: any }> = ({ navigation
           <View style={[styles.progressFill, { width: `${stats.completionPercentage}%` }]} />
         </View>
         <Text style={styles.completionSub}>
-          {stats.totalLocations - stats.missingPhotoItems.filter((l) => l.imageUrl && l.sceneDescription && l.funFact).length} of {stats.totalLocations} locations fully complete
+          {stats.totalLocations} total locations • target 100%
         </Text>
       </View>
 
@@ -117,9 +117,7 @@ export const AdminDashboardScreen: React.FC<{ navigation: any }> = ({ navigation
           navigation.navigate('AdminDetail', {
             type: 'allLocations',
             label: 'All Locations',
-            items: stats.missingPhotoItems.concat(
-              allLocations.filter((l) => l.imageUrl),
-            ),
+            items: allLocations,
           })
         }
       >
