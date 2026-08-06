@@ -254,6 +254,9 @@ export const STORAGE_KEYS = {
   NOTIFICATION_HISTORY: '@scenenearby/notifications',
   ONBOARDING_COMPLETE: '@scenenearby/onboarding_complete',
   ONBOARDING_DATA: '@scenenearby/onboarding_data',
+  VISITED_LOCATIONS: '@scenenearby/visited',
+  ACHIEVEMENTS: '@scenenearby/achievements',
+  COMPLETION_SNAPSHOTS: '@scenenearby/completion_snapshots',
 };
 
 // ── Onboarding Data ──
