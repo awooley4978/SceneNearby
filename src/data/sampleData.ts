@@ -687,6 +687,42 @@ const londonLocations: FilmingLocation[] = [
           isMovie: true,
         },
       ];
+        {
+          id: 'bos-005', title: 'MIT Campus', movieOrShow: 'Good Will Hunting', year: 1997,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/MIT%20Campus.jpg',
+          category: LocationCategory.drama, latitude: 42.3601, longitude: -71.0942,
+          address: '77 Massachusetts Ave, Cambridge, MA', city: 'Boston', country: 'USA',
+          sceneDescription: 'Will Hunting works as a janitor in the hallways of MIT, where he anonymously solves a complex math problem left on a hallway chalkboard by Professor Lambeau.',
+          funFact: 'The famous hallway chalkboard scene was filmed in Building 2 at MIT. Today, tourists still sneak into the building to take photos at the chalkboards where Matt Damon\'s character made mathematical history.',
+          isMovie: true,
+        },
+        {
+          id: 'bos-006', title: 'L Street Tavern', movieOrShow: 'Good Will Hunting', year: 1997,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/L%20Street%20Tavern.jpg',
+          category: LocationCategory.drama, latitude: 42.3345, longitude: -71.0365,
+          address: '658 E Broadway, South Boston, MA', city: 'Boston', country: 'USA',
+          sceneDescription: 'The dive bar where Will and his Southie friends Chuckie, Billy, and Morgan drink, joke, and defend their corner of the world.',
+          funFact: 'L Street Tavern is a real working-class bar in South Boston that still serves drinks to locals — and now plenty of movie tourists. The owners kept the \'Good Will Hunting\' memorabilia on the walls.',
+          isMovie: true,
+        },
+        {
+          id: 'bos-007', title: 'Bunker Hill Community College', movieOrShow: 'Good Will Hunting', year: 1997,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Bunker_Hill_College_main_entrance%2C_January_2010.JPG',
+          category: LocationCategory.drama, latitude: 42.3720, longitude: -71.0676,
+          address: '250 New Rutherford Ave, Charlestown, MA', city: 'Boston', country: 'USA',
+          sceneDescription: 'Stood in as the community college where Sean Maguire (Robin Williams) teaches psychology, including the iconic \'your move, chief\' classroom scenes.',
+          funFact: 'BHCC was chosen for its authentic blue-collar campus feel. Robin Williams spent time talking with actual students between takes.',
+          isMovie: true,
+        },
+        {
+          id: 'bos-008', title: 'Harvard Square', movieOrShow: "Good Will Hunting", year: 1997,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Harvard_square_harvard_yard.JPG',
+          category: LocationCategory.drama, latitude: 42.3736, longitude: -71.1190,
+          address: 'Harvard Square, Cambridge, MA', city: 'Boston', country: 'USA',
+          sceneDescription: 'The bustling heart of Cambridge appears throughout the film as Will navigates between his Southie roots and the elite academic world. Skylar and Will share pivotal moments in the cafés and streets of the Square.',
+          funFact: 'Though the film is set around Harvard, most \'Harvard\' interiors were actually shot elsewhere — but Harvard Square\'s exterior scenes are the real deal, including the iconic bench scene where Sean tells Will \'it\'s not your fault.\'',
+          isMovie: true,
+        },
 
       const seattleLocations: FilmingLocation[] = [
         {
