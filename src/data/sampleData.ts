@@ -590,6 +590,18 @@ const londonLocations: FilmingLocation[] = [
           thenAndNow: 'The building still stands at 9511 Harrison St in Des Plaines. While not open to the public, fans still drive by to see the exterior of the school where the Breakfast Club spent their Saturday.',
           isMovie: true,
         },
+        {
+          id: 'chi-007', title: 'LaSalle Street Canyon', movieOrShow: 'The Dark Knight', year: 2008,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/La_Salle_Street_-_Canyon_of_Commerce_(2639619014).jpg',
+          category: LocationCategory.action, latitude: 41.8789, longitude: -87.6324,
+          address: 'LaSalle Street between Jackson Blvd & Adams St, Chicago, IL 60604', city: 'Chicago', country: 'USA',
+          sceneDescription: 'The Joker\'s semi-truck flips end-over-end in one of cinema\'s most jaw-dropping practical effects, filmed in the narrow canyon of LaSalle Street. In a very different era of Chicago crime, Eliot Ness and his Untouchables ambushed Frank Nitti on the very same street — the famous staircase that doubled as Union Station is just east of here.',
+          funFact: 'Christopher Nolan closed LaSalle Street for three weeks and used a real semi-truck that was rigged with a piston to flip it — no CGI. Nearly 40 years earlier, Brian De Palma staged the iconic baby carriage staircase shootout here, cementing this one block as the most cinematic stretch of pavement in Chicago.',
+          quote: "You either die a hero, or you live long enough to see yourself become the villain.",
+          quoteAttribution: 'Harvey Dent',
+          thenAndNow: 'LaSalle Street remains a bustling financial corridor. The "canyon" effect is still dramatic, and the Board of Trade building at the south end anchors countless establishing shots.',
+          isMovie: true,
+        },
 
       const sanFranciscoLocations: FilmingLocation[] = [
         {
