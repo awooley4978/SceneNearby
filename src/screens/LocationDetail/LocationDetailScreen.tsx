@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -28,9 +28,6 @@ import { LocationPhotoGallery, GalleryPhoto } from '../../components/LocationPho
 import { SectionCard } from '../../components/SectionCard';
 import { SpotlightOverlay, LocationFrame, BrandDivider } from '../../components/BrandElements';
 import { BackButton } from '../../components/BackButton';
-import { AchievementModal } from '../../components/AchievementModal';
-import { markVisited, unmarkVisited, isVisited } from '../../services/VisitedService';
-import { detectCompletionChanges, checkAchievements } from '../../services/AchievementService';
 import { logLocationViewed, logLocationSaved, logLocationUnsaved, logLocationNavigate, logLocationShared, logUserRating } from '../../services/analytics';
 
 const HERO_HEIGHT = 420;
@@ -45,17 +42,7 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
   const { isSaved: checkSaved, toggleSave: toggleSaved } = useSaved();
   const saved = checkSaved(locationId);
   const [imageError, setImageError] = useState(false);
-  const [visited, setVisited] = useState(false);
-  const [showAchievement, setShowAchievement] = useState(false);
-  const [completedMovie, setCompletedMovie] = useState<string | null>(null);
   const userLocation = useUserLocation();
-
-  // Load visited state on mount
-  useEffect(() => {
-    if (location) {
-      isVisited(location.id).then(setVisited);
-    }
-  }, [location?.id]);
 
   const distanceFromUser = React.useMemo(() => {
     if (userLocation.latitude === null || userLocation.longitude === null || !location) return undefined;
@@ -166,23 +153,6 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
 
   const handleSave = async () => {
     await toggleSaved(locationId);
-  };
-
-  const handleVisitToggle = async () => {
-    if (visited) {
-      await unmarkVisited(locationId);
-      setVisited(false);
-    } else {
-      await markVisited(locationId);
-      setVisited(true);
-      // Check for completions and achievements
-      const { justCompleted } = await detectCompletionChanges();
-      await checkAchievements();
-      if (justCompleted.length > 0) {
-        setCompletedMovie(justCompleted[0]);
-        setShowAchievement(true);
-      }
-    }
   };
 
   const handleViewMovie = () => {
@@ -418,18 +388,6 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
           <Pressable
             style={({ pressed }) => [
               styles.secondaryButton,
-              visited && styles.visitedButton,
-              pressed && styles.buttonPressed,
-            ]}
-            onPress={handleVisitToggle}
-          >
-            <Text style={[styles.secondaryButtonText, visited && styles.visitedButtonText]}>
-              {visited ? '✅ Visited' : '👟 Mark Visited'}
-            </Text>
-          </Pressable>
-          <Pressable
-            style={({ pressed }) => [
-              styles.secondaryButton,
               saved && styles.savedButton,
               pressed && styles.buttonPressed,
             ]}
@@ -469,13 +427,6 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
           <Text style={styles.supportFooter}>scenenearbysupport@gmail.com</Text>
         </SectionCard>
       </ScrollView>
-
-      {/* Achievement celebration modal */}
-      <AchievementModal
-        visible={showAchievement}
-        movieTitle={completedMovie ?? ''}
-        onDismiss={() => setShowAchievement(false)}
-      />
     </View>
   );
 };
@@ -675,13 +626,6 @@ const styles = StyleSheet.create({
   },
   savedButtonText: {
     color: theme.colors.gold,
-  },
-  visitedButton: {
-    backgroundColor: '#10B981' + '20',
-    borderColor: '#10B981',
-  },
-  visitedButtonText: {
-    color: '#10B981',
   },
   buttonPressed: {
     transform: [{ scale: 0.96 }],

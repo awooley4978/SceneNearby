@@ -237,17 +237,6 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
           <Text style={styles.navLinkChevron}>›</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.navLinkRow}
-          onPress={() => navigation.navigate('Achievements')}
-        >
-          <View style={styles.navLinkInfo}>
-            <Text style={styles.navLinkLabel}>🏆 Achievements</Text>
-            <Text style={styles.navLinkDesc}>Track visited locations and earn badges</Text>
-          </View>
-          <Text style={styles.navLinkChevron}>›</Text>
-        </TouchableOpacity>
-
         {/* Reset Onboarding */}
         <TouchableOpacity
           style={styles.resetButton}

@@ -1,6 +1,5 @@
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
 import { BackButton } from '../../components/BackButton';
 import { theme } from '../../theme';
 import { movieGroupByTitle, locationsByMovie, mockRatings } from '../../data/sampleData';
@@ -8,8 +7,6 @@ import { categoryColors } from '../../models';
 import { LocationCard } from '../../components/LocationCard';
 import { StarRating } from '../../components/StarRating';
 import { MoviePoster } from '../../components/MoviePoster';
-import { MovieProgressBar } from '../../components/MovieProgressBar';
-import { getMovieProgress, type MovieProgress } from '../../services/AchievementService';
 
 export const MovieDetailScreen: React.FC<{ route: any; navigation: any }> = ({
   route,
@@ -18,14 +15,6 @@ export const MovieDetailScreen: React.FC<{ route: any; navigation: any }> = ({
   const { movieTitle } = route.params;
   const movieGroup = movieGroupByTitle(movieTitle);
   const locations = locationsByMovie(movieTitle);
-  const [progress, setProgress] = useState<MovieProgress | null>(null);
-
-  // Reload progress whenever the screen is focused
-  useFocusEffect(
-    useCallback(() => {
-      getMovieProgress(movieTitle).then(setProgress);
-    }, [movieTitle]),
-  );
 
   if (!movieGroup || locations.length === 0) {
     return (
@@ -62,18 +51,7 @@ export const MovieDetailScreen: React.FC<{ route: any; navigation: any }> = ({
           <StarRating rating={avgRating} size={14} showCount={false} />
           <Text style={styles.locationCount}>
             🎥 {movieGroup.locationCount} filming location{movieGroup.locationCount !== 1 ? 's' : ''}
-            {progress && progress.visitedCount > 0 && (
-              <Text style={styles.visitedHint}> — {progress.visitedCount} visited</Text>
-            )}
           </Text>
-          {progress && (progress.visitedCount > 0 || progress.previousComplete) && (
-            <MovieProgressBar
-              visitedCount={progress.visitedCount}
-              totalCount={progress.totalCount}
-              isComplete={progress.isComplete}
-              previousComplete={progress.previouslyComplete || false}
-            />
-          )}
         </View>
       </View>
 
@@ -169,10 +147,6 @@ const styles = StyleSheet.create({
     color: theme.colors.gold,
     fontWeight: '500',
     marginTop: 2,
-  },
-  visitedHint: {
-    color: '#10B981',
-    fontWeight: '600',
   },
   filmographyLink: {
     flexDirection: 'row',
