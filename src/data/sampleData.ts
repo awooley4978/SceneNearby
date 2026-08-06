@@ -615,6 +615,19 @@ const londonLocations: FilmingLocation[] = [
           thenAndNow: 'Rebranded Willis Tower in 2009, but Chicagoans still call it Sears Tower. The Skydeck attracts over 1.7 million visitors a year — you can still press your forehead against the same glass.',
           isMovie: true,
         },
+        {
+          id: 'chi-009', title: 'Chicago Board of Trade Building', movieOrShow: 'Ferris Bueller\'s Day Off', year: 1986,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Chicago_Board_of_Trade_Building%2C_Chicago%2C_Illinois_(11004312754).jpg',
+          focalPoint: { x: 0.5, y: 0.3 },
+          category: LocationCategory.comedy, latitude: 41.8781, longitude: -87.6322,
+          address: '141 W Jackson Blvd, Chicago, IL 60604', city: 'Chicago', country: 'USA',
+          sceneDescription: 'The Art Deco crown of the Board of Trade looms over LaSalle Street as Ferris, Sloane, and Cameron race through the financial district. Twenty years later, Christopher Nolan recast the same imposing limestone tower as the headquarters of Wayne Enterprises in Batman Begins — Gotham\'s answer to a cathedral of commerce.',
+          funFact: 'The Board of Trade\'s 31-foot statue of Ceres, goddess of grain, stands atop the building with no facial features — the sculptor argued no one would see her face from street level. The building held the title of Chicago\'s tallest from 1930 until 1965. Its lobby — a three-story hall of marble, brass, and gold — has appeared in dozens of films.',
+          quote: "I don't even have a piece of gum. I am completely without resources.",
+          quoteAttribution: 'Cameron Frye',
+          thenAndNow: 'Still an active trading floor and one of the most recognizable skyscrapers in Chicago. The building is a National Historic Landmark and anchors the south end of the LaSalle Street canyon.',
+          isMovie: true,
+        },
 
       const sanFranciscoLocations: FilmingLocation[] = [
         {
