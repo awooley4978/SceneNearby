@@ -1864,6 +1864,10 @@ const actorMap: Record<string, string[]> = {
   'chi-003': ['Jake Gyllenhaal', 'Michelle Monaghan', 'Vera Farmiga'],
   'chi-004': ['Matthew Broderick', 'Alan Ruck', 'Mia Sara'],
   'chi-005': ['Harrison Ford', 'Tommy Lee Jones', 'Sela Ward'],
+  'chi-006': ['Emilio Estevez', 'Molly Ringwald', 'Judd Nelson', 'Ally Sheedy', 'Anthony Michael Hall'],
+  'chi-007': ['Christian Bale', 'Heath Ledger', 'Kevin Costner', 'Sean Connery'],
+  'chi-008': ['Matthew Broderick', 'Alan Ruck', 'Mia Sara', 'Christian Bale', 'Heath Ledger'],
+  'chi-009': ['Matthew Broderick', 'Alan Ruck', 'Mia Sara', 'Christian Bale', 'Michael Caine'],
   'atl-001': ['Millie Bobby Brown', 'Finn Wolfhard', 'David Harbour'],
   'atl-002': ['Andrew Lincoln', 'Norman Reedus', 'Melissa McBride'],
   'atl-003': ['Chadwick Boseman', 'Michael B. Jordan', 'Lupita Nyong\'o'],
@@ -1934,6 +1938,10 @@ const actorMap: Record<string, string[]> = {
   'dal-003': ['Warren Beatty', 'Faye Dunaway', 'Gene Hackman'],
   'dal-004': ['Adrian Grenier', 'Kevin Connolly', 'Jeremy Piven'],
   'dal-005': ['Ron Livingston', 'Jennifer Aniston', 'Stephen Root'],
+  'dal-006': ['Billy Bob Thornton', 'Ali Larter', 'Jon Hamm', 'Demi Moore'],
+  'dal-007': ['Billy Bob Thornton', 'Ali Larter', 'Jon Hamm', 'Demi Moore'],
+  'dal-008': ['Billy Bob Thornton', 'Ali Larter', 'Jon Hamm', 'Demi Moore'],
+  'dal-009': ['Billy Bob Thornton', 'Ali Larter', 'Jon Hamm', 'Demi Moore'],
 };
 
 // Merge actors into allLocations
