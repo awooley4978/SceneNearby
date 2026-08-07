@@ -629,6 +629,7 @@ const londonLocations: FilmingLocation[] = [
           thenAndNow: 'Still an active trading floor and one of the most recognizable skyscrapers in Chicago. The building is a National Historic Landmark and anchors the south end of the LaSalle Street canyon.',
           isMovie: true,
         },
+      ];
 
       const sanFranciscoLocations: FilmingLocation[] = [
         {
@@ -1316,6 +1317,7 @@ const londonLocations: FilmingLocation[] = [
       ];
 
       const aucklandLocations: FilmingLocation[] = [
+      ];
       const wellingtonLocations: FilmingLocation[] = [
         {
           id: 'wlg-001', title: 'Weta Workshop', movieOrShow: 'The Lord of the Rings', year: 2001,
@@ -1850,6 +1852,7 @@ const londonLocations: FilmingLocation[] = [
             ];
 
             const dallasLocations: FilmingLocation[] = [
+      ];
       const albuquerqueLocations: FilmingLocation[] = [
         {
           id: 'abq-001', title: 'Surfer Boy Pizza', movieOrShow: 'Stranger Things', year: 2016,
