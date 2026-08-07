@@ -1793,7 +1793,7 @@ const londonLocations: FilmingLocation[] = [
 
       const washingtonDCLocations: FilmingLocation[] = [
         {
-          id: 'was-001', title: 'Lincoln Memorial', movieOrShow: 'Forrest Gump', year: 1994,
+          id: 'was-001', title: 'Lincoln Memorial', movieOrShow: 'Forrest Gump + Planet of the Apes (2001) + The X-Files', year: 1994,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/LincolnMemorial.JPG',
     focalPoint: { x: 0.5, y: 0.4 },
           category: LocationCategory.comedy, latitude: 38.8893, longitude: -77.0502,
@@ -1806,7 +1806,7 @@ const londonLocations: FilmingLocation[] = [
           isMovie: true,
         },
         {
-          id: 'was-002', title: 'National Mall', movieOrShow: 'Independence Day', year: 1996,
+          id: 'was-002', title: 'National Mall', movieOrShow: 'Independence Day + Captain America: The Winter Soldier + Wonder Woman 1984 + House of Cards + Veep', year: 1996,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/NationalMall.jpg',
           category: LocationCategory.action, latitude: 38.8895, longitude: -77.0220,
           address: 'National Mall, Washington DC', city: 'Washington DC', country: 'USA',
@@ -1818,7 +1818,7 @@ const londonLocations: FilmingLocation[] = [
           isMovie: true,
         },
         {
-          id: 'was-003', title: 'Jefferson Memorial', movieOrShow: 'The West Wing', year: 1999,
+          id: 'was-003', title: 'Jefferson Memorial', movieOrShow: 'The West Wing + National Treasure: Book of Secrets + House of Cards + Parks and Recreation', year: 1999,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/JeffersonMemorial.jpg',
           category: LocationCategory.drama, latitude: 38.8813, longitude: -77.0368,
           address: 'Jefferson Memorial, Washington DC', city: 'Washington DC', country: 'USA',
@@ -1830,7 +1830,7 @@ const londonLocations: FilmingLocation[] = [
           isMovie: false,
         },
         {
-                id: 'was-004', title: 'Library of Congress', movieOrShow: 'National Treasure 2', year: 2007,
+                id: 'was-004', title: 'Library of Congress', movieOrShow: "National Treasure 2 + All the President's Men + House of Cards + The X-Files", year: 2007,
                 imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/LiibraryofCongress.jpg',
                 category: LocationCategory.action, latitude: 38.8887, longitude: -77.0047,
                 address: '101 Independence Ave SE', city: 'Washington DC', country: 'USA',
@@ -2096,10 +2096,10 @@ const actorMap: Record<string, string[]> = {
   'nol-001': ['Tom Cruise', 'Brad Pitt', 'Kirsten Dunst'],
   'nol-002': ['Brad Pitt', 'Cate Blanchett', 'Taraji P. Henson'],
   'nol-003': ['Joseph Morgan', 'Daniel Gillies', 'Phoebe Tonkin'],
-  'was-001': ['Tom Hanks', 'Robin Wright', 'Gary Sinise'],
-  'was-002': ['Will Smith', 'Jeff Goldblum', 'Bill Pullman'],
-  'was-003': ['Martin Sheen', 'Rob Lowe', 'Allison Janney'],
-  'was-004': ['Nicolas Cage', 'Justin Bartha', 'Diane Kruger'],
+  'was-001': ['Tom Hanks', 'Mark Wahlberg', 'David Duchovny', 'Robin Wright', 'Gillian Anderson'],
+  'was-002': ['Will Smith', 'Chris Evans', 'Gal Gadot', 'Kevin Spacey', 'Julia Louis-Dreyfus'],
+  'was-003': ['Martin Sheen', 'Nicolas Cage', 'Kevin Spacey', 'Amy Poehler', 'Rob Lowe'],
+  'was-004': ['Nicolas Cage', 'Robert Redford', 'Kevin Spacey', 'David Duchovny', 'Dustin Hoffman'],
   'dal-001': ['Kevin Costner', 'Gary Oldman', 'Tommy Lee Jones'],
   'dal-002': ['Larry Hagman', 'Patrick Duffy', 'Linda Gray'],
   'dal-003': ['Warren Beatty', 'Faye Dunaway', 'Gene Hackman'],
