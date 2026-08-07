@@ -577,9 +577,8 @@ const londonLocations: FilmingLocation[] = [
           funFact: 'Jackson Drug is a real historic pharmacy building in downtown Jackson, Georgia, retrofitted by the production to look like a 1980s general store.',
           isMovie: false,
         },
-        },
-        },
       ];
+      const chicagoLocationsExtra: FilmingLocation[] = [
         {
           id: 'chi-006', title: 'Maine North High School', movieOrShow: 'The Breakfast Club', year: 1985,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Maine%20North%20High%20School.jpg',
@@ -1970,6 +1969,7 @@ export const allLocations: FilmingLocation[] = [
   ...newYorkLocations,
   ...losAngelesLocations,
   ...londonLocations,
+  ...chicagoLocationsExtra,
   ...chicagoLocations,
   ...atlantaLocations,
   ...sanFranciscoLocations,
