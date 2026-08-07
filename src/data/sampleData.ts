@@ -979,7 +979,7 @@ const londonLocations: FilmingLocation[] = [
           isMovie: false,
         },
         {
-          id: 'van-002', title: 'Stanley Park', movieOrShow: 'The X-Files', year: 1993,
+          id: 'van-002', title: 'Stanley Park', movieOrShow: 'The X-Files + Deadpool + Rise of the Planet of the Apes + Fifty Shades of Grey', year: 1993,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/StanleyPark.jpg',
           category: LocationCategory.sciFi, latitude: 49.3043, longitude: -123.1445,
           address: 'Stanley Park, Vancouver', city: 'Vancouver', country: 'Canada',
@@ -2051,7 +2051,7 @@ const actorMap: Record<string, string[]> = {
   'sea-003': ['Bridget Fonda', 'Campbell Scott', 'Kyra Sedgwick'],
   'sea-004': ['Elisabeth Moss', 'Heath Ledger', 'Julia Stiles', 'Joseph Fiennes', 'Yvonne Strahovski'],
   'van-001': ['Grant Gustin', 'Candice Patton', 'Danielle Panabaker'],
-  'van-002': ['David Duchovny', 'Gillian Anderson', 'Mitch Pileggi'],
+  'van-002': ['Ryan Reynolds', 'David Duchovny', 'James Franco', 'Dakota Johnson', 'Gillian Anderson'],
   'van-003': ['Tom Ellis', 'Grant Gustin', 'Melissa Benoist', 'Stephen Amell', 'Ginnifer Goodwin'],
   'van-004': ['Alexa Davalos', 'Rupert Evans', 'Luke Kleintank'],
   'van-005': ['Eliza Taylor', 'Bob Morley', 'Marie Avgeropoulos'],
