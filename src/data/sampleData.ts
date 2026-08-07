@@ -991,7 +991,7 @@ const londonLocations: FilmingLocation[] = [
           isMovie: false,
         },
         {
-          id: 'van-003', title: 'Gastown Steam Clock', movieOrShow: 'Lucifer', year: 2016,
+          id: 'van-003', title: 'Gastown Steam Clock', movieOrShow: 'Lucifer + Once Upon a Time + Arrow + The Flash + Supergirl', year: 2016,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/GastownSteamClock.jpg',
           category: LocationCategory.comedy, latitude: 49.2842, longitude: -123.1070,
           address: 'Water St & Cambie St, Vancouver', city: 'Vancouver', country: 'Canada',
@@ -2052,7 +2052,7 @@ const actorMap: Record<string, string[]> = {
   'sea-004': ['Elisabeth Moss', 'Heath Ledger', 'Julia Stiles', 'Joseph Fiennes', 'Yvonne Strahovski'],
   'van-001': ['Grant Gustin', 'Candice Patton', 'Danielle Panabaker'],
   'van-002': ['David Duchovny', 'Gillian Anderson', 'Mitch Pileggi'],
-  'van-003': ['Tom Ellis', 'Lauren German', 'Lesley-Ann Brandt'],
+  'van-003': ['Tom Ellis', 'Grant Gustin', 'Melissa Benoist', 'Stephen Amell', 'Ginnifer Goodwin'],
   'van-004': ['Alexa Davalos', 'Rupert Evans', 'Luke Kleintank'],
   'van-005': ['Eliza Taylor', 'Bob Morley', 'Marie Avgeropoulos'],
   'tor-001': ['Hugh Jackman', 'Patrick Stewart', 'Ian McKellen'],
