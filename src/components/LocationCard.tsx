@@ -264,6 +264,12 @@ export const LocationCard: React.FC<LocationCardProps> = ({
 
           {/* ── Content Area ── */}
           <View style={styles.content}>
+            {/* DEBUG BANNER — visible on every card */}
+            <View style={styles.debugBanner}>
+              <Text style={styles.debugText}>
+                🔍 id={location.id} | movieOrShow="{location.movieOrShow}" | year={location.year} | title="{location.title}"
+              </Text>
+            </View>
             {/* Movie/Show name */}
             <TouchableOpacity onPress={onMoviePress} disabled={!onMoviePress}>
               <Text style={styles.movieName} numberOfLines={1}>
@@ -317,6 +323,19 @@ const styles = StyleSheet.create({
     // Gold left-border accent
     borderLeftWidth: 3,
     borderLeftColor: theme.colors.gold + '40',
+  },
+  debugBanner: {
+    backgroundColor: '#FFD700',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    marginBottom: 4,
+    borderRadius: 4,
+  },
+  debugText: {
+    color: '#000',
+    fontSize: 10,
+    fontWeight: '700',
+    fontFamily: 'monospace',
   },
 
   // ── Hero Image ──
