@@ -729,6 +729,28 @@ const londonLocations: FilmingLocation[] = [
           thenAndNow: "Still operating as a charming oceanfront inn. You can book the same rooms that appeared on the show — just ask for an ocean-view suite and listen to the same waves the cast heard between takes.",
           isMovie: false,
         },
+        {
+          id: 'sdg-005', title: 'Top Gun House', movieOrShow: 'Top Gun', year: 1986,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Top_Gun_House_Oceanside_CA.jpg',
+          category: LocationCategory.action, latitude: 33.1950, longitude: -117.3830,
+          address: '102 N Pacific St, Oceanside, CA 92054', city: 'San Diego', country: 'USA',
+          sceneDescription: "The weathered Victorian cottage where Maverick pulls up on his Kawasaki Ninja to see Charlie. She steps onto the porch in that white dress, and the movie's most grounded love scene unfolds — no jets, no bravado, just two people on a quiet Oceanside street at golden hour.",
+          funFact: "Built in 1887, this little cottage is one of the oldest beach houses in Oceanside. After decades of neglect following the film's release, it was restored in 2020 and relocated 100 yards to the Mission Pacific Hotel property, where it now serves as a pie shop called 'High Pie' — a nod to the film's famous line.",
+          quote: "I feel the need — the need for speed.",
+          quoteAttribution: 'Maverick',
+          thenAndNow: "The house still stands, freshly restored. Visit High Pie for a slice and a photo on the same porch where Maverick told Charlie he'd 'ride his motorcycle into the danger zone.'",
+          isMovie: true,
+        },
+        {
+          id: 'sdg-006', title: 'Kansas City Barbeque', movieOrShow: 'Top Gun', year: 1986,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Kansas_City_BBQ.JPG',
+          category: LocationCategory.action, latitude: 32.7100, longitude: -117.1690,
+          address: '600 W Harbor Dr, San Diego, CA 92101', city: 'San Diego', country: 'USA',
+          sceneDescription: "Maverick and Goose sit at the piano, belting out 'Great Balls of Fire' while the rest of the Top Gun class cheers them on. This is the movie's heart — before the tragedy, before the final dogfight — just pilots being young and invincible in a dive bar near the naval base.",
+          funFact: "The actual piano from the film still sits inside Kansas City Barbeque. The bar burned down in 2008 but was rebuilt using memorabilia salvaged from the fire — including the famous piano, Maverick's helmet, and photos from the shoot. Anthony Edwards (Goose) visited the rebuilt bar and signed the wall.",
+          thenAndNow: "Still open and still serving BBQ. The Top Gun memorabilia covers every inch of wall space. Grab a rack of ribs at the table where the pilots sat and ask about the piano — they'll let you play it.",
+          isMovie: true,
+        },
       ];
 
       const bostonLocations: FilmingLocation[] = [
@@ -1904,6 +1926,8 @@ const actorMap: Record<string, string[]> = {
   'ldn-005': ['Tom Cruise', 'Jeremy Renner', 'Simon Pegg'],
   'ldn-006': ['Julia Roberts', 'Hugh Grant', 'Rhys Ifans'],
   'ldn-007': ['Renée Zellweger', 'Colin Firth', 'Hugh Grant'],
+  'sdg-005': ['Tom Cruise', 'Kelly McGillis', 'Val Kilmer', 'Anthony Edwards', 'Meg Ryan'],
+  'sdg-006': ['Tom Cruise', 'Kelly McGillis', 'Val Kilmer', 'Anthony Edwards', 'Meg Ryan'],
   'ldn-008': ['Benedict Cumberbatch', 'Martin Freeman', 'Andrew Scott'],
   'chi-001': ['John Belushi', 'Dan Aykroyd', 'Carrie Fisher'],
   'chi-002': ['Christian Bale', 'Heath Ledger', 'Aaron Eckhart'],
