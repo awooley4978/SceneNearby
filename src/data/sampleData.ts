@@ -967,7 +967,7 @@ const londonLocations: FilmingLocation[] = [
 
       const vancouverLocations: FilmingLocation[] = [
         {
-          id: 'van-001', title: 'Marine Building', movieOrShow: 'The Flash', year: 2014,
+          id: 'van-001', title: 'Marine Building', movieOrShow: 'The Flash + Smallville + Fantastic Four + Arrowverse + iZombie', year: 2014,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/MarineBuilding.jpg',
           category: LocationCategory.action, latitude: 49.2848, longitude: -123.1130,
           address: '355 Burrard St, Vancouver', city: 'Vancouver', country: 'Canada',
@@ -2050,7 +2050,7 @@ const actorMap: Record<string, string[]> = {
   'sea-002': ['Heath Ledger', 'Julia Stiles', 'Elisabeth Moss', 'Tom Hanks', 'Meg Ryan'],
   'sea-003': ['Bridget Fonda', 'Campbell Scott', 'Kyra Sedgwick'],
   'sea-004': ['Elisabeth Moss', 'Heath Ledger', 'Julia Stiles', 'Joseph Fiennes', 'Yvonne Strahovski'],
-  'van-001': ['Grant Gustin', 'Candice Patton', 'Danielle Panabaker'],
+  'van-001': ['Grant Gustin', 'Chris Evans', 'Jessica Alba', 'Tom Welling', 'Rose McIver'],
   'van-002': ['Ryan Reynolds', 'David Duchovny', 'James Franco', 'Dakota Johnson', 'Gillian Anderson'],
   'van-003': ['Tom Ellis', 'Grant Gustin', 'Melissa Benoist', 'Stephen Amell', 'Ginnifer Goodwin'],
   'van-004': ['Alexa Davalos', 'Rupert Evans', 'Luke Kleintank'],
