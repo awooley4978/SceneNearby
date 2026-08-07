@@ -369,7 +369,7 @@ const londonLocations: FilmingLocation[] = [
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/WrigleyField.jpg',
           category: LocationCategory.comedy, latitude: 41.9484, longitude: -87.6553,
           address: '1060 W Addison St, Chicago, IL 60613', city: 'Chicago', country: 'USA',
-          sceneDescription: 'Jake and Elwood Blues tear through Wrigley in a high-speed chase that defies both physics and ballpark security. Six years later, Ferris Bueller caught a foul ball here on his legendary day off — sitting in the bleachers, taunting the principal, and living every kid\'s fantasy of skipping school for a perfect summer game.',
+          sceneDescription: 'Jake and Elwood Blues tear through Wrigley in a high-speed chase that defies both physics and ballpark security. Six years later, Ferris Bueller caught a foul ball here on his legendary day off — sitting in the bleachers, taunting the principal, and living every kid's fantasy of skipping school for a perfect summer game.',
           funFact: 'The Ferris Bueller scene was filmed during an actual Cubs game on June 5, 1985 — a 5-4 loss to the Braves. John Hughes hid cameras around the ballpark and had Matthew Broderick sit in real bleacher seats among actual fans. The foul ball catch was genuine; Broderick snagged it on the first take.',
           quote: "We're on a mission from God.",
           quoteAttribution: 'Elwood Blues',
@@ -406,8 +406,8 @@ const londonLocations: FilmingLocation[] = [
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/GlenbrookNorthHighSchool.jpg',
           category: LocationCategory.comedy, latitude: 42.1283, longitude: -87.8300,
           address: '2300 Shermer Rd', city: 'Northbrook', country: 'USA',
-          sceneDescription: 'Ferris picks up Sloane from school in a memorable scene that introduces the trio\'s day-long adventure through Chicago. John Hughes returned to his alma mater for The Breakfast Club, filming several interior hallway scenes that defined the film\'s claustrophobic Saturday detention.',
-          funFact: 'Glenbrook North High School was director John Hughes\'s alma mater — he drew on his own teenage experiences here for both Ferris Bueller and The Breakfast Club. The library scenes in Breakfast Club were filmed at a different school, but those iconic hallway shots are pure Glenbrook North.',
+          sceneDescription: 'Ferris picks up Sloane from school in a memorable scene that introduces the trio's day-long adventure through Chicago. John Hughes returned to his alma mater for The Breakfast Club, filming several interior hallway scenes that defined the film's claustrophobic Saturday detention.',
+          funFact: 'Glenbrook North High School was director John Hughes's alma mater — he drew on his own teenage experiences here for both Ferris Bueller and The Breakfast Club. The library scenes in Breakfast Club were filmed at a different school, but those iconic hallway shots are pure Glenbrook North.',
           quote: 'Life moves pretty fast. If you don\'t stop and look around once in a while, you could miss it.',
           quoteAttribution: 'Ferris Bueller',
           estimatedVisitTime: 'Quick Stop (< 15 min)\nVisitor Tip: This is an active high school. Please be respectful of students and staff, and avoid visiting during school hours.',
@@ -476,7 +476,6 @@ const londonLocations: FilmingLocation[] = [
           quoteAttribution: 'Rick Grimes',
           thenAndNow: 'The view from Jackson Street Bridge remains one of the best skyline views in Atlanta.',
           isMovie: false,
-        },
         {
           id: 'atl-005', title: 'Gwinnett Place Mall', movieOrShow: 'Stranger Things', year: 2016,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Gwinnett_Place_Mall_-_7730413316.jpg',
@@ -504,6 +503,7 @@ const londonLocations: FilmingLocation[] = [
           funFact: "One of Atlanta's most-filmed locations — the quarry's rugged cliffs and water have doubled for post-apocalyptic wastelands, vampire hideouts, and the outskirts of Panem. It has since been transformed into Westside Park, Atlanta's largest green space.",
           isMovie: false,
         },
+        },
         {
           id: 'atl-008', title: 'Emory University Briarcliff Campus', movieOrShow: 'Stranger Things', year: 2016,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/%E2%80%9CHawkins_National_Labs%E2%80%9D_also_known_as_Emory_University%E2%80%99s_briarcliff_campus._(28903314358).jpg',
@@ -511,8 +511,7 @@ const londonLocations: FilmingLocation[] = [
           address: '1256 Briarcliff Road, Atlanta, GA', city: 'Atlanta', country: 'USA',
           sceneDescription: 'Stood in as Hawkins National Laboratory, the shadowy government facility where Eleven was experimented on and the gate to the Upside Down was opened.',
           funFact: 'The brutalist architecture of Emory\'s Briarcliff campus made it the perfect stand-in for the fictional Hawkins Lab, requiring minimal set dressing.',
-          isMovie: false
-        },
+          isMovie: false,
         {
           id: 'atl-009', title: 'Byers House', movieOrShow: 'Stranger Things', year: 2016,
           category: LocationCategory.drama, latitude: 33.4500, longitude: -84.4550,
@@ -559,8 +558,7 @@ const londonLocations: FilmingLocation[] = [
           address: '906 E 2nd Ave, Rome, GA', city: 'Atlanta', country: 'USA',
           sceneDescription: 'The haunted Creel House from Season 4, where Victor Creel\'s tragic family history unfolded and Vecna\'s origin was revealed.',
           funFact: 'This Victorian mansion in Rome, Georgia became one of the most chilling locations in the entire series after extensive production design.',
-          isMovie: false
-        },
+          isMovie: false,
         {
           id: 'atl-015', title: 'East Point First Baptist Church', movieOrShow: 'Stranger Things', year: 2016,
           category: LocationCategory.drama, latitude: 33.6680, longitude: -84.4500,
@@ -577,8 +575,9 @@ const londonLocations: FilmingLocation[] = [
           funFact: 'Jackson Drug is a real historic pharmacy building in downtown Jackson, Georgia, retrofitted by the production to look like a 1980s general store.',
           isMovie: false,
         },
+        },
+        },
       ];
-      const chicagoLocationsExtra: FilmingLocation[] = [
         {
           id: 'chi-006', title: 'Maine North High School', movieOrShow: 'The Breakfast Club', year: 1985,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Maine%20North%20High%20School.jpg',
@@ -629,7 +628,6 @@ const londonLocations: FilmingLocation[] = [
           thenAndNow: 'Still an active trading floor and one of the most recognizable skyscrapers in Chicago. The building is a National Historic Landmark and anchors the south end of the LaSalle Street canyon.',
           isMovie: true,
         },
-      ];
 
       const sanFranciscoLocations: FilmingLocation[] = [
         {
@@ -1317,7 +1315,6 @@ const londonLocations: FilmingLocation[] = [
       ];
 
       const aucklandLocations: FilmingLocation[] = [
-      ];
       const wellingtonLocations: FilmingLocation[] = [
         {
           id: 'wlg-001', title: 'Weta Workshop', movieOrShow: 'The Lord of the Rings', year: 2001,
@@ -1852,7 +1849,6 @@ const londonLocations: FilmingLocation[] = [
             ];
 
             const dallasLocations: FilmingLocation[] = [
-      ];
       const albuquerqueLocations: FilmingLocation[] = [
         {
           id: 'abq-001', title: 'Surfer Boy Pizza', movieOrShow: 'Stranger Things', year: 2016,
@@ -1972,7 +1968,6 @@ export const allLocations: FilmingLocation[] = [
   ...newYorkLocations,
   ...losAngelesLocations,
   ...londonLocations,
-  ...chicagoLocationsExtra,
   ...chicagoLocations,
   ...atlantaLocations,
   ...sanFranciscoLocations,
