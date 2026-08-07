@@ -476,6 +476,7 @@ const londonLocations: FilmingLocation[] = [
           quoteAttribution: 'Rick Grimes',
           thenAndNow: 'The view from Jackson Street Bridge remains one of the best skyline views in Atlanta.',
           isMovie: false,
+        },
         {
           id: 'atl-005', title: 'Gwinnett Place Mall', movieOrShow: 'Stranger Things', year: 2016,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Gwinnett_Place_Mall_-_7730413316.jpg',
