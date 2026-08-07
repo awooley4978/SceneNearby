@@ -631,7 +631,7 @@ const londonLocations: FilmingLocation[] = [
 
       const sanFranciscoLocations: FilmingLocation[] = [
         {
-          id: 'sfo-001', title: 'Alcatraz Island', movieOrShow: 'Escape from Alcatraz', year: 1979,
+          id: 'sfo-001', title: "Alcatraz Island", movieOrShow: 'Escape from Alcatraz + X-Men: The Last Stand + The Rock', year: 1979,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/AlcatrazIsland.jpg',
     focalPoint: { x: 0.5, y: 0.4 },
           category: LocationCategory.drama, latitude: 37.8267, longitude: -122.4230,
@@ -648,7 +648,7 @@ const londonLocations: FilmingLocation[] = [
           },
         },
         {
-          id: 'sfo-002', title: 'Painted Ladies (Alamo Square)', movieOrShow: 'Full House', year: 1987,
+          id: 'sfo-002', title: 'Painted Ladies (Alamo Square)', movieOrShow: 'Full House + Bicentennial Man', year: 1987,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/PaintedLadies.jpg',
           category: LocationCategory.comedy, latitude: 37.7764, longitude: -122.4346,
           address: 'Alamo Square, 710 Steiner St', city: 'San Francisco', country: 'USA',
@@ -661,7 +661,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
               focalPoint: { x: 0.4, y: 0.5 },
-    id: 'sfo-003', title: 'The Golden Gate Bridge', movieOrShow: 'Vertigo', year: 1958,
+    id: 'sfo-003', title: 'The Golden Gate Bridge', movieOrShow: 'Vertigo + Rise of the Planet of the Apes + X-Men: The Last Stand + Ant-Man + Venom + Godzilla', year: 1958,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/GoldenGateBridge.jpg',
           category: LocationCategory.drama, latitude: 37.8199, longitude: -122.4783,
           address: 'Golden Gate Bridge, San Francisco', city: 'San Francisco', country: 'USA',
@@ -673,7 +673,7 @@ const londonLocations: FilmingLocation[] = [
           isMovie: true,
         },
         {
-          id: 'sfo-004', title: 'Chinatown — Grant Avenue', movieOrShow: 'Big Trouble in Little China', year: 1986,
+          id: 'sfo-004', title: 'Chinatown — Grant Avenue', movieOrShow: 'Big Trouble in Little China + The Pursuit of Happyness + Shang-Chi', year: 1986,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/ChinatownGrantAvenue.JPG',
           category: LocationCategory.action, latitude: 37.7940, longitude: -122.4065,
           address: 'Grant Ave, San Francisco', city: 'San Francisco', country: 'USA',
@@ -2019,10 +2019,10 @@ const actorMap: Record<string, string[]> = {
   'atl-002': ['Andrew Lincoln', 'Norman Reedus', 'Melissa McBride'],
   'atl-003': ['Chadwick Boseman', 'Michael B. Jordan', 'Lupita Nyong\'o'],
   'atl-004': ['Andrew Lincoln', 'Norman Reedus', 'Danai Gurira'],
-  'sfo-001': ['Clint Eastwood', 'Patrick McGoohan', 'Roberts Blossom'],
-  'sfo-002': ['John Stamos', 'Bob Saget', 'Candace Cameron Bure'],
-  'sfo-003': ['James Stewart', 'Kim Novak', 'Barbara Bel Geddes'],
-  'sfo-004': ['Kurt Russell', 'Kim Cattrall', 'Dennis Dun'],
+  'sfo-001': ['Clint Eastwood', 'Sean Connery', 'Nicolas Cage', 'Hugh Jackman', 'Ed Harris'],
+  'sfo-002': ['John Stamos', 'Robin Williams', 'Bob Saget', 'Candace Cameron Bure', 'Sam Neill'],
+  'sfo-003': ['Tom Hardy', 'Paul Rudd', 'Hugh Jackman', 'James Stewart', 'Andy Serkis'],
+  'sfo-004': ['Will Smith', 'Simu Liu', 'Kurt Russell', 'Awkwafina', 'Tony Leung'],
   'sdg-001': ['Kristen Bell', 'Jason Dohring', 'Enrico Colantoni', 'Percy Daggs III'],
   'sdg-002': ['Kristen Bell', 'Jason Dohring', 'Enrico Colantoni', 'Percy Daggs III'],
   'sdg-003': ['Kristen Bell', 'Jason Dohring', 'Enrico Colantoni', 'Percy Daggs III'],
