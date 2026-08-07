@@ -764,6 +764,26 @@ const londonLocations: FilmingLocation[] = [
           thenAndNow: "The beach volleyball courts are still there, right next to the Oceanside Pier amphitheater. Bring a ball, queue up the Top Gun soundtrack, and recreate the scene — shirtless optional, but strongly encouraged by tradition.",
           isMovie: true,
         },
+        {
+          id: 'sdg-008', title: 'Oceanside Pier Plaza', movieOrShow: 'Animal Kingdom', year: 2016,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Oceanside%20Pier%20Plaza.jpg',
+          category: LocationCategory.drama, latitude: 33.1930, longitude: -117.3850,
+          address: 'Oceanside Pier, Oceanside, CA 92054', city: 'San Diego', country: 'USA',
+          sceneDescription: "The Cody brothers cut through the Pier Plaza — surfboards under arm, Pacific behind them — the camera tracking their swagger past beachgoers who have no idea they're watching Southern California's most dangerous family. The pier becomes a recurring symbol: the edge of the continent, the edge of the law.",
+          funFact: "The Oceanside Pier is one of the longest wooden piers on the West Coast at 1,942 feet. The Animal Kingdom crew filmed here regularly, using the pier's iconic Ruby's Diner at the end as a landmark. Locals say the cast became fixtures at the nearby coffee shops during the six-season run.",
+          thenAndNow: "The pier and plaza are open year-round. Walk to the end for panoramic ocean views, grab a shake at Ruby's, and keep an eye out — you might recognize the exact spot where Smurf's boys made their entrance.",
+          isMovie: false,
+        },
+        {
+          id: 'sdg-009', title: 'Real Surf Shop', movieOrShow: 'Animal Kingdom', year: 2016,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Real%20Surf%20Shop.jpg',
+          category: LocationCategory.drama, latitude: 33.1950, longitude: -117.3800,
+          address: 'Oceanside, CA 92054', city: 'San Diego', country: 'USA',
+          sceneDescription: "The Codys' legitimate front — a surf shop where boards are shaped, cash is washed, and family business gets discussed between waxing decks and ringing up tourists. The salt air and surf culture of Oceanside aren't just backdrop; they're the texture of a show where the beach is both playground and battleground.",
+          funFact: "The surf shop used for exterior shots is a real Oceanside surf institution. The production team chose it because it looked exactly how they imagined the Codys' shop — not a Hollywood set-dressed boutique, but an authentic working surf shop with wax on the counter and sand permanently embedded in the floorboards.",
+          thenAndNow: "Still selling boards and wetsuits to the local surf community. If you're in Oceanside, stop by and ask if they remember the Animal Kingdom days — the stories are better than any DVD commentary.",
+          isMovie: false,
+        },
 
       const bostonLocations: FilmingLocation[] = [
         {
@@ -1929,6 +1949,8 @@ const actorMap: Record<string, string[]> = {
   'la-005': ['Patrick Fugit', 'Kate Hudson', 'Billy Crudup'],
   'la-006': ['Jeff Bridges', 'John Goodman', 'Julianne Moore'],
   'sdg-007': ['Tom Cruise', 'Kelly McGillis', 'Val Kilmer', 'Anthony Edwards', 'Meg Ryan'],
+  'sdg-008': ['Ellen Barkin', 'Shawn Hatosy', 'Ben Robson', 'Jake Weary', 'Finn Cole'],
+  'sdg-009': ['Ellen Barkin', 'Shawn Hatosy', 'Ben Robson', 'Jake Weary', 'Finn Cole'],
   'la-007': ['Joseph Gordon-Levitt', 'Zooey Deschanel', 'Geoffrey Arend'],
   'la-008': ['Jason Segel', 'Amy Adams', 'Chris Cooper'],
   'la-009': ['Wesley Snipes', 'Woody Harrelson', 'Rosie Perez'],
