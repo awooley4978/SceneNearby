@@ -504,7 +504,6 @@ const londonLocations: FilmingLocation[] = [
           funFact: "One of Atlanta's most-filmed locations — the quarry's rugged cliffs and water have doubled for post-apocalyptic wastelands, vampire hideouts, and the outskirts of Panem. It has since been transformed into Westside Park, Atlanta's largest green space.",
           isMovie: false,
         },
-        },
         {
           id: 'atl-008', title: 'Emory University Briarcliff Campus', movieOrShow: 'Stranger Things', year: 2016,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/%E2%80%9CHawkins_National_Labs%E2%80%9D_also_known_as_Emory_University%E2%80%99s_briarcliff_campus._(28903314358).jpg',
