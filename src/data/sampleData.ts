@@ -686,6 +686,51 @@ const londonLocations: FilmingLocation[] = [
         },
       ];
 
+      const sandiegoLocations: FilmingLocation[] = [
+        {
+          id: 'sdg-001', title: 'Mars Investigations', movieOrShow: 'Veronica Mars', year: 2004,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Mars_Investigations.jpg',
+          category: LocationCategory.drama, latitude: 32.7450, longitude: -117.2500,
+          address: 'Ocean Beach, San Diego, CA 92107', city: 'San Diego', country: 'USA',
+          sceneDescription: "The no-frills PI office where Veronica works cases between classes at Neptune High. A neon sign, a cluttered desk, and a teen detective who always gets the last word — this is ground zero for every mystery in Neptune.",
+          funFact: "The exterior of Mars Investigations was shot at a real office in Ocean Beach. Fans still make the pilgrimage to stand under the iconic sign. Kristen Bell has said the Mars Investigations set felt more like home than any other she's worked on.",
+          quote: "I'm no longer a girl. I'm a woman who knows what she wants.",
+          quoteAttribution: 'Veronica Mars',
+          thenAndNow: "The building still stands in Ocean Beach. The sign is long gone, but true Marshmallows know exactly where to stand for the perfect photo.",
+          isMovie: false,
+        },
+        {
+          id: 'sdg-002', title: "Vinnie Van Lowe's Office", movieOrShow: 'Veronica Mars', year: 2004,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Vannie_Van_Lowes_Office.jpg',
+          category: LocationCategory.drama, latitude: 32.7480, longitude: -117.2520,
+          address: 'Ocean Beach, San Diego, CA 92107', city: 'San Diego', country: 'USA',
+          sceneDescription: "Vinnie Van Lowe runs his less-than-ethical PI operation out of a tiki-themed strip-mall office. Hawaiian shirts, questionable surveillance tactics, and a rivalry with Mars Investigations that's more friendly than either would admit.",
+          funFact: "Ken Marino's Vinnie Van Lowe was originally written as a one-episode character, but his chemistry with Kristen Bell was so electric he became a series regular. The tiki décor was Marino's idea — he wanted Vinnie to feel like a PI who never got over his spring break phase.",
+          thenAndNow: "The strip mall location in Ocean Beach has changed tenants over the years, but the laid-back surf-town vibe that made it perfect for Vinnie's operation hasn't changed a bit.",
+          isMovie: false,
+        },
+        {
+          id: 'sdg-003', title: 'Ocean Beach Hotel', movieOrShow: 'Veronica Mars', year: 2004,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Ocean_Beach_Hotel.jpg',
+          category: LocationCategory.drama, latitude: 32.7450, longitude: -117.2530,
+          address: '5080 Newport Ave, San Diego, CA 92107', city: 'San Diego', country: 'USA',
+          sceneDescription: "The slightly faded beachfront hotel where out-of-town suspects check in and alibis unravel over ocean views. In Neptune, even a hotel balcony can become a crime scene.",
+          funFact: "The Ocean Beach Hotel (known locally as the OB Hotel) has been a San Diego landmark since the 1940s. Its neon sign is one of the most photographed in Ocean Beach, and the rooftop bar has some of the best sunset views in San Diego — no investigation required.",
+          thenAndNow: "The OB Hotel is still open and still has that vintage beach-town character. Grab a drink at the rooftop bar and imagine Veronica working a lead at the next table.",
+          isMovie: false,
+        },
+        {
+          id: 'sdg-004', title: 'Inn at Sunset Cliffs', movieOrShow: 'Veronica Mars', year: 2004,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Inn_At_Sunset_Cliffs.png',
+          category: LocationCategory.drama, latitude: 32.7220, longitude: -117.2560,
+          address: '1370 Sunset Cliffs Blvd, San Diego, CA 92107', city: 'San Diego', country: 'USA',
+          sceneDescription: "Perched dramatically above the Pacific, this boutique inn serves as the backdrop for some of Neptune's most pivotal confrontations. The sound of waves crashing against the cliffs below underscores moments where secrets finally surface.",
+          funFact: "The Inn at Sunset Cliffs is a real boutique hotel built in the 1930s, and its cliffside location is genuinely breathtaking. The Veronica Mars crew filmed here during golden hour to capture the same Pacific light that makes the inn a popular wedding venue.",
+          thenAndNow: "Still operating as a charming oceanfront inn. You can book the same rooms that appeared on the show — just ask for an ocean-view suite and listen to the same waves the cast heard between takes.",
+          isMovie: false,
+        },
+      ];
+
       const bostonLocations: FilmingLocation[] = [
         {
           id: 'bos-001', title: 'Boston Public Garden', movieOrShow: 'Good Will Hunting', year: 1997,
@@ -1812,6 +1857,7 @@ export const allLocations: FilmingLocation[] = [
   ...chicagoLocations,
   ...atlantaLocations,
   ...sanFranciscoLocations,
+  ...sandiegoLocations,
   ...bostonLocations,
   ...seattleLocations,
   ...vancouverLocations,
@@ -1876,6 +1922,10 @@ const actorMap: Record<string, string[]> = {
   'sfo-002': ['John Stamos', 'Bob Saget', 'Candace Cameron Bure'],
   'sfo-003': ['James Stewart', 'Kim Novak', 'Barbara Bel Geddes'],
   'sfo-004': ['Kurt Russell', 'Kim Cattrall', 'Dennis Dun'],
+  'sdg-001': ['Kristen Bell', 'Jason Dohring', 'Enrico Colantoni', 'Percy Daggs III'],
+  'sdg-002': ['Kristen Bell', 'Jason Dohring', 'Enrico Colantoni', 'Percy Daggs III'],
+  'sdg-003': ['Kristen Bell', 'Jason Dohring', 'Enrico Colantoni', 'Percy Daggs III'],
+  'sdg-004': ['Kristen Bell', 'Jason Dohring', 'Enrico Colantoni', 'Percy Daggs III'],
   'bos-001': ['Matt Damon', 'Robin Williams', 'Ben Affleck'],
   'bos-002': ['Jimmy Fallon', 'Drew Barrymore', 'Jack Kehler'],
   'bos-003': ['Leonardo DiCaprio', 'Matt Damon', 'Jack Nicholson'],
@@ -1998,7 +2048,7 @@ export const locationById = (id: string): FilmingLocation | undefined => {
   return loc;
 };
 
-export const cities = ['New York City', 'Los Angeles', 'London', 'Chicago', 'Atlanta', 'San Francisco', 'Boston', 'Seattle', 'Vancouver', 'Toronto', 'Paris', 'Rome', 'Sydney', 'Auckland', 'Wellington', 'Tokyo', 'Berlin', 'Dublin', 'New Orleans', 'Albuquerque', 'Washington DC', 'Dallas'] as const;
+export const cities = ['New York City', 'Los Angeles', 'London', 'Chicago', 'Atlanta', 'San Francisco', 'San Diego', 'Boston', 'Seattle', 'Vancouver', 'Toronto', 'Paris', 'Rome', 'Sydney', 'Auckland', 'Wellington', 'Tokyo', 'Berlin', 'Dublin', 'New Orleans', 'Albuquerque', 'Washington DC', 'Dallas'] as const;
 
 // ── Mock Ratings ──
 
