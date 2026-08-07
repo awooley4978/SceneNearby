@@ -902,7 +902,7 @@ const londonLocations: FilmingLocation[] = [
 
       const seattleLocations: FilmingLocation[] = [
         {
-          id: 'sea-001', title: 'Pike Place Market', movieOrShow: 'Sleepless in Seattle', year: 1993,
+          id: 'sea-001', title: 'Pike Place Market', movieOrShow: 'Sleepless in Seattle + Singles + Frasier', year: 1993,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/PikePlaceMarket.jpg',
           category: LocationCategory.romance, latitude: 47.6092, longitude: -122.3407,
           address: 'Pike Place Market, Seattle, WA 98101', city: 'Seattle', country: 'USA',
@@ -914,7 +914,7 @@ const londonLocations: FilmingLocation[] = [
           isMovie: true,
         },
         {
-          id: 'sea-002', title: 'Space Needle', movieOrShow: '10 Things I Hate About You', year: 1999,
+          id: 'sea-002', title: 'Space Needle', movieOrShow: "10 Things I Hate About You + The Handmaid's Tale + Sleepless in Seattle", year: 1999,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/SpaceNeedle.jpg',
     focalPoint: { x: 0.5, y: 0.25 },
           category: LocationCategory.comedy, latitude: 47.6205, longitude: -122.3493,
@@ -939,7 +939,7 @@ const londonLocations: FilmingLocation[] = [
           isMovie: true,
         },
         {
-          id: 'sea-004', title: 'Suzzallo Library, UW', movieOrShow: 'The Handmaid\'s Tale', year: 2017,
+          id: 'sea-004', title: 'Suzzallo Library, UW', movieOrShow: 'The Handmaid\'s Tale + 10 Things I Hate About You', year: 2017,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Suzzallo_Library.jpg',
           category: LocationCategory.drama, latitude: 47.6555, longitude: -122.3100,
           address: 'Suzzallo Library, UW Campus', city: 'Seattle', country: 'USA',
@@ -2031,10 +2031,10 @@ const actorMap: Record<string, string[]> = {
   'bos-002': ['Jimmy Fallon', 'Drew Barrymore', 'Jack Kehler'],
   'bos-003': ['Leonardo DiCaprio', 'Matt Damon', 'Jack Nicholson'],
   'bos-004': ['Jesse Eisenberg', 'Andrew Garfield', 'Justin Timberlake'],
-  'sea-001': ['Tom Hanks', 'Meg Ryan', 'Ross Malinger'],
-  'sea-002': ['Heath Ledger', 'Julia Stiles', 'Joseph Gordon-Levitt'],
+  'sea-001': ['Tom Hanks', 'Meg Ryan', 'Kelsey Grammer', 'Bridget Fonda', 'Matt Dillon'],
+  'sea-002': ['Heath Ledger', 'Julia Stiles', 'Elisabeth Moss', 'Tom Hanks', 'Meg Ryan'],
   'sea-003': ['Bridget Fonda', 'Campbell Scott', 'Kyra Sedgwick'],
-  'sea-004': ['Elisabeth Moss', 'Joseph Fiennes', 'Yvonne Strahovski'],
+  'sea-004': ['Elisabeth Moss', 'Heath Ledger', 'Julia Stiles', 'Joseph Fiennes', 'Yvonne Strahovski'],
   'van-001': ['Grant Gustin', 'Candice Patton', 'Danielle Panabaker'],
   'van-002': ['David Duchovny', 'Gillian Anderson', 'Mitch Pileggi'],
   'van-003': ['Tom Ellis', 'Lauren German', 'Lesley-Ann Brandt'],
