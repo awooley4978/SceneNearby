@@ -426,6 +426,44 @@ const londonLocations: FilmingLocation[] = [
           thenAndNow: 'The Art Institute remains one of the world\'s greatest art museums, housing masterpieces from every era.',
           isMovie: true,
         },
+        {
+          id: 'chi-006', title: 'Maine North High School', movieOrShow: 'The Breakfast Club', year: 1985,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Maine%20North%20High%20School.jpg',
+          category: LocationCategory.comedy, latitude: 42.0333, longitude: -87.8833,
+          address: '9511 Harrison St, Des Plaines, IL 60016', city: 'Chicago', country: 'USA',
+          sceneDescription: 'The closed school became Shermer High School for The Breakfast Club. Since the actual library was too small, the production team built the famous library set inside the school\'s gymnasium — the room where five strangers became a family over the course of a Saturday detention.',
+          funFact: 'Maine North closed permanently in 1981 due to low attendance. John Hughes chose the shuttered school for its authentic, frozen-in-time feel. The building is now owned by the police department and used as an Illinois Lottery payment facility — the famous gym-turned-library is now a warehouse storing confiscated and lost items.',
+          quote: "We're all pretty bizarre. Some of us are just better at hiding it, that's all.",
+          quoteAttribution: 'John Bender',
+          thenAndNow: 'The building still stands at 9511 Harrison St in Des Plaines. While not open to the public, fans still drive by to see the exterior of the school where the Breakfast Club spent their Saturday.',
+          isMovie: true,
+        },
+        {
+          id: 'chi-007', title: 'LaSalle Street Canyon', movieOrShow: 'The Dark Knight', year: 2008,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/La_Salle_Street_-_Canyon_of_Commerce_(2639619014).jpg',
+          category: LocationCategory.action, latitude: 41.8789, longitude: -87.6324,
+          address: 'LaSalle Street between Jackson Blvd & Adams St, Chicago, IL 60604', city: 'Chicago', country: 'USA',
+          sceneDescription: 'The Joker\'s semi-truck flips end-over-end in one of cinema\'s most jaw-dropping practical effects, filmed in the narrow canyon of LaSalle Street. In a very different era of Chicago crime, Eliot Ness and his Untouchables ambushed Frank Nitti on the very same street — the famous staircase that doubled as Union Station is just east of here.',
+          funFact: 'Christopher Nolan closed LaSalle Street for three weeks and used a real semi-truck that was rigged with a piston to flip it — no CGI. Nearly 40 years earlier, Brian De Palma staged the iconic baby carriage staircase shootout here, cementing this one block as the most cinematic stretch of pavement in Chicago.',
+          quote: "You either die a hero, or you live long enough to see yourself become the villain.",
+          quoteAttribution: 'Harvey Dent',
+          thenAndNow: 'LaSalle Street remains a bustling financial corridor. The "canyon" effect is still dramatic, and the Board of Trade building at the south end anchors countless establishing shots.',
+          isMovie: true,
+        },
+        {
+          id: 'chi-008', title: 'Willis Tower (Sears Tower)', movieOrShow: 'Ferris Bueller\'s Day Off', year: 1986,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Sears_Tower%2C_Wacker_Drive_and_Jackson_Boulevard%2C_Chicago%2C_IL_-_54189600211.jpg',
+          focalPoint: { x: 0.5, y: 0.35 },
+          category: LocationCategory.comedy, latitude: 41.8789, longitude: -87.6359,
+          address: '233 S Wacker Dr, Chicago, IL 60606', city: 'Chicago', country: 'USA',
+          sceneDescription: 'Ferris, Sloane, and Cameron press their foreheads against the glass of the Skydeck, 1,353 feet above Chicago, gazing down at the city they\'ve just conquered in a single day. Two decades later, Christopher Nolan used the same tower as the dark centerpiece of Gotham\'s skyline in The Dark Knight — the Joker\'s final act played out in its long shadow.',
+          funFact: 'When Ferris Bueller opened in 1986, this was the tallest building in the world — a title it held for 25 years. The Skydeck\'s "Ledge" glass boxes (added later) extend 4.3 feet out from the 103rd floor, but the observation deck scenes use the original windows. John Hughes filmed the trio here on a real weekday, with actual tourists in the background.',
+          quote: "Life moves pretty fast. If you don't stop and look around once in a while, you could miss it.",
+          quoteAttribution: 'Ferris Bueller',
+          thenAndNow: 'Rebranded Willis Tower in 2009, but Chicagoans still call it Sears Tower. The Skydeck attracts over 1.7 million visitors a year — you can still press your forehead against the same glass.',
+          isMovie: true,
+        },
+
       ];
 
       const atlantaLocations: FilmingLocation[] = [
@@ -476,6 +514,7 @@ const londonLocations: FilmingLocation[] = [
           quoteAttribution: 'Rick Grimes',
           thenAndNow: 'The view from Jackson Street Bridge remains one of the best skyline views in Atlanta.',
           isMovie: false,
+        },
         {
           id: 'atl-005', title: 'Gwinnett Place Mall', movieOrShow: 'Stranger Things', year: 2016,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Gwinnett_Place_Mall_-_7730413316.jpg',
@@ -503,7 +542,6 @@ const londonLocations: FilmingLocation[] = [
           funFact: "One of Atlanta's most-filmed locations — the quarry's rugged cliffs and water have doubled for post-apocalyptic wastelands, vampire hideouts, and the outskirts of Panem. It has since been transformed into Westside Park, Atlanta's largest green space.",
           isMovie: false,
         },
-        },
         {
           id: 'atl-008', title: 'Emory University Briarcliff Campus', movieOrShow: 'Stranger Things', year: 2016,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/%E2%80%9CHawkins_National_Labs%E2%80%9D_also_known_as_Emory_University%E2%80%99s_briarcliff_campus._(28903314358).jpg',
@@ -512,6 +550,7 @@ const londonLocations: FilmingLocation[] = [
           sceneDescription: 'Stood in as Hawkins National Laboratory, the shadowy government facility where Eleven was experimented on and the gate to the Upside Down was opened.',
           funFact: 'The brutalist architecture of Emory\'s Briarcliff campus made it the perfect stand-in for the fictional Hawkins Lab, requiring minimal set dressing.',
           isMovie: false,
+        },
         {
           id: 'atl-009', title: 'Byers House', movieOrShow: 'Stranger Things', year: 2016,
           category: LocationCategory.drama, latitude: 33.4500, longitude: -84.4550,
@@ -559,6 +598,7 @@ const londonLocations: FilmingLocation[] = [
           sceneDescription: 'The haunted Creel House from Season 4, where Victor Creel\'s tragic family history unfolded and Vecna\'s origin was revealed.',
           funFact: 'This Victorian mansion in Rome, Georgia became one of the most chilling locations in the entire series after extensive production design.',
           isMovie: false,
+        },
         {
           id: 'atl-015', title: 'East Point First Baptist Church', movieOrShow: 'Stranger Things', year: 2016,
           category: LocationCategory.drama, latitude: 33.6680, longitude: -84.4500,
@@ -575,46 +615,6 @@ const londonLocations: FilmingLocation[] = [
           funFact: 'Jackson Drug is a real historic pharmacy building in downtown Jackson, Georgia, retrofitted by the production to look like a 1980s general store.',
           isMovie: false,
         },
-        },
-        },
-      ];
-        {
-          id: 'chi-006', title: 'Maine North High School', movieOrShow: 'The Breakfast Club', year: 1985,
-          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Maine%20North%20High%20School.jpg',
-          category: LocationCategory.comedy, latitude: 42.0333, longitude: -87.8833,
-          address: '9511 Harrison St, Des Plaines, IL 60016', city: 'Chicago', country: 'USA',
-          sceneDescription: 'The closed school became Shermer High School for The Breakfast Club. Since the actual library was too small, the production team built the famous library set inside the school\'s gymnasium — the room where five strangers became a family over the course of a Saturday detention.',
-          funFact: 'Maine North closed permanently in 1981 due to low attendance. John Hughes chose the shuttered school for its authentic, frozen-in-time feel. The building is now owned by the police department and used as an Illinois Lottery payment facility — the famous gym-turned-library is now a warehouse storing confiscated and lost items.',
-          quote: "We're all pretty bizarre. Some of us are just better at hiding it, that's all.",
-          quoteAttribution: 'John Bender',
-          thenAndNow: 'The building still stands at 9511 Harrison St in Des Plaines. While not open to the public, fans still drive by to see the exterior of the school where the Breakfast Club spent their Saturday.',
-          isMovie: true,
-        },
-        {
-          id: 'chi-007', title: 'LaSalle Street Canyon', movieOrShow: 'The Dark Knight', year: 2008,
-          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/La_Salle_Street_-_Canyon_of_Commerce_(2639619014).jpg',
-          category: LocationCategory.action, latitude: 41.8789, longitude: -87.6324,
-          address: 'LaSalle Street between Jackson Blvd & Adams St, Chicago, IL 60604', city: 'Chicago', country: 'USA',
-          sceneDescription: 'The Joker\'s semi-truck flips end-over-end in one of cinema\'s most jaw-dropping practical effects, filmed in the narrow canyon of LaSalle Street. In a very different era of Chicago crime, Eliot Ness and his Untouchables ambushed Frank Nitti on the very same street — the famous staircase that doubled as Union Station is just east of here.',
-          funFact: 'Christopher Nolan closed LaSalle Street for three weeks and used a real semi-truck that was rigged with a piston to flip it — no CGI. Nearly 40 years earlier, Brian De Palma staged the iconic baby carriage staircase shootout here, cementing this one block as the most cinematic stretch of pavement in Chicago.',
-          quote: "You either die a hero, or you live long enough to see yourself become the villain.",
-          quoteAttribution: 'Harvey Dent',
-          thenAndNow: 'LaSalle Street remains a bustling financial corridor. The "canyon" effect is still dramatic, and the Board of Trade building at the south end anchors countless establishing shots.',
-          isMovie: true,
-        },
-        {
-          id: 'chi-008', title: 'Willis Tower (Sears Tower)', movieOrShow: 'Ferris Bueller\'s Day Off', year: 1986,
-          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Sears_Tower%2C_Wacker_Drive_and_Jackson_Boulevard%2C_Chicago%2C_IL_-_54189600211.jpg',
-          focalPoint: { x: 0.5, y: 0.35 },
-          category: LocationCategory.comedy, latitude: 41.8789, longitude: -87.6359,
-          address: '233 S Wacker Dr, Chicago, IL 60606', city: 'Chicago', country: 'USA',
-          sceneDescription: 'Ferris, Sloane, and Cameron press their foreheads against the glass of the Skydeck, 1,353 feet above Chicago, gazing down at the city they\'ve just conquered in a single day. Two decades later, Christopher Nolan used the same tower as the dark centerpiece of Gotham\'s skyline in The Dark Knight — the Joker\'s final act played out in its long shadow.',
-          funFact: 'When Ferris Bueller opened in 1986, this was the tallest building in the world — a title it held for 25 years. The Skydeck\'s "Ledge" glass boxes (added later) extend 4.3 feet out from the 103rd floor, but the observation deck scenes use the original windows. John Hughes filmed the trio here on a real weekday, with actual tourists in the background.',
-          quote: "Life moves pretty fast. If you don't stop and look around once in a while, you could miss it.",
-          quoteAttribution: 'Ferris Bueller',
-          thenAndNow: 'Rebranded Willis Tower in 2009, but Chicagoans still call it Sears Tower. The Skydeck attracts over 1.7 million visitors a year — you can still press your forehead against the same glass.',
-          isMovie: true,
-        },
         {
           id: 'chi-009', title: 'Chicago Board of Trade Building', movieOrShow: 'Ferris Bueller\'s Day Off', year: 1986,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Chicago_Board_of_Trade_Building%2C_Chicago%2C_Illinois_(11004312754).jpg',
@@ -628,6 +628,7 @@ const londonLocations: FilmingLocation[] = [
           thenAndNow: 'Still an active trading floor and one of the most recognizable skyscrapers in Chicago. The building is a National Historic Landmark and anchors the south end of the LaSalle Street canyon.',
           isMovie: true,
         },
+      ];
 
       const sanFranciscoLocations: FilmingLocation[] = [
         {
@@ -684,7 +685,6 @@ const londonLocations: FilmingLocation[] = [
           thenAndNow: 'San Francisco\'s Chinatown is the oldest in North America and a vibrant cultural hub.',
           isMovie: true,
         },
-      ];
         {
           id: 'sfo-005', title: 'Lombard Street', movieOrShow: 'The Princess Diaries + Ant-Man + Herbie: Fully Loaded + What\'s Up, Doc?', year: 2001,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Lombard%20Street.jpg',
@@ -698,6 +698,7 @@ const londonLocations: FilmingLocation[] = [
           thenAndNow: "Still San Francisco\'s most Instagrammable street. Go early morning to beat the crowds, or visit at twilight when the Bay Bridge lights up and the gardens glow. Just don\'t drive it during tourist season unless you enjoy spending 45 minutes in first gear.",
           isMovie: true,
         },
+      ];
 
       const sandiegoLocations: FilmingLocation[] = [
         {
@@ -764,7 +765,6 @@ const londonLocations: FilmingLocation[] = [
           thenAndNow: "Still open and still serving BBQ. The Top Gun memorabilia covers every inch of wall space. Grab a rack of ribs at the table where the pilots sat and ask about the piano — they'll let you play it.",
           isMovie: true,
         },
-      ];
         {
           id: 'sdg-007', title: 'Oceanside Beach Amphitheater', movieOrShow: 'Top Gun', year: 1986,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Oceanside%20Beach%20Amphitheater.jpg',
@@ -797,6 +797,7 @@ const londonLocations: FilmingLocation[] = [
           thenAndNow: "Still selling boards and wetsuits to the local surf community. If you're in Oceanside, stop by and ask if they remember the Animal Kingdom days — the stories are better than any DVD commentary.",
           isMovie: false,
         },
+      ];
 
       const bostonLocations: FilmingLocation[] = [
         {
@@ -848,7 +849,6 @@ const londonLocations: FilmingLocation[] = [
           thenAndNow: 'Harvard Yard remains the historic heart of America\'s oldest university, founded in 1636.',
           isMovie: true,
         },
-      ];
         {
           id: 'bos-005', title: 'MIT Campus', movieOrShow: 'Good Will Hunting + The Social Network', year: 1997,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/MIT%20Campus.jpg',
@@ -912,6 +912,7 @@ const londonLocations: FilmingLocation[] = [
           funFact: 'The Massachusetts State House\'s dome was originally covered in copper by Paul Revere\'s company, then gilded in 23-karat gold in 1874.',
           isMovie: true,
         },
+      ];
 
       const seattleLocations: FilmingLocation[] = [
         {
@@ -1142,7 +1143,6 @@ const londonLocations: FilmingLocation[] = [
           thenAndNow: 'The Pont Alexandre III is widely considered the most ornate bridge in Paris.',
           isMovie: true,
         },
-      ];
         {
           id: 'par-006', title: 'Café de Flore', movieOrShow: 'Emily in Paris', year: 2020,
           category: LocationCategory.romance, latitude: 48.8540, longitude: 2.3325,
@@ -1151,6 +1151,7 @@ const londonLocations: FilmingLocation[] = [
           funFact: 'Café de Flore has been a Paris literary institution since the 1880s — Sartre and de Beauvoir wrote here daily, long before Emily ever ordered her first café crème.',
           isMovie: false,
         },
+      ];
 
       const romeLocations: FilmingLocation[] = [
         {
@@ -1315,57 +1316,6 @@ const londonLocations: FilmingLocation[] = [
       ];
 
       const aucklandLocations: FilmingLocation[] = [
-      const wellingtonLocations: FilmingLocation[] = [
-        {
-          id: 'wlg-001', title: 'Weta Workshop', movieOrShow: 'The Lord of the Rings', year: 2001,
-          category: LocationCategory.action, latitude: -41.3481, longitude: 174.8164,
-          address: '1 Weka St, Miramar, Wellington', city: 'Wellington', country: 'New Zealand',
-          sceneDescription: 'The legendary creative studio where Middle-earth was brought to life — Weta crafted the One Ring, Aragorn\'s sword Andúril, and over 48,000 pieces of armor for the trilogy.',
-          funFact: 'Weta Workshop\'s artists handmade every single link in the chainmail worn by the actors — over 12.5 million links across all three films.',
-          isMovie: true,
-        },
-        {
-          id: 'wlg-002', title: 'Mount Victoria Lookout', movieOrShow: 'The Lord of the Rings', year: 2001,
-          category: LocationCategory.action, latitude: -41.2962, longitude: 174.7860,
-          address: 'Lookout Rd, Hataitai, Wellington', city: 'Wellington', country: 'New Zealand',
-          sceneDescription: 'The pine forest trails of Mount Victoria became the woods where Frodo and the hobbits hide from the Black Rider on their way to Bree. A short walk from downtown Wellington.',
-          funFact: 'Peter Jackson shot these scenes in 1999 during a single night — the famous "Get off the road!" scene was filmed just meters from a popular walking track.',
-          isMovie: true,
-        },
-        {
-          id: 'wlg-003', title: 'Kaitoke Regional Park', movieOrShow: 'The Lord of the Rings', year: 2001,
-          category: LocationCategory.action, latitude: -41.0623, longitude: 175.1941,
-          address: 'Kaitoke, Upper Hutt', city: 'Wellington', country: 'New Zealand',
-          sceneDescription: 'The lush beech forests of Kaitoke became Rivendell — the Elven sanctuary where Frodo awakens after his escape from the Nazgûl and the Fellowship is formed.',
-          funFact: 'A Rivendell signpost still stands in the park pointing visitors to the exact filming spots. The production built elaborate elven archways here that were later dismantled to restore the forest.',
-          isMovie: true,
-        },
-        {
-          id: 'wlg-004', title: 'Harcourt Park', movieOrShow: 'The Lord of the Rings', year: 2001,
-          category: LocationCategory.action, latitude: -41.1196, longitude: 175.1007,
-          address: 'Harcourt Park, Upper Hutt', city: 'Wellington', country: 'New Zealand',
-          sceneDescription: 'The manicured gardens of Harcourt Park doubled as the Gardens of Isengard, where Gandalf walks with Saruman before the wizard\'s betrayal is revealed.',
-          funFact: 'The giant tree in the park, visible in several shots, is a 150-year-old redwood — a species introduced to New Zealand from California in the 1870s.',
-          isMovie: true,
-        },
-        {
-          id: 'wlg-005', title: 'Putangirua Pinnacles', movieOrShow: 'The Lord of the Rings', year: 2003,
-          category: LocationCategory.action, latitude: -41.4502, longitude: 175.2412,
-          address: 'Cape Palliser Rd, Wairarapa', city: 'Wellington', country: 'New Zealand',
-          sceneDescription: 'These towering eroded rock formations became the Paths of the Dead in The Return of the King, where Aragorn, Legolas, and Gimli pass through the haunted mountain.',
-          funFact: 'The Pinnacles were formed over 120,000 years by rainwater eroding ancient gravel deposits — the same process that shaped Arizona\'s Bryce Canyon.',
-          isMovie: true,
-        },
-        {
-          id: 'wlg-006', title: 'Dry Creek Quarry', movieOrShow: 'The Lord of the Rings', year: 2001,
-          category: LocationCategory.action, latitude: -41.2245, longitude: 174.8982,
-          address: 'Dry Creek, Lower Hutt', city: 'Wellington', country: 'New Zealand',
-          sceneDescription: 'This unassuming quarry became the backdrop for two of Middle-earth\'s most iconic locations: Helm\'s Deep and Minas Tirith, built at massive scale by the Weta team.',
-          funFact: 'The Helm\'s Deep set measured 350 meters long and took 7 months to build. It was the largest set ever constructed in the Southern Hemisphere until it was dismantled.',
-          isMovie: true,
-        },
-      ];
-
         {
           id: 'akl-001', title: 'Hobbiton — Matamata', movieOrShow: 'The Lord of the Rings', year: 2001,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Hobbiton.jpg',
@@ -1426,7 +1376,6 @@ const londonLocations: FilmingLocation[] = [
           thenAndNow: 'The Over World still operates as a working game store, with a dedicated Minecraft corner that attracts fans from around the world.',
           isMovie: false,
         },
-      ];
         {
           id: 'akl-005', title: 'Elephant Rocks', movieOrShow: 'The Chronicles of Narnia', year: 2005,
           category: LocationCategory.action, latitude: -44.8583, longitude: 170.6400,
@@ -1436,6 +1385,59 @@ const londonLocations: FilmingLocation[] = [
           isMovie: true,
           remoteDestination: { ocean: 'Pacific Ocean' },
         },
+      ];
+
+      const wellingtonLocations: FilmingLocation[] = [
+        {
+          id: 'wlg-001', title: 'Weta Workshop', movieOrShow: 'The Lord of the Rings', year: 2001,
+          category: LocationCategory.action, latitude: -41.3481, longitude: 174.8164,
+          address: '1 Weka St, Miramar, Wellington', city: 'Wellington', country: 'New Zealand',
+          sceneDescription: 'The legendary creative studio where Middle-earth was brought to life — Weta crafted the One Ring, Aragorn\'s sword Andúril, and over 48,000 pieces of armor for the trilogy.',
+          funFact: 'Weta Workshop\'s artists handmade every single link in the chainmail worn by the actors — over 12.5 million links across all three films.',
+          isMovie: true,
+        },
+        {
+          id: 'wlg-002', title: 'Mount Victoria Lookout', movieOrShow: 'The Lord of the Rings', year: 2001,
+          category: LocationCategory.action, latitude: -41.2962, longitude: 174.7860,
+          address: 'Lookout Rd, Hataitai, Wellington', city: 'Wellington', country: 'New Zealand',
+          sceneDescription: 'The pine forest trails of Mount Victoria became the woods where Frodo and the hobbits hide from the Black Rider on their way to Bree. A short walk from downtown Wellington.',
+          funFact: 'Peter Jackson shot these scenes in 1999 during a single night — the famous "Get off the road!" scene was filmed just meters from a popular walking track.',
+          isMovie: true,
+        },
+        {
+          id: 'wlg-003', title: 'Kaitoke Regional Park', movieOrShow: 'The Lord of the Rings', year: 2001,
+          category: LocationCategory.action, latitude: -41.0623, longitude: 175.1941,
+          address: 'Kaitoke, Upper Hutt', city: 'Wellington', country: 'New Zealand',
+          sceneDescription: 'The lush beech forests of Kaitoke became Rivendell — the Elven sanctuary where Frodo awakens after his escape from the Nazgûl and the Fellowship is formed.',
+          funFact: 'A Rivendell signpost still stands in the park pointing visitors to the exact filming spots. The production built elaborate elven archways here that were later dismantled to restore the forest.',
+          isMovie: true,
+        },
+        {
+          id: 'wlg-004', title: 'Harcourt Park', movieOrShow: 'The Lord of the Rings', year: 2001,
+          category: LocationCategory.action, latitude: -41.1196, longitude: 175.1007,
+          address: 'Harcourt Park, Upper Hutt', city: 'Wellington', country: 'New Zealand',
+          sceneDescription: 'The manicured gardens of Harcourt Park doubled as the Gardens of Isengard, where Gandalf walks with Saruman before the wizard\'s betrayal is revealed.',
+          funFact: 'The giant tree in the park, visible in several shots, is a 150-year-old redwood — a species introduced to New Zealand from California in the 1870s.',
+          isMovie: true,
+        },
+        {
+          id: 'wlg-005', title: 'Putangirua Pinnacles', movieOrShow: 'The Lord of the Rings', year: 2003,
+          category: LocationCategory.action, latitude: -41.4502, longitude: 175.2412,
+          address: 'Cape Palliser Rd, Wairarapa', city: 'Wellington', country: 'New Zealand',
+          sceneDescription: 'These towering eroded rock formations became the Paths of the Dead in The Return of the King, where Aragorn, Legolas, and Gimli pass through the haunted mountain.',
+          funFact: 'The Pinnacles were formed over 120,000 years by rainwater eroding ancient gravel deposits — the same process that shaped Arizona\'s Bryce Canyon.',
+          isMovie: true,
+        },
+        {
+          id: 'wlg-006', title: 'Dry Creek Quarry', movieOrShow: 'The Lord of the Rings', year: 2001,
+          category: LocationCategory.action, latitude: -41.2245, longitude: 174.8982,
+          address: 'Dry Creek, Lower Hutt', city: 'Wellington', country: 'New Zealand',
+          sceneDescription: 'This unassuming quarry became the backdrop for two of Middle-earth\'s most iconic locations: Helm\'s Deep and Minas Tirith, built at massive scale by the Weta team.',
+          funFact: 'The Helm\'s Deep set measured 350 meters long and took 7 months to build. It was the largest set ever constructed in the Southern Hemisphere until it was dismantled.',
+          isMovie: true,
+        },
+      ];
+
 
       const tokyoLocations: FilmingLocation[] = [
         {
@@ -1538,7 +1540,6 @@ const londonLocations: FilmingLocation[] = [
           thenAndNow: 'Tempelhof is now a public park, one of the largest inner-city open spaces in the world.',
           isMovie: true,
         },
-      ];
         {
           id: 'ber-005', title: 'Friedrichstadt-Palast', movieOrShow: "The Queen's Gambit", year: 2020,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Friedrichstadt-palast_Foyer.JPG',
@@ -1593,6 +1594,7 @@ const londonLocations: FilmingLocation[] = [
           funFact: 'The Palais am Funkturm was built in 1957 as West Berlin\'s premier event space and has hosted everyone from David Bowie to the Berlin International Film Festival.',
           isMovie: false,
         },
+      ];
 
       const dublinLocations: FilmingLocation[] = [
         {
@@ -1849,17 +1851,6 @@ const londonLocations: FilmingLocation[] = [
             ];
 
             const dallasLocations: FilmingLocation[] = [
-      const albuquerqueLocations: FilmingLocation[] = [
-        {
-          id: 'abq-001', title: 'Surfer Boy Pizza', movieOrShow: 'Stranger Things', year: 2016,
-          category: LocationCategory.drama, latitude: 34.8100, longitude: -106.7370,
-          address: '3476 NM-47, Los Lunas, NM', city: 'Albuquerque', country: 'USA',
-          sceneDescription: 'Stood in as the Surfer Boy Pizza restaurant, where the California crew works and where key Season 4 moments unfold.',
-          funFact: 'The production built the Surfer Boy Pizza interior on a soundstage, but the exterior shots used a real building along NM-47.',
-          isMovie: false,
-        },
-      ];
-
               {
                 id: 'dal-001', title: 'Dealey Plaza', movieOrShow: 'JFK', year: 1991,
                 imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/DealeyPlaza.jpeg',
@@ -1920,7 +1911,6 @@ const londonLocations: FilmingLocation[] = [
                 thenAndNow: 'Deep Ellum is Dallas\'s premier arts and entertainment district, known for its murals and live music venues.',
                 isMovie: true,
               },
-            ];
         {
           id: 'dal-006', title: "Mary's Café", movieOrShow: 'Landman', year: 2024,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Marys_Cafe.jpg',
@@ -1963,8 +1953,32 @@ const londonLocations: FilmingLocation[] = [
           thenAndNow: "Book a room or just grab a drink at the Lobby Bar — you might spot a few oilmen talking business, or a Landman film crew capturing the atmosphere.",
           isMovie: false,
         },
+        {
+          id: 'dal-006', title: "Mary's Café", movieOrShow: 'Landman', year: 2024,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Marys_Cafe.jpg',
+          category: LocationCategory.drama, latitude: 32.5480, longitude: -98.4973,
+          address: '119 Grant Ave, Strawn, TX 76475', city: 'Dallas', country: 'USA',
+          sceneDescription: "Billy Bob Thornton's Tommy Norris brokers oil deals over coffee at this small-town Texas café — the kind of place where the waitress knows everyone's name and the handshake still seals the contract. About 110 miles west of Dallas, it captures the show's West Texas oil-patch authenticity.",
+          funFact: "Mary's Café is a real Strawn institution, serving home-style Texas cooking since the 1940s. Taylor Sheridan chose it for Landman because it looks exactly like the kind of café where roughnecks and landmen actually meet — no set dressing needed.",
+          quote: "Oil is a nasty business. But it pays the bills.",
+          quoteAttribution: 'Tommy Norris',
+          thenAndNow: "Still open for business. If you make the drive from Dallas, try the chicken-fried steak — it's been on the menu since day one.",
+          isMovie: false,
+        },
+      ];
 
-export const allLocations: FilmingLocation[] = [
+      const albuquerqueLocations: FilmingLocation[] = [
+        {
+          id: 'abq-001', title: 'Surfer Boy Pizza', movieOrShow: 'Stranger Things', year: 2016,
+          category: LocationCategory.drama, latitude: 34.8100, longitude: -106.7370,
+          address: '3476 NM-47, Los Lunas, NM', city: 'Albuquerque', country: 'USA',
+          sceneDescription: 'Stood in as the Surfer Boy Pizza restaurant, where the California crew works and where key Season 4 moments unfold.',
+          funFact: 'The production built the Surfer Boy Pizza interior on a soundstage, but the exterior shots used a real building along NM-47.',
+          isMovie: false,
+        },
+      ];
+
+      export const allLocations: FilmingLocation[] = [
   ...newYorkLocations,
   ...losAngelesLocations,
   ...londonLocations,
