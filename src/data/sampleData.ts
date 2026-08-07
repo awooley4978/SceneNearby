@@ -837,7 +837,7 @@ const londonLocations: FilmingLocation[] = [
         },
       ];
         {
-          id: 'bos-005', title: 'MIT Campus', movieOrShow: 'Good Will Hunting', year: 1997,
+          id: 'bos-005', title: 'MIT Campus', movieOrShow: 'Good Will Hunting + The Social Network', year: 1997,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/MIT%20Campus.jpg',
           category: LocationCategory.drama, latitude: 42.3601, longitude: -71.0942,
           address: '77 Massachusetts Ave, Cambridge, MA', city: 'Boston', country: 'USA',
@@ -2031,6 +2031,7 @@ const actorMap: Record<string, string[]> = {
   'bos-002': ['Jimmy Fallon', 'Drew Barrymore', 'Jack Kehler'],
   'bos-003': ['Leonardo DiCaprio', 'Matt Damon', 'Jack Nicholson'],
   'bos-004': ['Jesse Eisenberg', 'Andrew Garfield', 'Justin Timberlake'],
+  'bos-005': ['Matt Damon', 'Robin Williams', 'Jesse Eisenberg', 'Ben Affleck', 'Andrew Garfield'],
   'sea-001': ['Tom Hanks', 'Meg Ryan', 'Kelsey Grammer', 'Bridget Fonda', 'Matt Dillon'],
   'sea-002': ['Heath Ledger', 'Julia Stiles', 'Elisabeth Moss', 'Tom Hanks', 'Meg Ryan'],
   'sea-003': ['Bridget Fonda', 'Campbell Scott', 'Kyra Sedgwick'],
