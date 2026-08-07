@@ -1141,7 +1141,7 @@ const londonLocations: FilmingLocation[] = [
 
       const romeLocations: FilmingLocation[] = [
         {
-          id: 'rom-001', title: 'Trevi Fountain', movieOrShow: 'La Dolce Vita', year: 1960,
+          id: 'rom-001', title: 'Trevi Fountain', movieOrShow: 'La Dolce Vita + Roman Holiday', year: 1960,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/TreviFountain.jpg',
     focalPoint: { x: 0.5, y: 0.6 },
           category: LocationCategory.romance, latitude: 41.9009, longitude: 12.4833,
@@ -2050,7 +2050,7 @@ const actorMap: Record<string, string[]> = {
   'par-003': ['Tom Hanks', 'Audrey Tautou', 'Ian McKellen'],
   'par-004': ['Ethan Hawke', 'Julie Delpy', 'Vernon Dobtcheff'],
   'par-005': ['Leonardo DiCaprio', 'Joseph Gordon-Levitt', 'Elliot Page'],
-  'rom-001': ['Marcello Mastroianni', 'Anita Ekberg', 'Anouk Aimée'],
+  'rom-001': ['Marcello Mastroianni', 'Anita Ekberg', 'Audrey Hepburn', 'Gregory Peck', 'Anouk Aimée'],
   'rom-002': ['Audrey Hepburn', 'Gregory Peck', 'Eddie Albert'],
   'rom-003': ['Russell Crowe', 'Joaquin Phoenix', 'Connie Nielsen'],
   'rom-004': ['Toni Servillo', 'Carlo Verdone', 'Sabrina Ferilli'],
