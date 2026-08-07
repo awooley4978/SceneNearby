@@ -511,7 +511,8 @@ const londonLocations: FilmingLocation[] = [
           address: '1256 Briarcliff Road, Atlanta, GA', city: 'Atlanta', country: 'USA',
           sceneDescription: 'Stood in as Hawkins National Laboratory, the shadowy government facility where Eleven was experimented on and the gate to the Upside Down was opened.',
           funFact: 'The brutalist architecture of Emory\'s Briarcliff campus made it the perfect stand-in for the fictional Hawkins Lab, requiring minimal set dressing.',
-          isMovie: false,
+          isMovie: false
+        },
         {
           id: 'atl-009', title: 'Byers House', movieOrShow: 'Stranger Things', year: 2016,
           category: LocationCategory.drama, latitude: 33.4500, longitude: -84.4550,
@@ -558,7 +559,8 @@ const londonLocations: FilmingLocation[] = [
           address: '906 E 2nd Ave, Rome, GA', city: 'Atlanta', country: 'USA',
           sceneDescription: 'The haunted Creel House from Season 4, where Victor Creel\'s tragic family history unfolded and Vecna\'s origin was revealed.',
           funFact: 'This Victorian mansion in Rome, Georgia became one of the most chilling locations in the entire series after extensive production design.',
-          isMovie: false,
+          isMovie: false
+        },
         {
           id: 'atl-015', title: 'East Point First Baptist Church', movieOrShow: 'Stranger Things', year: 2016,
           category: LocationCategory.drama, latitude: 33.6680, longitude: -84.4500,
