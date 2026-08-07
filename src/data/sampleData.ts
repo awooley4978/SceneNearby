@@ -752,6 +752,18 @@ const londonLocations: FilmingLocation[] = [
           isMovie: true,
         },
       ];
+        {
+          id: 'sdg-007', title: 'Oceanside Beach Amphitheater', movieOrShow: 'Top Gun', year: 1986,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Oceanside%20Beach%20Amphitheater.jpg',
+          category: LocationCategory.action, latitude: 33.1930, longitude: -117.3830,
+          address: '301 The Strand N, Oceanside, CA 92054', city: 'San Diego', country: 'USA',
+          sceneDescription: "The endless summer volleyball scene — shirtless pilots diving in the sand, Kenny Loggins on the soundtrack, and the California sun doing more work than any dialogue ever could. Oceanside's beachfront amphitheater and its adjacent courts became the most iconic volleyball montage in cinema history.",
+          funFact: "The volleyball scene was filmed over two days at the Oceanside beach courts near the pier. The actors were genuinely competitive — Val Kilmer and Rick Rossovich took it so seriously that Tony Scott had to remind them they were supposed to be teammates, not rivals. The sand was imported because the natural Oceanside sand was too coarse.",
+          quote: "Playing with the boys.",
+          quoteAttribution: 'Kenny Loggins',
+          thenAndNow: "The beach volleyball courts are still there, right next to the Oceanside Pier amphitheater. Bring a ball, queue up the Top Gun soundtrack, and recreate the scene — shirtless optional, but strongly encouraged by tradition.",
+          isMovie: true,
+        },
 
       const bostonLocations: FilmingLocation[] = [
         {
@@ -1916,6 +1928,7 @@ const actorMap: Record<string, string[]> = {
   'la-004': ['Christian Bale', 'Tom Hardy', 'Anne Hathaway'],
   'la-005': ['Patrick Fugit', 'Kate Hudson', 'Billy Crudup'],
   'la-006': ['Jeff Bridges', 'John Goodman', 'Julianne Moore'],
+  'sdg-007': ['Tom Cruise', 'Kelly McGillis', 'Val Kilmer', 'Anthony Edwards', 'Meg Ryan'],
   'la-007': ['Joseph Gordon-Levitt', 'Zooey Deschanel', 'Geoffrey Arend'],
   'la-008': ['Jason Segel', 'Amy Adams', 'Chris Cooper'],
   'la-009': ['Wesley Snipes', 'Woody Harrelson', 'Rosie Perez'],
