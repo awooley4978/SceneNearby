@@ -38,6 +38,12 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
 }) => {
   const { locationId } = route.params;
   const location = locationById(locationId);
+
+  // DEBUG: log the runtime object for dal-004
+  if (locationId === 'dal-004') {
+    console.log('[RUNTIME DEBUG — LocationDetailScreen] dal-004 received:', JSON.stringify(location, null, 2));
+  }
+
   const communityPhotos = location ? photosByLocation(location.id) : [];
   const { isSaved: checkSaved, toggleSave: toggleSaved } = useSaved();
   const saved = checkSaved(locationId);

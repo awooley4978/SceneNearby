@@ -42,6 +42,10 @@ export const LocationCard: React.FC<LocationCardProps> = ({
   showRating = true,
   index = 0,
 }) => {
+  // DEBUG: log the runtime object for dal-004
+  if (location.id === 'dal-004') {
+    console.log('[RUNTIME DEBUG — LocationCard] dal-004 received:', JSON.stringify(location, null, 2));
+  }
   const rating = mockRatings[location.id];
   const { isSaved: checkSaved, toggleSave: contextToggle } = useSaved();
   const isSaved = checkSaved(location.id);
