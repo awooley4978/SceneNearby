@@ -38,12 +38,6 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
 }) => {
   const { locationId } = route.params;
   const location = locationById(locationId);
-
-  // DEBUG: log the runtime object for dal-004
-  if (locationId === 'dal-004') {
-    console.log('[RUNTIME DEBUG — LocationDetailScreen] dal-004 received:', JSON.stringify(location, null, 2));
-  }
-
   const communityPhotos = location ? photosByLocation(location.id) : [];
   const { isSaved: checkSaved, toggleSave: toggleSaved } = useSaved();
   const saved = checkSaved(locationId);
@@ -270,12 +264,6 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
 
           {/* Hero content */}
           <View style={styles.heroContent}>
-            {/* DEBUG BANNER — visible in detail view */}
-            <View style={styles.debugBanner}>
-              <Text style={styles.debugText}>
-                🔍 id={location.id} | movieOrShow="{location.movieOrShow}" | year={location.year} | title="{location.title}"
-              </Text>
-            </View>
             <Pressable onPress={handleViewMovie} style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}>
               <Text style={styles.showName}>{location.movieOrShow}</Text>
             </Pressable>
@@ -449,21 +437,6 @@ const styles = StyleSheet.create({
   content: { paddingBottom: 40 },
   errorContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.background },
   errorText: { fontSize: 18, color: theme.colors.textSecondary },
-
-  debugBanner: {
-    backgroundColor: '#FFD700',
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    marginBottom: 8,
-    borderRadius: 4,
-    alignSelf: 'flex-start',
-  },
-  debugText: {
-    color: '#000',
-    fontSize: 10,
-    fontWeight: '700',
-    fontFamily: 'monospace',
-  },
 
   // ── Hero ──
   hero: { height: HERO_HEIGHT, justifyContent: 'flex-end', overflow: 'hidden', position: 'relative' },

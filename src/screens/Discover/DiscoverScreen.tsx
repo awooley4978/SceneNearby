@@ -439,10 +439,6 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
 
   return (
     <View style={[styles.container, { paddingTop: insets.top + 8 }]}>
-      {/* TEMPORARY — remove after Metro connection verified */}
-      <View style={{ backgroundColor: '#FF0066', paddingVertical: 14, alignItems: 'center', zIndex: 9999 }}>
-        <Text style={{ color: '#FFF', fontSize: 18, fontWeight: '900', letterSpacing: 2 }}>■ METRO CHECK — BUILD ab7c055 ■</Text>
-      </View>
       {isLoading ? (
         <Animated.View style={styles.listContent}>
           <CardSkeleton />
