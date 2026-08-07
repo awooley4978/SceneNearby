@@ -685,6 +685,19 @@ const londonLocations: FilmingLocation[] = [
           isMovie: true,
         },
       ];
+        {
+          id: 'sfo-005', title: 'Lombard Street', movieOrShow: 'The Princess Diaries + Ant-Man + Herbie: Fully Loaded + What\'s Up, Doc?', year: 2001,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Lombard%20Street.jpg',
+    focalPoint: { x: 0.5, y: 0.3 },
+          category: LocationCategory.comedy, latitude: 37.8020, longitude: -122.4187,
+          address: 'Lombard Street, San Francisco, CA 94133', city: 'San Francisco', country: 'USA',
+          sceneDescription: "The most crooked street in the world winds through eight hairpin turns past manicured flowerbeds and million-dollar views — a postcard come to life that\'s been the backdrop for everything from royal makeovers to shrinking superheroes and one very opinionated Volkswagen Beetle.",
+          funFact: "Lombard Street\'s famous crooked section was created in 1922 to reduce the hill\'s 27% grade. It\'s now one of San Francisco\'s most photographed spots, drawing over 2 million visitors a year. Herbie: Fully Loaded actually had Lindsay Lohan\'s Volkswagen drive UP the one-way street — they got a special permit and closed it for filming.",
+          quote: 'A queen is never late. Everyone else is simply early.',
+          quoteAttribution: 'Queen Clarisse Renaldi',
+          thenAndNow: "Still San Francisco\'s most Instagrammable street. Go early morning to beat the crowds, or visit at twilight when the Bay Bridge lights up and the gardens glow. Just don\'t drive it during tourist season unless you enjoy spending 45 minutes in first gear.",
+          isMovie: true,
+        },
 
       const sandiegoLocations: FilmingLocation[] = [
         {
@@ -2023,6 +2036,7 @@ const actorMap: Record<string, string[]> = {
   'sfo-002': ['John Stamos', 'Robin Williams', 'Bob Saget', 'Candace Cameron Bure', 'Sam Neill'],
   'sfo-003': ['Tom Hardy', 'Paul Rudd', 'Hugh Jackman', 'James Stewart', 'Andy Serkis'],
   'sfo-004': ['Will Smith', 'Simu Liu', 'Kurt Russell', 'Awkwafina', 'Tony Leung'],
+  'sfo-005': ['Anne Hathaway', 'Paul Rudd', 'Lindsay Lohan', 'Barbra Streisand', 'Julie Andrews'],
   'sdg-001': ['Kristen Bell', 'Jason Dohring', 'Enrico Colantoni', 'Percy Daggs III'],
   'sdg-002': ['Kristen Bell', 'Jason Dohring', 'Enrico Colantoni', 'Percy Daggs III'],
   'sdg-003': ['Kristen Bell', 'Jason Dohring', 'Enrico Colantoni', 'Percy Daggs III'],
