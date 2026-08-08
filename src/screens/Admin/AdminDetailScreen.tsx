@@ -31,7 +31,6 @@ export const AdminDetailScreen: React.FC<{ navigation: any; route: any }> = ({
   route,
 }) => {
   const { type, label, items = [] } = (route.params ?? {}) as AdminDetailParams;
-  const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set());
   const [filtersExpanded, setFiltersExpanded] = useState(false);
   const [filters, setFilters] = useState<DetailFilters>(EMPTY_FILTERS);
 
@@ -55,25 +54,11 @@ export const AdminDetailScreen: React.FC<{ navigation: any; route: any }> = ({
     filters.firstLetter,
   ].filter(Boolean).length;
 
-  const toggleCheck = (id: string) => {
-    setCheckedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
-      return next;
-    });
-  };
-
   const setFilter = (key: keyof DetailFilters, value: string | null) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
   const clearAllFilters = () => setFilters(EMPTY_FILTERS);
-
-  const checkedCount = checkedIds.size;
 
   const renderChips = (
     options: string[],
@@ -182,13 +167,6 @@ export const AdminDetailScreen: React.FC<{ navigation: any; route: any }> = ({
         )}
       </View>
 
-      {/* Checked counter */}
-      {checkedCount > 0 && (
-        <View style={styles.checkedBar}>
-          <Text style={styles.checkedText}>☑ {checkedCount} selected</Text>
-        </View>
-      )}
-
       {/* Empty state */}
       {filteredItems.length === 0 && (
         <View style={styles.emptyState}>
@@ -209,33 +187,22 @@ export const AdminDetailScreen: React.FC<{ navigation: any; route: any }> = ({
 
       {/* List */}
       <ScrollView style={styles.list} contentContainerStyle={styles.listContent}>
-        {filteredItems.map((loc) => {
-          const isChecked = checkedIds.has(loc.id);
-          return (
-            <TouchableOpacity
-              key={loc.id}
-              style={[styles.row, isChecked && styles.rowChecked]}
-              onPress={() => navigation.navigate('LocationDetail', { locationId: loc.id })}
-              activeOpacity={0.7}
-            >
-              <TouchableOpacity
-                onPress={() => toggleCheck(loc.id)}
-                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-              >
-                <Text style={[styles.checkbox, isChecked && styles.checkboxChecked]}>
-                  {isChecked ? '☑' : '☐'}
-                </Text>
-              </TouchableOpacity>
-              <View style={styles.rowInfo}>
-                <Text style={styles.rowTitle}>{loc.title}</Text>
-                <Text style={styles.rowSub}>
-                  {loc.movieOrShow}{loc.year ? ` (${loc.year})` : ''} — {loc.city}, {loc.country}
-                </Text>
-              </View>
-              <Text style={styles.rowChevron}>›</Text>
-            </TouchableOpacity>
-          );
-        })}
+        {filteredItems.map((loc) => (
+          <TouchableOpacity
+            key={loc.id}
+            style={styles.row}
+            onPress={() => navigation.navigate('LocationDetail', { locationId: loc.id })}
+            activeOpacity={0.7}
+          >
+            <View style={styles.rowInfo}>
+              <Text style={styles.rowTitle}>{loc.title}</Text>
+              <Text style={styles.rowSub}>
+                {loc.movieOrShow}{loc.year ? ` (${loc.year})` : ''} — {loc.city}, {loc.country}
+              </Text>
+            </View>
+            <Text style={styles.rowChevron}>›</Text>
+          </TouchableOpacity>
+        ))}
       </ScrollView>
     </View>
   );
@@ -368,16 +335,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 
-  // Checked bar
-  checkedBar: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    backgroundColor: theme.colors.gold + '15',
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.gold + '30',
-  },
-  checkedText: { fontSize: 13, fontWeight: '600', color: theme.colors.gold },
-
   // Empty
   emptyState: {
     flex: 1,
@@ -400,19 +357,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.surface3 + '60',
-  },
-  rowChecked: {
-    backgroundColor: theme.colors.gold + '08',
-  },
-  checkbox: {
-    fontSize: 20,
-    marginRight: 12,
-    color: theme.colors.textTertiary,
-    width: 28,
-    textAlign: 'center',
-  },
-  checkboxChecked: {
-    color: theme.colors.gold,
   },
   rowInfo: { flex: 1 },
   rowTitle: { fontSize: 15, fontWeight: '600', color: theme.colors.textPrimary },
