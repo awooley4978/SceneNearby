@@ -866,7 +866,6 @@ const londonLocations: FilmingLocation[] = [
           thenAndNow: 'Still San Francisco\'s most Instagrammable street.',
           isMovie: true,
         },
-        {
       ];
 
       const sandiegoLocations: FilmingLocation[] = [
@@ -1210,7 +1209,6 @@ const londonLocations: FilmingLocation[] = [
           thenAndNow: 'Suzzallo Library remains the crown jewel of UW\'s campus.',
           isMovie: true,
         },
-        {
       ];
 
       const vancouverLocations: FilmingLocation[] = [
