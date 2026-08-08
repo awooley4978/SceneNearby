@@ -56,34 +56,6 @@ export const LocationAlbumScreen: React.FC<{ route: any; navigation: any }> = ({
     loadPhotos();
   }, [loadPhotos]);
 
-  if (!user) {
-    return (
-      <EmptyState
-        emoji="🔒"
-        title="Sign in to view photos"
-        subtitle="Your photos will appear here once you're signed in."
-      />
-    );
-  }
-
-  if (loading) {
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color={theme.colors.gold} />
-      </View>
-    );
-  }
-
-  if (photos.length === 0) {
-    return (
-      <EmptyState
-        emoji="📸"
-        title="No photos yet"
-        subtitle={`You haven't added any photos at ${locationName}.`}
-      />
-    );
-  }
-
   const renderPhoto = ({ item, index }: { item: UserPhoto; index: number }) => (
     <TouchableOpacity
       style={styles.photoTile}
@@ -100,6 +72,56 @@ export const LocationAlbumScreen: React.FC<{ route: any; navigation: any }> = ({
 
   const currentPhoto = viewerIndex !== null ? photos[viewerIndex] : null;
 
+  // Content varies by auth / loading / empty state, but the dark
+  // container + back bar always render so users can always get out.
+  let content: React.ReactNode;
+  if (!user) {
+    content = (
+      <EmptyState
+        emoji="🔒"
+        title="Sign in to view photos"
+        subtitle="Your photos will appear here once you're signed in."
+      />
+    );
+  } else if (loading) {
+    content = (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color={theme.colors.gold} />
+      </View>
+    );
+  } else if (photos.length === 0) {
+    content = (
+      <EmptyState
+        emoji="📸"
+        title="No photos yet"
+        subtitle={`You haven't added any photos at ${locationName}.`}
+      />
+    );
+  } else {
+    content = (
+      <>
+        {/* Header info */}
+        <View style={styles.header}>
+          <Text style={styles.city}>{city}</Text>
+          <Text style={styles.count}>
+            {photos.length} photo{photos.length !== 1 ? 's' : ''}
+          </Text>
+        </View>
+        {/* Photo grid */}
+        <FlatList
+          data={photos}
+          keyExtractor={(item) => item.id}
+          renderItem={renderPhoto}
+          numColumns={NUM_COLUMNS}
+          contentContainerStyle={styles.grid}
+          showsVerticalScrollIndicator={false}
+          columnWrapperStyle={{ gap: SPACING }}
+          ItemSeparatorComponent={() => <View style={{ height: SPACING }} />}
+        />
+      </>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.topBar}>
@@ -112,25 +134,7 @@ export const LocationAlbumScreen: React.FC<{ route: any; navigation: any }> = ({
           <Text style={styles.closeButtonText}>✕</Text>
         </TouchableOpacity>
       </View>
-      {/* Header info */}
-      <View style={styles.header}>
-        <Text style={styles.city}>{city}</Text>
-        <Text style={styles.count}>
-          {photos.length} photo{photos.length !== 1 ? 's' : ''}
-        </Text>
-      </View>
-
-      {/* Photo grid */}
-      <FlatList
-        data={photos}
-        keyExtractor={(item) => item.id}
-        renderItem={renderPhoto}
-        numColumns={NUM_COLUMNS}
-        contentContainerStyle={styles.grid}
-        showsVerticalScrollIndicator={false}
-        columnWrapperStyle={{ gap: SPACING }}
-        ItemSeparatorComponent={() => <View style={{ height: SPACING }} />}
-      />
+      {content}
 
       {/* Full-screen viewer modal */}
       <Modal
@@ -142,11 +146,11 @@ export const LocationAlbumScreen: React.FC<{ route: any; navigation: any }> = ({
         <View style={styles.viewerOverlay}>
           {/* Close button */}
           <TouchableOpacity
-            style={styles.closeButton}
+            style={styles.viewerCloseButton}
             onPress={() => setViewerIndex(null)}
             activeOpacity={0.7}
           >
-            <Text style={styles.closeButtonText}>✕</Text>
+            <Text style={styles.viewerCloseButtonText}>✕</Text>
           </TouchableOpacity>
 
           {/* Position badge */}
@@ -205,6 +209,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    paddingTop: 56,
+    paddingBottom: 12,
     paddingRight: 16,
   },
   closeButton: {
@@ -263,7 +269,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.97)',
     justifyContent: 'center',
   },
-  closeButton: {
+  viewerCloseButton: {
     position: 'absolute',
     top: Platform.OS === 'ios' ? 54 : 24,
     right: 20,
@@ -275,7 +281,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  closeButtonText: {
+  viewerCloseButtonText: {
     fontSize: 18,
     color: theme.colors.white,
     fontWeight: '600',

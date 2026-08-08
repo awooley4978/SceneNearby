@@ -88,22 +88,28 @@ export const AdminDashboardScreen: React.FC<{ navigation: any }> = ({ navigation
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* Back button */}
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => navigation.navigate('Profile')}
-        activeOpacity={0.7}
-      >
-        <Text style={styles.backText}>‹ Back</Text>
-      </TouchableOpacity>
-
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerEmoji}>🛡️</Text>
-        <Text style={styles.headerTitle}>Admin Dashboard</Text>
-        <Text style={styles.headerSub}>Scene Nearby content health</Text>
+    <View style={styles.container}>
+      {/* Fixed header bar — keeps Back tappable and clear of the status bar */}
+      <View style={styles.topBar}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.navigate('Profile')}
+          activeOpacity={0.7}
+          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+        >
+          <Text style={styles.backText}>‹ Back</Text>
+        </TouchableOpacity>
+        <Text style={styles.topBarTitle}>Admin</Text>
+        <View style={styles.topBarSpacer} />
       </View>
+
+      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.headerEmoji}>🛡️</Text>
+          <Text style={styles.headerTitle}>Admin Dashboard</Text>
+          <Text style={styles.headerSub}>Scene Nearby content health</Text>
+        </View>
 
       {/* Completion bar */}
       <View style={styles.completionSection}>
@@ -158,7 +164,8 @@ export const AdminDashboardScreen: React.FC<{ navigation: any }> = ({ navigation
       <View style={styles.footer}>
         <Text style={styles.footerText}>Scene Nearby Admin • v1.0</Text>
       </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };
 
@@ -185,13 +192,24 @@ const styles = StyleSheet.create({
   headerTitle: { fontSize: 26, fontWeight: '800', color: theme.colors.gold },
   headerSub: { fontSize: 14, color: theme.colors.textSecondary, marginTop: 4 },
 
-  // Back button
+  // Top bar (fixed header)
+  topBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingTop: 56,
+    paddingBottom: 12,
+    paddingHorizontal: 16,
+    backgroundColor: theme.colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.surface3,
+  },
   backButton: {
-    alignSelf: 'flex-start',
     paddingVertical: 8,
-    paddingHorizontal: 4,
+    paddingRight: 12,
   },
   backText: { fontSize: 16, color: theme.colors.gold, fontWeight: '600' },
+  topBarTitle: { fontSize: 16, fontWeight: '700', color: theme.colors.textSecondary },
+  topBarSpacer: { width: 44 },
 
   // Completion
   completionSection: {

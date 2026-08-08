@@ -46,37 +46,6 @@ export const AlbumScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     return unsubscribe;
   }, [navigation, loadAlbum]);
 
-  // Not signed in
-  if (!user) {
-    return (
-      <EmptyState
-        emoji="🔒"
-        title="Sign in to view your album"
-        subtitle="Your photos will appear here once you're signed in."
-      />
-    );
-  }
-
-  // Loading
-  if (loading) {
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color={theme.colors.gold} />
-      </View>
-    );
-  }
-
-  // Empty album
-  if (groups.length === 0) {
-    return (
-      <EmptyState
-        emoji="📸"
-        title="Your Album is waiting"
-        subtitle="Photos you add at filming locations will appear here."
-      />
-    );
-  }
-
   const renderLocationCard = ({ item }: { item: LocationGroup }) => (
     <TouchableOpacity
       style={styles.card}
@@ -120,6 +89,43 @@ export const AlbumScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     </TouchableOpacity>
   );
 
+  // Content varies by auth / loading / empty state, but the dark
+  // container + back bar always render so users can always get out.
+  let content: React.ReactNode;
+  if (!user) {
+    content = (
+      <EmptyState
+        emoji="🔒"
+        title="Sign in to view your album"
+        subtitle="Your photos will appear here once you're signed in."
+      />
+    );
+  } else if (loading) {
+    content = (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color={theme.colors.gold} />
+      </View>
+    );
+  } else if (groups.length === 0) {
+    content = (
+      <EmptyState
+        emoji="📸"
+        title="Your Album is waiting"
+        subtitle="Photos you add at filming locations will appear here."
+      />
+    );
+  } else {
+    content = (
+      <FlatList
+        data={groups}
+        keyExtractor={(item) => item.locationId}
+        renderItem={renderLocationCard}
+        contentContainerStyle={styles.list}
+        showsVerticalScrollIndicator={false}
+      />
+    );
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.topBar}>
@@ -132,13 +138,7 @@ export const AlbumScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           <Text style={styles.closeButtonText}>✕</Text>
         </TouchableOpacity>
       </View>
-      <FlatList
-        data={groups}
-        keyExtractor={(item) => item.locationId}
-        renderItem={renderLocationCard}
-        contentContainerStyle={styles.list}
-        showsVerticalScrollIndicator={false}
-      />
+      {content}
     </View>
   );
 };
@@ -152,6 +152,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    paddingTop: 56,
+    paddingBottom: 12,
     paddingRight: 16,
   },
   closeButton: {
