@@ -32,6 +32,7 @@ const GRADIENT_PAIRS: Record<string, string[]> = {
   'Sci-Fi': ['#0E4D64', '#0a1a2e'],
   Action: ['#7F1D1D', '#2a1a1a'],
   Romance: ['#6B2142', '#2a1a2a'],
+  Horror: ['#7C2D12', '#2a1a1a'],
 };
 
 export const LocationCard: React.FC<LocationCardProps> = ({

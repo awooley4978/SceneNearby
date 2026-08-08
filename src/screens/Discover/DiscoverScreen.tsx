@@ -36,6 +36,7 @@ const categories = [
   { key: LocationCategory.sciFi, label: 'Sci-Fi' },
   { key: LocationCategory.action, label: 'Action' },
   { key: LocationCategory.romance, label: 'Romance' },
+  { key: LocationCategory.horror, label: 'Horror' },
 ];
 
 const typeFilters = [

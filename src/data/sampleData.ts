@@ -756,7 +756,7 @@ const londonLocations: FilmingLocation[] = [
           id: 'sfo-003b', title: 'The Golden Gate Bridge', movieOrShow: 'Rise of the Planet of the Apes', year: 2011,
           focalPoint: { x: 0.4, y: 0.5 },
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/GoldenGateBridge.jpg',
-          category: LocationCategory.scifi, latitude: 37.8199, longitude: -122.4783,
+          category: LocationCategory.sciFi, latitude: 37.8199, longitude: -122.4783,
           address: 'Golden Gate Bridge, San Francisco', city: 'San Francisco', country: 'USA',
           sceneDescription: 'Caesar and his army of genetically enhanced apes swarm across the Golden Gate Bridge in the film\'s breathtaking climax.',
           funFact: 'The bridge battle sequence took months to plan and used a combination of practical stunts on a partial bridge set.',
