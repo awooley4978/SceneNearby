@@ -8,6 +8,8 @@ import { BucketListSheet } from './BucketListSheet';
 interface EstimatedVisitTimeProps {
   time?: string;
   locationId?: string;
+  hasVisited?: boolean;
+  onGateAnswered?: (visited: boolean) => void;
 }
 
 const TIME_OPTIONS = [
@@ -19,31 +21,45 @@ const TIME_OPTIONS = [
   { key: 'fullday', label: 'Full Day', emoji: '🌞' },
 ];
 
-export const EstimatedVisitTime: React.FC<EstimatedVisitTimeProps> = ({ time, locationId }) => {
+export const EstimatedVisitTime: React.FC<EstimatedVisitTimeProps> = ({ time, locationId, hasVisited: externalHasVisited, onGateAnswered }) => {
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [sheetVisible, setSheetVisible] = useState(false);
 
   // Gate & time state
   const [loaded, setLoaded] = useState(false);
-  const [hasVisited, setHasVisited] = useState(false);
+  const [internalHasVisited, setInternalHasVisited] = useState(false);
   const [savedTime, setSavedTime] = useState<string | null>(null);
   const [showGate, setShowGate] = useState(false);
   const [showBucketList, setShowBucketList] = useState(false);
 
+  // Use external state if provided, otherwise use internal
+  const hasVisited = externalHasVisited !== undefined ? externalHasVisited : internalHasVisited;
+
   useEffect(() => {
     if (!locationId) return;
+    // If external state is provided, skip internal load
+    if (externalHasVisited !== undefined) {
+      getUserVisitTime(locationId).then((visitTime) => {
+        if (visitTime) {
+          setSavedTime(visitTime);
+          setSelectedTime(visitTime);
+        }
+        setLoaded(true);
+      });
+      return;
+    }
     Promise.all([
       isGateAnswered(locationId),
       getUserVisitTime(locationId),
     ]).then(([visited, visitTime]) => {
-      setHasVisited(visited);
+      setInternalHasVisited(visited);
       if (visitTime) {
         setSavedTime(visitTime);
         setSelectedTime(visitTime);
       }
       setLoaded(true);
     });
-  }, [locationId]);
+  }, [locationId, externalHasVisited]);
 
   const cleanTime = (t?: string) => {
     if (!t) return t;
@@ -74,7 +90,8 @@ export const EstimatedVisitTime: React.FC<EstimatedVisitTimeProps> = ({ time, lo
   const handleVisited = () => {
     if (locationId) {
       markLocationVisited(locationId);
-      setHasVisited(true);
+      setInternalHasVisited(true);
+      onGateAnswered?.(true);
     }
     setShowGate(false);
     setSheetVisible(true);
@@ -83,7 +100,8 @@ export const EstimatedVisitTime: React.FC<EstimatedVisitTimeProps> = ({ time, lo
   const handleNotVisited = () => {
     if (locationId) {
       markLocationDismissed(locationId);
-      setHasVisited(true);
+      setInternalHasVisited(true);
+      onGateAnswered?.(false);
     }
     setShowGate(false);
     setShowBucketList(true);

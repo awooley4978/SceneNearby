@@ -5,6 +5,7 @@ export enum LocationCategory {
   sciFi = 'Sci-Fi',
   action = 'Action',
   romance = 'Romance',
+  horror = 'Horror',
 }
 
 export const categoryColors: Record<LocationCategory, string> = {
@@ -13,6 +14,7 @@ export const categoryColors: Record<LocationCategory, string> = {
   [LocationCategory.sciFi]: '#06B6D4',
   [LocationCategory.action]: '#EF4444',
   [LocationCategory.romance]: '#EC4899',
+  [LocationCategory.horror]: '#F97316',
 };
 
 export const categoryIcons: Record<LocationCategory, string> = {
@@ -21,6 +23,7 @@ export const categoryIcons: Record<LocationCategory, string> = {
   [LocationCategory.sciFi]: 'sparkles',
   [LocationCategory.action]: 'flame',
   [LocationCategory.romance]: 'heart',
+  [LocationCategory.horror]: 'ghost',
 };
 
 // ── Core Model ──

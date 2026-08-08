@@ -36,6 +36,7 @@ const categories = [
   { key: LocationCategory.sciFi, label: 'Sci-Fi' },
   { key: LocationCategory.action, label: 'Action' },
   { key: LocationCategory.romance, label: 'Romance' },
+  { key: LocationCategory.horror, label: 'Horror' },
 ];
 
 const typeFilters = [
@@ -123,6 +124,17 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
 
     return results;
   })();
+
+  // Filter search results by selected type (movies/shows)
+  const filteredSearchResults = useMemo(() => {
+    if (selectedType === 'all') return searchResults;
+    return searchResults.filter((item) => {
+      if (item.type === 'actor') return false; // actors don't match movie/show filter
+      if (selectedType === 'movies') return item.type === 'movie';
+      if (selectedType === 'shows') return item.type === 'show';
+      return true;
+    });
+  }, [searchResults, selectedType]);
 
   useEffect(() => {
     if (searchQuery.trim() && searchQuery !== prevQuery.current) {
@@ -466,14 +478,14 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
         )}
       </View>
       {/* Search results dropdown */}
-      {searchQuery.trim().length > 0 && searchResults.length > 0 && (
+      {searchQuery.trim().length > 0 && filteredSearchResults.length > 0 && (
         <View style={styles.searchResults}>
           <FlatList
-            data={searchResults.slice(0, 10)}
+            data={filteredSearchResults.slice(0, 10)}
             keyExtractor={(item) => item.id}
             renderItem={renderSearchResult}
             scrollEnabled={false}
-            extraData={searchQuery}
+            extraData={`${searchQuery}-${selectedType}`}
           />
         </View>
       )}

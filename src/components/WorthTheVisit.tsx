@@ -11,6 +11,8 @@ interface WorthTheVisitProps {
   percentage?: number;
   votes?: number;
   locationId?: string;
+  hasVisited?: boolean;
+  onGateAnswered?: (visited: boolean) => void;
 }
 
 const VOTE_OPTIONS: { key: WorthItVote; label: string; emoji: string }[] = [
@@ -19,7 +21,7 @@ const VOTE_OPTIONS: { key: WorthItVote; label: string; emoji: string }[] = [
   { key: 'big_fan', label: 'Only If a Big Fan', emoji: '🎬' },
 ];
 
-export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes, locationId }) => {
+export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes, locationId, hasVisited: externalHasVisited, onGateAnswered }) => {
   const { user } = useAuth();
   const [liveStats, setLiveStats] = useState<WorthItStats | null>(null);
   const [userVote, setUserVote] = useState<WorthItVote | null>(null);
@@ -28,25 +30,39 @@ export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes,
 
   // Gate & vote state
   const [loaded, setLoaded] = useState(false);
-  const [hasVisited, setHasVisited] = useState(false);
+  const [internalHasVisited, setInternalHasVisited] = useState(false);
   const [savedVote, setSavedVote] = useState<WorthItVoteData | null>(null);
   const [showGate, setShowGate] = useState(false);
   const [showBucketList, setShowBucketList] = useState(false);
 
+  // Use external state if provided, otherwise use internal
+  const hasVisited = externalHasVisited !== undefined ? externalHasVisited : internalHasVisited;
+
   useEffect(() => {
     if (!locationId) return;
+    // If external state is provided, skip internal gate check
+    if (externalHasVisited !== undefined) {
+      getUserWorthItVote(locationId).then((voteData) => {
+        if (voteData) {
+          setSavedVote(voteData);
+          setUserVote(voteData.key as WorthItVote);
+        }
+        setLoaded(true);
+      });
+      return;
+    }
     Promise.all([
       isGateAnswered(locationId),
       getUserWorthItVote(locationId),
     ]).then(([visited, voteData]) => {
-      setHasVisited(visited);
+      setInternalHasVisited(visited);
       if (voteData) {
         setSavedVote(voteData);
         setUserVote(voteData.key as WorthItVote);
       }
       setLoaded(true);
     });
-  }, [locationId]);
+  }, [locationId, externalHasVisited]);
 
   useEffect(() => {
     if (!locationId) return;
@@ -87,7 +103,8 @@ export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes,
   const handleVisited = () => {
     if (locationId) {
       markLocationVisited(locationId);
-      setHasVisited(true);
+      setInternalHasVisited(true);
+      onGateAnswered?.(true);
     }
     setShowGate(false);
     setSheetVisible(true);
@@ -96,7 +113,8 @@ export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes,
   const handleNotVisited = () => {
     if (locationId) {
       markLocationDismissed(locationId);
-      setHasVisited(true);
+      setInternalHasVisited(true);
+      onGateAnswered?.(false);
     }
     setShowGate(false);
     setShowBucketList(true);

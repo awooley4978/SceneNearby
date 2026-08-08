@@ -215,12 +215,17 @@ export const AdminDetailScreen: React.FC<{ navigation: any; route: any }> = ({
             <TouchableOpacity
               key={loc.id}
               style={[styles.row, isChecked && styles.rowChecked]}
-              onPress={() => toggleCheck(loc.id)}
+              onPress={() => navigation.navigate('LocationDetail', { locationId: loc.id })}
               activeOpacity={0.7}
             >
-              <Text style={[styles.checkbox, isChecked && styles.checkboxChecked]}>
-                {isChecked ? '☑' : '☐'}
-              </Text>
+              <TouchableOpacity
+                onPress={() => toggleCheck(loc.id)}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              >
+                <Text style={[styles.checkbox, isChecked && styles.checkboxChecked]}>
+                  {isChecked ? '☑' : '☐'}
+                </Text>
+              </TouchableOpacity>
               <View style={styles.rowInfo}>
                 <Text style={styles.rowTitle}>{loc.title}</Text>
                 <Text style={styles.rowSub}>
