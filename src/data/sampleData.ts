@@ -3127,6 +3127,15 @@ export const locationById = (id: string): FilmingLocation | undefined => {
   return loc;
 };
 
+/** Find sibling locations at the same physical spot (same base ID, different movie) */
+export const siblingsByLocation = (locationId: string): FilmingLocation[] => {
+  // IDs like sfo-001a, sfo-001b → base is sfo-001
+  const base = locationId.replace(/[a-z]+$/, '');
+  return allLocations.filter(
+    (l) => l.id !== locationId && l.id.startsWith(base)
+  );
+};
+
 export const cities = ['New York City', 'Los Angeles', 'London', 'Chicago', 'Atlanta', 'San Francisco', 'San Diego', 'Boston', 'Seattle', 'Vancouver', 'Toronto', 'Paris', 'Rome', 'Sydney', 'Auckland', 'Wellington', 'Tokyo', 'Berlin', 'Dublin', 'New Orleans', 'Albuquerque', 'Washington DC', 'Dallas'] as const;
 
 // ── Mock Ratings ──
