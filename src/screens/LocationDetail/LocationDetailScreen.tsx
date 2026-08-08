@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -15,7 +15,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../../theme';
 import { locationById, photosByLocation, calculateDistance, siblingsByLocation } from '../../data/sampleData';
 import { STORAGE_KEYS, defaultUserSettings, communityPhotoToGallery } from '../../models';
-import { getUserSettings, setUserSettings } from '../../services/StorageService';
+import { getUserSettings, setUserSettings, isGateAnswered } from '../../services/StorageService';
 import { useSaved } from '../../context/SavedContext';
 import { useUserLocation } from '../../hooks/useUserLocation';
 import { MapPlaceholder } from '../../components/MapPlaceholder';
@@ -42,7 +42,18 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
   const { isSaved: checkSaved, toggleSave: toggleSaved } = useSaved();
   const saved = checkSaved(locationId);
   const [imageError, setImageError] = useState(false);
+  const [hasVisited, setHasVisited] = useState(false);
   const userLocation = useUserLocation();
+
+  useEffect(() => {
+    if (locationId) {
+      isGateAnswered(locationId).then(setHasVisited);
+    }
+  }, [locationId]);
+
+  const handleGateAnswered = React.useCallback(() => {
+    setHasVisited(true);
+  }, []);
 
   const distanceFromUser = React.useMemo(() => {
     if (userLocation.latitude === null || userLocation.longitude === null || !location) return undefined;
@@ -309,12 +320,19 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
             percentage={location.worthItPercentage}
             votes={location.worthItVotes}
             locationId={location.id}
+            hasVisited={hasVisited}
+            onGateAnswered={handleGateAnswered}
           />
         </SectionCard>
 
         {/* Estimated Visit Time */}
         <SectionCard icon="⏱️" title="Visit Time" fadeDelay={160}>
-          <EstimatedVisitTime time={location.estimatedVisitTime} locationId={location.id} />
+          <EstimatedVisitTime
+            time={location.estimatedVisitTime}
+            locationId={location.id}
+            hasVisited={hasVisited}
+            onGateAnswered={handleGateAnswered}
+          />
         </SectionCard>
 
         {/* What Happened Here — story variant */}
