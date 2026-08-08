@@ -102,7 +102,16 @@ export const LocationAlbumScreen: React.FC<{ route: any; navigation: any }> = ({
 
   return (
     <View style={styles.container}>
-      <BackButton />
+      <View style={styles.topBar}>
+        <BackButton />
+        <TouchableOpacity
+          style={styles.closeButton}
+          onPress={() => navigation.navigate('Profile')}
+          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+        >
+          <Text style={styles.closeButtonText}>✕</Text>
+        </TouchableOpacity>
+      </View>
       {/* Header info */}
       <View style={styles.header}>
         <Text style={styles.city}>{city}</Text>
@@ -191,6 +200,25 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
+  },
+  topBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingRight: 16,
+  },
+  closeButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: theme.colors.surface2,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  closeButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: theme.colors.textSecondary,
   },
   centered: {
     flex: 1,
