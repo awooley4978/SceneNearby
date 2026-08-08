@@ -867,8 +867,6 @@ const londonLocations: FilmingLocation[] = [
           isMovie: true,
         },
         {
-        {
-        {
       ];
 
       const sandiegoLocations: FilmingLocation[] = [
