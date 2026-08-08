@@ -815,7 +815,6 @@ const londonLocations: FilmingLocation[] = [
           isMovie: true,
         },
         {
-        {
           id: 'sfo-005', title: 'Lombard Street', movieOrShow: 'The Princess Diaries', year: 2001,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Lombard%20Street.jpg',
         focalPoint: { x: 0.5, y: 0.3 },
@@ -1139,7 +1138,6 @@ const londonLocations: FilmingLocation[] = [
           isMovie: false,
         },
         {
-        {
           id: 'sea-002', title: 'Space Needle', movieOrShow: '10 Things I Hate About You', year: 1999,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/SpaceNeedle.jpg',
         focalPoint: { x: 0.5, y: 0.25 },
@@ -1178,7 +1176,6 @@ const londonLocations: FilmingLocation[] = [
           thenAndNow: 'The Space Needle remains Seattle\'s most recognizable icon.',
           isMovie: true,
         },
-        {
         {
           id: 'sea-003', title: 'Capitol Hill', movieOrShow: 'Singles', year: 1992,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/CoryellCourtApartments.JPG',
@@ -1280,9 +1277,6 @@ const londonLocations: FilmingLocation[] = [
           isMovie: false,
         },
         {
-        {
-        {
-        {
           id: 'van-002', title: 'Stanley Park', movieOrShow: 'The X-Files', year: 1993,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/StanleyPark.jpg',
           category: LocationCategory.sciFi, latitude: 49.3043, longitude: -123.1445,
@@ -1330,8 +1324,6 @@ const londonLocations: FilmingLocation[] = [
           thenAndNow: 'Stanley Park is Vancouver\'s crown jewel.',
           isMovie: true,
         },
-        {
-        {
         {
           id: 'van-003', title: 'Gastown Steam Clock', movieOrShow: 'Lucifer', year: 2016,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/GastownSteamClock.jpg',
@@ -1392,9 +1384,6 @@ const londonLocations: FilmingLocation[] = [
           thenAndNow: 'The Gastown Steam Clock remains one of Vancouver\'s most photographed landmarks.',
           isMovie: false,
         },
-        {
-        {
-        {
         {
           id: 'van-004', title: 'Dr. Sun Yat-Sen Garden', movieOrShow: 'The Man in the High Castle', year: 2015,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/SunYatSenGarden.jpg',
@@ -2325,7 +2314,6 @@ const londonLocations: FilmingLocation[] = [
           isMovie: false,
         },
         {
-        {
           id: 'was-002', title: 'National Mall', movieOrShow: 'Independence Day', year: 1996,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/NationalMall.jpg',
           category: LocationCategory.action, latitude: 38.8895, longitude: -77.022,
@@ -2386,9 +2374,6 @@ const londonLocations: FilmingLocation[] = [
           isMovie: false,
         },
         {
-        {
-        {
-        {
           id: 'was-003', title: 'Mary', movieOrShow: 'The West Wing', year: 1999,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/JeffersonMemorial.jpg',
           category: LocationCategory.drama, latitude: 38.8813, longitude: -77.0368,
@@ -2436,8 +2421,6 @@ const londonLocations: FilmingLocation[] = [
           thenAndNow: 'The Jefferson Memorial remains one of the most elegant monuments on the National Mall.',
           isMovie: false,
         },
-        {
-        {
         {
           id: 'dal-007', title: 'Sundance Square', movieOrShow: 'Landman', year: 2024,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Sundance%20Square.jpg',
