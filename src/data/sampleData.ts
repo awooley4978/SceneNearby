@@ -2938,7 +2938,7 @@ const actorMap: Record<string, string[]> = {
   'chi-007': ['Christian Bale', 'Heath Ledger', 'Kevin Costner', 'Sean Connery'],
   'chi-008': ['Matthew Broderick', 'Alan Ruck', 'Mia Sara', 'Christian Bale', 'Heath Ledger'],
   'chi-009': ['Matthew Broderick', 'Alan Ruck', 'Mia Sara', 'Christian Bale', 'Michael Caine'],
-  'atl-001': ['Millie Bobby Brown', 'Finn Wolfhard', 'David Harbour'],
+  'atl-001': ['David Harbour'],
   'atl-002': ['Andrew Lincoln', 'Norman Reedus', 'Melissa McBride'],
   'atl-003': ['Chadwick Boseman', 'Michael B. Jordan', 'Lupita Nyong\'o'],
   'atl-004': ['Andrew Lincoln', 'Norman Reedus', 'Danai Gurira'],
