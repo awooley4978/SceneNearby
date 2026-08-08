@@ -456,6 +456,8 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
           placeholderTextColor={theme.colors.textTertiary}
           value={searchQuery}
           onChangeText={setSearchQuery}
+          autoCorrect={false}
+          autoCapitalize="none"
         />
         {searchQuery.length > 0 && (
           <TouchableOpacity onPress={() => setSearchQuery('')}>
