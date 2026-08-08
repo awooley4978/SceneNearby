@@ -450,7 +450,7 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
   );
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top + 8 }]}>
+    <View style={[styles.container, { paddingTop: Math.max(insets.top, 56) + 8 }]}>
       {isLoading ? (
         <Animated.View style={styles.listContent}>
           <CardSkeleton />
