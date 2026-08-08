@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BackButton } from '../../components/BackButton';
 import { theme } from '../../theme';
 import { movieGroupByTitle, locationsByMovie, mockRatings } from '../../data/sampleData';
@@ -13,6 +14,7 @@ export const MovieDetailScreen: React.FC<{ route: any; navigation: any }> = ({
   navigation,
 }) => {
   const { movieTitle } = route.params;
+  const insets = useSafeAreaInsets();
   const movieGroup = movieGroupByTitle(movieTitle);
   const locations = locationsByMovie(movieTitle);
 
@@ -32,7 +34,7 @@ export const MovieDetailScreen: React.FC<{ route: any; navigation: any }> = ({
     }, 0) / locations.length;
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       <BackButton />
       {/* Hero header */}
       <View style={[styles.hero, { backgroundColor: catColor + '25' }]}>
