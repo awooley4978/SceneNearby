@@ -2893,7 +2893,6 @@ const londonLocations: FilmingLocation[] = [
   ...newOrleansLocations,
   ...washingtonDCLocations,
   ...albuquerqueLocations,
-  ...dallasLocations,
 ]; // distanceFromUser calculated at runtime from user GPS coordinates
 
 // ── Actors per location ──
