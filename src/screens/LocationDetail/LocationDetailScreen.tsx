@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../../theme';
-import { locationById, photosByLocation, calculateDistance } from '../../data/sampleData';
+import { locationById, photosByLocation, calculateDistance, siblingsByLocation } from '../../data/sampleData';
 import { STORAGE_KEYS, defaultUserSettings, communityPhotoToGallery } from '../../models';
 import { getUserSettings, setUserSettings } from '../../services/StorageService';
 import { useSaved } from '../../context/SavedContext';
@@ -48,6 +48,10 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
     if (userLocation.latitude === null || userLocation.longitude === null || !location) return undefined;
     return calculateDistance(userLocation.latitude, userLocation.longitude, location.latitude, location.longitude) / 1609.34;
   }, [userLocation.latitude, userLocation.longitude, location]);
+
+  const siblings = React.useMemo(() => {
+    return siblingsByLocation(locationId);
+  }, [locationId]);
 
   const galleryPhotos: GalleryPhoto[] = React.useMemo(() => {
     return communityPhotos
@@ -368,6 +372,28 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
           </SectionCard>
         )}
 
+        {/* Also Filmed Here */}
+        {siblings.length > 0 && (
+          <SectionCard icon="🎞️" title="Also Filmed Here" fadeDelay={420}>
+            {siblings.map((sibling) => (
+              <Pressable
+                key={sibling.id}
+                style={({ pressed }) => [
+                  styles.siblingRow,
+                  pressed && { opacity: 0.6 },
+                ]}
+                onPress={() => navigation.push('LocationDetail', { locationId: sibling.id })}
+              >
+                <Text style={styles.siblingTitle}>
+                  {sibling.movieOrShow}{' '}
+                  <Text style={styles.siblingYear}>({sibling.year})</Text>
+                </Text>
+                <Text style={styles.siblingCategory}>{sibling.category}</Text>
+              </Pressable>
+            ))}
+          </SectionCard>
+        )}
+
         {/* Location info */}
         <SectionCard icon="📍" title="Location" elevated fadeDelay={440}>
           <Text style={styles.bodyText}>{location.address}</Text>
@@ -585,6 +611,30 @@ const styles = StyleSheet.create({
     color: theme.colors.textTertiary,
     marginTop: 8,
     fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+  },
+
+  // ── Also Filmed Here ──
+  siblingRow: {
+    paddingVertical: 12,
+    paddingHorizontal: 4,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.06)',
+  },
+  siblingTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: theme.colors.gold,
+    marginBottom: 2,
+  },
+  siblingYear: {
+    fontSize: 13,
+    fontWeight: '400',
+    color: theme.colors.textTertiary,
+  },
+  siblingCategory: {
+    fontSize: 12,
+    color: theme.colors.textSecondary,
+    marginTop: 2,
   },
 
   // ── Actions ──
