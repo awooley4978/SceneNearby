@@ -675,8 +675,6 @@ const londonLocations: FilmingLocation[] = [
           isMovie: true,
         },
         {
-        {
-        {
           id: 'sfo-002', title: 'Painted Ladies (Alamo Square)', movieOrShow: 'Full House', year: 1987,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/PaintedLadies.jpg',
         focalPoint: { x: 0.4, y: 0.5 },
@@ -702,7 +700,6 @@ const londonLocations: FilmingLocation[] = [
           thenAndNow: 'The Painted Ladies are among the most photographed row houses in America.',
           isMovie: true,
         },
-        {
         {
           id: 'sfo-003a', title: 'The Golden Gate Bridge', movieOrShow: 'Vertigo', year: 1958,
           focalPoint: { x: 0.4, y: 0.5 },
@@ -817,7 +814,6 @@ const londonLocations: FilmingLocation[] = [
           thenAndNow: 'San Francisco\'s Chinatown is the oldest in North America and remains a vibrant cultural hub.',
           isMovie: true,
         },
-        {
         {
         {
           id: 'sfo-005', title: 'Lombard Street', movieOrShow: 'The Princess Diaries', year: 2001,
@@ -1050,7 +1046,6 @@ const londonLocations: FilmingLocation[] = [
           isMovie: true,
         },
         {
-        {
           id: 'bos-006', title: 'L Street Tavern', movieOrShow: 'Good Will Hunting', year: 1997,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/L%20Street%20Tavern.jpg',
           category: LocationCategory.drama, latitude: 42.3345, longitude: -71.0365,
@@ -1145,7 +1140,6 @@ const londonLocations: FilmingLocation[] = [
         },
         {
         {
-        {
           id: 'sea-002', title: 'Space Needle', movieOrShow: '10 Things I Hate About You', year: 1999,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/SpaceNeedle.jpg',
         focalPoint: { x: 0.5, y: 0.25 },
@@ -1184,7 +1178,6 @@ const londonLocations: FilmingLocation[] = [
           thenAndNow: 'The Space Needle remains Seattle\'s most recognizable icon.',
           isMovie: true,
         },
-        {
         {
         {
           id: 'sea-003', title: 'Capitol Hill', movieOrShow: 'Singles', year: 1992,
@@ -1290,7 +1283,6 @@ const londonLocations: FilmingLocation[] = [
         {
         {
         {
-        {
           id: 'van-002', title: 'Stanley Park', movieOrShow: 'The X-Files', year: 1993,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/StanleyPark.jpg',
           category: LocationCategory.sciFi, latitude: 49.3043, longitude: -123.1445,
@@ -1338,7 +1330,6 @@ const londonLocations: FilmingLocation[] = [
           thenAndNow: 'Stanley Park is Vancouver\'s crown jewel.',
           isMovie: true,
         },
-        {
         {
         {
         {
@@ -1401,7 +1392,6 @@ const londonLocations: FilmingLocation[] = [
           thenAndNow: 'The Gastown Steam Clock remains one of Vancouver\'s most photographed landmarks.',
           isMovie: false,
         },
-        {
         {
         {
         {
@@ -1582,7 +1572,6 @@ const londonLocations: FilmingLocation[] = [
           thenAndNow: 'The Trevi Fountain remains one of Rome\'s most beloved landmarks.',
           isMovie: true,
         },
-        {
         {
           id: 'rom-002', title: 'Spanish Steps', movieOrShow: 'Roman Holiday', year: 1953,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/SpanishSteps%2C.jpg',
@@ -2337,7 +2326,6 @@ const londonLocations: FilmingLocation[] = [
         },
         {
         {
-        {
           id: 'was-002', title: 'National Mall', movieOrShow: 'Independence Day', year: 1996,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/NationalMall.jpg',
           category: LocationCategory.action, latitude: 38.8895, longitude: -77.022,
@@ -2401,7 +2389,6 @@ const londonLocations: FilmingLocation[] = [
         {
         {
         {
-        {
           id: 'was-003', title: 'Mary', movieOrShow: 'The West Wing', year: 1999,
           imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/JeffersonMemorial.jpg',
           category: LocationCategory.drama, latitude: 38.8813, longitude: -77.0368,
@@ -2449,7 +2436,6 @@ const londonLocations: FilmingLocation[] = [
           thenAndNow: 'The Jefferson Memorial remains one of the most elegant monuments on the National Mall.',
           isMovie: false,
         },
-        {
         {
         {
         {
