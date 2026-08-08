@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BackButton } from '../../components/BackButton';
 import { theme } from '../../theme';
 import { locationsByActor, actorGroups, movieGroups } from '../../data/sampleData';
@@ -11,6 +12,7 @@ export const ActorDetailScreen: React.FC<{ route: any; navigation: any }> = ({
   navigation,
 }) => {
   const { actorName } = route.params;
+  const insets = useSafeAreaInsets();
   const locations = locationsByActor(actorName);
   const group = actorGroups.find((g) => g.name === actorName);
 
@@ -23,7 +25,7 @@ export const ActorDetailScreen: React.FC<{ route: any; navigation: any }> = ({
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       <BackButton />
       {/* Actor header */}
       <View style={styles.header}>
