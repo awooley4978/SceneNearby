@@ -2089,6 +2089,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'akl-005', title: 'Elephant Rocks', movieOrShow: 'The Chronicles of Narnia', year: 2005,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Elephant_Rocks_towards_Maerewhenua_Valley.jpg',
           category: LocationCategory.action, latitude: -44.8583, longitude: 170.6400,
           address: 'Duntroon, Waitaki Valley', city: 'Auckland', country: 'New Zealand',
           sceneDescription: 'These massive weathered limestone boulders became Aslan\'s Camp in The Lion, The Witch and The Wardrobe — the awe-inspiring field where the great lion\'s army gathers.',
@@ -2100,15 +2101,8 @@ const londonLocations: FilmingLocation[] = [
 
       const wellingtonLocations: FilmingLocation[] = [
         {
-          id: 'wlg-001', title: 'Weta Workshop', movieOrShow: 'The Lord of the Rings', year: 2001,
-          category: LocationCategory.action, latitude: -41.3481, longitude: 174.8164,
-          address: '1 Weka St, Miramar, Wellington', city: 'Wellington', country: 'New Zealand',
-          sceneDescription: 'The legendary creative studio where Middle-earth was brought to life — Weta crafted the One Ring, Aragorn\'s sword Andúril, and over 48,000 pieces of armor for the trilogy.',
-          funFact: 'Weta Workshop\'s artists handmade every single link in the chainmail worn by the actors — over 12.5 million links across all three films.',
-          isMovie: true,
-        },
-        {
           id: 'wlg-002', title: 'Mount Victoria Lookout', movieOrShow: 'The Lord of the Rings', year: 2001,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Mount_Victoria_summit_lookout.jpg',
           category: LocationCategory.action, latitude: -41.2962, longitude: 174.7860,
           address: 'Lookout Rd, Hataitai, Wellington', city: 'Wellington', country: 'New Zealand',
           sceneDescription: 'The pine forest trails of Mount Victoria became the woods where Frodo and the hobbits hide from the Black Rider on their way to Bree. A short walk from downtown Wellington.',
@@ -2117,6 +2111,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'wlg-003', title: 'Kaitoke Regional Park', movieOrShow: 'The Lord of the Rings', year: 2001,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Rivendell_(3).jpg',
           category: LocationCategory.action, latitude: -41.0623, longitude: 175.1941,
           address: 'Kaitoke, Upper Hutt', city: 'Wellington', country: 'New Zealand',
           sceneDescription: 'The lush beech forests of Kaitoke became Rivendell — the Elven sanctuary where Frodo awakens after his escape from the Nazgûl and the Fellowship is formed.',
@@ -2125,6 +2120,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'wlg-004', title: 'Harcourt Park', movieOrShow: 'The Lord of the Rings', year: 2001,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Harcourt_Park_-_panoramio.jpg',
           category: LocationCategory.action, latitude: -41.1196, longitude: 175.1007,
           address: 'Harcourt Park, Upper Hutt', city: 'Wellington', country: 'New Zealand',
           sceneDescription: 'The manicured gardens of Harcourt Park doubled as the Gardens of Isengard, where Gandalf walks with Saruman before the wizard\'s betrayal is revealed.',
@@ -2133,6 +2129,7 @@ const londonLocations: FilmingLocation[] = [
         },
         {
           id: 'wlg-005', title: 'Putangirua Pinnacles', movieOrShow: 'The Lord of the Rings', year: 2003,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Putangirua_Pinnacles%2C_New_Zealand_(14).JPG',
           category: LocationCategory.action, latitude: -41.4502, longitude: 175.2412,
           address: 'Cape Palliser Rd, Wairarapa', city: 'Wellington', country: 'New Zealand',
           sceneDescription: 'These towering eroded rock formations became the Paths of the Dead in The Return of the King, where Aragorn, Legolas, and Gimli pass through the haunted mountain.',
@@ -2140,11 +2137,39 @@ const londonLocations: FilmingLocation[] = [
           isMovie: true,
         },
         {
-          id: 'wlg-006', title: 'Dry Creek Quarry', movieOrShow: 'The Lord of the Rings', year: 2001,
-          category: LocationCategory.action, latitude: -41.2245, longitude: 174.8982,
-          address: 'Dry Creek, Lower Hutt', city: 'Wellington', country: 'New Zealand',
-          sceneDescription: 'This unassuming quarry became the backdrop for two of Middle-earth\'s most iconic locations: Helm\'s Deep and Minas Tirith, built at massive scale by the Weta team.',
-          funFact: 'The Helm\'s Deep set measured 350 meters long and took 7 months to build. It was the largest set ever constructed in the Southern Hemisphere until it was dismantled.',
+          id: 'wlg-007', title: 'Tawhai Falls', movieOrShow: 'The Lord of the Rings', year: 2002,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Gollum\'s_pool.jpg',
+          category: LocationCategory.action, latitude: -39.1325, longitude: 175.5288,
+          address: 'Tawhai Falls, Tongariro National Park', city: 'Wellington', country: 'New Zealand',
+          sceneDescription: 'Deep in Tongariro National Park, this crystal-clear volcanic pool is where the wretched Gollum is first seen fishing in The Two Towers — his gnarled fingers slipping beneath the water as the Ring\'s pull holds him in its thrall.',
+          funFact: 'Tawhai Falls sits just a five-minute walk from the Chateau Tongariro — the water is naturally filtered by ancient volcanic rock, so the pool needs no movie magic to look impossibly clear.',
+          quote: 'We wants it, we needs it. Must have the precious!',
+          quoteAttribution: 'Gollum',
+          thenAndNow: 'The falls are still one of Tongariro National Park\'s most stunning roadside stops, looking every bit as eerie and beautiful as they did on screen.',
+          isMovie: true,
+        },
+        {
+          id: 'wlg-008', title: 'Queen Elizabeth Park', movieOrShow: 'The Lord of the Rings', year: 2003,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Queen_Elizabeth_Park_-_panoramio.jpg',
+          category: LocationCategory.action, latitude: -40.9833, longitude: 174.9667,
+          address: 'Queen Elizabeth Park, Paekakariki', city: 'Wellington', country: 'New Zealand',
+          sceneDescription: 'These sweeping coastal farmlands north of Wellington became the Pelennor Fields — the vast plains before Minas Tirith where the Rohirrim launched their legendary charge in The Return of the King.',
+          funFact: 'The filmmakers chose Queen Elizabeth Park for its flat, open terrain that could double for the plains of Gondor — the colossal battlements of Minas Tirith were added entirely in post-production.',
+          quote: 'Ride now! Ride for ruin and the world\'s ending!',
+          quoteAttribution: 'Théoden, King of Rohan',
+          thenAndNow: 'The park is now a beloved recreation spot with walking and cycling trails along the Kapiti Coast, minutes from Paekakariki.',
+          isMovie: true,
+        },
+        {
+          id: 'wlg-009', title: 'Hutt River', movieOrShow: 'The Lord of the Rings', year: 2001,
+          imageUrl: 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev/Upper_Hutt_River_(at_Poet\'s_Park)_-_panoramio_(1).jpg',
+          category: LocationCategory.action, latitude: -41.1167, longitude: 175.0667,
+          address: 'Poet\'s Park, Upper Hutt', city: 'Wellington', country: 'New Zealand',
+          sceneDescription: 'The Hutt River doubled as the mighty Anduin in The Fellowship of the Ring — the great waterway the Fellowship rows down after leaving Lothlórien, passing beneath the colossal statues of the Argonath.',
+          funFact: 'The riverbank at Poet\'s Park has been a favorite filming spot for decades — the fast-flowing water and steep, tree-lined banks stood in perfectly for Middle-earth\'s longest river.',
+          quote: 'The Argonath. Long have I wanted to look upon the kings of old.',
+          quoteAttribution: 'Aragorn',
+          thenAndNow: 'Poet\'s Park remains a peaceful riverside reserve in Upper Hutt, a short walk from the town center along the Hutt River Trail.',
           isMovie: true,
         },
       ];
@@ -3205,12 +3230,13 @@ export const mockRatings: Record<string, LocationRating> = {
   'bos-010': ['Leonardo DiCaprio', 'Matt Damon', 'Jack Nicholson', 'Mark Wahlberg', 'Martin Sheen'],
   'bos-011': ['Leonardo DiCaprio', 'Matt Damon', 'Jack Nicholson', 'Mark Wahlberg', 'Martin Sheen'],
   'par-006': ['Lily Collins', 'Philippine Leroy-Beaulieu', 'Ashley Park', 'Lucas Bravo', 'Camille Razat'],
-  'wlg-001': ['Elijah Wood', 'Ian McKellen', 'Viggo Mortensen', 'Orlando Bloom', 'Sean Astin'],
   'wlg-002': ['Elijah Wood', 'Ian McKellen', 'Viggo Mortensen', 'Orlando Bloom', 'Sean Astin'],
   'wlg-003': ['Elijah Wood', 'Ian McKellen', 'Viggo Mortensen', 'Orlando Bloom', 'Sean Astin'],
   'wlg-004': ['Elijah Wood', 'Ian McKellen', 'Viggo Mortensen', 'Orlando Bloom', 'Sean Astin'],
   'wlg-005': ['Elijah Wood', 'Ian McKellen', 'Viggo Mortensen', 'Orlando Bloom', 'Sean Astin'],
-  'wlg-006': ['Elijah Wood', 'Ian McKellen', 'Viggo Mortensen', 'Orlando Bloom', 'Sean Astin'],
+  'wlg-007': ['Elijah Wood', 'Ian McKellen', 'Viggo Mortensen', 'Orlando Bloom', 'Sean Astin'],
+  'wlg-008': ['Elijah Wood', 'Ian McKellen', 'Viggo Mortensen', 'Orlando Bloom', 'Sean Astin'],
+  'wlg-009': ['Elijah Wood', 'Ian McKellen', 'Viggo Mortensen', 'Orlando Bloom', 'Sean Astin'],
 };
 
 // ── Mock Community Photos ──

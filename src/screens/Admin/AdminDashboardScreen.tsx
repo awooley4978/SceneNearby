@@ -89,6 +89,15 @@ export const AdminDashboardScreen: React.FC<{ navigation: any }> = ({ navigation
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      {/* Back button */}
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => navigation.navigate('Profile')}
+        activeOpacity={0.7}
+      >
+        <Text style={styles.backText}>‹ Back</Text>
+      </TouchableOpacity>
+
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerEmoji}>🛡️</Text>
@@ -175,6 +184,14 @@ const styles = StyleSheet.create({
   headerEmoji: { fontSize: 40, marginBottom: 8 },
   headerTitle: { fontSize: 26, fontWeight: '800', color: theme.colors.gold },
   headerSub: { fontSize: 14, color: theme.colors.textSecondary, marginTop: 4 },
+
+  // Back button
+  backButton: {
+    alignSelf: 'flex-start',
+    paddingVertical: 8,
+    paddingHorizontal: 4,
+  },
+  backText: { fontSize: 16, color: theme.colors.gold, fontWeight: '600' },
 
   // Completion
   completionSection: {
