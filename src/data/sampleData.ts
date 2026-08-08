@@ -2213,7 +2213,7 @@ const londonLocations: FilmingLocation[] = [
           isMovie: true,
         },
       ];
-      const washingtonDCLocations: FilmingLocation[
+      const washingtonDCLocations: FilmingLocation[] = [
         {
           id: 'dal-001', title: 'Dealey Plaza', movieOrShow: 'JFK', year: 1991,
           category: LocationCategory.drama, latitude: 32.7789, longitude: -96.8083,
