@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { theme } from '../theme';
 import { BottomSheet } from './BottomSheet';
-import { isLocationVisited, markLocationVisited, getUserVisitTime, setUserVisitTime } from '../services/StorageService';
+import { isGateAnswered, markLocationVisited, markLocationDismissed, getUserVisitTime, setUserVisitTime } from '../services/StorageService';
 import { BucketListSheet } from './BucketListSheet';
 
 interface EstimatedVisitTimeProps {
@@ -33,7 +33,7 @@ export const EstimatedVisitTime: React.FC<EstimatedVisitTimeProps> = ({ time, lo
   useEffect(() => {
     if (!locationId) return;
     Promise.all([
-      isLocationVisited(locationId),
+      isGateAnswered(locationId),
       getUserVisitTime(locationId),
     ]).then(([visited, visitTime]) => {
       setHasVisited(visited);
@@ -81,7 +81,10 @@ export const EstimatedVisitTime: React.FC<EstimatedVisitTimeProps> = ({ time, lo
   };
 
   const handleNotVisited = () => {
-    // Never persist — gate re-appears next tap
+    if (locationId) {
+      markLocationDismissed(locationId);
+      setHasVisited(true);
+    }
     setShowGate(false);
     setShowBucketList(true);
   };

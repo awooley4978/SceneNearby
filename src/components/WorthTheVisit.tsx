@@ -4,7 +4,7 @@ import { theme } from '../theme';
 import { useAuth } from '../context/AuthContext';
 import { submitWorthItVote, getWorthItStats, WorthItVote, WorthItStats } from '../services/firestore';
 import { BottomSheet } from './BottomSheet';
-import { isLocationVisited, markLocationVisited, getUserWorthItVote, setUserWorthItVote, WorthItVoteData } from '../services/StorageService';
+import { isGateAnswered, markLocationVisited, markLocationDismissed, getUserWorthItVote, setUserWorthItVote, WorthItVoteData } from '../services/StorageService';
 import { BucketListSheet } from './BucketListSheet';
 
 interface WorthTheVisitProps {
@@ -36,7 +36,7 @@ export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes,
   useEffect(() => {
     if (!locationId) return;
     Promise.all([
-      isLocationVisited(locationId),
+      isGateAnswered(locationId),
       getUserWorthItVote(locationId),
     ]).then(([visited, voteData]) => {
       setHasVisited(visited);
@@ -94,7 +94,10 @@ export const WorthTheVisit: React.FC<WorthTheVisitProps> = ({ percentage, votes,
   };
 
   const handleNotVisited = () => {
-    // Never persist — gate re-appears next tap
+    if (locationId) {
+      markLocationDismissed(locationId);
+      setHasVisited(true);
+    }
     setShowGate(false);
     setShowBucketList(true);
   };

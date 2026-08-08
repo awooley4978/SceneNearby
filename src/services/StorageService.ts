@@ -8,6 +8,7 @@ const KEYS = {
   USER_SETTINGS: '@scenenearby/settings',
   LAST_CITY: '@scenenearby/last_city',
   VISITED_LOCATIONS: '@scenenearby/visited_locations',
+  DISMISSED_LOCATIONS: '@scenenearby/dismissed_locations',
   USER_WORTHIT_VOTE: '@scenenearby/user_worthit_vote',
   USER_VISIT_TIME: '@scenenearby/user_visit_time',
 };
@@ -91,27 +92,46 @@ export async function setLastCity(city: string): Promise<void> {
   try { await AsyncStorage.setItem(KEYS.LAST_CITY, city); } catch {}
 }
 
-// ── Gate: visited locations ──
-// Only 'visited' is persisted. 'not_visited' never stored → gate re-appears.
+// ── Gate: visited + dismissed locations ──
+// Both 'visited' and 'dismissed' are persisted so the gate only appears once per location.
 
-export async function isLocationVisited(locationId: string): Promise<boolean> {
+async function isLocationInList(key: string, locationId: string): Promise<boolean> {
   try {
-    const raw = await AsyncStorage.getItem(KEYS.VISITED_LOCATIONS);
+    const raw = await AsyncStorage.getItem(key);
     if (!raw) return false;
-    const visited: string[] = JSON.parse(raw);
-    return visited.includes(locationId);
+    return (JSON.parse(raw) as string[]).includes(locationId);
   } catch { return false; }
 }
 
-export async function markLocationVisited(locationId: string): Promise<void> {
+async function addLocationToList(key: string, locationId: string): Promise<void> {
   try {
-    const raw = await AsyncStorage.getItem(KEYS.VISITED_LOCATIONS);
-    const visited: string[] = raw ? JSON.parse(raw) : [];
-    if (!visited.includes(locationId)) {
-      visited.push(locationId);
-      await AsyncStorage.setItem(KEYS.VISITED_LOCATIONS, JSON.stringify(visited));
+    const raw = await AsyncStorage.getItem(key);
+    const list: string[] = raw ? JSON.parse(raw) : [];
+    if (!list.includes(locationId)) {
+      list.push(locationId);
+      await AsyncStorage.setItem(key, JSON.stringify(list));
     }
   } catch {}
+}
+
+export async function isLocationVisited(locationId: string): Promise<boolean> {
+  return isLocationInList(KEYS.VISITED_LOCATIONS, locationId);
+}
+
+export async function isGateAnswered(locationId: string): Promise<boolean> {
+  const [visited, dismissed] = await Promise.all([
+    isLocationInList(KEYS.VISITED_LOCATIONS, locationId),
+    isLocationInList(KEYS.DISMISSED_LOCATIONS, locationId),
+  ]);
+  return visited || dismissed;
+}
+
+export async function markLocationVisited(locationId: string): Promise<void> {
+  await addLocationToList(KEYS.VISITED_LOCATIONS, locationId);
+}
+
+export async function markLocationDismissed(locationId: string): Promise<void> {
+  await addLocationToList(KEYS.DISMISSED_LOCATIONS, locationId);
 }
 
 // ── User Worth-It Vote ──
