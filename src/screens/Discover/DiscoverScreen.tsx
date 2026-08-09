@@ -58,6 +58,23 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
   const [refreshing, setRefreshing] = useState(false);
   const prevQuery = useRef('');
 
+  // ── API data ──
+  const { locations: allLocations, loading, error } = useAllLocations();
+  const { actorGroups } = useActorGroups();
+
+  // Derived helpers that used to come from sampleData
+  const allLocationsWithActors = allLocations;
+  const locationsByCategory = (cat: LocationCategory) => allLocations.filter(l => l.category === cat);
+
+  // Compute rating map from location data
+  const ratingMap = useMemo(() => {
+    const map: Record<string, { average: number; count: number }> = {};
+    for (const loc of allLocations) {
+      if (loc.rating) map[loc.id] = loc.rating;
+    }
+    return map;
+  }, [allLocations]);
+
   // Search results with grouping — computed on every render for reliability
   const q = searchQuery.trim().toLowerCase();
   const searchResults = ((): SearchResultItem[] => {
@@ -136,23 +153,9 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
       prevQuery.current = searchQuery;
     }
   }, [searchQuery, searchResults.length]);
-  const [isLoading, setIsLoading] = useState(true);
-  const userLocation = useUserLocation();
-  const fadeAnim = useRef(new Animated.Value(0)).current;
 
-  useEffect(() => {
-    // Simulate initial load for skeleton demonstration
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 400,
-        useNativeDriver: true,
-      }).start();
-    }, 800);
-    return () => clearTimeout(timer);
-  }, []);
   const [sortMode, setSortMode] = useState<SortMode>('default');
+  const userLocation = useUserLocation();
 
   // Constants
   const RADIUS_STAGES = [3, 5, 10, 25, 50];
@@ -223,8 +226,8 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
       result = [...result].sort((a, b) => (a.distanceFromUser || 0) - (b.distanceFromUser || 0));
     } else if (sortMode === 'rating') {
       result = [...result].sort((a, b) => {
-        const ra = mockRatings[a.id]?.average || 0;
-        const rb = mockRatings[b.id]?.average || 0;
+        const ra = ratingMap[a.id]?.average || 0;
+        const rb = ratingMap[b.id]?.average || 0;
         return rb - ra;
       });
     }
@@ -445,12 +448,28 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
 
   return (
     <View style={[styles.container, { paddingTop: Math.max(insets.top, 56) + 8 }]}>
-      {isLoading ? (
+      {loading ? (
         <Animated.View style={styles.listContent}>
           <CardSkeleton />
           <CardSkeleton />
           <CardSkeleton />
         </Animated.View>
+      ) : error ? (
+        <View style={styles.listContent}>
+          <EmptyState
+            emoji="⚠️"
+            title="Couldn't load locations"
+            subtitle={error}
+          />
+        </View>
+      ) : allLocations.length === 0 ? (
+        <View style={styles.listContent}>
+          <EmptyState
+            emoji="📍"
+            title="No locations yet"
+            subtitle="Check back soon — we're adding more filming locations."
+          />
+        </View>
       ) : (
       <>
       {/* Search bar — outside FlatList so it never remounts on keystroke */}
@@ -496,7 +515,7 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
         )}
         ListHeaderComponent={renderHeader}
         ListEmptyComponent={
-          isLoading ? null : (
+          loading ? null : (
             <EmptyState
               emoji="🎬"
               title="No locations found"

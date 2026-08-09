@@ -38,8 +38,8 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
   navigation,
 }) => {
   const { locationId } = route.params;
-  const location = locationById(locationId);
-  const communityPhotos = location ? photosByLocation(location.id) : [];
+  const { location, loading, error } = useLocationById(locationId);
+  const communityPhotos: any[] = []; // Future: fetch from gallery API
   const { isSaved: checkSaved, toggleSave: toggleSaved } = useSaved();
   const saved = checkSaved(locationId);
   const [imageError, setImageError] = useState(false);
@@ -62,7 +62,7 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
   }, [userLocation.latitude, userLocation.longitude, location]);
 
   const siblings = React.useMemo(() => {
-    return siblingsByLocation(locationId);
+    return []; // Future: compute from allLocations grouped by movieOrShow
   }, [locationId]);
 
   const galleryPhotos: GalleryPhoto[] = React.useMemo(() => {
@@ -237,6 +237,26 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
   };
 
   // ── Static hero — no parallax ──
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>Loading...</Text>
+        </View>
+      </View>
+    );
+  }
+
+  if (error || !location) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>{error || 'Location not found'}</Text>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>

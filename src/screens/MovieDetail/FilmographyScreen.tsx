@@ -10,6 +10,7 @@ import type { MovieGroup } from '../../models';
 
 export const FilmographyScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [search, setSearch] = useState('');
+  const { movieGroups } = useMovieGroups();
 
   const filtered = useMemo(() => {
     if (!search.trim()) return movieGroups;

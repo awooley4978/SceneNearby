@@ -4,6 +4,12 @@ import { STORAGE_KEYS } from '../models';
 import { apiClient } from '../services/api';
 import { getVisitedIds } from './VisitedService';
 
+// Stub: movieGroupByTitle was from sampleData, now needs API data
+// Returns null until we can compute from fetched locations
+function movieGroupByTitle(_title: string): any | null {
+  return null; // TODO: Implement with allLocations from API
+}
+
 // ── Public Types ──
 
 /** Per-movie progress snapshot — computed dynamically from visited locations */

@@ -26,6 +26,7 @@ export const SavedScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   // Local state for instant removal on unsave (context updates async)
   const [localRemoved, setLocalRemoved] = useState<Set<string>>(new Set());
+  const { locations: allLocations } = useAllLocations();
 
   // Reset local removal when savedIds change externally
   useEffect(() => {
@@ -59,8 +60,8 @@ export const SavedScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         break;
       case 'rating':
         result.sort((a, b) => {
-          const ra = mockRatings[a.id]?.average || 0;
-          const rb = mockRatings[b.id]?.average || 0;
+          const ra = a.rating?.average || 0;
+          const rb = b.rating?.average || 0;
           return rb - ra;
         });
         break;
