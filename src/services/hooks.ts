@@ -177,25 +177,34 @@ export function useActorGroups() {
   return { actorGroups, loading };
 }
 
-/** Build rating map from all locations */
+/** Build rating map from all locations (fetches full data) */
 export function useRatingMap() {
-  const { locations, loading } = useAllLocations();
-  // Fetch full locations to get rating data — but for now use the API's worthIt fields
-  // For a full implementation, fetch each location individually, but that's expensive
-  // Instead, use allLocations and the worthIt data from full fetches when loaded
   const [ratingMap, setRatingMap] = useState<Record<string, LocationRating>>({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!locations.length) return;
-    // For now, create ratings from whatever data we have
-    // Full ratings would require fetching each location individually
-    const map: Record<string, LocationRating> = {};
-    // Use a default rating until full data is loaded
-    for (const loc of locations) {
-      map[loc.id] = { average: 4.0, count: 10 };
-    }
-    setRatingMap(map);
-  }, [locations.length]);
+    let cancelled = false;
+    setLoading(true);
+    apiClient.getAllLocationsFull()
+      .then(locations => {
+        if (cancelled) return;
+        const map: Record<string, LocationRating> = {};
+        for (const loc of locations) {
+          const rating = computeRating(loc);
+          if (rating) map[loc.id] = rating;
+        }
+        setRatingMap(map);
+        setLoading(false);
+      })
+      .catch(err => {
+        if (!cancelled) {
+          setError(err.message || 'Unknown error');
+          setLoading(false);
+        }
+      });
+    return () => { cancelled = true; };
+  }, []);
 
-  return { ratingMap, loading };
+  return { ratingMap, loading, error };
 }
