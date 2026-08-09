@@ -171,12 +171,22 @@ class ApiClient {
   }
 
   private async fetchJson<T>(path: string): Promise<T> {
-    const response = await fetch(`${this.baseUrl}${path}`);
-    if (!response.ok) {
-      const errorBody = await response.json().catch(() => ({ error: 'Request failed' }));
-      throw new Error(errorBody.error || `HTTP ${response.status}`);
+    // Fast timeout (2s) — unreachable server falls back to bundled data immediately
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 2000);
+    try {
+      const response = await fetch(`${this.baseUrl}${path}`, {
+        signal: controller.signal,
+      });
+      clearTimeout(timer);
+      if (!response.ok) {
+        const errorBody = await response.json().catch(() => ({ error: 'Request failed' }));
+        throw new Error(errorBody.error || `HTTP ${response.status}`);
+      }
+      return response.json();
+    } finally {
+      clearTimeout(timer);
     }
-    return response.json();
   }
 
   /** Paginated list of locations (summary) */
