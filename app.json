@@ -48,6 +48,12 @@
                     "locationWhenInUsePermission": "Scene Nearby uses your location to show you nearby filming locations."
                 }
             ],
+            [
+                "react-native-maps",
+                {
+                    "googleMapsApiKey": "AIzaSyBLUZWpL5Z0S2_G_tcddtInru-KFeMivLs"
+                }
+            ],
             "expo-dev-client"
         ],
         "extra": {
