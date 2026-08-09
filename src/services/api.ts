@@ -79,7 +79,23 @@ class ApiClient {
     );
   }
 
-  /** Get all locations (paginates through all pages) */
+  /** Get all locations with full data including worthItPercentage */
+  async getAllLocationsFull(): Promise<ApiLocation[]> {
+    const all: ApiLocation[] = [];
+    let offset = 0;
+    const limit = 200;
+    let batch: ApiLocation[];
+    do {
+      batch = await this.fetchJson<ApiLocation[]>(
+        `/api/locations?limit=${limit}&offset=${offset}`,
+      );
+      all.push(...batch);
+      offset += limit;
+    } while (batch.length === limit);
+    return all;
+  }
+
+  /** Get all locations (summary fields, paginated) */
   async getAllLocations(): Promise<ApiLocationSummary[]> {
     const all: ApiLocationSummary[] = [];
     let offset = 0;
