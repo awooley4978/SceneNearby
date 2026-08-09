@@ -15,8 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '../../theme';
 import { LocationCategory, categoryColors } from '../../models';
 import {
-  allLocations,
-  locationsByCategory,
+  allLocations as staticLocations,
   mockRatings,
   actorGroups,
   allLocationsWithActors,
@@ -28,6 +27,7 @@ import { EmptyState } from '../../components/EmptyState';
 import { useUserLocation } from '../../hooks/useUserLocation';
 import { logSearchPerformed, logMovieTapped, logActorTapped } from '../../services/analytics';
 import type { FilmingLocation, ActorGroup } from '../../models';
+import { useLocations } from '../../hooks/useLocations';
 
 const categories = [
   { key: 'all', label: 'All' },
@@ -58,6 +58,9 @@ interface SearchResultItem {
 
 export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const insets = useSafeAreaInsets();
+  // Prefer the API while retaining static data as an offline/rollback fallback.
+  const locationsApi = useLocations(100, 0);
+  const allLocations = (locationsApi.data as FilmingLocation[] | null) || staticLocations;
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedType, setSelectedType] = useState<string>('all');
@@ -74,7 +77,7 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
     const addedActors = new Set<string>();
 
     // Search locations
-    const matchedLocs = allLocationsWithActors.filter(
+    const matchedLocs = (locationsApi.data as FilmingLocation[] || allLocationsWithActors).filter(
       (loc) =>
         loc.title.toLowerCase().includes(q) ||
         loc.movieOrShow.toLowerCase().includes(q) ||
@@ -172,7 +175,7 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
 
     let base = selectedCategory === 'all'
       ? allLocations
-      : locationsByCategory(selectedCategory as LocationCategory);
+      : allLocations.filter((loc) => loc.category === selectedCategory);
     if (selectedType === 'movies') base = base.filter((l) => l.isMovie);
     else if (selectedType === 'shows') base = base.filter((l) => !l.isMovie);
 
@@ -192,7 +195,7 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
     // If searching with actor results, still show filtered feed below
     let result = selectedCategory === 'all'
       ? allLocations
-      : locationsByCategory(selectedCategory as LocationCategory);
+      : allLocations.filter((loc) => loc.category === selectedCategory);
 
     // Apply type filter
     if (selectedType === 'movies') {
