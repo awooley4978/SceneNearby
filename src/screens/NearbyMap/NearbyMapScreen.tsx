@@ -28,6 +28,7 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
   const [selectedLocation, setSelectedLocation] = useState<FilmingLocation | null>(null);
   const [showList, setShowList] = useState(false);
   const { savedIds, toggleSave: toggleSaved } = useSaved();
+  const { locations: allLocations } = useAllLocations();
   const mapRef = useRef<MapView>(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [region, setRegion] = useState<Region>({
@@ -140,7 +141,6 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
 
   const renderCluster = (loc: FilmingLocation, index: number) => {
     const catColor = categoryColors[loc.category];
-    const rating = mockRatings[loc.id];
     const isSaved = savedIds.has(loc.id);
     return (
       <Marker
@@ -200,9 +200,9 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
                 <Text style={styles.calloutYearText}>{selectedLocation.year}</Text>
               </View>
             </View>
-            {mockRatings[selectedLocation.id] && (
+            {selectedLocation.rating && (
               <View style={styles.calloutRating}>
-                <StarRating rating={mockRatings[selectedLocation.id].average} size={12} showCount />
+                <StarRating rating={selectedLocation.rating.average} size={12} showCount />
               </View>
             )}
           </TouchableOpacity>

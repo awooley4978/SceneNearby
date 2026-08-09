@@ -15,8 +15,9 @@ export const MovieDetailScreen: React.FC<{ route: any; navigation: any }> = ({
 }) => {
   const { movieTitle } = route.params;
   const insets = useSafeAreaInsets();
-  const movieGroup = movieGroupByTitle(movieTitle);
-  const locations = locationsByMovie(movieTitle);
+  const { movieGroups, allLocations } = useMovieGroups();
+  const movieGroup = movieGroups.find((g) => g.title === movieTitle);
+  const locations = allLocations.filter((l) => l.movieOrShow === movieTitle);
 
   if (!movieGroup || locations.length === 0) {
     return (
@@ -29,7 +30,7 @@ export const MovieDetailScreen: React.FC<{ route: any; navigation: any }> = ({
   const catColor = categoryColors[movieGroup.category];
   const avgRating =
     locations.reduce((sum, loc) => {
-      const r = mockRatings[loc.id];
+      const r = loc.rating;
       return sum + (r?.average || 0);
     }, 0) / locations.length;
 

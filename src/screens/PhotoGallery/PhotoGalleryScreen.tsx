@@ -7,8 +7,9 @@ import { LocationPhotoGallery, GalleryPhoto } from '../../components/LocationPho
 
 export const PhotoGalleryScreen: React.FC<{ route: any }> = ({ route }) => {
   const { locationId } = route.params;
-  const location = locationById(locationId);
-  const communityPhotos = location ? photosByLocation(locationId) : [];
+  const { location } = useLocationById(locationId);
+  const communityPhotos: any[] = []; // Future: gallery API
+  const photosByLocation = () => [];
 
   // Map community photos to gallery format
   const galleryPhotos: GalleryPhoto[] = communityPhotos.map((p) => ({
