@@ -5,6 +5,7 @@
     "version": "1.0.1",
     "scheme": "scenenearby",
     "orientation": "portrait",
+    "newArchEnabled": false,
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "splash": {
