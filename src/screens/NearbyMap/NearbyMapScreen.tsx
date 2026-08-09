@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import MapView, { Marker, Region } from 'react-native-maps';
 import { theme } from '../../theme';
-import { allLocations, mockRatings } from '../../data/sampleData';
+import { useAllLocations } from '../../services/hooks';
 import { categoryColors } from '../../models';
 import { LocationCard } from '../../components/LocationCard';
 import { StarRating } from '../../components/StarRating';

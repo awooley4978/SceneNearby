@@ -9,12 +9,12 @@ import {
   Alert,
 } from 'react-native';
 import { theme } from '../../theme';
-import { allLocations, mockRatings } from '../../data/sampleData';
+import { useAllLocations } from '../../services/hooks';
 import { LocationCard } from '../../components/LocationCard';
 import { EmptyState } from '../../components/EmptyState';
 import { useSaved } from '../../context/SavedContext';
 import { useUserLocation } from '../../hooks/useUserLocation';
-import { calculateDistance } from '../../data/sampleData';
+import { calculateDistance } from '../../services/geo';
 
 type SortMode = 'recent' | 'nearest' | 'az' | 'rating';
 

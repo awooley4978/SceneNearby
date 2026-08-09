@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { BackButton } from '../../components/BackButton';
 import { theme } from '../../theme';
-import { photosByLocation, locationById } from '../../data/sampleData';
+import { useLocationById } from '../../services/hooks';
 import { LocationPhotoGallery, GalleryPhoto } from '../../components/LocationPhotoGallery';
 
 export const PhotoGalleryScreen: React.FC<{ route: any }> = ({ route }) => {

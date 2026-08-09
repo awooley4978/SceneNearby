@@ -13,7 +13,8 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../../theme';
-import { locationById, photosByLocation, calculateDistance, siblingsByLocation } from '../../data/sampleData';
+import { useLocationById } from '../../services/hooks';
+import { calculateDistance } from '../../services/geo';
 import { STORAGE_KEYS, defaultUserSettings, communityPhotoToGallery } from '../../models';
 import { getUserSettings, setUserSettings, isGateAnswered } from '../../services/StorageService';
 import { useSaved } from '../../context/SavedContext';

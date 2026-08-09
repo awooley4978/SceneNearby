@@ -1,4 +1,4 @@
-import { allLocations } from '../data/sampleData';
+import { apiClient } from '../services/api';
 import type { FilmingLocation } from '../models';
 
 export interface AdminStats {

@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { STORAGE_KEYS } from '../models';
-import { allLocations, movieGroupByTitle } from '../data/sampleData';
+// API migration: use apiClient from '../services/api' instead
+import { apiClient } from '../services/api';
 import { getVisitedIds } from './VisitedService';
 
 // ── Public Types ──

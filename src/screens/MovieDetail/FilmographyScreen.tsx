@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
 import { BackButton } from '../../components/BackButton';
 import { theme } from '../../theme';
-import { movieGroups } from '../../data/sampleData';
+import { useMovieGroups } from '../../services/hooks';
 import { categoryColors } from '../../models';
 import { StarRating } from '../../components/StarRating';
 import { MoviePoster } from '../../components/MoviePoster';

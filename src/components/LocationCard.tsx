@@ -14,7 +14,7 @@ import { MapPlaceholder } from './MapPlaceholder';
 import { SmartHeroImage } from './SmartHeroImage';
 import { DistanceBadge } from './DistanceBadge';
 import { StarRating } from './StarRating';
-import { mockRatings } from '../data/sampleData';
+import { useRatingMap } from '../services/hooks';
 import { useSaved } from '../context/SavedContext';
 
 interface LocationCardProps {

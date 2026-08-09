@@ -3,7 +3,7 @@ import { View, Text, FlatList, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BackButton } from '../../components/BackButton';
 import { theme } from '../../theme';
-import { locationsByActor, actorGroups, movieGroups } from '../../data/sampleData';
+import { useLocationsByActor, useActorGroups, useMovieGroups } from '../../services/hooks';
 import { LocationCard } from '../../components/LocationCard';
 import { MoviePoster } from '../../components/MoviePoster';
 

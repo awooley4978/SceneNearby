@@ -14,14 +14,8 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '../../theme';
 import { LocationCategory, categoryColors } from '../../models';
-import {
-  allLocations,
-  locationsByCategory,
-  mockRatings,
-  actorGroups,
-  allLocationsWithActors,
-  calculateDistance,
-} from '../../data/sampleData';
+import { useAllLocations, useActorGroups } from '../../services/hooks';
+import { calculateDistance } from '../../services/geo';
 import { LocationCard } from '../../components/LocationCard';
 import { CardSkeleton } from '../../components/SkeletonLoader';
 import { EmptyState } from '../../components/EmptyState';
