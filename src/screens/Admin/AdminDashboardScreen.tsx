@@ -10,7 +10,7 @@ import {
 import { theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
 import { computeAdminStats, type AdminStats } from '../../services/AdminService';
-import { allLocations } from '../../data/sampleData';
+import { useAllLocations } from '../../services/hooks';
 
 const ADMIN_EMAILS = ['awooley4978@gmail.com', 'scenenearbysupport@gmail.com'];
 

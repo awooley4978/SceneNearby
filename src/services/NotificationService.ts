@@ -1,5 +1,5 @@
 import { PROXIMITY_PRESETS, ProximityMode } from '../models';
-import { calculateDistance } from '../data/sampleData';
+import { calculateDistance } from '../services/geo';
 
 // ── Local notification service ──
 // In a real app, this would use react-native-push-notification or Notifee

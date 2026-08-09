@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { allLocations, calculateDistance } from '../data/sampleData';
+import { useAllLocations } from '../services/hooks';
+import { calculateDistance } from '../services/geo';
 import { getLastCity, setLastCity } from '../services/StorageService';
 import { useSaved } from '../context/SavedContext';
 import type { UserLocation } from './useUserLocation';
