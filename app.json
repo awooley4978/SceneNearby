@@ -5,7 +5,6 @@
     "version": "1.0.1",
     "scheme": "scenenearby",
     "orientation": "portrait",
-    "newArchEnabled": false,
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "splash": {
@@ -49,6 +48,7 @@
           "locationWhenInUsePermission": "Scene Nearby uses your location to show you nearby filming locations."
         }
       ],
+      "./plugins/withMapsGeneratedPod",
       "expo-dev-client"
     ],
     "extra": {
