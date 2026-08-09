@@ -24,6 +24,7 @@ export function useCityDetection(
   userLocation: UserLocation,
 ): CityDetection {
   const { savedIds, loaded: savedLoaded } = useSaved();
+  const { locations: allLocations } = useAllLocations();
   const [showWelcome, setShowWelcome] = useState(false);
   const [cityName, setCityName] = useState('');
   const [savedCount, setSavedCount] = useState(0);

@@ -26,6 +26,7 @@ interface StatCard {
 
 export const AdminDashboardScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { user } = useAuth();
+  const { locations: allLocations } = useAllLocations();
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -38,10 +39,10 @@ export const AdminDashboardScreen: React.FC<{ navigation: any }> = ({ navigation
     }
     // Try to fetch pending photo count from Turso, fall back to 0
     fetchPendingPhotos()
-      .then((count) => setStats(computeAdminStats(count)))
-      .catch(() => setStats(computeAdminStats(0)))
+      .then((count) => setStats(computeAdminStats(allLocations, count)))
+      .catch(() => setStats(computeAdminStats(allLocations, 0)))
       .finally(() => setLoading(false));
-  }, [isAdmin]);
+  }, [isAdmin, allLocations]);
 
   if (!isAdmin) {
     return (
