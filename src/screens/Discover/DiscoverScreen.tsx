@@ -158,7 +158,7 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
   const userLocation = useUserLocation();
 
   // Constants
-  const RADIUS_STAGES = [3, 5, 10, 25, 50];
+  const RADIUS_STAGES = [5, 10, 25, 50];
   const ARRIVAL_THRESHOLD_MILES = 0.1;
 
   // Progressive radius: smallest stage with >=1 result, defaults to max (50) if 0
@@ -182,7 +182,7 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
       if (withDist.some((loc) => loc.distanceFromUser! <= stage)) return stage;
     }
     return RADIUS_STAGES[RADIUS_STAGES.length - 1]; // fallback: max radius
-  }, [userLocation.latitude, userLocation.longitude, searchQuery, selectedCategory, selectedType]);
+  }, [userLocation.latitude, userLocation.longitude, searchQuery, selectedCategory, selectedType, allLocations]);
 
   // Filtered locations (for the main feed)
   const filteredLocations = (() => {
@@ -242,7 +242,7 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
       distanceFromUser: calculateDistance(userLocation.latitude!, userLocation.longitude!, loc.latitude, loc.longitude) / 1609.34,
     })).filter((loc) => loc.distanceFromUser! <= (activeRadius ?? RADIUS_STAGES[RADIUS_STAGES.length - 1]));
     return withDist.sort((a, b) => (a.distanceFromUser || 0) - (b.distanceFromUser || 0)).slice(0, 5);
-  }, [userLocation.latitude, userLocation.longitude, activeRadius]);
+  }, [userLocation.latitude, userLocation.longitude, activeRadius, allLocations]);
 
   const moreToDiscover = useMemo(() => {
     if (userLocation.latitude === null || userLocation.longitude === null) return [];
@@ -273,7 +273,7 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
     return Array.from(movieMap.values())
       .sort((a, b) => (a.distanceFromUser || 0) - (b.distanceFromUser || 0))
       .slice(0, 20);
-  }, [userLocation.latitude, userLocation.longitude, activeRadius]);
+  }, [userLocation.latitude, userLocation.longitude, activeRadius, allLocations]);
 
   const onRefresh = () => {
     setRefreshing(true);
