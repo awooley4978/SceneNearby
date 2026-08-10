@@ -346,8 +346,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
             <Text style={styles.pageTitle}>You're ready.</Text>
             <Text style={styles.pageSubtitle}>Let's find something amazing.</Text>
             <Text style={styles.arrivalNote}>
-              From now on, Scene Nearby watches for filming locations around you.{'\n'}
-              When you arrive in a city with saved spots, we'll send a quiet notification — even if the app isn't open.
+              For the best experience, leave Scene Nearby running in the background so you don't miss nearby alerts.
             </Text>
             <TouchableOpacity style={styles.letsGoButton} onPress={handleComplete}>
               <Text style={styles.letsGoText}>Let's Go</Text>
