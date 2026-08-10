@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StatusBar } from 'react-native';
+import { StatusBar, Text, View, StyleSheet } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import * as ExpoSplashScreen from 'expo-splash-screen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -21,9 +21,30 @@ import {
   resetOnboarding as resetStorageOnboarding,
 } from './src/services/StorageService';
 
-// Prevent native splash screen from auto-hiding — we control it
-// based on startup initialization completing.
-ExpoSplashScreen.preventAutoHideAsync();
+// ── Module-level safety net: if JS loads but React never mounts ──
+// (e.g. a crash during component render), this timeout fires
+// independently and dismisses the native splash so the user isn't
+// trapped behind it forever. Set BEFORE preventAutoHideAsync so the
+// native splash has a guaranteed escape hatch.
+let _splashHidden = false;
+const _forceHideSplash = () => {
+  if (!_splashHidden) {
+    _splashHidden = true;
+    ExpoSplashScreen.hideAsync();
+  }
+};
+setTimeout(_forceHideSplash, 10000);
+
+// ── Prevent auto-hide: we'll dismiss when React is ready ──
+// Wrapped in an IIFE so a failure here doesn't crash the module.
+(function () {
+  try {
+    ExpoSplashScreen.preventAutoHideAsync();
+  } catch (_) {
+    // If this fails, the native splash will auto-hide on first frame.
+    // That's a minor visual glitch — not a hang.
+  }
+})();
 
 export const resetOnboarding = async () => {
   await resetStorageOnboarding();
@@ -35,13 +56,22 @@ const MagicLinkListener: React.FC<{ children: React.ReactNode }> = ({ children }
   return <>{children}</>;
 };
 
+type InitStep =
+  | 'module-loaded'
+  | 'component-mounted'
+  | 'storage-read'
+  | 'phase-set'
+  | 'splash-hidden'
+  | 'error';
+
 const App: React.FC = () => {
   const [appPhase, setAppPhase] = useState<'loading' | 'splash' | 'onboarding' | 'locationSetup' | 'main'>('loading');
   const [onboardingResult, setOnboardingResult] = useState<any>(null);
+  const [initStep, setInitStep] = useState<InitStep>('module-loaded');
+  const [initError, setInitError] = useState<string | null>(null);
 
   // ── Notification setup ──
   useEffect(() => {
-    // Show notifications while app is in the foreground
     Notifications.setNotificationHandler({
       handleNotification: async () => ({
         shouldShowAlert: true,
@@ -50,29 +80,32 @@ const App: React.FC = () => {
       }),
     });
 
-    // Request permission
     (async () => {
-      const { status } = await Notifications.requestPermissionsAsync();
-      if (status !== 'granted') {
-        console.log('[Notifications] Permission not granted');
-      }
+      try {
+        await Notifications.requestPermissionsAsync();
+      } catch (_) {}
     })();
   }, []);
 
+  // ── Startup init ──
   useEffect(() => {
+    setInitStep('component-mounted');
     let resolved = false;
 
-    // Safety timeout: if the async init hangs for any reason, force-
-    // dismiss the native splash after 8s so the user isn't stuck forever.
+    // Per-effect safety: force-hide native splash after 8s if we
+    // haven't resolved yet. Redundant with the module-level 10s
+    // timeout, but covers the case where this effect hangs.
     const timeout = setTimeout(() => {
       if (!resolved) {
-        ExpoSplashScreen.hideAsync();
+        _forceHideSplash();
       }
     }, 8000);
 
     (async () => {
       try {
         const complete = await getOnboardingComplete();
+        setInitStep('storage-read');
+
         if (complete) {
           const data = await getOnboardingData();
           setOnboardingResult(data);
@@ -80,13 +113,19 @@ const App: React.FC = () => {
         } else {
           setAppPhase('splash');
         }
-      } catch {
-        // Even if storage fails, show the splash — don't lock the user out.
+        setInitStep('phase-set');
+      } catch (err: any) {
+        setInitStep('error');
+        setInitError(err?.message || String(err));
         setAppPhase('splash');
       } finally {
         resolved = true;
         clearTimeout(timeout);
-        ExpoSplashScreen.hideAsync();
+        try {
+          await ExpoSplashScreen.hideAsync();
+          _splashHidden = true;
+          setInitStep('splash-hidden');
+        } catch (_) {}
       }
     })();
 
@@ -112,11 +151,17 @@ const App: React.FC = () => {
     setAppPhase('main');
   };
 
+  // ── Loading phase with debug indicator ──
   if (appPhase === 'loading') {
     return (
       <GestureHandlerRootView style={{ flex: 1, backgroundColor: theme.colors.background }}>
         <SafeAreaProvider>
           <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
+          {/* Debug: tiny text at bottom to prove JS loaded and which step we reached */}
+          <View style={debugStyles.container}>
+            <Text style={debugStyles.text}>init: {initStep}</Text>
+            {initError ? <Text style={debugStyles.error}>err: {initError}</Text> : null}
+          </View>
         </SafeAreaProvider>
       </GestureHandlerRootView>
     );
@@ -128,6 +173,10 @@ const App: React.FC = () => {
         <SafeAreaProvider>
           <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
           <SplashScreen onFinish={handleSplashFinish} />
+          {/* Debug overlay on splash too, so we can tell it's our JS splash */}
+          <View style={debugStyles.container}>
+            <Text style={debugStyles.text}>splash-js | {initStep}</Text>
+          </View>
         </SafeAreaProvider>
       </GestureHandlerRootView>
     );
@@ -139,6 +188,9 @@ const App: React.FC = () => {
         <SafeAreaProvider>
           <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
           <OnboardingScreen onComplete={handleOnboardingComplete} />
+          <View style={debugStyles.container}>
+            <Text style={debugStyles.text}>onboarding-js</Text>
+          </View>
         </SafeAreaProvider>
       </GestureHandlerRootView>
     );
@@ -173,5 +225,27 @@ const App: React.FC = () => {
     </GestureHandlerRootView>
   );
 };
+
+const debugStyles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    bottom: 50,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+  },
+  text: {
+    color: '#555',
+    fontSize: 10,
+    fontFamily: 'monospace',
+    letterSpacing: 1,
+  },
+  error: {
+    color: '#e55',
+    fontSize: 10,
+    fontFamily: 'monospace',
+    marginTop: 2,
+  },
+});
 
 export default App;
