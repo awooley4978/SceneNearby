@@ -394,6 +394,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
         scrollEventThrottle={16}
         bounces={false}
         scrollEnabled={currentPage !== 0}
+        getItemLayout={(_, index) => ({ length: width, offset: width * index, index })}
       />
       {renderDots()}
     </View>
