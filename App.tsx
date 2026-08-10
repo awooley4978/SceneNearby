@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StatusBar, Text, View, StyleSheet } from 'react-native';
 import * as Notifications from 'expo-notifications';
-import * as ExpoSplashScreen from 'expo-splash-screen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppNavigator } from './src/navigation/AppNavigator';
@@ -21,30 +20,23 @@ import {
   resetOnboarding as resetStorageOnboarding,
 } from './src/services/StorageService';
 
-// ── Module-level safety net: if JS loads but React never mounts ──
-// (e.g. a crash during component render), this timeout fires
-// independently and dismisses the native splash so the user isn't
-// trapped behind it forever. Set BEFORE preventAutoHideAsync so the
-// native splash has a guaranteed escape hatch.
-let _splashHidden = false;
-const _forceHideSplash = () => {
-  if (!_splashHidden) {
-    _splashHidden = true;
-    ExpoSplashScreen.hideAsync();
+// ── Dynamic reference to expo-splash-screen ──
+// We use a lazy getter instead of a static import so that a crash
+// during the expo-splash-screen module initialization doesn't
+// prevent App from mounting. index.ts also has its own 10s safety
+// timeout as a defense-in-depth.
+let _ExpoSplashScreen: typeof import('expo-splash-screen') | null = null;
+const _getSplash = async () => {
+  if (!_ExpoSplashScreen) {
+    _ExpoSplashScreen = await import('expo-splash-screen');
   }
+  return _ExpoSplashScreen;
 };
-setTimeout(_forceHideSplash, 10000);
 
-// ── Prevent auto-hide: we'll dismiss when React is ready ──
-// Wrapped in an IIFE so a failure here doesn't crash the module.
-(function () {
-  try {
-    ExpoSplashScreen.preventAutoHideAsync();
-  } catch (_) {
-    // If this fails, the native splash will auto-hide on first frame.
-    // That's a minor visual glitch — not a hang.
-  }
-})();
+// Try to call preventAutoHideAsync early, but don't block on it.
+// If the module isn't ready, the native splash will auto-hide after
+// the first frame — a minor visual glitch, not a hang.
+_getSplash().then((m) => m.preventAutoHideAsync().catch(() => {}));
 
 export const resetOnboarding = async () => {
   await resetStorageOnboarding();
@@ -87,17 +79,16 @@ const App: React.FC = () => {
     })();
   }, []);
 
-  // ── Startup init ──
+  // ── Startup init + splash dismiss ──
   useEffect(() => {
     setInitStep('component-mounted');
     let resolved = false;
 
-    // Per-effect safety: force-hide native splash after 8s if we
-    // haven't resolved yet. Redundant with the module-level 10s
-    // timeout, but covers the case where this effect hangs.
+    // Per-effect safety: force-hide native splash after 8s.
+    // Redundant with index.ts's 10s timeout, but covers edge cases.
     const timeout = setTimeout(() => {
       if (!resolved) {
-        _forceHideSplash();
+        _getSplash().then((m) => m.hideAsync().catch(() => {}));
       }
     }, 8000);
 
@@ -122,8 +113,8 @@ const App: React.FC = () => {
         resolved = true;
         clearTimeout(timeout);
         try {
-          await ExpoSplashScreen.hideAsync();
-          _splashHidden = true;
+          const splash = await _getSplash();
+          await splash.hideAsync();
           setInitStep('splash-hidden');
         } catch (_) {}
       }
@@ -157,7 +148,6 @@ const App: React.FC = () => {
       <GestureHandlerRootView style={{ flex: 1, backgroundColor: theme.colors.background }}>
         <SafeAreaProvider>
           <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
-          {/* Debug: tiny text at bottom to prove JS loaded and which step we reached */}
           <View style={debugStyles.container}>
             <Text style={debugStyles.text}>init: {initStep}</Text>
             {initError ? <Text style={debugStyles.error}>err: {initError}</Text> : null}
@@ -173,7 +163,6 @@ const App: React.FC = () => {
         <SafeAreaProvider>
           <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
           <SplashScreen onFinish={handleSplashFinish} />
-          {/* Debug overlay on splash too, so we can tell it's our JS splash */}
           <View style={debugStyles.container}>
             <Text style={debugStyles.text}>splash-js | {initStep}</Text>
           </View>
