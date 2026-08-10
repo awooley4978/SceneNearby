@@ -139,16 +139,18 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
     setSelectedLocation(null);
   };
 
-  const renderCluster = (loc: FilmingLocation, index: number) => {
+  const renderCluster = (loc: FilmingLocation) => {
     const catColor = categoryColors[loc.category];
-    const isSaved = savedIds.has(loc.id);
     return (
       <Marker
         key={loc.id}
         coordinate={{ latitude: loc.latitude, longitude: loc.longitude }}
-        pinColor={catColor}
         onPress={() => handleMarkerPress(loc)}
-      />
+      >
+        <View style={[styles.markerOuter, { borderColor: catColor + '40' }]}>
+          <View style={[styles.markerDot, { backgroundColor: catColor }]} />
+        </View>
+      </Marker>
     );
   };
 
@@ -331,4 +333,16 @@ const styles = StyleSheet.create({
   listTitle: { fontSize: 16, fontWeight: '700', color: theme.colors.textPrimary },
   listClose: { fontSize: 18, color: theme.colors.textTertiary, padding: 4 },
   listContent: { paddingHorizontal: 16, paddingBottom: 20 },
+  // Custom marker styles (Google Maps pinColor doesn't support hex)
+  markerOuter: {
+    width: 28, height: 28, borderRadius: 14,
+    backgroundColor: 'white',
+    borderWidth: 3,
+    justifyContent: 'center', alignItems: 'center',
+    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, shadowRadius: 4,
+    elevation: 4,
+  },
+  markerDot: {
+    width: 16, height: 16, borderRadius: 8,
+  },
 });
