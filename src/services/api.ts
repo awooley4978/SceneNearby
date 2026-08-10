@@ -113,10 +113,23 @@ function transformRow(row: RawLocationRow): ApiLocation {
     focalPoint: row.focal_point_x != null && row.focal_point_y != null
       ? { x: row.focal_point_x, y: row.focal_point_y }
       : null,
-    remoteDestination: row.remote_destination_json
-      ? JSON.parse(row.remote_destination_json)
-      : null,
-    actors: row.actors_json ? JSON.parse(row.actors_json) : [],
+    remoteDestination: (() => {
+      if (!row.remote_destination_json) return null;
+      try {
+        return JSON.parse(row.remote_destination_json);
+      } catch {
+        // Some DB entries use JS object syntax (unquoted keys) — skip
+        return null;
+      }
+    })(),
+    actors: (() => {
+      if (!row.actors_json) return [];
+      try {
+        return JSON.parse(row.actors_json);
+      } catch {
+        return [];
+      }
+    })(),
     estimatedVisitTime: row.estimated_visit_time,
     worthItPercentage: row.worth_it_percentage,
     worthItVotes: row.worth_it_votes,
