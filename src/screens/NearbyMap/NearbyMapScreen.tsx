@@ -139,16 +139,16 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
     setSelectedLocation(null);
   };
 
-  const renderCluster = (loc: FilmingLocation) => {
+  const renderCluster = (loc: FilmingLocation, index: number) => {
     const catColor = categoryColors[loc.category];
+    const isSaved = savedIds.has(loc.id);
     return (
       <Marker
         key={loc.id}
         coordinate={{ latitude: loc.latitude, longitude: loc.longitude }}
+        pinColor={catColor}
         onPress={() => handleMarkerPress(loc)}
-      >
-        <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: catColor }} />
-      </Marker>
+      />
     );
   };
 
@@ -331,9 +331,4 @@ const styles = StyleSheet.create({
   listTitle: { fontSize: 16, fontWeight: '700', color: theme.colors.textPrimary },
   listClose: { fontSize: 18, color: theme.colors.textTertiary, padding: 4 },
   listContent: { paddingHorizontal: 16, paddingBottom: 20 },
-  // Custom colored dot markers
-  markerDot: {
-    width: 20, height: 20, borderRadius: 10,
-    borderWidth: 2, borderColor: 'white',
-  },
 });
