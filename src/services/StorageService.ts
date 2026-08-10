@@ -7,6 +7,7 @@ const KEYS = {
   NOTIFICATION_PREFS: '@scenenearby/notification_prefs',
   USER_SETTINGS: '@scenenearby/settings',
   LAST_CITY: '@scenenearby/last_city',
+  ARRIVAL_NOTIFIED_CITY: '@scenenearby/arrival_notified_city',
   VISITED_LOCATIONS: '@scenenearby/visited_locations',
   DISMISSED_LOCATIONS: '@scenenearby/dismissed_locations',
   USER_WORTHIT_VOTE: '@scenenearby/user_worthit_vote',
@@ -90,6 +91,18 @@ export async function getLastCity(): Promise<string | null> {
 
 export async function setLastCity(city: string): Promise<void> {
   try { await AsyncStorage.setItem(KEYS.LAST_CITY, city); } catch {}
+}
+
+export async function getArrivalNotifiedCity(): Promise<string | null> {
+  try { return await AsyncStorage.getItem(KEYS.ARRIVAL_NOTIFIED_CITY); } catch { return null; }
+}
+
+export async function setArrivalNotifiedCity(city: string): Promise<void> {
+  try { await AsyncStorage.setItem(KEYS.ARRIVAL_NOTIFIED_CITY, city); } catch {}
+}
+
+export async function clearArrivalNotifiedCity(): Promise<void> {
+  try { await AsyncStorage.removeItem(KEYS.ARRIVAL_NOTIFIED_CITY); } catch {}
 }
 
 // ── Gate: visited + dismissed locations ──

@@ -20,6 +20,7 @@ import { useSaved } from '../../context/SavedContext';
 import { useUserLocationContext } from '../../context/UserLocationContext';
 import { useCityDetection } from '../../hooks/useCityDetection';
 import { CityWelcomeModal } from '../../components/CityWelcomeModal';
+import { ArrivalBanner } from '../../components/ArrivalBanner';
 import type { FilmingLocation } from '../../models';
 
 const { width, height } = Dimensions.get('window');
@@ -41,7 +42,7 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
   const { activeCity, activeCityLat, activeCityLng, isLoaded } = useUserLocationContext();
 
   // City welcome detection
-  const { showWelcome, cityName, savedCount, dismiss } = useCityDetection({
+  const { showWelcome, cityName, savedCount, dismiss, showArrivalBanner, dismissArrival } = useCityDetection({
     latitude: region.latitude,
     longitude: region.longitude,
     isGps: false,
@@ -242,6 +243,13 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
           />
         </View>
       )}
+
+      {/* Arrival Banner — quiet informational notification */}
+      <ArrivalBanner
+        visible={showArrivalBanner}
+        cityName={cityName}
+        onDismiss={dismissArrival}
+      />
 
       {/* City Welcome Modal */}
       <CityWelcomeModal

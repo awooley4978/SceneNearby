@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAllLocations } from '../services/hooks';
 import { calculateDistance } from '../services/geo';
-import { getLastCity, setLastCity } from '../services/StorageService';
+import { getLastCity, setLastCity, getArrivalNotifiedCity, setArrivalNotifiedCity } from '../services/StorageService';
 import { useSaved } from '../context/SavedContext';
 import type { UserLocation } from './useUserLocation';
 
@@ -14,11 +14,17 @@ export interface CityDetection {
   savedCount: number;
   /** Dismiss the modal and record the city as seen */
   dismiss: () => void;
+  /** Whether the quiet arrival banner should show */
+  showArrivalBanner: boolean;
+  /** Dismiss the arrival banner and record the notification as sent */
+  dismissArrival: () => void;
 }
 
 /**
  * Detects when the user enters a new city and checks if they have
- * saved locations there. Triggers the city welcome flow once per city.
+ * saved locations there. Triggers both:
+ * 1. The full CityWelcomeModal (once per city, permanent until city changes)
+ * 2. A quiet ArrivalBanner (once per arrival — re-fires on subsequent trips)
  */
 export function useCityDetection(
   userLocation: UserLocation,
@@ -26,6 +32,7 @@ export function useCityDetection(
   const { savedIds, loaded: savedLoaded } = useSaved();
   const { locations: allLocations } = useAllLocations();
   const [showWelcome, setShowWelcome] = useState(false);
+  const [showArrivalBanner, setShowArrivalBanner] = useState(false);
   const [cityName, setCityName] = useState('');
   const [savedCount, setSavedCount] = useState(0);
   const pendingRef = useRef(false);
@@ -64,15 +71,8 @@ export function useCityDetection(
     // Only consider cities within ~50 miles (80km)
     if (closestDist > 80467 || !closestCity) return;
 
-    // Check if this is a new city
     pendingRef.current = true;
     (async () => {
-      const lastCity = await getLastCity();
-      if (lastCity === closestCity) {
-        pendingRef.current = false;
-        return; // Already welcomed here
-      }
-
       // Count saved locations in this city
       const cityLower = closestCity.toLowerCase();
       let count = 0;
@@ -81,11 +81,26 @@ export function useCityDetection(
         if (loc && loc.city.toLowerCase() === cityLower) count++;
       }
 
-      if (count > 0) {
-        setCityName(closestCity);
-        setSavedCount(count);
+      if (count === 0) {
+        pendingRef.current = false;
+        return;
+      }
+
+      setCityName(closestCity);
+      setSavedCount(count);
+
+      // ── Welcome modal (once per city, permanent) ──
+      const lastCity = await getLastCity();
+      if (lastCity !== closestCity) {
         setShowWelcome(true);
       }
+
+      // ── Arrival banner (once per arrival, re-fires on different trips) ──
+      const lastNotified = await getArrivalNotifiedCity();
+      if (lastNotified !== closestCity) {
+        setShowArrivalBanner(true);
+      }
+
       pendingRef.current = false;
     })();
   }, [userLocation.latitude, userLocation.longitude, savedIds, savedLoaded]);
@@ -95,5 +110,10 @@ export function useCityDetection(
     await setLastCity(cityName);
   };
 
-  return { showWelcome, cityName, savedCount, dismiss };
+  const dismissArrival = async () => {
+    setShowArrivalBanner(false);
+    await setArrivalNotifiedCity(cityName);
+  };
+
+  return { showWelcome, cityName, savedCount, dismiss, showArrivalBanner, dismissArrival };
 }
