@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { getSavedIds, setSavedIds } from '../services/StorageService';
 import {
-  startBackgroundLocationTracking,
-  stopBackgroundLocationTracking,
+  startBackgroundGeofencing,
+  stopBackgroundGeofencing,
 } from '../tasks/backgroundLocation';
 
 interface SavedContextValue {
@@ -34,16 +34,16 @@ export const SavedProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     })();
   }, []);
 
-  // Start/stop background location tracking based on saved locations
+  // Start/stop geofencing based on saved locations
   useEffect(() => {
     if (!loaded) return;
     if (savedIds.size > 0) {
-      startBackgroundLocationTracking().catch((err) =>
-        console.log('[SavedProvider] Failed to start bg tracking:', err),
+      startBackgroundGeofencing().catch((err) =>
+        console.log('[SavedProvider] Failed to start geofencing:', err),
       );
     } else {
-      stopBackgroundLocationTracking().catch((err) =>
-        console.log('[SavedProvider] Failed to stop bg tracking:', err),
+      stopBackgroundGeofencing().catch((err) =>
+        console.log('[SavedProvider] Failed to stop geofencing:', err),
       );
     }
   }, [savedIds.size, loaded]);
