@@ -91,13 +91,24 @@ interface RawLocationRow {
   worth_it_votes: number | null;
 }
 
+// ── Normalize DB category (lowercase) to LocationCategory enum values ──
+const CATEGORY_MAP: Record<string, string> = {
+  drama: 'Drama',
+  comedy: 'Comedy',
+  scifi: 'Sci-Fi', sciFi: 'Sci-Fi',
+  action: 'Action',
+  romance: 'Romance',
+  horror: 'Horror',
+};
+
 function transformRow(row: RawLocationRow): ApiLocation {
+  const normalizedCategory = CATEGORY_MAP[row.category.toLowerCase()] || row.category;
   return {
     id: row.id,
     title: row.title,
     movieOrShow: row.movie_or_show,
     year: row.year,
-    category: row.category,
+    category: normalizedCategory,
     latitude: row.latitude,
     longitude: row.longitude,
     address: row.address ? row.address.replace(/\\n/g, '\n') : '',
