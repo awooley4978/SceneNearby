@@ -10,6 +10,29 @@ interface ArrivalBannerProps {
 
 const AUTO_DISMISS_MS = 6000;
 
+const CITY_FLAGS: Record<string, string> = {
+  'London': '🇬🇧',
+  'Paris': '🇫🇷',
+  'New York City': '🇺🇸',
+  'Los Angeles': '🇺🇸',
+  'Chicago': '🇺🇸',
+  'Dallas': '🇺🇸',
+  'San Francisco': '🇺🇸',
+  'Boston': '🇺🇸',
+  'Seattle': '🇺🇸',
+  'New Orleans': '🇺🇸',
+  'Washington DC': '🇺🇸',
+  'Toronto': '🇨🇦',
+  'Sydney': '🇦🇺',
+  'Tokyo': '🇯🇵',
+  'Dublin': '🇮🇪',
+  'Albuquerque': '🇺🇸',
+};
+
+function getFlag(cityName: string): string {
+  return CITY_FLAGS[cityName] || '📍';
+}
+
 /**
  * Subtle informational banner that slides down when the user arrives
  * in a city where they have saved filming locations. Auto-dismisses
@@ -50,7 +73,7 @@ export const ArrivalBanner: React.FC<ArrivalBannerProps> = ({ cityName, visible,
   return (
     <Animated.View style={[styles.banner, { transform: [{ translateY }] }]}>
       <TouchableOpacity style={styles.touchable} onPress={dismiss} activeOpacity={0.9}>
-        <Text style={styles.emoji}>🇬🇧</Text>
+        <Text style={styles.emoji}>{getFlag(cityName)}</Text>
         <View style={styles.textBlock}>
           <Text style={styles.title}>Welcome to {cityName}!</Text>
           <Text style={styles.body}>
