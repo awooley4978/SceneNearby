@@ -98,7 +98,7 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
     if (!userCity) return allLocations;
     const cityName = userCity.toLowerCase();
     return allLocations.filter((l) => l.city.toLowerCase().includes(cityName) || cityName.includes(l.city.toLowerCase()));
-  }, [userCity]);
+  }, [userCity, allLocations]);
 
   const handleMarkerPress = (location: FilmingLocation) => {
     setSelectedLocation(location);
