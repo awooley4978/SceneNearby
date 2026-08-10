@@ -62,11 +62,11 @@ export const LocationSetupScreen: React.FC<LocationSetupScreenProps> = ({
       activeCity: detectedCity || 'New York City',
       activeCityLat: detectedCoords?.lat ?? 40.7580,
       activeCityLng: detectedCoords?.lng ?? -73.9855,
+      manualLocation: false,
     });
   };
 
   const handleCitySelect = (city: typeof CITIES[0]) => {
-    // Map city names to match sample data city field
     const cityNameMap: Record<string, string> = {
       'New York': 'New York City',
       'Los Angeles': 'Los Angeles',
@@ -93,6 +93,7 @@ export const LocationSetupScreen: React.FC<LocationSetupScreenProps> = ({
       activeCity: cityNameMap[city.name] || city.name,
       activeCityLat: city.lat,
       activeCityLng: city.lng,
+      manualLocation: true,
     });
   };
 
@@ -269,6 +270,7 @@ export const LocationSetupScreen: React.FC<LocationSetupScreenProps> = ({
                         activeCity: cityNameMap[city.name] || city.name,
                         activeCityLat: found.lat,
                         activeCityLng: found.lng,
+                        manualLocation: true,
                       });
                     }
                   }}

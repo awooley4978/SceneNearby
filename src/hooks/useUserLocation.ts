@@ -53,6 +53,24 @@ export function useUserLocation(): UserLocation {
 
     async function getLocation() {
       try {
+        // Check if user manually selected a city (skip GPS)
+        const onboardingData = await getOnboardingData();
+        if (onboardingData?.manualLocation) {
+          if (!mounted) return;
+          const { activeCityLat, activeCityLng } = onboardingData;
+          if (isValidCoordinate(activeCityLat, activeCityLng)) {
+            setLocation({
+              latitude: activeCityLat,
+              longitude: activeCityLng,
+              isGps: false,
+              isLoading: false,
+              permissionDenied: false,
+              error: null,
+            });
+            return;
+          }
+        }
+
         const { status } = await Location.requestForegroundPermissionsAsync();
 
         if (!mounted) return;

@@ -8,9 +8,9 @@ import {
   Alert,
 } from 'react-native';
 import { theme } from '../../theme';
-import { availableCityPacks, defaultUserSettings } from '../../models';
+import { availableCityPacks, defaultUserSettings, CITIES } from '../../models';
 import type { MapStyleOption } from '../../models';
-import { resetOnboarding, getUserSettings, setUserSettings } from '../../services/StorageService';
+import { resetOnboarding, getUserSettings, setUserSettings, setOnboardingData, getOnboardingData } from '../../services/StorageService';
 import { Linking, Platform } from 'react-native';
 import { logPremiumUpgrade } from '../../services/analytics';
 import { useAuth } from '../../context/AuthContext';
@@ -153,6 +153,51 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
             </View>
           );
         })}
+      </View>
+
+      {/* Active City */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>🏙️ Active City</Text>
+        <TouchableOpacity
+          style={styles.navLinkRow}
+          onPress={() => {
+            Alert.alert(
+              'Switch City',
+              'Choose a city to explore. GPS will be ignored until you reset onboarding.',
+              [
+                ...CITIES.slice(0, 12).map((city) => {
+                  const cityNameMap: Record<string, string> = {
+                    'New York': 'New York City', 'Los Angeles': 'Los Angeles',
+                    'London': 'London', 'Chicago': 'Chicago', 'Paris': 'Paris',
+                    'Dallas': 'Dallas', 'San Francisco': 'San Francisco',
+                    'Boston': 'Boston', 'Seattle': 'Seattle', 'Toronto': 'Toronto',
+                    'Sydney': 'Sydney', 'Tokyo': 'Tokyo',
+                  };
+                  return {
+                    text: city.name,
+                    onPress: async () => {
+                      const mapped = cityNameMap[city.name] || city.name;
+                      await setOnboardingData({
+                        activeCity: mapped,
+                        activeCityLat: city.lat,
+                        activeCityLng: city.lng,
+                        manualLocation: true,
+                      });
+                      Alert.alert('Updated', `Now exploring ${mapped}. Restart the app for changes to take effect.`);
+                    },
+                  };
+                }),
+                { text: 'Cancel', style: 'cancel' as const },
+              ],
+            );
+          }}
+        >
+          <View style={styles.navLinkInfo}>
+            <Text style={styles.navLinkLabel}>📍 Change City</Text>
+            <Text style={styles.navLinkDesc}>Switch the city you're exploring</Text>
+          </View>
+          <Text style={styles.navLinkChevron}>›</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Settings — link to Notification Preferences */}
