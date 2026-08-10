@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../../theme';
+import { HeroSkeleton, SkeletonLoader } from '../../components/SkeletonLoader';
 import { useLocationById } from '../../services/hooks';
 import { calculateDistance } from '../../services/geo';
 import { STORAGE_KEYS, defaultUserSettings, communityPhotoToGallery } from '../../models';
@@ -70,14 +71,6 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
       .map((p) => communityPhotoToGallery(p, location?.imageUrl))
       .filter((p) => p.imageUrl);
   }, [communityPhotos, location?.imageUrl]);
-
-  if (!location) {
-    return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>Location not found</Text>
-      </View>
-    );
-  }
 
   const handleNavigate = async () => {
     const lat = location.latitude;
@@ -241,9 +234,19 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
   if (loading) {
     return (
       <View style={styles.container}>
-        <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Loading...</Text>
-        </View>
+        <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
+          <HeroSkeleton />
+          <View style={styles.content}>
+            <View style={{ marginBottom: 20, paddingTop: 16 }}>
+              <SkeletonLoader height={14} width="40%" borderRadius={4} style={{ marginBottom: 8 }} />
+              <SkeletonLoader height={28} width="75%" borderRadius={6} />
+            </View>
+            <SkeletonLoader height={14} width="100%" borderRadius={4} style={{ marginBottom: 6 }} />
+            <SkeletonLoader height={14} width="100%" borderRadius={4} style={{ marginBottom: 6 }} />
+            <SkeletonLoader height={14} width="60%" borderRadius={4} style={{ marginBottom: 20 }} />
+            <SkeletonLoader height={48} width="100%" borderRadius={12} />
+          </View>
+        </ScrollView>
       </View>
     );
   }
