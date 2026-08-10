@@ -285,9 +285,14 @@ export const LocationCard: React.FC<LocationCardProps> = ({
                   <StarRating rating={rating.average} count={rating.count} size={11} showCount />
                 )}
               </View>
-              <Text style={styles.address} numberOfLines={3}>
-                📍 {location.address}
-              </Text>
+              <View style={styles.addressBlock}>
+                <Text style={styles.address} numberOfLines={1}>
+                  📍 {location.address.split('\n')[0]}
+                </Text>
+                <Text style={styles.addressCity}>
+                  {location.city}{location.country ? `, ${location.country}` : ''}
+                </Text>
+              </View>
             </View>
           </View>
         </Animated.View>
@@ -447,10 +452,18 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: 8,
   },
+  addressBlock: {
+    maxWidth: '50%',
+  },
   address: {
     fontSize: 11,
     color: theme.colors.textTertiary,
-    maxWidth: '50%',
+  },
+  addressCity: {
+    fontSize: 10,
+    color: theme.colors.textTertiary,
+    opacity: 0.7,
+    marginTop: 1,
   },
   arrivalBadge: {
     flexDirection: 'row',
