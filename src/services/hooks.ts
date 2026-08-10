@@ -71,18 +71,8 @@ function computeRating(loc: ApiLocation): LocationRating | undefined {
 
 // ── Hooks ──
 
-/** Fetch all locations (paginated) */
-export function useAllLocations() {
-  const result = useApiData<ApiLocationSummary[]>(
-    () => apiClient.getAllLocations(),
-    [],
-  );
-  const locations = result.data?.map(toFilmingLocation) ?? [];
-  return { ...result, locations };
-}
-
 /** Fetch all locations with FULL data (scene descriptions, fun facts, etc.) */
-export function useAllLocationsFull() {
+export function useAllLocations() {
   const [locations, setLocations] = useState<FilmingLocation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -121,6 +111,9 @@ export function useAllLocationsFull() {
 
   return { locations, loading, error, refetch };
 }
+
+/** @deprecated — alias for useAllLocations (now returns full data) */
+export const useAllLocationsFull = useAllLocations;
 
 /** Fetch a single location by ID */
 export function useLocationById(id: string | undefined) {
