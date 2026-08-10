@@ -10,7 +10,8 @@ import {
 import { theme } from '../../theme';
 import { availableCityPacks, defaultUserSettings, CITIES } from '../../models';
 import type { MapStyleOption } from '../../models';
-import { resetOnboarding, getUserSettings, setUserSettings, setOnboardingData, getOnboardingData } from '../../services/StorageService';
+import { resetOnboarding, getUserSettings, setUserSettings, getOnboardingData } from '../../services/StorageService';
+import { useUserLocationContext } from '../../context/UserLocationContext';
 import { Linking, Platform } from 'react-native';
 import { logPremiumUpgrade } from '../../services/analytics';
 import { useAuth } from '../../context/AuthContext';
@@ -19,6 +20,7 @@ const ADMIN_EMAILS = ['awooley4978@gmail.com', 'scenenearbysupport@gmail.com'];
 
 export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { user, signOut: authSignOut } = useAuth();
+  const { setActiveCity } = useUserLocationContext();
   const [settings, setSettings] = useState(defaultUserSettings);
   const [isPremium, setIsPremium] = useState(false);
   const [purchasedPacks, setPurchasedPacks] = useState<string[]>([]);
@@ -177,13 +179,8 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
                     text: city.name,
                     onPress: async () => {
                       const mapped = cityNameMap[city.name] || city.name;
-                      await setOnboardingData({
-                        activeCity: mapped,
-                        activeCityLat: city.lat,
-                        activeCityLng: city.lng,
-                        manualLocation: true,
-                      });
-                      Alert.alert('Updated', `Now exploring ${mapped}. Restart the app for changes to take effect.`);
+                      await setActiveCity(mapped, city.lat, city.lng);
+                      Alert.alert('Updated', `Now exploring ${mapped}.`);
                     },
                   };
                 }),

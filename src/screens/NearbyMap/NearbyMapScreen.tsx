@@ -16,8 +16,8 @@ import { LocationCard } from '../../components/LocationCard';
 import { StarRating } from '../../components/StarRating';
 import { CategoryBadge } from '../../components/CategoryBadge';
 import { MoviePoster } from '../../components/MoviePoster';
-import { getOnboardingData } from '../../services/StorageService';
 import { useSaved } from '../../context/SavedContext';
+import { useUserLocationContext } from '../../context/UserLocationContext';
 import { useCityDetection } from '../../hooks/useCityDetection';
 import { CityWelcomeModal } from '../../components/CityWelcomeModal';
 import type { FilmingLocation } from '../../models';
@@ -38,14 +38,13 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
     latitudeDelta: 40,
     longitudeDelta: 40,
   });
-  const [userCity, setUserCity] = useState<string>('');
-  const [userCoords, setUserCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const { activeCity, activeCityLat, activeCityLng, isLoaded } = useUserLocationContext();
 
   // City welcome detection
   const { showWelcome, cityName, savedCount, dismiss } = useCityDetection({
     latitude: region.latitude,
     longitude: region.longitude,
-    isGps: !!userCoords,
+    isGps: false,
     isLoading: false,
     permissionDenied: false,
     error: null,
@@ -55,27 +54,17 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
   const targetLat = route?.params?.centerLat;
   const targetLng = route?.params?.centerLng;
 
-  // Load user coordinates from onboarding data
+  // Center map on active city when context loads (or city changes)
   useEffect(() => {
-    (async () => {
-      try {
-        const data = await getOnboardingData();
-        if (data?.activeCityLat && data?.activeCityLng) {
-          setUserCoords({ lat: data.activeCityLat, lng: data.activeCityLng });
-          setUserCity(data.activeCity || '');
-          // If no target provided, center on user
-          if (!targetLat) {
-            setRegion({
-              latitude: data.activeCityLat,
-              longitude: data.activeCityLng,
-              latitudeDelta: 0.5,
-              longitudeDelta: 0.5,
-            });
-          }
-        }
-      } catch {}
-    })();
-  }, []);
+    if (isLoaded && activeCityLat && activeCityLng && !targetLat) {
+      setRegion({
+        latitude: activeCityLat,
+        longitude: activeCityLng,
+        latitudeDelta: 0.5,
+        longitudeDelta: 0.5,
+      });
+    }
+  }, [isLoaded, activeCityLat, activeCityLng, targetLat]);
 
   // If target location provided, center map on it
   useEffect(() => {
@@ -95,10 +84,10 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
 
   // Filter locations by current city
   const cityLocations = useMemo(() => {
-    if (!userCity) return allLocations;
-    const cityName = userCity.toLowerCase();
+    if (!activeCity) return allLocations;
+    const cityName = activeCity.toLowerCase();
     return allLocations.filter((l) => l.city.toLowerCase().includes(cityName) || cityName.includes(l.city.toLowerCase()));
-  }, [userCity, allLocations]);
+  }, [activeCity, allLocations]);
 
   const handleMarkerPress = (location: FilmingLocation) => {
     setSelectedLocation(location);
@@ -169,8 +158,8 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
       {/* Header — descriptive only */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>📍 Nearby</Text>
-        {userCity ? (
-          <Text style={styles.headerSubtitle}>Exploring locations near {userCity}</Text>
+        {activeCity ? (
+          <Text style={styles.headerSubtitle}>Exploring locations near {activeCity}</Text>
         ) : (
           <Text style={styles.headerSubtitle}>{allLocations.length} filming locations worldwide</Text>
         )}
@@ -231,7 +220,7 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
       {showList && (
         <View style={styles.listPanel}>
           <View style={styles.listHeader}>
-            <Text style={styles.listTitle}>📍 {cityLocations.length} location{cityLocations.length !== 1 ? 's' : ''} in {userCity || 'your area'}</Text>
+            <Text style={styles.listTitle}>📍 {cityLocations.length} location{cityLocations.length !== 1 ? 's' : ''} in {activeCity || 'your area'}</Text>
             <TouchableOpacity onPress={toggleList}>
               <Text style={styles.listClose}>✕</Text>
             </TouchableOpacity>

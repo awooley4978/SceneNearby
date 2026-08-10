@@ -7,6 +7,7 @@ import { SplashScreen } from './src/screens/Splash/SplashScreen';
 import { OnboardingScreen } from './src/screens/Onboarding/OnboardingScreen';
 import { LocationSetupScreen } from './src/screens/Onboarding/LocationSetupScreen';
 import { AuthProvider } from './src/context/AuthContext';
+import { UserLocationProvider } from './src/context/UserLocationContext';
 import { useMagicLink } from './src/hooks/useMagicLink';
 import { theme } from './src/theme';
 import {
@@ -111,9 +112,11 @@ const App: React.FC = () => {
       <SafeAreaProvider>
         <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
         <AuthProvider>
-          <MagicLinkListener>
-            <AppNavigator />
-          </MagicLinkListener>
+          <UserLocationProvider>
+            <MagicLinkListener>
+              <AppNavigator />
+            </MagicLinkListener>
+          </UserLocationProvider>
         </AuthProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
