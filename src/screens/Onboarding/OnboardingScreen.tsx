@@ -345,6 +345,10 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
             <Text style={styles.pageEmoji}>🎉</Text>
             <Text style={styles.pageTitle}>You're ready.</Text>
             <Text style={styles.pageSubtitle}>Let's find something amazing.</Text>
+            <Text style={styles.arrivalNote}>
+              From now on, Scene Nearby watches for filming locations around you.{'\n'}
+              When you arrive in a city with saved spots, we'll send a quiet notification — even if the app isn't open.
+            </Text>
             <TouchableOpacity style={styles.letsGoButton} onPress={handleComplete}>
               <Text style={styles.letsGoText}>Let's Go</Text>
             </TouchableOpacity>
@@ -485,6 +489,10 @@ const styles = StyleSheet.create({
   pageEmoji: { fontSize: 60, marginBottom: 20 },
   pageTitle: { fontSize: 24, fontWeight: '700', color: theme.colors.textPrimary, textAlign: 'center', marginBottom: 12 },
   pageSubtitle: { fontSize: 16, color: theme.colors.textSecondary, textAlign: 'center', lineHeight: 22, marginBottom: 24 },
+  arrivalNote: {
+    fontSize: 13, color: theme.colors.textTertiary, textAlign: 'center',
+    lineHeight: 20, marginBottom: 24, paddingHorizontal: 8,
+  },
   notifCard: {
     backgroundColor: theme.colors.surface, borderRadius: 20, padding: 20, paddingTop: 12,
     width: '100%', marginBottom: 16, borderWidth: 1, borderColor: theme.colors.gold + '20',
