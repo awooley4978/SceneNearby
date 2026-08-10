@@ -16,7 +16,7 @@ export const FilmographyScreen: React.FC<{ navigation: any }> = ({ navigation })
     if (!search.trim()) return movieGroups;
     const q = search.toLowerCase();
     return movieGroups.filter((g) => g.title.toLowerCase().includes(q));
-  }, [search]);
+  }, [search, movieGroups]);
 
   const renderMovie = ({ item }: { item: MovieGroup }) => {
     const catColor = categoryColors[item.category];
