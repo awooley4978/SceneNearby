@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BackButton } from '../../components/BackButton';
 import { theme } from '../../theme';
@@ -15,9 +15,20 @@ export const MovieDetailScreen: React.FC<{ route: any; navigation: any }> = ({
 }) => {
   const { movieTitle } = route.params;
   const insets = useSafeAreaInsets();
-  const { movieGroups, allLocations } = useMovieGroups();
+  const { movieGroups, allLocations, loading } = useMovieGroups();
   const movieGroup = movieGroups.find((g) => g.title === movieTitle);
   const locations = allLocations.filter((l) => l.movieOrShow === movieTitle);
+
+  if (loading) {
+    return (
+      <View style={[styles.container, { paddingTop: insets.top }]}>
+        <BackButton />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={theme.colors.gold} />
+        </View>
+      </View>
+    );
+  }
 
   if (!movieGroup || locations.length === 0) {
     return (
@@ -95,6 +106,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: theme.colors.background,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   errorText: {
     fontSize: 16,

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, TextInput, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BackButton } from '../../components/BackButton';
 import { theme } from '../../theme';
@@ -12,7 +12,7 @@ import type { MovieGroup } from '../../models';
 export const FilmographyScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const insets = useSafeAreaInsets();
   const [search, setSearch] = useState('');
-  const { movieGroups } = useMovieGroups();
+  const { movieGroups, loading } = useMovieGroups();
 
   const filtered = useMemo(() => {
     if (!search.trim()) return movieGroups;
@@ -60,18 +60,24 @@ export const FilmographyScreen: React.FC<{ navigation: any }> = ({ navigation })
           onChangeText={setSearch}
         />
       </View>
-      <FlatList
-        data={filtered}
-        keyExtractor={(item) => item.title}
-        renderItem={renderMovie}
-        contentContainerStyle={styles.list}
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={
-          <View style={styles.empty}>
-            <Text style={styles.emptyText}>No movies found</Text>
-          </View>
-        }
-      />
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={theme.colors.gold} />
+        </View>
+      ) : (
+        <FlatList
+          data={filtered}
+          keyExtractor={(item) => item.title}
+          renderItem={renderMovie}
+          contentContainerStyle={styles.list}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <View style={styles.empty}>
+              <Text style={styles.emptyText}>No movies found</Text>
+            </View>
+          }
+        />
+      )}
     </View>
   );
 };
@@ -118,6 +124,7 @@ const styles = StyleSheet.create({
   metaText: { fontSize: 12, color: theme.colors.textSecondary },
   metaSep: { fontSize: 12, color: theme.colors.textTertiary },
   chevron: { fontSize: 22, color: theme.colors.textTertiary, fontWeight: '300' },
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   empty: { paddingVertical: 60, alignItems: 'center' },
   emptyText: { fontSize: 15, color: theme.colors.textTertiary },
 });

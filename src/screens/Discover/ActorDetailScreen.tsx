@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BackButton } from '../../components/BackButton';
 import { theme } from '../../theme';
@@ -14,7 +14,19 @@ export const ActorDetailScreen: React.FC<{ route: any; navigation: any }> = ({
   const { actorName } = route.params;
   const insets = useSafeAreaInsets();
   const { locations } = useLocationsByActor(actorName);
-  const { actorGroups } = useActorGroups();
+  const { actorGroups, loading } = useActorGroups();
+
+  if (loading) {
+    return (
+      <View style={[styles.container, { paddingTop: insets.top }]}>
+        <BackButton />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={theme.colors.gold} />
+        </View>
+      </View>
+    );
+  }
+
   const group = actorGroups.find((g) => g.name === actorName);
 
   if (!group || locations.length === 0) {
@@ -83,6 +95,7 @@ export const ActorDetailScreen: React.FC<{ route: any; navigation: any }> = ({
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background },
   errorContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.background },
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   errorText: { fontSize: 16, color: theme.colors.textSecondary },
   header: { alignItems: 'center', paddingVertical: 24, paddingHorizontal: 16 },
   avatar: { fontSize: 48, marginBottom: 8 },
