@@ -146,9 +146,8 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
         key={loc.id}
         coordinate={{ latitude: loc.latitude, longitude: loc.longitude }}
         onPress={() => handleMarkerPress(loc)}
-        tracksViewChanges={false}
       >
-        <View style={[styles.markerDot, { backgroundColor: catColor }]} />
+        <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: catColor }} />
       </Marker>
     );
   };
