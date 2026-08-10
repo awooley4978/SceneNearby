@@ -10,6 +10,7 @@ import { LocationSetupScreen } from './src/screens/Onboarding/LocationSetupScree
 import { AuthProvider } from './src/context/AuthContext';
 import { UserLocationProvider } from './src/context/UserLocationContext';
 import { useMagicLink } from './src/hooks/useMagicLink';
+import './src/tasks/backgroundLocation'; // registers background location task
 import { theme } from './src/theme';
 import {
   getOnboardingComplete,

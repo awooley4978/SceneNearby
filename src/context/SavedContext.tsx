@@ -1,5 +1,9 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { getSavedIds, setSavedIds } from '../services/StorageService';
+import {
+  startBackgroundLocationTracking,
+  stopBackgroundLocationTracking,
+} from '../tasks/backgroundLocation';
 
 interface SavedContextValue {
   savedIds: Set<string>;
@@ -29,6 +33,20 @@ export const SavedProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       setLoaded(true);
     })();
   }, []);
+
+  // Start/stop background location tracking based on saved locations
+  useEffect(() => {
+    if (!loaded) return;
+    if (savedIds.size > 0) {
+      startBackgroundLocationTracking().catch((err) =>
+        console.log('[SavedProvider] Failed to start bg tracking:', err),
+      );
+    } else {
+      stopBackgroundLocationTracking().catch((err) =>
+        console.log('[SavedProvider] Failed to stop bg tracking:', err),
+      );
+    }
+  }, [savedIds.size, loaded]);
 
   const isSaved = useCallback((id: string) => savedIds.has(id), [savedIds]);
 
