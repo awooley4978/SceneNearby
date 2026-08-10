@@ -1,7 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
+import * as Notifications from 'expo-notifications';
 import { useAllLocations } from '../services/hooks';
 import { calculateDistance } from '../services/geo';
-import { getLastCity, setLastCity, getArrivalNotifiedCity, setArrivalNotifiedCity } from '../services/StorageService';
+import {
+  getLastCity,
+  setLastCity,
+  getArrivalNotifiedCity,
+  setArrivalNotifiedCity,
+} from '../services/StorageService';
 import { useSaved } from '../context/SavedContext';
 import type { UserLocation } from './useUserLocation';
 
@@ -14,17 +20,51 @@ export interface CityDetection {
   savedCount: number;
   /** Dismiss the modal and record the city as seen */
   dismiss: () => void;
-  /** Whether the quiet arrival banner should show */
-  showArrivalBanner: boolean;
-  /** Dismiss the arrival banner and record the notification as sent */
-  dismissArrival: () => void;
+}
+
+const CITY_FLAGS: Record<string, string> = {
+  'London': '🇬🇧',
+  'Paris': '🇫🇷',
+  'New York City': '🇺🇸',
+  'Los Angeles': '🇺🇸',
+  'Chicago': '🇺🇸',
+  'Dallas': '🇺🇸',
+  'San Francisco': '🇺🇸',
+  'Boston': '🇺🇸',
+  'Seattle': '🇺🇸',
+  'New Orleans': '🇺🇸',
+  'Washington DC': '🇺🇸',
+  'Toronto': '🇨🇦',
+  'Sydney': '🇦🇺',
+  'Tokyo': '🇯🇵',
+  'Dublin': '🇮🇪',
+  'Albuquerque': '🇺🇸',
+};
+
+function getFlag(cityName: string): string {
+  return CITY_FLAGS[cityName] || '📍';
+}
+
+/**
+ * Sends a local device notification for city arrival.
+ * Works when the app is in the foreground or background.
+ */
+async function sendArrivalNotification(cityName: string): Promise<void> {
+  const flag = getFlag(cityName);
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: `${flag} Welcome to ${cityName}!`,
+      body: "Scene Nearby is watching for filming locations around you. We'll let you know when there's something nearby you won't want to miss.",
+    },
+    trigger: null, // immediate
+  });
 }
 
 /**
  * Detects when the user enters a new city and checks if they have
- * saved locations there. Triggers both:
- * 1. The full CityWelcomeModal (once per city, permanent until city changes)
- * 2. A quiet ArrivalBanner (once per arrival — re-fires on subsequent trips)
+ * saved locations there. Triggers:
+ * 1. The CityWelcomeModal (once per city, permanent until city changes)
+ * 2. A local device notification (once per arrival, re-fires on subsequent trips)
  */
 export function useCityDetection(
   userLocation: UserLocation,
@@ -32,7 +72,6 @@ export function useCityDetection(
   const { savedIds, loaded: savedLoaded } = useSaved();
   const { locations: allLocations } = useAllLocations();
   const [showWelcome, setShowWelcome] = useState(false);
-  const [showArrivalBanner, setShowArrivalBanner] = useState(false);
   const [cityName, setCityName] = useState('');
   const [savedCount, setSavedCount] = useState(0);
   const pendingRef = useRef(false);
@@ -95,10 +134,11 @@ export function useCityDetection(
         setShowWelcome(true);
       }
 
-      // ── Arrival banner (once per arrival, re-fires on different trips) ──
+      // ── Device notification (once per arrival, re-fires on different trips) ──
       const lastNotified = await getArrivalNotifiedCity();
       if (lastNotified !== closestCity) {
-        setShowArrivalBanner(true);
+        await sendArrivalNotification(closestCity);
+        await setArrivalNotifiedCity(closestCity);
       }
 
       pendingRef.current = false;
@@ -110,10 +150,5 @@ export function useCityDetection(
     await setLastCity(cityName);
   };
 
-  const dismissArrival = async () => {
-    setShowArrivalBanner(false);
-    await setArrivalNotifiedCity(cityName);
-  };
-
-  return { showWelcome, cityName, savedCount, dismiss, showArrivalBanner, dismissArrival };
+  return { showWelcome, cityName, savedCount, dismiss };
 }

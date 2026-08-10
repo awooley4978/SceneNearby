@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'react-native';
+import * as Notifications from 'expo-notifications';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppNavigator } from './src/navigation/AppNavigator';
@@ -31,6 +32,26 @@ const MagicLinkListener: React.FC<{ children: React.ReactNode }> = ({ children }
 const App: React.FC = () => {
   const [appPhase, setAppPhase] = useState<'loading' | 'splash' | 'onboarding' | 'locationSetup' | 'main'>('loading');
   const [onboardingResult, setOnboardingResult] = useState<any>(null);
+
+  // ── Notification setup ──
+  useEffect(() => {
+    // Show notifications while app is in the foreground
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: false,
+      }),
+    });
+
+    // Request permission
+    (async () => {
+      const { status } = await Notifications.requestPermissionsAsync();
+      if (status !== 'granted') {
+        console.log('[Notifications] Permission not granted');
+      }
+    })();
+  }, []);
 
   useEffect(() => {
     (async () => {
