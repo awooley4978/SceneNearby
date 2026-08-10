@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'react-native';
 import * as Notifications from 'expo-notifications';
+import * as ExpoSplashScreen from 'expo-splash-screen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppNavigator } from './src/navigation/AppNavigator';
@@ -19,6 +20,10 @@ import {
   setOnboardingData,
   resetOnboarding as resetStorageOnboarding,
 } from './src/services/StorageService';
+
+// Prevent native splash screen from auto-hiding — we control it
+// based on startup initialization completing.
+ExpoSplashScreen.preventAutoHideAsync();
 
 export const resetOnboarding = async () => {
   await resetStorageOnboarding();
@@ -55,16 +60,40 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    let resolved = false;
+
+    // Safety timeout: if the async init hangs for any reason, force-
+    // dismiss the native splash after 8s so the user isn't stuck forever.
+    const timeout = setTimeout(() => {
+      if (!resolved) {
+        ExpoSplashScreen.hideAsync();
+      }
+    }, 8000);
+
     (async () => {
-      const complete = await getOnboardingComplete();
-      if (complete) {
-        const data = await getOnboardingData();
-        setOnboardingResult(data);
-        setAppPhase('main');
-      } else {
+      try {
+        const complete = await getOnboardingComplete();
+        if (complete) {
+          const data = await getOnboardingData();
+          setOnboardingResult(data);
+          setAppPhase('main');
+        } else {
+          setAppPhase('splash');
+        }
+      } catch {
+        // Even if storage fails, show the splash — don't lock the user out.
         setAppPhase('splash');
+      } finally {
+        resolved = true;
+        clearTimeout(timeout);
+        ExpoSplashScreen.hideAsync();
       }
     })();
+
+    return () => {
+      resolved = true;
+      clearTimeout(timeout);
+    };
   }, []);
 
   const handleSplashFinish = () => {
