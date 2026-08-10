@@ -10,7 +10,7 @@ import {
 import { theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
 import { computeAdminStats, type AdminStats } from '../../services/AdminService';
-import { useAllLocations } from '../../services/hooks';
+import { useAllLocationsFull } from '../../services/hooks';
 
 const ADMIN_EMAILS = ['awooley4978@gmail.com', 'scenenearbysupport@gmail.com'];
 
@@ -26,7 +26,7 @@ interface StatCard {
 
 export const AdminDashboardScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { user } = useAuth();
-  const { locations: allLocations } = useAllLocations();
+  const { locations: allLocations } = useAllLocationsFull();
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -94,7 +94,7 @@ export const AdminDashboardScreen: React.FC<{ navigation: any }> = ({ navigation
       <View style={styles.topBar}>
         <TouchableOpacity
           style={styles.backButton}
-          onPress={() => navigation.navigate('Profile')}
+          onPress={() => navigation.navigate('ProfileHome')}
           activeOpacity={0.7}
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
         >

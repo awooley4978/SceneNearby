@@ -8,7 +8,6 @@ import {
   Image,
   ActivityIndicator,
 } from 'react-native';
-import { BackButton } from '../../components/BackButton';
 import { theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
 import { EmptyState } from '../../components/EmptyState';
@@ -129,14 +128,16 @@ export const AlbumScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.topBar}>
-        <BackButton />
         <TouchableOpacity
-          style={styles.closeButton}
-          onPress={() => navigation.navigate('Profile')}
+          style={styles.backButton}
+          onPress={() => navigation.navigate('ProfileHome')}
+          activeOpacity={0.7}
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
         >
-          <Text style={styles.closeButtonText}>✕</Text>
+          <Text style={styles.backText}>‹ Back</Text>
         </TouchableOpacity>
+        <Text style={styles.topBarTitle}>Album</Text>
+        <View style={styles.topBarSpacer} />
       </View>
       {content}
     </View>
@@ -150,25 +151,21 @@ const styles = StyleSheet.create({
   },
   topBar: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     paddingTop: 56,
     paddingBottom: 12,
-    paddingRight: 16,
+    paddingHorizontal: 16,
+    backgroundColor: theme.colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.surface3,
   },
-  closeButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: theme.colors.surface2,
-    justifyContent: 'center',
-    alignItems: 'center',
+  backButton: {
+    paddingVertical: 8,
+    paddingRight: 12,
   },
-  closeButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: theme.colors.textSecondary,
-  },
+  backText: { fontSize: 16, color: theme.colors.gold, fontWeight: '600' },
+  topBarTitle: { fontSize: 16, fontWeight: '700', color: theme.colors.textSecondary },
+  topBarSpacer: { width: 44 },
   centered: {
     flex: 1,
     justifyContent: 'center',

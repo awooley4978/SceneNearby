@@ -81,6 +81,47 @@ export function useAllLocations() {
   return { ...result, locations };
 }
 
+/** Fetch all locations with FULL data (scene descriptions, fun facts, etc.) */
+export function useAllLocationsFull() {
+  const [locations, setLocations] = useState<FilmingLocation[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    apiClient.getAllLocationsFull()
+      .then(data => {
+        if (cancelled) return;
+        setLocations(data.map(toFilmingLocation));
+        setLoading(false);
+      })
+      .catch(err => {
+        if (!cancelled) {
+          setError(err.message || 'Unknown error');
+          setLoading(false);
+        }
+      });
+    return () => { cancelled = true; };
+  }, []);
+
+  const refetch = () => {
+    setLoading(true);
+    setError(null);
+    apiClient.getAllLocationsFull()
+      .then(data => {
+        setLocations(data.map(toFilmingLocation));
+        setLoading(false);
+      })
+      .catch(err => {
+        setError(err.message || 'Unknown error');
+        setLoading(false);
+      });
+  };
+
+  return { locations, loading, error, refetch };
+}
+
 /** Fetch a single location by ID */
 export function useLocationById(id: string | undefined) {
   const result = useApiData<ApiLocation>(
