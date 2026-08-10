@@ -100,7 +100,7 @@ function transformRow(row: RawLocationRow): ApiLocation {
     category: row.category,
     latitude: row.latitude,
     longitude: row.longitude,
-    address: row.address,
+    address: row.address ? row.address.replace(/\\n/g, '\n') : '',
     city: row.city,
     country: row.country,
     sceneDescription: row.scene_description,

@@ -285,7 +285,7 @@ export const LocationCard: React.FC<LocationCardProps> = ({
                   <StarRating rating={rating.average} count={rating.count} size={11} showCount />
                 )}
               </View>
-              <Text style={styles.address} numberOfLines={1}>
+              <Text style={styles.address} numberOfLines={3}>
                 📍 {location.address}
               </Text>
             </View>
