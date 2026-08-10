@@ -145,13 +145,17 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
     const pageContent = () => {
       switch (index) {
         case 0: return (
-          <View style={styles.page}>
+          <TouchableOpacity
+            style={styles.page}
+            activeOpacity={1}
+            onPress={() => goToPage(1)}
+          >
             <View style={styles.gradientBg} />
             <Text style={styles.welcomeEmoji}>🎬</Text>
             <Text style={styles.welcomeTitle}>Your favorite scenes are closer than you think.</Text>
             <View style={styles.welcomeAccentLine} />
             <Text style={styles.welcomeSub}>Discover filming locations while you travel.</Text>
-          </View>
+          </TouchableOpacity>
         );
         case 1: return (
           <View style={styles.page}>
@@ -389,6 +393,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
         viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
         scrollEventThrottle={16}
         bounces={false}
+        scrollEnabled={currentPage !== 0}
       />
       {renderDots()}
     </View>
