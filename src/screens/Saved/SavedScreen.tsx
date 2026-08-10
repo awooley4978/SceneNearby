@@ -15,10 +15,12 @@ import { EmptyState } from '../../components/EmptyState';
 import { useSaved } from '../../context/SavedContext';
 import { useUserLocation } from '../../hooks/useUserLocation';
 import { calculateDistance } from '../../services/geo';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type SortMode = 'recent' | 'nearest' | 'az' | 'rating';
 
 export const SavedScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
+  const insets = useSafeAreaInsets();
   const { savedIds, loaded } = useSaved();
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<SortMode>('recent');
@@ -80,7 +82,7 @@ export const SavedScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   ];
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: Math.max(insets.top, 56) + 8 }]}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Saved</Text>
         {loaded && savedLocations.length > 0 && (
@@ -146,17 +148,18 @@ export const SavedScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 };
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background },
-  header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 12, paddingBottom: 4 },
+  header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingBottom: 4 },
   headerTitle: { fontSize: 28, fontWeight: '700', color: theme.colors.textPrimary, letterSpacing: -0.5 },
   countBadge: { marginLeft: 10, backgroundColor: theme.colors.gold, paddingHorizontal: 10, paddingVertical: 3, borderRadius: 12 },
   countText: { fontSize: 13, fontWeight: '700', color: theme.colors.black },
   toolbar: { paddingHorizontal: 16, paddingTop: 8, paddingBottom: 8 },
   searchBar: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: theme.colors.surface, borderRadius: 12,
-    paddingHorizontal: 14, height: 44, borderWidth: 1, borderColor: theme.colors.surface3,
+    flexDirection: 'row', alignItems: 'center', backgroundColor: theme.colors.surface2, borderRadius: 12,
+    paddingHorizontal: 14, marginBottom: 8, height: 48, borderWidth: 1, borderColor: theme.colors.gold + '40',
+    shadowColor: theme.colors.gold, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 3,
   },
-  searchIcon: { fontSize: 14, marginRight: 8 },
-  searchInput: { flex: 1, color: theme.colors.textPrimary, fontSize: 14 },
+  searchIcon: { fontSize: 16, marginRight: 8 },
+  searchInput: { flex: 1, color: theme.colors.textPrimary, fontSize: 15 },
   sortRow: { flexDirection: 'row', gap: 8, marginTop: 10, flexWrap: 'wrap' },
   sortChip: { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 16, backgroundColor: theme.colors.surface2, borderWidth: 1, borderColor: theme.colors.surface3 },
   sortChipActive: { borderColor: theme.colors.gold, backgroundColor: theme.colors.gold + '15' },

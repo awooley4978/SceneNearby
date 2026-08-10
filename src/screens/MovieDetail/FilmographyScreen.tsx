@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BackButton } from '../../components/BackButton';
 import { theme } from '../../theme';
 import { useMovieGroups } from '../../services/hooks';
@@ -9,6 +10,7 @@ import { MoviePoster } from '../../components/MoviePoster';
 import type { MovieGroup } from '../../models';
 
 export const FilmographyScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
+  const insets = useSafeAreaInsets();
   const [search, setSearch] = useState('');
   const { movieGroups } = useMovieGroups();
 
@@ -46,7 +48,7 @@ export const FilmographyScreen: React.FC<{ navigation: any }> = ({ navigation })
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: Math.max(insets.top, 56) + 8 }]}>
       <BackButton />
       <View style={styles.searchBar}>
         <Text style={styles.searchIcon}>🔍</Text>
@@ -82,18 +84,23 @@ const styles = StyleSheet.create({
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.surface2,
     borderRadius: 12,
     marginHorizontal: 16,
     marginTop: 12,
     marginBottom: 8,
     paddingHorizontal: 14,
-    height: 44,
+    height: 48,
     borderWidth: 1,
-    borderColor: theme.colors.surface3,
+    borderColor: theme.colors.gold + '40',
+    shadowColor: theme.colors.gold,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  searchIcon: { fontSize: 14, marginRight: 8 },
-  searchInput: { flex: 1, color: theme.colors.textPrimary, fontSize: 14 },
+  searchIcon: { fontSize: 16, marginRight: 8 },
+  searchInput: { flex: 1, color: theme.colors.textPrimary, fontSize: 15 },
   list: { paddingHorizontal: 16, paddingBottom: 40 },
   movieCard: {
     flexDirection: 'row',
