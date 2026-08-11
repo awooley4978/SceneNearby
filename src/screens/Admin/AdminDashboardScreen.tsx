@@ -26,6 +26,7 @@ interface StatCard {
 
 export const AdminDashboardScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { user } = useAuth();
+  const { locations: allLocations } = useAllLocations();
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [loading, setLoading] = useState(true);
 
