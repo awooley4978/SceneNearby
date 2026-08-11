@@ -2,16 +2,26 @@
  * TEMP DEBUG INSTRUMENT (debug/release-startup-logs only).
  *
  * Drops an ObjC probe file (SNStartupProbe.m) into the app target and
- * registers it in the Xcode project. The probe logs at the two earliest
- * possible points in the launch path:
- *   [SN] +load ran                    — ObjC runtime load (before main)
- *   [SN] constructor ran (dyld done)  — C constructor (before main)
+ * registers it in the Xcode project. The probe logs at the earliest
+ * possible points in the launch path — BEFORE main():
+ *   [SN] constructor ran (dyld load complete, before main)
+ *   [SN] +load ran (ObjC runtime, before main)
+ *   [SN] category +load on NSObject ran (pre-main)
+ *
+ * Three independent canaries, strip-proofed:
+ *  - constructor: __attribute__((used)) + keep-alive global + forced via
+ *    `-u _SNProbeConstructor` linker flag
+ *  - class +load: ObjC class metadata survives dead-stripping
+ *  - category +load on NSObject: __objc_catlist is never dead-stripped
+ *
+ * Plus OTHER_LDFLAGS `-Wl,-no_dead_strip_inits_and_terms` on the Release
+ * config so init functions are never stripped in the shipping binary.
  *
  * Combined with the AppDelegate [SN] markers from withStartupLogs, the
- * full bisection becomes:
- *   no probe logs          → hang inside dyld / a library's own static init
- *   probe logs, no [SN] DFL→ hang between pre-main and didFinishLaunching
- *   DFL begin, no "after"  → hang inside startReactNative (bundle load)
+ * full bisection:
+ *   no probe logs at all     → hang before main (dylib/static init)
+ *   probe logs, no [SN] DFL  → hang between pre-main and didFinishLaunching
+ *   DFL begin, no "after"    → hang inside startReactNative (bundle load)
  */
 const fs = require('fs');
 const path = require('path');
@@ -19,17 +29,37 @@ const { withXcodeProject } = require('@expo/config-plugins');
 
 const PROBE = `#import <Foundation/Foundation.h>
 
-__attribute__((constructor))
-static void SNProbeConstructor(void) {
+// ---- Pre-main probe 1: C constructor --------------------------------------
+// Non-static + used so the linker cannot dead-strip it; also kept via the
+// -u _SNProbeConstructor linker flag and the keep-alive reference below.
+__attribute__((used, constructor))
+void SNProbeConstructor(void) {
   NSLog(@"[SN] constructor ran (dyld load complete, before main)");
 }
 
+// Keep-alive: a used global that references the constructor.
+__attribute__((used))
+static void *const SNProbeKeepAlive = (void *)&SNProbeConstructor;
+
+// ---- Pre-main probe 2: ObjC class +load -----------------------------------
 @interface SNStartupProbe : NSObject
 @end
 
 @implementation SNStartupProbe
 + (void)load {
   NSLog(@"[SN] +load ran (ObjC runtime, before main)");
+}
+@end
+
+// ---- Pre-main probe 3: category +load on NSObject --------------------------
+// ObjC category metadata (__objc_catlist) is never dead-stripped, so this is
+// the most robust pre-main canary.
+@interface NSObject (SNStartupProbe)
+@end
+
+@implementation NSObject (SNStartupProbe)
++ (void)load {
+  NSLog(@"[SN] category +load on NSObject ran (pre-main)");
 }
 @end
 `;
@@ -91,6 +121,26 @@ module.exports = function withStartupProbe(config) {
       path.join(appDir.name, 'SNStartupProbe.m'),
       { target: targetKey },
       groupKey
+    );
+
+    // Strip-proof the probes: keep init functions in the Release binary and
+    // force-keep the constructor symbol. (Release config only — dev untouched.)
+    // NOTE: -Xlinker form only — the pbxproj serializer splits on commas, so
+    // -Wl,-foo would be mangled into two tokens. Must keep $(inherited) so the
+    // Pods xcconfig OTHER_LDFLAGS (-ObjC etc.) still apply.
+    proj.updateBuildProperty(
+      'OTHER_LDFLAGS',
+      [
+        '"$(inherited)"',
+        '-Xlinker',
+        '-no_dead_strip_inits_and_terms',
+        '-Xlinker',
+        '-u',
+        '-Xlinker',
+        '_SNProbeConstructor',
+      ],
+      'Release',
+      targetName
     );
 
     return config;
