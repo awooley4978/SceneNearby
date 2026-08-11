@@ -45,7 +45,6 @@
                     "locationWhenInUsePermission": "Scene Nearby uses your location to show you nearby filming locations."
                 }
             ],
-            "expo-dev-client",
             "expo-splash-screen"
         ],
         "extra": {
