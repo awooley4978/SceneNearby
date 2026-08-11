@@ -24,6 +24,7 @@ export function useCityDetection(
   userLocation: UserLocation,
 ): CityDetection {
   const { savedIds, loaded: savedLoaded } = useSaved();
+  const { locations: allLocations } = useAllLocations();
   const [showWelcome, setShowWelcome] = useState(false);
   const [cityName, setCityName] = useState('');
   const [savedCount, setSavedCount] = useState(0);
@@ -87,7 +88,7 @@ export function useCityDetection(
       }
       pendingRef.current = false;
     })();
-  }, [userLocation.latitude, userLocation.longitude, savedIds, savedLoaded]);
+  }, [userLocation.latitude, userLocation.longitude, savedIds, savedLoaded, allLocations.length]);
 
   const dismiss = async () => {
     setShowWelcome(false);
