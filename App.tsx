@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StatusBar } from 'react-native';
+import { StatusBar, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as ExpoSplashScreen from 'expo-splash-screen';
@@ -19,6 +19,7 @@ import {
 } from './src/services/StorageService';
 
 // Keep native splash up until the initial JS UI is ready
+console.log('[STARTUP] module loaded, calling preventAutoHideAsync');
 ExpoSplashScreen.preventAutoHideAsync();
 
 export const resetOnboarding = async () => {
@@ -37,7 +38,10 @@ const App: React.FC = () => {
 
   useEffect(() => {
     (async () => {
+      console.log('[STARTUP] useEffect running');
       const complete = await getOnboardingComplete();
+      const nextPhase = complete ? 'main' : 'splash';
+      console.log(`[STARTUP] onboarding complete=%s → phase=%s`, complete, nextPhase);
       if (complete) {
         const data = await getOnboardingData();
         setOnboardingResult(data);
@@ -45,7 +49,9 @@ const App: React.FC = () => {
       } else {
         setAppPhase('splash');
       }
+      console.log('[STARTUP] about to call hideAsync');
       await ExpoSplashScreen.hideAsync();
+      console.log('[STARTUP] hideAsync resolved');
     })();
   }, []);
 
@@ -65,11 +71,25 @@ const App: React.FC = () => {
     setAppPhase('main');
   };
 
+  // ── Debug banner: proves JS UI mounted ──
+  const DebugPhaseBanner = ({ phase }: { phase: string }) => (
+    <View style={{
+      position: 'absolute', bottom: 20, alignSelf: 'center',
+      backgroundColor: 'rgba(255,50,50,0.85)', paddingHorizontal: 14,
+      paddingVertical: 6, borderRadius: 8, zIndex: 9999,
+    }}>
+      <Text style={{ color: '#fff', fontWeight: '700', fontSize: 12 }}>
+        JS MOUNTED — phase: {phase}
+      </Text>
+    </View>
+  );
+
   if (appPhase === 'loading') {
     return (
       <GestureHandlerRootView style={{ flex: 1, backgroundColor: theme.colors.background }}>
         <SafeAreaProvider>
           <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
+          <DebugPhaseBanner phase="loading" />
         </SafeAreaProvider>
       </GestureHandlerRootView>
     );
@@ -81,6 +101,7 @@ const App: React.FC = () => {
         <SafeAreaProvider>
           <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
           <SplashScreen onFinish={handleSplashFinish} />
+          <DebugPhaseBanner phase="splash" />
         </SafeAreaProvider>
       </GestureHandlerRootView>
     );
@@ -92,6 +113,7 @@ const App: React.FC = () => {
         <SafeAreaProvider>
           <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
           <OnboardingScreen onComplete={handleOnboardingComplete} />
+          <DebugPhaseBanner phase="onboarding" />
         </SafeAreaProvider>
       </GestureHandlerRootView>
     );
@@ -106,6 +128,7 @@ const App: React.FC = () => {
             onboardingData={onboardingResult}
             onComplete={handleLocationSetupComplete}
           />
+          <DebugPhaseBanner phase="locationSetup" />
         </SafeAreaProvider>
       </GestureHandlerRootView>
     );
@@ -120,6 +143,7 @@ const App: React.FC = () => {
             <AppNavigator />
           </MagicLinkListener>
         </AuthProvider>
+        <DebugPhaseBanner phase="main" />
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );
