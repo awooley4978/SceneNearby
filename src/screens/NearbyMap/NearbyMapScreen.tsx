@@ -7,6 +7,8 @@ import {
   Text,
   FlatList,
   Animated,
+  Linking,
+  Platform,
 } from 'react-native';
 import MapView, { Marker, Region } from 'react-native-maps';
 import { theme } from '../../theme';
@@ -16,6 +18,7 @@ import { LocationCard } from '../../components/LocationCard';
 import { StarRating } from '../../components/StarRating';
 import { CategoryBadge } from '../../components/CategoryBadge';
 import { MoviePoster } from '../../components/MoviePoster';
+import { DiscoveryNotificationCard } from '../../components/DiscoveryNotificationCard';
 import { getOnboardingData } from '../../services/StorageService';
 import { useSaved } from '../../context/SavedContext';
 import { useCityDetection } from '../../hooks/useCityDetection';
@@ -40,6 +43,31 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
   });
   const [userCity, setUserCity] = useState<string>('');
   const [userCoords, setUserCoords] = useState<{ lat: number; lng: number } | null>(null);
+
+  // ── Dev-only: trigger notification card with mock proximity data ──
+  const [devNotifVisible, setDevNotifVisible] = useState(false);
+  const [devNotifLocation, setDevNotifLocation] = useState<FilmingLocation | null>(null);
+  const devTapCount = useRef(0);
+  const devTapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleDevNotificationTrigger = () => {
+    if (!__DEV__) return;
+    if (devTapTimer.current) clearTimeout(devTapTimer.current);
+    devTapCount.current += 1;
+    if (devTapCount.current >= 3) {
+      devTapCount.current = 0;
+      // Find Friends apartment location from real data
+      const friendsLoc = allLocations.find(
+        (l) =>
+          l.movieOrShow.toLowerCase().includes('friends') ||
+          l.title.toLowerCase().includes('friend') ||
+          l.title.toLowerCase().includes('monica'),
+      ) || allLocations[0];
+      setDevNotifLocation(friendsLoc || null);
+      setDevNotifVisible(true);
+    }
+    devTapTimer.current = setTimeout(() => { devTapCount.current = 0; }, 600);
+  };
 
   // City welcome detection
   const { showWelcome, cityName, savedCount, dismiss } = useCityDetection({
@@ -168,7 +196,9 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
 
       {/* Header — descriptive only */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>📍 Nearby</Text>
+        <TouchableOpacity onPress={handleDevNotificationTrigger} activeOpacity={0.7}>
+          <Text style={styles.headerTitle}>📍 Nearby</Text>
+        </TouchableOpacity>
         {userCity ? (
           <Text style={styles.headerSubtitle}>Exploring locations near {userCity}</Text>
         ) : (
@@ -272,6 +302,35 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
           // Stay on map — all locations are already shown
         }}
       />
+
+      {/* Dev-only: proximity notification card triggered by triple-tap on header */}
+      {devNotifLocation && (
+        <DiscoveryNotificationCard
+          visible={devNotifVisible}
+          onDismiss={() => setDevNotifVisible(false)}
+          movieTitle={devNotifLocation.movieOrShow}
+          locationName={devNotifLocation.title}
+          city={devNotifLocation.city}
+          description={devNotifLocation.sceneDescription || `A filming location from ${devNotifLocation.movieOrShow}`}
+          distance="0.3 mi"
+          imageUrl={devNotifLocation.imageUrl}
+          rating={devNotifLocation.rating?.average?.toFixed(1)}
+          visitTime={devNotifLocation.estimatedVisitTime}
+          onNavigate={() => {
+            const { latitude, longitude } = devNotifLocation;
+            const label = encodeURIComponent(devNotifLocation.title);
+            const mapsUrl = Platform.select({
+              ios: `maps://app?ll=${latitude},${longitude}&q=${label}`,
+              android: `geo:${latitude},${longitude}?q=${latitude},${longitude}(${label})`,
+              default: `https://www.google.com/maps?q=${latitude},${longitude}`,
+            });
+            Linking.openURL(mapsUrl).catch(() => {});
+          }}
+          onViewDetails={() => {
+            navigation.navigate('LocationDetail', { locationId: devNotifLocation.id });
+          }}
+        />
+      )}
     </View>
   );
 };
