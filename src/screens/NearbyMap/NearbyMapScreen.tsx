@@ -45,10 +45,16 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
   const [userCoords, setUserCoords] = useState<{ lat: number; lng: number } | null>(null);
 
   // ── Dev-only: trigger notification card with mock proximity data ──
+  // Cycle through real locations: each triple-tap shows the next one.
   const [devNotifVisible, setDevNotifVisible] = useState(false);
   const [devNotifLocation, setDevNotifLocation] = useState<FilmingLocation | null>(null);
+  const devNotifVisibleRef = useRef(false);
+  const devCycleIndex = useRef(0);
   const devTapCount = useRef(0);
   const devTapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Keep ref in sync with state so the handler never goes stale
+  useEffect(() => { devNotifVisibleRef.current = devNotifVisible; }, [devNotifVisible]);
 
   const handleDevNotificationTrigger = () => {
     if (!__DEV__) return;
@@ -56,15 +62,31 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
     devTapCount.current += 1;
     if (devTapCount.current >= 3) {
       devTapCount.current = 0;
-      // Find Friends apartment location from real data
-      const friendsLoc = allLocations.find(
-        (l) =>
-          l.movieOrShow.toLowerCase().includes('friends') ||
-          l.title.toLowerCase().includes('friend') ||
-          l.title.toLowerCase().includes('monica'),
-      ) || allLocations[0];
-      setDevNotifLocation(friendsLoc || null);
-      setDevNotifVisible(true);
+      if (devNotifVisibleRef.current) {
+        // Dismiss current alert, then show the next one after animation
+        setDevNotifVisible(false);
+        setTimeout(() => {
+          const locs = allLocations;
+          if (locs.length > 0) {
+            devCycleIndex.current = (devCycleIndex.current + 1) % locs.length;
+            setDevNotifLocation(locs[devCycleIndex.current]);
+            setDevNotifVisible(true);
+          }
+        }, 250);
+      } else {
+        const locs = allLocations;
+        if (locs.length === 0) return;
+        // First show: start with Friends if found, otherwise index 0
+        const friendsIdx = locs.findIndex(
+          (l) =>
+            l.movieOrShow.toLowerCase().includes('friends') ||
+            l.title.toLowerCase().includes('friend') ||
+            l.title.toLowerCase().includes('monica'),
+        );
+        devCycleIndex.current = friendsIdx >= 0 ? friendsIdx : 0;
+        setDevNotifLocation(locs[devCycleIndex.current]);
+        setDevNotifVisible(true);
+      }
     }
     devTapTimer.current = setTimeout(() => { devTapCount.current = 0; }, 600);
   };
