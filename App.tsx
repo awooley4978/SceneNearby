@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import * as ExpoSplashScreen from 'expo-splash-screen';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { SplashScreen } from './src/screens/Splash/SplashScreen';
 import { OnboardingScreen } from './src/screens/Onboarding/OnboardingScreen';
@@ -16,6 +17,9 @@ import {
   setOnboardingData,
   resetOnboarding as resetStorageOnboarding,
 } from './src/services/StorageService';
+
+// Keep native splash up until the initial JS UI is ready
+ExpoSplashScreen.preventAutoHideAsync();
 
 export const resetOnboarding = async () => {
   await resetStorageOnboarding();
@@ -41,6 +45,7 @@ const App: React.FC = () => {
       } else {
         setAppPhase('splash');
       }
+      await ExpoSplashScreen.hideAsync();
     })();
   }, []);
 
