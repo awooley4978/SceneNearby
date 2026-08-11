@@ -47,7 +47,8 @@
             ],
             "expo-dev-client",
             "expo-splash-screen",
-            "./plugins/withStartupLogs"
+            "./plugins/withStartupLogs",
+            "./plugins/withStartupProbe"
         ],
         "extra": {
             "eas": {
