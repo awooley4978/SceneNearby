@@ -27,6 +27,15 @@ import type { FilmingLocation } from '../../models';
 
 const { width, height } = Dimensions.get('window');
 
+// ── TEMP: Map crash bisection knobs (debug/map-crash-bisect only) ──
+// Flip ONE at a time, save (fast refresh), relaunch, tap the Map tab.
+// Defaults = current shipped behavior.
+const MAP_BISECT = {
+  controlledRegion: true,   // false → use initialRegion (uncontrolled map)
+  showsUserLocation: true,  // false → drop the prop entirely
+  markers: true,            // false → render zero markers
+};
+
 export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ navigation, route }) => {
   const [selectedLocation, setSelectedLocation] = useState<FilmingLocation | null>(null);
   const [showList, setShowList] = useState(false);
@@ -208,12 +217,12 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
       <MapView
         ref={mapRef}
         style={styles.map}
-        region={region}
-        showsUserLocation
+        {...(MAP_BISECT.controlledRegion ? { region } : { initialRegion: region })}
+        {...(MAP_BISECT.showsUserLocation ? { showsUserLocation: true } : {})}
         showsCompass
         mapPadding={{ top: 60, right: 16, bottom: showList ? 280 : 120, left: 16 }}
       >
-        {allLocations.map(renderCluster)}
+        {MAP_BISECT.markers ? allLocations.map(renderCluster) : null}
       </MapView>
 
       {/* Header — descriptive only */}
