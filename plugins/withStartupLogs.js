@@ -40,22 +40,41 @@ module.exports = function withStartupLogs(config) {
       '  ) -> Bool {\n    NSLog("[SN] didFinishLaunching begin")\n    let delegate = ReactNativeDelegate()'
     );
 
-    // 2) before startReactNative + watchdog stack dumps.
+    // 2) before startReactNative + main-thread responsiveness watchdog.
+    // NOTE: Thread.callStackSymbols is a CLASS property (current thread only).
+    // To observe the MAIN thread we must run the dump on the main queue —
+    // if the main queue is blocked (hang inside startReactNative), the
+    // semaphore probe times out and we log UNRESPONSIVE instead.
     const bindLine = '    bindReactNativeFactory(factory)';
     if (!src.includes(bindLine)) {
       throw new Error('[SN plugin] could not find bindReactNativeFactory (Swift)');
     }
-    src = src.replace(
-      bindLine,
-      bindLine +
-        '\n    NSLog("[SN] before startReactNative")\n' +
-        '    DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + 5) {\n' +
-        '      NSLog("[SN] WATCHDOG +5s main thread stack:\\n%@", Thread.mainThread.callStackSymbols.joined(separator: "\\n"))\n' +
-        '    }\n' +
-        '    DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + 10) {\n' +
-        '      NSLog("[SN] WATCHDOG +10s main thread stack:\\n%@", Thread.mainThread.callStackSymbols.joined(separator: "\\n"))\n' +
-        '    }'
-    );
+    const watchdog5 = [
+      '    NSLog("[SN] before startReactNative")',
+      '    DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + 5) {',
+      '      let snSem = DispatchSemaphore(value: 0)',
+      '      DispatchQueue.main.async { snSem.signal() }',
+      '      if snSem.wait(timeout: .now() + 2) == .success {',
+      '        DispatchQueue.main.async {',
+      '          NSLog("[SN] WATCHDOG +5s main RESPONSIVE stack:\\n%@", Thread.callStackSymbols.joined(separator: "\\n"))',
+      '        }',
+      '      } else {',
+      '        NSLog("[SN] WATCHDOG +5s MAIN THREAD UNRESPONSIVE")',
+      '      }',
+      '    }',
+      '    DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + 10) {',
+      '      let snSem = DispatchSemaphore(value: 0)',
+      '      DispatchQueue.main.async { snSem.signal() }',
+      '      if snSem.wait(timeout: .now() + 2) == .success {',
+      '        DispatchQueue.main.async {',
+      '          NSLog("[SN] WATCHDOG +10s main RESPONSIVE stack:\\n%@", Thread.callStackSymbols.joined(separator: "\\n"))',
+      '        }',
+      '      } else {',
+      '        NSLog("[SN] WATCHDOG +10s MAIN THREAD UNRESPONSIVE")',
+      '      }',
+      '    }',
+    ].join('\n');
+    src = src.replace(bindLine, bindLine + '\n' + watchdog5);
 
     // 3) after startReactNative — before the super call.
     const superCall =
