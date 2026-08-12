@@ -23,6 +23,16 @@
             "eas": {
                 "projectId": "0e688584-d597-4110-bef7-13784736463e"
             }
-        }
+        },
+        "plugins": [
+            [
+                "expo-location",
+                {
+                    "locationAlwaysAndWhenInUsePermission": "Scene Nearby uses your location to alert you when you're near a filming location.",
+                    "locationWhenInUsePermission": "Scene Nearby uses your location to show you nearby filming locations."
+                }
+            ],
+            "expo-splash-screen"
+        ]
     }
 }
