@@ -19,8 +19,6 @@ import {
 } from './src/services/StorageService';
 
 // Keep native splash up until the initial JS UI is ready
-console.log('[STARTUP] module loaded, calling preventAutoHideAsync');
-ExpoSplashScreen.preventAutoHideAsync();
 
 export const resetOnboarding = async () => {
   await resetStorageOnboarding();
