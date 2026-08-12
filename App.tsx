@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { StatusBar, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import * as ExpoSplashScreen from 'expo-splash-screen';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { SplashScreen } from './src/screens/Splash/SplashScreen';
 import { OnboardingScreen } from './src/screens/Onboarding/OnboardingScreen';
@@ -47,9 +46,6 @@ const App: React.FC = () => {
       } else {
         setAppPhase('splash');
       }
-      console.log('[STARTUP] about to call hideAsync');
-      await ExpoSplashScreen.hideAsync();
-      console.log('[STARTUP] hideAsync resolved');
     })();
   }, []);
 
