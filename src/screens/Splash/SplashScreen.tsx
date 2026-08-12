@@ -44,12 +44,12 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
         Animated.timing(goldPulse, {
           toValue: 1,
           duration: 2000,
-          useNativeDriver: false,
+          useNativeDriver: true,
         }),
         Animated.timing(goldPulse, {
           toValue: 0,
           duration: 2000,
-          useNativeDriver: false,
+          useNativeDriver: true,
         }),
       ]),
     ).start();

@@ -84,7 +84,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
 
   const onScroll = Animated.event(
     [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-    { useNativeDriver: false },
+    { useNativeDriver: true },
   );
 
   const onViewableItemsChanged = useCallback(
