@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { StatusBar, Text, View } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { SplashScreen } from './src/screens/Splash/SplashScreen';
 import { OnboardingScreen } from './src/screens/Onboarding/OnboardingScreen';
@@ -80,57 +78,57 @@ const App: React.FC = () => {
 
   if (appPhase === 'loading') {
     return (
-      <GestureHandlerRootView style={{ flex: 1, backgroundColor: theme.colors.background }}>
-        <SafeAreaProvider>
+      <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+        <View style={{ flex: 1 }}>
           <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
           <DebugPhaseBanner phase="loading" />
-        </SafeAreaProvider>
-      </GestureHandlerRootView>
+        </View>
+      </View>
     );
   }
 
   if (appPhase === 'splash') {
     return (
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <SafeAreaProvider>
+      <View style={{ flex: 1 }}>
+        <View style={{ flex: 1 }}>
           <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
           <SplashScreen onFinish={handleSplashFinish} />
           <DebugPhaseBanner phase="splash" />
-        </SafeAreaProvider>
-      </GestureHandlerRootView>
+        </View>
+      </View>
     );
   }
 
   if (appPhase === 'onboarding') {
     return (
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <SafeAreaProvider>
+      <View style={{ flex: 1 }}>
+        <View style={{ flex: 1 }}>
           <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
           <OnboardingScreen onComplete={handleOnboardingComplete} />
           <DebugPhaseBanner phase="onboarding" />
-        </SafeAreaProvider>
-      </GestureHandlerRootView>
+        </View>
+      </View>
     );
   }
 
   if (appPhase === 'locationSetup') {
     return (
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <SafeAreaProvider>
+      <View style={{ flex: 1 }}>
+        <View style={{ flex: 1 }}>
           <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
           <LocationSetupScreen
             onboardingData={onboardingResult}
             onComplete={handleLocationSetupComplete}
           />
           <DebugPhaseBanner phase="locationSetup" />
-        </SafeAreaProvider>
-      </GestureHandlerRootView>
+        </View>
+      </View>
     );
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaProvider>
+    <View style={{ flex: 1 }}>
+      <View style={{ flex: 1 }}>
         <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
         <AuthProvider>
           <MagicLinkListener>
@@ -138,8 +136,8 @@ const App: React.FC = () => {
           </MagicLinkListener>
         </AuthProvider>
         <DebugPhaseBanner phase="main" />
-      </SafeAreaProvider>
-    </GestureHandlerRootView>
+      </View>
+    </View>
   );
 };
 
