@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { StatusBar, Text, View } from 'react-native';
+import { StatusBar, Text, View, ScrollView, Pressable } from 'react-native';
+import { installDiagnostics, setPhase, subscribe, getState } from './src/services/diagnostics';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { SplashScreen } from './src/screens/Splash/SplashScreen';
@@ -17,6 +18,10 @@ import {
 } from './src/services/StorageService';
 
 // Keep native splash up until the initial JS UI is ready
+
+// Diagnostics tracer (diagnostic-only): install before App renders so the
+// heartbeat, event log, and fatal overlay cover the whole session.
+installDiagnostics();
 
 export const resetOnboarding = async () => {
   await resetStorageOnboarding();
@@ -42,19 +47,23 @@ const App: React.FC = () => {
       if (complete) {
         const data = await getOnboardingData();
         setOnboardingResult(data);
+        setPhase('main');
         setAppPhase('main');
       } else {
+        setPhase('splash');
         setAppPhase('splash');
       }
     })();
   }, []);
 
   const handleSplashFinish = () => {
+    setPhase('onboarding');
     setAppPhase('onboarding');
   };
 
   const handleOnboardingComplete = async (data: any) => {
     setOnboardingResult(data);
+    setPhase('locationSetup');
     setAppPhase('locationSetup');
   };
 
@@ -62,28 +71,88 @@ const App: React.FC = () => {
     const fullData = { ...onboardingResult, ...locationData };
     await setOnboardingData(fullData);
     await setOnboardingComplete(true);
+    setPhase('main');
     setAppPhase('main');
   };
 
-  // ── Debug banner: proves JS UI mounted ──
-  const DebugPhaseBanner = ({ phase }: { phase: string }) => (
-    <View style={{
-      position: 'absolute', bottom: 20, alignSelf: 'center',
-      backgroundColor: 'rgba(255,50,50,0.85)', paddingHorizontal: 14,
-      paddingVertical: 6, borderRadius: 8, zIndex: 9999,
-    }}>
-      <Text style={{ color: '#fff', fontWeight: '700', fontSize: 12 }}>
-        JS MOUNTED — phase: {phase}
-      </Text>
-    </View>
-  );
+  // ── Diagnostics overlay: live event log + heartbeat + fatal screen ──
+  const DiagnosticsOverlay = () => {
+    const [, forceRender] = useState(0);
+    const [expanded, setExpanded] = useState(false);
+    useEffect(() => subscribe(() => forceRender((t) => t + 1)), []);
+
+    const state = getState();
+    const aliveAgo = state.lastHeartbeat
+      ? Math.max(0, Math.round((Date.now() - state.lastHeartbeat) / 1000))
+      : -1;
+    const lastEvent = state.events[state.events.length - 1];
+
+    if (state.fatal) {
+      return (
+        <View style={{
+          position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: '#7f1d1d', zIndex: 99999, paddingTop: 90, paddingHorizontal: 20,
+        }}>
+          <Text style={{ color: '#fff', fontSize: 22, fontWeight: '800', marginBottom: 8 }}>
+            JS FATAL{state.fatal.isFatal ? ' (fatal)' : ''}
+          </Text>
+          <ScrollView style={{ flex: 1 }}>
+            <Text style={{ color: '#fff', fontSize: 14, marginBottom: 12 }}>{state.fatal.message}</Text>
+            {state.fatal.stack ? (
+              <Text style={{ color: '#fecaca', fontSize: 11, fontFamily: 'monospace' }}>{state.fatal.stack}</Text>
+            ) : null}
+          </ScrollView>
+        </View>
+      );
+    }
+
+    return (
+      <Pressable
+        onPress={() => setExpanded((e) => !e)}
+        style={{
+          position: 'absolute', bottom: 20, left: 10, right: 10, alignSelf: 'center',
+          backgroundColor: expanded ? 'rgba(20,20,20,0.96)' : 'rgba(255,50,50,0.85)',
+          paddingHorizontal: 14, paddingVertical: 6, borderRadius: 8, zIndex: 9999,
+        }}
+      >
+        <Text style={{ color: '#fff', fontWeight: '700', fontSize: 12 }}>
+          JS alive {aliveAgo}s ago · phase: {state.phase} · last: {lastEvent ? lastEvent.tag : '-'}
+        </Text>
+        {expanded && (
+          <View style={{ marginTop: 8, maxHeight: 260 }}>
+            {state.lastSessionSnapshot ? (
+              <View style={{ marginBottom: 8, borderBottomWidth: 1, borderBottomColor: '#555', paddingBottom: 6 }}>
+                <Text style={{ color: '#fbbf24', fontWeight: '800', fontSize: 11 }}>
+                  LAST SESSION END ({new Date(state.lastSessionSnapshot.t).toLocaleTimeString()} · phase{' '}
+                  {state.lastSessionSnapshot.phase} · events {state.lastSessionSnapshot.events.length})
+                </Text>
+                <Text style={{ color: '#fde68a', fontSize: 10, fontFamily: 'monospace' }}>
+                  {state.lastSessionSnapshot.events.join(' → ')}
+                </Text>
+              </View>
+            ) : (
+              <Text style={{ color: '#888', fontSize: 11, marginBottom: 6 }}>No previous-session snapshot.</Text>
+            )}
+            <ScrollView>
+              {state.events.slice(-30).map((e, i) => (
+                <Text key={i} style={{ color: '#ddd', fontSize: 10, fontFamily: 'monospace' }}>
+                  {new Date(e.t).toLocaleTimeString()} {e.tag}
+                  {e.detail ? `: ${e.detail}` : ''}
+                </Text>
+              ))}
+            </ScrollView>
+          </View>
+        )}
+      </Pressable>
+    );
+  };
 
   if (appPhase === 'loading') {
     return (
       <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
         <SafeAreaProvider>
           <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
-          <DebugPhaseBanner phase="loading" />
+          <DiagnosticsOverlay />
         </SafeAreaProvider>
       </View>
     );
@@ -95,7 +164,7 @@ const App: React.FC = () => {
         <SafeAreaProvider>
           <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
           <SplashScreen onFinish={handleSplashFinish} />
-          <DebugPhaseBanner phase="splash" />
+          <DiagnosticsOverlay />
         </SafeAreaProvider>
       </View>
     );
@@ -107,7 +176,7 @@ const App: React.FC = () => {
         <SafeAreaProvider>
           <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
           <OnboardingScreen onComplete={handleOnboardingComplete} />
-          <DebugPhaseBanner phase="onboarding" />
+          <DiagnosticsOverlay />
         </SafeAreaProvider>
       </View>
     );
@@ -122,7 +191,7 @@ const App: React.FC = () => {
             onboardingData={onboardingResult}
             onComplete={handleLocationSetupComplete}
           />
-          <DebugPhaseBanner phase="locationSetup" />
+          <DiagnosticsOverlay />
         </SafeAreaProvider>
       </View>
     );
@@ -137,7 +206,7 @@ const App: React.FC = () => {
             <AppNavigator />
           </MagicLinkListener>
         </AuthProvider>
-        <DebugPhaseBanner phase="main" />
+        <DiagnosticsOverlay />
       </SafeAreaProvider>
     </View>
   );
