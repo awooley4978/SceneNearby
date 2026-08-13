@@ -79,6 +79,7 @@ const App: React.FC = () => {
   const DiagnosticsOverlay = () => {
     const [, forceRender] = useState(0);
     const [expanded, setExpanded] = useState(false);
+    const [showRaw, setShowRaw] = useState(false);
     useEffect(() => subscribe(() => forceRender((t) => t + 1)), []);
 
     const state = getState();
@@ -106,43 +107,82 @@ const App: React.FC = () => {
       );
     }
 
+    if (expanded) {
+      return (
+        <View style={{
+          position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(8,8,8,0.97)', zIndex: 99999, paddingTop: 64,
+          paddingHorizontal: 12, paddingBottom: 12,
+        }}>
+          <Pressable
+            onPress={() => setExpanded(false)}
+            style={{ position: 'absolute', top: 58, right: 16, zIndex: 2 }}
+          >
+            <Text style={{ color: '#fbbf24', fontSize: 15, fontWeight: '800' }}>✕ CLOSE</Text>
+          </Pressable>
+          <Text style={{ color: '#fff', fontSize: 12, fontWeight: '700', marginBottom: 8 }}>
+            SESSION LOG · JS alive {aliveAgo}s ago · phase {state.phase}
+          </Text>
+          <ScrollView style={{ flex: 1 }}>
+            {/* Previous session (persisted — survives termination) */}
+            <Text style={{ color: '#fbbf24', fontWeight: '800', fontSize: 12, marginTop: 4, marginBottom: 4 }}>
+              LAST SESSION END (diag_prev_session — readable on every launch)
+            </Text>
+            {state.lastSessionSnapshot ? (
+              <View style={{ borderLeftWidth: 3, borderLeftColor: '#fbbf24', paddingLeft: 8, marginBottom: 12 }}>
+                <Text style={{ color: '#fde68a', fontSize: 10, fontFamily: 'monospace', marginBottom: 4 }}>
+                  saved {new Date(state.lastSessionSnapshot.t).toLocaleTimeString()} · phase {state.lastSessionSnapshot.phase} · heartbeat {state.lastSessionSnapshot.heartbeat}
+                </Text>
+                {state.lastSessionSnapshot.events.map((ev, i) => (
+                  <Text key={i} style={{ color: '#fde68a', fontSize: 10, fontFamily: 'monospace' }}>• {ev}</Text>
+                ))}
+                <Pressable onPress={() => setShowRaw((r) => !r)} style={{ marginTop: 4 }}>
+                  <Text style={{ color: '#93c5fd', fontSize: 11, fontWeight: '700' }}>
+                    {showRaw ? 'HIDE RAW JSON' : 'SHOW RAW JSON'}
+                  </Text>
+                </Pressable>
+                {showRaw && (
+                  <Text selectable style={{ color: '#93c5fd', fontSize: 9, fontFamily: 'monospace', marginTop: 4 }}>
+                    {JSON.stringify(state.lastSessionSnapshot, null, 2)}
+                  </Text>
+                )}
+              </View>
+            ) : (
+              <Text style={{ color: '#888', fontSize: 11, marginBottom: 12 }}>No previous-session snapshot (first launch on this install).</Text>
+            )}
+
+            {/* Live session */}
+            <Text style={{ color: '#4ade80', fontWeight: '800', fontSize: 12, marginBottom: 4 }}>
+              LIVE ({state.events.length} events)
+            </Text>
+            {state.events.slice(-40).map((e, i) => (
+              <Text key={i} style={{ color: '#ddd', fontSize: 10, fontFamily: 'monospace' }}>
+                {new Date(e.t).toLocaleTimeString()} {e.tag}
+                {e.detail ? `: ${e.detail}` : ''}
+              </Text>
+            ))}
+            <Text style={{ color: '#555', fontSize: 10, marginTop: 12, marginBottom: 20 }}>
+              Tip: the LAST SESSION END block above is the final persisted snapshot from the previous run —
+              it shows the last ~10 events before termination. If the app died with no red JS FATAL screen,
+              the failure is native-side (freeze/termination), not a catchable JS error.
+            </Text>
+          </ScrollView>
+        </View>
+      );
+    }
+
     return (
       <Pressable
-        onPress={() => setExpanded((e) => !e)}
+        onPress={() => setExpanded(true)}
         style={{
           position: 'absolute', bottom: 20, left: 10, right: 10, alignSelf: 'center',
-          backgroundColor: expanded ? 'rgba(20,20,20,0.96)' : 'rgba(255,50,50,0.85)',
+          backgroundColor: 'rgba(255,50,50,0.85)',
           paddingHorizontal: 14, paddingVertical: 6, borderRadius: 8, zIndex: 9999,
         }}
       >
         <Text style={{ color: '#fff', fontWeight: '700', fontSize: 12 }}>
-          JS alive {aliveAgo}s ago · phase: {state.phase} · last: {lastEvent ? lastEvent.tag : '-'}
+          JS alive {aliveAgo}s ago · phase: {state.phase} · last: {lastEvent ? lastEvent.tag : '-'} · tap for log
         </Text>
-        {expanded && (
-          <View style={{ marginTop: 8, maxHeight: 260 }}>
-            {state.lastSessionSnapshot ? (
-              <View style={{ marginBottom: 8, borderBottomWidth: 1, borderBottomColor: '#555', paddingBottom: 6 }}>
-                <Text style={{ color: '#fbbf24', fontWeight: '800', fontSize: 11 }}>
-                  LAST SESSION END ({new Date(state.lastSessionSnapshot.t).toLocaleTimeString()} · phase{' '}
-                  {state.lastSessionSnapshot.phase} · events {state.lastSessionSnapshot.events.length})
-                </Text>
-                <Text style={{ color: '#fde68a', fontSize: 10, fontFamily: 'monospace' }}>
-                  {state.lastSessionSnapshot.events.join(' → ')}
-                </Text>
-              </View>
-            ) : (
-              <Text style={{ color: '#888', fontSize: 11, marginBottom: 6 }}>No previous-session snapshot.</Text>
-            )}
-            <ScrollView>
-              {state.events.slice(-30).map((e, i) => (
-                <Text key={i} style={{ color: '#ddd', fontSize: 10, fontFamily: 'monospace' }}>
-                  {new Date(e.t).toLocaleTimeString()} {e.tag}
-                  {e.detail ? `: ${e.detail}` : ''}
-                </Text>
-              ))}
-            </ScrollView>
-          </View>
-        )}
       </Pressable>
     );
   };

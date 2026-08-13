@@ -115,6 +115,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
   };
 
   const handleComplete = () => {
+    logEvent('letsGoPressed');
     onComplete({
       travelStyle,
       contentLoves,
