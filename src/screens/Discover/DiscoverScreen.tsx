@@ -450,6 +450,7 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
     <View style={[styles.container, { paddingTop: Math.max(insets.top, 56) + 8 }]}>
       {loading ? (
         <Animated.View style={styles.listContent}>
+          <Text style={styles.loadingText}>Loading locations…</Text>
           <CardSkeleton />
           <CardSkeleton />
           <CardSkeleton />
@@ -539,6 +540,14 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background },
+  loadingText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: theme.colors.textSecondary,
+    textAlign: 'center',
+    marginTop: 24,
+    marginBottom: 12,
+  },
   listContent: { paddingHorizontal: 16, paddingBottom: 100 },
   searchBar: {
     flexDirection: 'row', alignItems: 'center', backgroundColor: theme.colors.surface2, borderRadius: 12,
