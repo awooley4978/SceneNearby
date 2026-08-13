@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Image, ImageBackground,
   View,
   Text,
@@ -11,6 +12,35 @@ import { Image, ImageBackground,
 import { theme } from '../../theme';
 import { DISCOVERY_FREQUENCIES, STORAGE_KEYS } from '../../models';
 import type { DiscoveryFrequency } from '../../models';
+
+// Additive on-device tracer for EAS Genre-page failures. It persists the prior
+// session snapshot so force-quits/crashes remain diagnosable on next launch.
+const TRACE_KEY = '@scene-nearby/genre-tracer:last-session';
+const GenreTracer: React.FC<{ page: number }> = ({ page }) => {
+  const [snapshot, setSnapshot] = useState<string>('');
+  const heartbeat = useRef(0);
+  const events = useRef<string[]>([]);
+  const started = useRef(Date.now());
+  const record = useCallback(async (event: string) => {
+    const item = `${new Date().toISOString()} ${event}`;
+    events.current = [...events.current.slice(-7), item];
+    const value = JSON.stringify({ page, heartbeat: heartbeat.current, events: events.current, updatedAt: Date.now() });
+    await AsyncStorage.setItem(TRACE_KEY, value);
+    setSnapshot(value);
+  }, [page]);
+  React.useEffect(() => {
+    AsyncStorage.getItem(TRACE_KEY).then((value) => value && setSnapshot(`previous:${value}`)).catch(() => undefined);
+    void record(`session-start page=${page}`);
+    const timer = setInterval(() => { heartbeat.current += 1; void record(`heartbeat=${heartbeat.current} page=${page}`); }, 1500);
+    return () => clearInterval(timer);
+  }, [record]);
+  React.useEffect(() => { void record(`page-visible=${page}`); }, [page, record]);
+  const parsed = snapshot.replace(/^previous:/, '');
+  return <View pointerEvents="none" style={styles.tracerOverlay}>
+    <Text style={styles.tracerText}>TRACE page={page} ♥{heartbeat.current} {snapshot.startsWith('previous:') ? 'PREVIOUS SESSION' : 'LIVE'}</Text>
+    {snapshot.startsWith('previous:') && <Text style={styles.tracerDetail}>{parsed.slice(0, 100)}</Text>}
+  </View>;
+};
 
 const { width, height } = Dimensions.get('window');
 
@@ -373,6 +403,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
 
   return (
     <View style={styles.container}>
+      <GenreTracer page={currentPage} />
       <FlatList
         ref={flatListRef}
         data={pages}
@@ -394,6 +425,9 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background },
+  tracerOverlay: { position: 'absolute', top: 4, left: 8, right: 8, zIndex: 9999, backgroundColor: 'rgba(130,20,20,0.88)', padding: 5, borderRadius: 4 },
+  tracerText: { color: '#fff', fontSize: 10, fontWeight: '700' },
+  tracerDetail: { color: '#ffd0d0', fontSize: 8, marginTop: 2 },
   pageContainer: { width, flex: 1, justifyContent: 'center', alignItems: 'center' },
   page: { width, flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 32 },
 
