@@ -27,9 +27,15 @@ interface StatCard {
 
 export const AdminDashboardScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { user } = useAuth();
-  const { locations: allLocations } = useAllLocations();
+  const {
+    locations: allLocations,
+    error: locationsError,
+    refetch: refetchLocations,
+  } = useAllLocations();
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [statsError, setStatsError] = useState<string | null>(null);
+  const [retryTick, setRetryTick] = useState(0);
 
   const isAdmin = user?.email && ADMIN_EMAILS.includes(user.email);
 
@@ -40,14 +46,20 @@ export const AdminDashboardScreen: React.FC<{ navigation: any }> = ({ navigation
     }
     let cancelled = false;
     // Compute stats from the location list (arrives via useAllLocations) plus
-    // the pending-moderation count from the API. Re-runs when locations load.
+    // the pending-moderation count from the API. Re-runs when locations load
+    // or when the user hits Retry.
     apiClient
       .getStats()
-      .then((stats) => {
-        if (!cancelled) setStats(computeAdminStats(stats?.pending_moderation ?? 0, allLocations));
+      .then((apiStats) => {
+        if (cancelled) return;
+        setStats(computeAdminStats(apiStats?.pending_moderation ?? 0, allLocations));
+        setStatsError(null);
       })
       .catch(() => {
-        if (!cancelled) setStats(computeAdminStats(0, allLocations));
+        if (cancelled) return;
+        // Keep last-known-good numbers; a transient failure must never read as an empty database.
+        setStats((prev) => prev ?? computeAdminStats(0, allLocations));
+        setStatsError('Could not reach the server for live stats. Showing last-known-good numbers.');
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -55,7 +67,11 @@ export const AdminDashboardScreen: React.FC<{ navigation: any }> = ({ navigation
     return () => {
       cancelled = true;
     };
-  }, [isAdmin, allLocations]);
+  }, [isAdmin, allLocations, retryTick]);
+  const handleRetry = () => {
+    refetchLocations();
+    setRetryTick((t) => t + 1);
+  };
 
   if (!isAdmin) {
     return (
@@ -71,9 +87,24 @@ export const AdminDashboardScreen: React.FC<{ navigation: any }> = ({ navigation
   }
 
   if (loading || !stats) {
+    if (loading) {
+      return (
+        <View style={styles.centered}>
+          <ActivityIndicator size="large" color={theme.colors.gold} />
+        </View>
+      );
+    }
+    // No data at all — explicit error + Retry, never a fake zero grid.
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color={theme.colors.gold} />
+        <Text style={styles.lockEmoji}>📡</Text>
+        <Text style={styles.deniedTitle}>Couldn't load the dashboard</Text>
+        <Text style={styles.deniedText}>
+          {locationsError || statsError || 'Something went wrong while loading stats.'}
+        </Text>
+        <TouchableOpacity style={styles.retryButton} onPress={handleRetry}>
+          <Text style={styles.retryButtonText}>Retry</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -125,6 +156,16 @@ export const AdminDashboardScreen: React.FC<{ navigation: any }> = ({ navigation
           <Text style={styles.headerSub}>Scene Nearby content health</Text>
         </View>
 
+      {(locationsError || statsError) && (
+        <View style={styles.banner}>
+          <Text style={styles.bannerText}>
+            ⚠️ {locationsError ? `Couldn't load locations: ${locationsError}` : statsError}
+          </Text>
+          <TouchableOpacity style={styles.retryButton} onPress={handleRetry}>
+            <Text style={styles.retryButtonText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      )}
       {/* Completion bar */}
       <View style={styles.completionSection}>
         <View style={styles.completionHeader}>
@@ -290,6 +331,17 @@ const styles = StyleSheet.create({
   deniedTitle: { fontSize: 22, fontWeight: '700', color: theme.colors.textPrimary, marginBottom: 8 },
   deniedText: { fontSize: 14, color: theme.colors.textSecondary, textAlign: 'center' },
   deniedEmail: { fontSize: 12, color: theme.colors.textTertiary, marginTop: 12 },
+  banner: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    backgroundColor: theme.colors.surface2, borderWidth: 1, borderColor: '#F59E0B' + '66',
+    borderRadius: 12, paddingHorizontal: 14, paddingVertical: 10, marginBottom: 16,
+  },
+  bannerText: { flex: 1, fontSize: 12, color: theme.colors.textPrimary, marginRight: 12, lineHeight: 16 },
+  retryButton: {
+    paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8, backgroundColor: theme.colors.gold,
+    alignSelf: 'center', marginTop: 12,
+  },
+  retryButtonText: { fontSize: 13, fontWeight: '700', color: theme.colors.black },
 
   // Footer
   footer: { alignItems: 'center', paddingVertical: 24 },
