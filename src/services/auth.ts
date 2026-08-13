@@ -9,7 +9,7 @@ import {
   signInAnonymously as firebaseSignInAnonymously,
   User,
   ActionCodeSettings,
-} from 'firebase/auth';
+} from '@firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { auth } from './firebase';
 

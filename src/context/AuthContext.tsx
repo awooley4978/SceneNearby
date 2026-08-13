@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { User } from 'firebase/auth';
+import { User } from '@firebase/auth';
 import {
   onAuthChange,
   signInWithPassword,

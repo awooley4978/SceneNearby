@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { StatusBar, Text, View } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import * as ExpoSplashScreen from 'expo-splash-screen';
 import { AppNavigator } from './src/navigation/AppNavigator';
+import { ErrorBoundary } from './src/components/ErrorBoundary';
 import { SplashScreen } from './src/screens/Splash/SplashScreen';
 import { OnboardingScreen } from './src/screens/Onboarding/OnboardingScreen';
 import { LocationSetupScreen } from './src/screens/Onboarding/LocationSetupScreen';
@@ -19,8 +18,6 @@ import {
 } from './src/services/StorageService';
 
 // Keep native splash up until the initial JS UI is ready
-console.log('[STARTUP] module loaded, calling preventAutoHideAsync');
-ExpoSplashScreen.preventAutoHideAsync();
 
 export const resetOnboarding = async () => {
   await resetStorageOnboarding();
@@ -49,9 +46,6 @@ const App: React.FC = () => {
       } else {
         setAppPhase('splash');
       }
-      console.log('[STARTUP] about to call hideAsync');
-      await ExpoSplashScreen.hideAsync();
-      console.log('[STARTUP] hideAsync resolved');
     })();
   }, []);
 
@@ -86,42 +80,42 @@ const App: React.FC = () => {
 
   if (appPhase === 'loading') {
     return (
-      <GestureHandlerRootView style={{ flex: 1, backgroundColor: theme.colors.background }}>
+      <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
         <SafeAreaProvider>
           <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
           <DebugPhaseBanner phase="loading" />
         </SafeAreaProvider>
-      </GestureHandlerRootView>
+      </View>
     );
   }
 
   if (appPhase === 'splash') {
     return (
-      <GestureHandlerRootView style={{ flex: 1 }}>
+      <View style={{ flex: 1 }}>
         <SafeAreaProvider>
           <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
           <SplashScreen onFinish={handleSplashFinish} />
           <DebugPhaseBanner phase="splash" />
         </SafeAreaProvider>
-      </GestureHandlerRootView>
+      </View>
     );
   }
 
   if (appPhase === 'onboarding') {
     return (
-      <GestureHandlerRootView style={{ flex: 1 }}>
+      <View style={{ flex: 1 }}>
         <SafeAreaProvider>
           <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
           <OnboardingScreen onComplete={handleOnboardingComplete} />
           <DebugPhaseBanner phase="onboarding" />
         </SafeAreaProvider>
-      </GestureHandlerRootView>
+      </View>
     );
   }
 
   if (appPhase === 'locationSetup') {
     return (
-      <GestureHandlerRootView style={{ flex: 1 }}>
+      <View style={{ flex: 1 }}>
         <SafeAreaProvider>
           <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
           <LocationSetupScreen
@@ -130,22 +124,24 @@ const App: React.FC = () => {
           />
           <DebugPhaseBanner phase="locationSetup" />
         </SafeAreaProvider>
-      </GestureHandlerRootView>
+      </View>
     );
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <View style={{ flex: 1 }}>
       <SafeAreaProvider>
         <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
         <AuthProvider>
           <MagicLinkListener>
-            <AppNavigator />
+            <ErrorBoundary>
+              <AppNavigator />
+            </ErrorBoundary>
           </MagicLinkListener>
         </AuthProvider>
         <DebugPhaseBanner phase="main" />
       </SafeAreaProvider>
-    </GestureHandlerRootView>
+    </View>
   );
 };
 

@@ -1,7 +1,19 @@
 // ── API Client for Nearby API ──
-// Base URL for the API server (localhost in dev, configurable for production)
+// Base URL for the API server. Override at build time with EXPO_PUBLIC_API_URL
+// (e.g. a deployed API or a tunnel URL). Defaults to localhost:3001, which works
+// for the iOS simulator (shares the host network) and local dev.
 
-const BASE_URL = 'http://localhost:3001';
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3001';
+// Hard timeout so a missing/unreachable API surfaces as a visible error state
+// instead of an endless loading state (the black-screen symptom).
+const FETCH_TIMEOUT_MS = 10000;
+// The staging edge gzip-compresses responses for clients that advertise gzip
+// (RN's NSURLSession sends `Accept-Encoding: gzip, deflate, br`). RN's iOS
+// fetch can hang indefinitely on gzip HTTP/2 bodies without Content-Length
+// (a known RN networking failure), leaving screens stuck in loading forever.
+// Sending `identity` keeps responses uncompressed — verified against the live
+// edge (no content-encoding, payload parses normally).
+const FETCH_HEADERS = { 'Accept-Encoding': 'identity' };
 
 export interface ApiLocation {
   id: string;
@@ -49,6 +61,8 @@ export interface ApiLocationSummary {
   country: string;
   imageUrl: string | null;
   focalPoint: { x: number; y: number } | null;
+  /** Present in full payloads; summary mode omits it (treated as false). */
+  isMovie?: boolean;
   distance?: number;
 }
 
@@ -64,12 +78,38 @@ class ApiClient {
   }
 
   private async fetchJson<T>(path: string): Promise<T> {
-    const response = await fetch(`${this.baseUrl}${path}`);
-    if (!response.ok) {
-      const errorBody = await response.json().catch(() => ({ error: 'Request failed' }));
-      throw new Error(errorBody.error || `HTTP ${response.status}`);
+    const controller = new AbortController();
+    // AbortController alone is not enough on RN/iOS (the abort can fail to
+    // reject an already-stalled request), so race the fetch against a hard
+    // timeout that always rejects. Both fire together on timeout.
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const timedOut = new Promise<never>((_, reject) => {
+      timer = setTimeout(() => {
+        controller.abort();
+        reject(new Error(`Request timed out after ${Math.round(FETCH_TIMEOUT_MS / 1000)}s — is the API server running at ${this.baseUrl}?`));
+      }, FETCH_TIMEOUT_MS);
+    });
+    try {
+      let response: Response;
+      try {
+        response = await Promise.race([
+          fetch(`${this.baseUrl}${path}`, { signal: controller.signal, headers: FETCH_HEADERS }),
+          timedOut,
+        ]);
+      } catch (err) {
+        if (controller.signal.aborted) {
+          throw new Error(`Request timed out after ${Math.round(FETCH_TIMEOUT_MS / 1000)}s — is the API server running at ${this.baseUrl}?`);
+        }
+        throw new Error(`Could not reach API (${this.baseUrl}): ${err instanceof Error ? err.message : String(err)}`);
+      }
+      if (!response.ok) {
+        const errorBody = await response.json().catch(() => ({ error: `Request failed (HTTP ${response.status})` }));
+        throw new Error(errorBody.error || `HTTP ${response.status}`);
+      }
+      return response.json();
+    } finally {
+      if (timer) clearTimeout(timer);
     }
-    return response.json();
   }
 
   /** Paginated list of locations */
@@ -138,6 +178,11 @@ class ApiClient {
     return this.fetchJson<ApiLocation[]>(
       `/api/locations/search?q=${encodeURIComponent(q)}&type=${type}`,
     );
+  }
+
+  /** Moderation stats */
+  async getStats(): Promise<{ total_submissions: number; pending_moderation: number }> {
+    return this.fetchJson(`/api/stats`);
   }
 }
 

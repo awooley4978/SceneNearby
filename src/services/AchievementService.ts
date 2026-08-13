@@ -42,9 +42,9 @@ export interface CompletedMovie {
 
 // ── Internal helpers ──
 
-function groupLocationsByMovie(): Map<string, { ids: string[]; total: number }> {
+function groupLocationsByMovie(locations: Array<{ movieOrShow: string; id: string }> = []): Map<string, { ids: string[]; total: number }> {
   const map = new Map<string, { ids: string[]; total: number }>();
-  for (const loc of allLocations) {
+  for (const loc of locations) {
     const movie = loc.movieOrShow;
     if (!map.has(movie)) {
       map.set(movie, { ids: [], total: 0 });

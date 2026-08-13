@@ -13,7 +13,7 @@ export interface AdminStats {
   missingDescriptionItems: FilmingLocation[];
 }
 
-export function computeAdminStats(pendingPhotoCount: number = 0): AdminStats {
+export function computeAdminStats(pendingPhotoCount: number, allLocations: FilmingLocation[]): AdminStats {
   const total = allLocations.length;
 
   const missingPhotoItems = allLocations.filter((l) => !l.imageUrl);

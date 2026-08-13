@@ -53,7 +53,9 @@ function toFilmingLocation(api: ApiLocation | ApiLocationSummary): FilmingLocati
     quote: (api as ApiLocation).quote || null,
     quoteAttribution: (api as ApiLocation).quoteAttribution || null,
     thenAndNow: (api as ApiLocation).thenAndNow || null,
-    isMovie: api.isMovie,
+    // Summary payloads omit isMovie; treat missing as false rather than
+    // leaving the field undefined (movie/show filters then stay type-safe).
+    isMovie: Boolean(api.isMovie),
     distanceFromUser: api.distance,
     actors: (api as ApiLocation).actors || [],
     imageUrl: api.imageUrl || undefined,
