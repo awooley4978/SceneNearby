@@ -250,13 +250,11 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
                     ]}
                     onPress={() => toggleContentLove(item.label)}
                   >
-                    <ImageBackground
-                      source={GENRE_IMAGES[item.label]}
-                      style={styles.genreImage}
-                      imageStyle={styles.genreImageStyle}
+                    <View
+                      style={[styles.genreImage, { backgroundColor: GENRE_GRADIENTS[item.label][0] }]}
                     >
                       <View style={styles.genreOverlay} />
-                    </ImageBackground>
+                    </View>
                     <Text style={[styles.genreLabel, active && styles.genreLabelActive]}>
                       {item.label}
                     </Text>
