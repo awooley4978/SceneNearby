@@ -1,19 +1,6 @@
-import React, { useEffect, useRef } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Animated,
-  StatusBar,
-  Dimensions,
-} from 'react-native';
+import React, { useEffect } from 'react';
+import { StatusBar, StyleSheet, Text, View } from 'react-native';
 import { theme } from '../../theme';
-
-const { width, height } = Dimensions.get('window');
-
-interface SplashScreenProps {
-  onFinish: () => void;
-}
 
 const SPARKLE_POSITIONS = [
   { x: -40, y: -40, size: 4 },
@@ -26,161 +13,26 @@ const SPARKLE_POSITIONS = [
   { x: 60, y: 10, size: 4 },
 ];
 
-export const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
-  const logoScale = useRef(new Animated.Value(0.3)).current;
-  const logoOpacity = useRef(new Animated.Value(0)).current;
-  const taglineOpacity = useRef(new Animated.Value(0)).current;
-  const subtitleOpacity = useRef(new Animated.Value(0)).current;
-  const goldPulse = useRef(new Animated.Value(0)).current;
-  const sparkleAnims = useRef(SPARKLE_POSITIONS.map(() => new Animated.Value(0))).current;
-  const tapPulse = useRef(new Animated.Value(0)).current;
-  const taglinePulse = useRef(new Animated.Value(0)).current;
-  const bottomSpring = useRef(new Animated.Value(0)).current;
-
+// STATIC splash: the animated variant (5× Animated.loop + entrance sequence)
+// crashes Release on Fabric regardless of driver (proven: js-chunk2b2 JS-driver
+// and js-chunk2b3 native-driver both fail; static js-chunk2b3b/cee47c9 progresses).
+// Keeps the full branded layout frozen at its final state; restores motion later
+// once the crash construct is isolated.
+export const SplashScreen: React.FC<{ onFinish: () => void }> = ({ onFinish }) => {
   useEffect(() => {
-    // Gold glow pulse loop
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(goldPulse, {
-          toValue: 1,
-          duration: 2000,
-          useNativeDriver: false,
-        }),
-        Animated.timing(goldPulse, {
-          toValue: 0,
-          duration: 2000,
-          useNativeDriver: false,
-        }),
-      ]),
-    ).start();
-
-    // Sparkle animations — staggered
-    sparkleAnims.forEach((anim, i) => {
-      Animated.loop(
-        Animated.sequence([
-          Animated.delay(i * 400),
-          Animated.timing(anim, {
-            toValue: 1,
-            duration: 600,
-            useNativeDriver: true,
-          }),
-          Animated.timing(anim, {
-            toValue: 0,
-            duration: 600,
-            useNativeDriver: true,
-          }),
-          Animated.delay(2000),
-        ]),
-      ).start();
-    });
-
-    // Tagline pulse loop
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(taglinePulse, {
-          toValue: 1,
-          duration: 1500,
-          useNativeDriver: true,
-        }),
-        Animated.timing(taglinePulse, {
-          toValue: 0,
-          duration: 1500,
-          useNativeDriver: true,
-        }),
-      ]),
-    ).start();
-
-    // Bottom dots spring entrance
-    Animated.spring(bottomSpring, {
-      toValue: 1,
-      damping: 12,
-      stiffness: 100,
-      useNativeDriver: true,
-    }).start();
-
-    // "Tap to begin" pulse
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(tapPulse, {
-          toValue: 1,
-          duration: 1200,
-          useNativeDriver: true,
-        }),
-        Animated.timing(tapPulse, {
-          toValue: 0,
-          duration: 1200,
-          useNativeDriver: true,
-        }),
-      ]),
-    ).start();
-
-    // Main entrance sequence
-    Animated.sequence([
-      Animated.parallel([
-        Animated.spring(logoScale, {
-          toValue: 1,
-          tension: 40,
-          friction: 4,
-          useNativeDriver: true,
-        }),
-        Animated.timing(logoOpacity, {
-          toValue: 1,
-          duration: 600,
-          useNativeDriver: true,
-        }),
-      ]),
-      Animated.timing(taglineOpacity, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true,
-      }),
-      Animated.timing(subtitleOpacity, {
-        toValue: 1,
-        duration: 400,
-        useNativeDriver: true,
-      }),
-      Animated.delay(1500),
-    ]).start(() => {
-      onFinish();
-    });
-  }, []);
-
-  const goldGlowOpacity = goldPulse.interpolate({
-    inputRange: [0, 0.5, 1],
-    outputRange: [0.2, 0.5, 0.2],
-  });
-
+    const t = setTimeout(onFinish, 2200);
+    return () => clearTimeout(t);
+  }, [onFinish]);
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
-
       {/* Logo area */}
-      <Animated.View
-        style={[
-          styles.logoContainer,
-          {
-            opacity: logoOpacity,
-            transform: [{ scale: logoScale }],
-          },
-        ]}
-      >
+      <View style={[styles.logoContainer, { opacity: 1, transform: [{ scale: 1 }] }]}>
         {/* Gold glow ring */}
-        <Animated.View
-          style={[
-            styles.glowRing,
-            {
-              opacity: goldGlowOpacity,
-              transform: [{ scale: goldPulse.interpolate({
-                inputRange: [0, 1],
-                outputRange: [1, 1.08],
-              }) }],
-            },
-          ]}
-        />
-
+        <View style={[styles.glowRing, { opacity: 0.5, transform: [{ scale: 1.04 }] }]} />
         {/* Sparkles around logo */}
         {SPARKLE_POSITIONS.map((pos, i) => (
-          <Animated.View
+          <View
             key={i}
             style={[
               styles.sparkle,
@@ -190,85 +42,46 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
                 borderRadius: pos.size,
                 left: pos.x,
                 top: pos.y,
-                opacity: sparkleAnims[i],
-                transform: [{
-                  scale: sparkleAnims[i].interpolate({
-                    inputRange: [0, 0.5, 1],
-                    outputRange: [0.5, 1.5, 0.5],
-                  }),
-                }],
+                opacity: 1,
+                transform: [{ scale: 1 }],
               },
             ]}
           />
         ))}
-
         <View style={styles.logoCircle}>
           <Text style={styles.logoIcon}>🎬</Text>
         </View>
         <Text style={styles.appName}>Scene Nearby</Text>
-      </Animated.View>
-
+      </View>
       {/* Tagline */}
-      <Animated.View style={[styles.taglineContainer, { opacity: taglineOpacity }]}>
-        <Animated.Text
-          style={[
-            styles.tagline,
-            {
-              transform: [{
-                scale: taglinePulse.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [1, 1.02],
-                }),
-              }],
-            },
-          ]}
-        >
+      <View style={styles.taglineContainer}>
+        <Text style={styles.tagline}>
           Discover the movies{'\n'}
           <Text style={styles.taglineGold}>playing all around you</Text>
-        </Animated.Text>
-      </Animated.View>
-
+        </Text>
+      </View>
       {/* Subtitle */}
-      <Animated.View style={[styles.subtitleContainer, { opacity: subtitleOpacity }]}>
+      <View style={styles.subtitleContainer}>
         <Text style={styles.subtitle}>
           Turn your everyday surroundings into{'\n'}
           a treasure hunt of cinematic history
         </Text>
-      </Animated.View>
-
-      {/* "Tap to begin" pulsing indicator */}
-      <Animated.View
-        style={[
-          styles.tapIndicator,
-          {
-            opacity: tapPulse.interpolate({
-              inputRange: [0, 0.5, 1],
-              outputRange: [0.3, 1, 0.3],
-            }),
-          },
-        ]}
-      >
+      </View>
+      {/* "Tap to begin" indicator */}
+      <View style={[styles.tapIndicator, { opacity: 0.6 }]}>
         <View style={styles.tapLine} />
         <Text style={styles.tapText}>Tap to begin</Text>
         <View style={styles.tapLine} />
-      </Animated.View>
-
+      </View>
       {/* Bottom decoration */}
-      <Animated.View style={[styles.bottomRow, {
-        opacity: bottomSpring,
-        transform: [{ translateY: bottomSpring.interpolate({
-          inputRange: [0, 1],
-          outputRange: [20, 0],
-        }) }],
-      }]}>
+      <View style={styles.bottomRow}>
         <View style={styles.goldDot} />
         <View style={styles.goldLine} />
         <View style={styles.goldDot} />
-      </Animated.View>
+      </View>
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
