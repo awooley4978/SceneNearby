@@ -11,6 +11,7 @@ import { theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
 import { computeAdminStats, type AdminStats } from '../../services/AdminService';
 import { useAllLocations } from '../../services/hooks';
+import { apiClient } from '../../services/api';
 
 const ADMIN_EMAILS = ['awooley4978@gmail.com', 'scenenearbysupport@gmail.com'];
 
@@ -37,12 +38,24 @@ export const AdminDashboardScreen: React.FC<{ navigation: any }> = ({ navigation
       setLoading(false);
       return;
     }
-    // Try to fetch pending photo count from Turso, fall back to 0
-    fetchPendingPhotos()
-      .then((count) => setStats(computeAdminStats(count)))
-      .catch(() => setStats(computeAdminStats(0)))
-      .finally(() => setLoading(false));
-  }, [isAdmin]);
+    let cancelled = false;
+    // Compute stats from the location list (arrives via useAllLocations) plus
+    // the pending-moderation count from the API. Re-runs when locations load.
+    apiClient
+      .getStats()
+      .then((stats) => {
+        if (!cancelled) setStats(computeAdminStats(stats?.pending_moderation ?? 0, allLocations));
+      })
+      .catch(() => {
+        if (!cancelled) setStats(computeAdminStats(0, allLocations));
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [isAdmin, allLocations]);
 
   if (!isAdmin) {
     return (
@@ -169,19 +182,6 @@ export const AdminDashboardScreen: React.FC<{ navigation: any }> = ({ navigation
     </View>
   );
 };
-
-const NEARBY_API = 'http://localhost:3000';
-
-async function fetchPendingPhotos(): Promise<number> {
-  try {
-    const res = await fetch(`${NEARBY_API}/api/stats`);
-    if (!res.ok) return 0;
-    const data = await res.json();
-    return data?.pending_moderation ?? 0;
-  } catch {
-    return 0;
-  }
-}
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background },

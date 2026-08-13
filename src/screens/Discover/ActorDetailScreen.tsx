@@ -15,6 +15,7 @@ export const ActorDetailScreen: React.FC<{ route: any; navigation: any }> = ({
   const insets = useSafeAreaInsets();
   const { locations } = useLocationsByActor(actorName);
   const { actorGroups } = useActorGroups();
+  const { movieGroups } = useMovieGroups();
   const group = actorGroups.find((g) => g.name === actorName);
 
   if (!group || locations.length === 0) {

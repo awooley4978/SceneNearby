@@ -9,6 +9,7 @@ import {
   ScrollView,
   RefreshControl,
   Animated,
+  ActivityIndicator,
   Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -59,7 +60,7 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
   const prevQuery = useRef('');
 
   // ── API data ──
-  const { locations: allLocations, loading, error } = useAllLocations();
+  const { locations: allLocations, loading, error, refetch } = useAllLocations();
   const { actorGroups } = useActorGroups();
 
   // Derived helpers that used to come from sampleData
@@ -449,18 +450,21 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
   return (
     <View style={[styles.container, { paddingTop: Math.max(insets.top, 56) + 8 }]}>
       {loading ? (
-        <Animated.View style={styles.listContent}>
+        <View style={styles.listContent}>
+          <ActivityIndicator size="large" color={theme.colors.gold} style={styles.loadingSpinner} />
           <Text style={styles.loadingText}>Loading locations…</Text>
           <CardSkeleton />
           <CardSkeleton />
           <CardSkeleton />
-        </Animated.View>
+        </View>
       ) : error ? (
         <View style={styles.listContent}>
           <EmptyState
             emoji="⚠️"
             title="Couldn't load locations"
             subtitle={error}
+            actionLabel="Try Again"
+            onAction={refetch}
           />
         </View>
       ) : allLocations.length === 0 ? (
@@ -540,6 +544,7 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background },
+  loadingSpinner: { marginTop: 24, marginBottom: 8 },
   loadingText: {
     fontSize: 14,
     fontWeight: '600',

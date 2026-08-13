@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StatusBar, Text, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppNavigator } from './src/navigation/AppNavigator';
+import { ErrorBoundary } from './src/components/ErrorBoundary';
 import { SplashScreen } from './src/screens/Splash/SplashScreen';
 import { OnboardingScreen } from './src/screens/Onboarding/OnboardingScreen';
 import { LocationSetupScreen } from './src/screens/Onboarding/LocationSetupScreen';
@@ -35,8 +36,7 @@ const App: React.FC = () => {
   useEffect(() => {
     (async () => {
       console.log('[STARTUP] useEffect running');
-      // SPLASH_BISECT KNOB: force full flow for e2e validation
-      const complete = false; // await getOnboardingComplete();
+      const complete = await getOnboardingComplete();
       const nextPhase = complete ? 'main' : 'splash';
       console.log(`[STARTUP] onboarding complete=%s → phase=%s`, complete, nextPhase);
       if (complete) {
@@ -134,7 +134,9 @@ const App: React.FC = () => {
         <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
         <AuthProvider>
           <MagicLinkListener>
-            <AppNavigator />
+            <ErrorBoundary>
+              <AppNavigator />
+            </ErrorBoundary>
           </MagicLinkListener>
         </AuthProvider>
         <DebugPhaseBanner phase="main" />
