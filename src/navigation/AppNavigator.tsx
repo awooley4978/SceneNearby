@@ -191,12 +191,12 @@ const CustomTabBar: React.FC<{
         Animated.timing(glowAnims[index], {
           toValue: 1,
           duration: 150,
-          useNativeDriver: false,
+          useNativeDriver: true,
         }),
         Animated.timing(glowAnims[index], {
           toValue: 0,
           duration: 300,
-          useNativeDriver: false,
+          useNativeDriver: true,
         }),
       ]).start();
 
