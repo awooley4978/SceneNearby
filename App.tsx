@@ -35,7 +35,8 @@ const App: React.FC = () => {
   useEffect(() => {
     (async () => {
       console.log('[STARTUP] useEffect running');
-      const complete = await getOnboardingComplete();
+      // SPLASH_BISECT KNOB: force splash for splash-render testing
+      const complete = false; // await getOnboardingComplete();
       const nextPhase = complete ? 'main' : 'splash';
       console.log(`[STARTUP] onboarding complete=%s → phase=%s`, complete, nextPhase);
       if (complete) {
