@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StatusBar, Text, View } from 'react-native';
+import { StatusBar, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { ErrorBoundary } from './src/components/ErrorBoundary';
@@ -65,25 +65,11 @@ const App: React.FC = () => {
     setAppPhase('main');
   };
 
-  // ── Debug banner: proves JS UI mounted ──
-  const DebugPhaseBanner = ({ phase }: { phase: string }) => (
-    <View style={{
-      position: 'absolute', bottom: 20, alignSelf: 'center',
-      backgroundColor: 'rgba(255,50,50,0.85)', paddingHorizontal: 14,
-      paddingVertical: 6, borderRadius: 8, zIndex: 9999,
-    }}>
-      <Text style={{ color: '#fff', fontWeight: '700', fontSize: 12 }}>
-        JS MOUNTED — phase: {phase}
-      </Text>
-    </View>
-  );
-
   if (appPhase === 'loading') {
     return (
       <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
         <SafeAreaProvider>
           <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
-          <DebugPhaseBanner phase="loading" />
         </SafeAreaProvider>
       </View>
     );
@@ -95,7 +81,6 @@ const App: React.FC = () => {
         <SafeAreaProvider>
           <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
           <SplashScreen onFinish={handleSplashFinish} />
-          <DebugPhaseBanner phase="splash" />
         </SafeAreaProvider>
       </View>
     );
@@ -107,7 +92,6 @@ const App: React.FC = () => {
         <SafeAreaProvider>
           <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
           <OnboardingScreen onComplete={handleOnboardingComplete} />
-          <DebugPhaseBanner phase="onboarding" />
         </SafeAreaProvider>
       </View>
     );
@@ -122,7 +106,6 @@ const App: React.FC = () => {
             onboardingData={onboardingResult}
             onComplete={handleLocationSetupComplete}
           />
-          <DebugPhaseBanner phase="locationSetup" />
         </SafeAreaProvider>
       </View>
     );
@@ -139,7 +122,6 @@ const App: React.FC = () => {
             </ErrorBoundary>
           </MagicLinkListener>
         </AuthProvider>
-        <DebugPhaseBanner phase="main" />
       </SafeAreaProvider>
     </View>
   );
