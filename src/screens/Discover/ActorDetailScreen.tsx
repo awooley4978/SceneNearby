@@ -1,11 +1,12 @@
 import React from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BackButton } from '../../components/BackButton';
 import { theme } from '../../theme';
 import { useLocationsByActor, useActorGroups, useMovieGroups } from '../../services/hooks';
 import { LocationCard } from '../../components/LocationCard';
 import { MoviePoster } from '../../components/MoviePoster';
+import { EmptyState } from '../../components/EmptyState';
 
 export const ActorDetailScreen: React.FC<{ route: any; navigation: any }> = ({
   route,
@@ -13,11 +14,33 @@ export const ActorDetailScreen: React.FC<{ route: any; navigation: any }> = ({
 }) => {
   const { actorName } = route.params;
   const insets = useSafeAreaInsets();
-  const { locations } = useLocationsByActor(actorName);
-  const { actorGroups } = useActorGroups();
+  const { locations, loading: locationsLoading, error: locationsError, refetch } = useLocationsByActor(actorName);
+  const { actorGroups, loading: groupsLoading } = useActorGroups();
   const { movieGroups } = useMovieGroups();
   const group = actorGroups.find((g) => g.name === actorName);
 
+  // Same ordering rule as MovieDetailScreen: actorGroups/locations are both []
+  // while their fetches are in flight — don't render "Actor not found" until
+  // everything has resolved. Loading → error → not-found.
+  if (groupsLoading || locationsLoading) {
+    return (
+      <View style={styles.errorContainer}>
+        <ActivityIndicator size="large" color={theme.colors.gold} />
+        <Text style={[styles.errorText, { marginTop: 10 }]}>Loading {actorName}…</Text>
+      </View>
+    );
+  }
+  if (locationsError) {
+    return (
+      <EmptyState
+        emoji="⚠️"
+        title="Couldn't load this actor"
+        subtitle={locationsError}
+        actionLabel="Try Again"
+        onAction={refetch}
+      />
+    );
+  }
   if (!group || locations.length === 0) {
     return (
       <View style={styles.errorContainer}>

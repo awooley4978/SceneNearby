@@ -1,7 +1,8 @@
 import React, { useMemo } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BackButton } from '../../components/BackButton';
+import { EmptyState } from '../../components/EmptyState';
 import { theme } from '../../theme';
 import { useMovieGroups } from '../../services/hooks';
 import { categoryColors } from '../../models';
@@ -15,10 +16,32 @@ export const MovieDetailScreen: React.FC<{ route: any; navigation: any }> = ({
 }) => {
   const { movieTitle } = route.params;
   const insets = useSafeAreaInsets();
-  const { movieGroups, allLocations } = useMovieGroups();
+  const { movieGroups, allLocations, loading, error, refetch } = useMovieGroups();
   const movieGroup = movieGroups.find((g) => g.title === movieTitle);
   const locations = allLocations.filter((l) => l.movieOrShow === movieTitle);
 
+  // Order matters: never claim "not found" while the hook is still resolving —
+  // movieGroups is [] during the fetch, so the not-found branch would flash
+  // on every navigation until data lands. Loading → error → not-found.
+  if (loading) {
+    return (
+      <View style={styles.errorContainer}>
+        <ActivityIndicator size="large" color={theme.colors.gold} />
+        <Text style={[styles.errorText, { marginTop: 10 }]}>Loading {movieTitle}…</Text>
+      </View>
+    );
+  }
+  if (error) {
+    return (
+      <EmptyState
+        emoji="⚠️"
+        title="Couldn't load this title"
+        subtitle={error}
+        actionLabel="Try Again"
+        onAction={refetch}
+      />
+    );
+  }
   if (!movieGroup || locations.length === 0) {
     return (
       <View style={styles.errorContainer}>
