@@ -61,7 +61,7 @@ export interface ApiLocationSummary {
   country: string;
   imageUrl: string | null;
   focalPoint: { x: number; y: number } | null;
-  /** Present in full payloads; summary mode omits it (treated as false). */
+  /** Movie (true) vs TV show (false); present in both summary and full payloads. */
   isMovie?: boolean;
   distance?: number;
 }

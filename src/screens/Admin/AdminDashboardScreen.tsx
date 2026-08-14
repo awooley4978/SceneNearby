@@ -10,7 +10,7 @@ import {
 import { theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
 import { computeAdminStats, type AdminStats } from '../../services/AdminService';
-import { useAllLocations } from '../../services/hooks';
+import { useAllLocationsFull } from '../../services/hooks';
 import { apiClient } from '../../services/api';
 
 const ADMIN_EMAILS = ['awooley4978@gmail.com', 'scenenearbysupport@gmail.com'];
@@ -31,7 +31,7 @@ export const AdminDashboardScreen: React.FC<{ navigation: any }> = ({ navigation
     locations: allLocations,
     error: locationsError,
     refetch: refetchLocations,
-  } = useAllLocations();
+  } = useAllLocationsFull();
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [statsError, setStatsError] = useState<string | null>(null);

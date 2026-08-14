@@ -1,6 +1,6 @@
 // Probe: does the Discover radius filter empty the feed for a "far" user?
 // Uses the app's OWN geo.ts calculateDistance against the real 209 locations.
-import { apiClient } from '/tmp/scene-app/src/services/api.ts';
+import { apiClient } from '../src/services/api.ts';
 import { calculateDistance } from './src/services/geo';
 
 async function main() {

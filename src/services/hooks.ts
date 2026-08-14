@@ -53,8 +53,7 @@ function toFilmingLocation(api: ApiLocation | ApiLocationSummary): FilmingLocati
     quote: (api as ApiLocation).quote || null,
     quoteAttribution: (api as ApiLocation).quoteAttribution || null,
     thenAndNow: (api as ApiLocation).thenAndNow || null,
-    // Summary payloads omit isMovie; treat missing as false rather than
-    // leaving the field undefined (movie/show filters then stay type-safe).
+    // isMovie is present in full payloads and (since 2026-08-14) summary payloads too.
     isMovie: Boolean(api.isMovie),
     distanceFromUser: api.distance,
     actors: (api as ApiLocation).actors || [],
@@ -77,6 +76,18 @@ function computeRating(loc: ApiLocation): LocationRating | undefined {
 export function useAllLocations() {
   const result = useApiData<ApiLocationSummary[]>(
     () => apiClient.getAllLocations(),
+    [],
+  );
+  const locations = result.data?.map(toFilmingLocation) ?? [];
+  return { ...result, locations };
+}
+/**
+ * Fetch all locations with full detail (descriptions, fun facts, quotes,
+ * actors, isMovie). Heavier than summary; used where completeness matters.
+ */
+export function useAllLocationsFull() {
+  const result = useApiData<ApiLocation[]>(
+    () => apiClient.getAllLocationsFull(),
     [],
   );
   const locations = result.data?.map(toFilmingLocation) ?? [];

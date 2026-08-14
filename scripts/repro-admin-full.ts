@@ -4,7 +4,7 @@
  *
  * Run:  EXPO_PUBLIC_API_URL=https://b118a520627ac1a10a1362a93ff3b3f5.ctonew.app bun run repro-admin-full.ts
  */
-import { apiClient } from '/tmp/scene-app/src/services/api.ts';
+import { apiClient } from '../src/services/api.ts';
 
 function toFilmingLocation(api: any): any {
   return {

@@ -1,6 +1,6 @@
 // Verify: every city the app lets the user pick is covered; only live GPS outside
 // the 26 covered cities produces an empty feed. Uses the app's OWN calculateDistance.
-import { apiClient } from '/tmp/scene-app/src/services/api.ts';
+import { apiClient } from '../src/services/api.ts';
 import { calculateDistance } from './src/services/geo';
 import { CITIES } from './src/models';
 
