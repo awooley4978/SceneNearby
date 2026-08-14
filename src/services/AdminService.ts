@@ -43,7 +43,7 @@ export function computeAdminStats(pendingPhotoCount: number, allLocations: Filmi
 
 /** Extract unique sorted values for a given field from a location list */
 export function getUniqueValues(items: FilmingLocation[], field: 'city' | 'country'): string[] {
-  const values = new Set(items.map((l) => l[field]));
+  const values = new Set(items.map((l) => l[field]).filter((v): v is string => !!v));
   return [...values].sort((a, b) => a.localeCompare(b));
 }
 
@@ -51,7 +51,7 @@ export function getUniqueValues(items: FilmingLocation[], field: 'city' | 'count
 export function getTitleFirstLetters(items: FilmingLocation[]): string[] {
   const letters = new Set(
     items
-      .map((l) => l.title.charAt(0).toUpperCase())
+      .map((l) => (l.title ?? '').charAt(0).toUpperCase())
       .filter((ch) => ch >= 'A' && ch <= 'Z'),
   );
   return [...letters].sort();
@@ -59,16 +59,17 @@ export function getTitleFirstLetters(items: FilmingLocation[]): string[] {
 
 /** Derive a region/state from the address field (e.g. "Chicago, IL 60613" → "IL") */
 export function deriveRegion(loc: FilmingLocation): string {
-  // Try to extract US state abbreviation from address
-  const match = loc.address.match(/,\s*([A-Z]{2})\s+\d/);
+  // address is not guaranteed on every projection (e.g. photo-submission rows) —
+  // treat a missing value as '' instead of crashing on undefined.match
+  const match = (loc.address ?? '').match(/,\s*([A-Z]{2})\s+\d/);
   if (match) return match[1];
   // Fall back to country
-  return loc.country;
+  return loc.country ?? '';
 }
 
 /** Get sorted unique regions */
 export function getUniqueRegions(items: FilmingLocation[]): string[] {
-  const regions = new Set(items.map(deriveRegion));
+  const regions = new Set(items.map(deriveRegion).filter((v): v is string => !!v));
   return [...regions].sort((a, b) => a.localeCompare(b));
 }
 
@@ -95,9 +96,9 @@ export function applyDetailFilters(items: FilmingLocation[], filters: DetailFilt
     if (filters.search.trim()) {
       const q = filters.search.toLowerCase();
       const matchesSearch =
-        loc.title.toLowerCase().includes(q) ||
-        loc.movieOrShow.toLowerCase().includes(q) ||
-        loc.address.toLowerCase().includes(q);
+        (loc.title ?? '').toLowerCase().includes(q) ||
+        (loc.movieOrShow ?? '').toLowerCase().includes(q) ||
+        (loc.address ?? '').toLowerCase().includes(q);
       if (!matchesSearch) return false;
     }
 

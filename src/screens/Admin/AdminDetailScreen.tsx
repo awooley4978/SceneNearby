@@ -33,19 +33,28 @@ export const AdminDetailScreen: React.FC<{ navigation: any; route: any }> = ({
   route,
 }) => {
   const { type, label, items = [] } = (route.params ?? {}) as AdminDetailParams;
+  // Photo-approval rows are PhotoSubmission objects — they have no address,
+  // city, or title, so location filters are meaningless there AND would crash
+  // (deriveRegion/applyDetailFilters read fields that don't exist). Gate them
+  // off so the approval screen renders without touching location fields.
+  const isApproval = type === 'pendingApproval';
+  const locationItems = useMemo(
+    () => (isApproval ? [] : (items as FilmingLocation[])),
+    [isApproval, items],
+  );
   const [filtersExpanded, setFiltersExpanded] = useState(false);
   const [filters, setFilters] = useState<DetailFilters>(EMPTY_FILTERS);
 
-  // Derive filter options from the (unfiltered) items
-  const cities = useMemo(() => getUniqueValues(items, 'city'), [items]);
-  const countries = useMemo(() => getUniqueValues(items, 'country'), [items]);
-  const regions = useMemo(() => getUniqueRegions(items), [items]);
-  const firstLetters = useMemo(() => getTitleFirstLetters(items), [items]);
+  // Derive filter options from the (unfiltered) location items
+  const cities = useMemo(() => getUniqueValues(locationItems, 'city'), [locationItems]);
+  const countries = useMemo(() => getUniqueValues(locationItems, 'country'), [locationItems]);
+  const regions = useMemo(() => getUniqueRegions(locationItems), [locationItems]);
+  const firstLetters = useMemo(() => getTitleFirstLetters(locationItems), [locationItems]);
 
   // Apply filters
   const filteredItems = useMemo(
-    () => applyDetailFilters(items, filters),
-    [items, filters],
+    () => applyDetailFilters(locationItems, filters),
+    [locationItems, filters],
   );
 
   const activeFilterCount = [
@@ -61,7 +70,6 @@ export const AdminDetailScreen: React.FC<{ navigation: any; route: any }> = ({
   };
 
   // ── Pending photo approvals (type === 'pendingApproval') ──
-  const isApproval = type === 'pendingApproval';
   const [localPending, setLocalPending] = useState<PhotoSubmission[] | null>(null);
   const [actingOn, setActingOn] = useState<string | null>(null);
   const pendingItems = localPending ?? (items as PhotoSubmission[]);

@@ -23,6 +23,7 @@ import { getOnboardingData } from '../../services/StorageService';
 import { useSaved } from '../../context/SavedContext';
 import { useCityDetection } from '../../hooks/useCityDetection';
 import { CityWelcomeModal } from '../../components/CityWelcomeModal';
+import { calculateDistance } from '../../services/geo';
 import type { FilmingLocation } from '../../models';
 
 const { width, height } = Dimensions.get('window');
@@ -143,12 +144,23 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
     }
   }, [targetLat, targetLng]);
 
-  // Filter locations by current city
+  // List view mirrors the map: every marker rendered (allLocations) is listed,
+  // ordered nearest-first from the user's location. It is deliberately NOT
+  // filtered by the database `city` label — that field is a metro grouping
+  // (e.g. AT&T Stadium has city="Dallas"), so an exact-label match would hide
+  // locations from users physically near them (reported: "0 in Arlington"
+  // while AT&T Stadium is 4.1 mi away and its pin renders on this map).
   const cityLocations = useMemo(() => {
-    if (!userCity) return allLocations;
-    const cityName = userCity.toLowerCase();
-    return allLocations.filter((l) => l.city.toLowerCase().includes(cityName) || cityName.includes(l.city.toLowerCase()));
-  }, [userCity]);
+    if (!userCoords) return allLocations;
+    const sorted = [...allLocations];
+    const { lat, lng } = userCoords;
+    sorted.sort(
+      (a, b) =>
+        calculateDistance(lat, lng, a.latitude, a.longitude) -
+        calculateDistance(lat, lng, b.latitude, b.longitude),
+    );
+    return sorted;
+  }, [allLocations, userCoords]);
 
   const handleMarkerPress = (location: FilmingLocation) => {
     setSelectedLocation(location);
@@ -283,7 +295,10 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
       {showList && (
         <View style={styles.listPanel}>
           <View style={styles.listHeader}>
-            <Text style={styles.listTitle}>📍 {cityLocations.length} location{cityLocations.length !== 1 ? 's' : ''} in {userCity || 'your area'}</Text>
+            <Text style={styles.listTitle}>
+              📍 {cityLocations.length} location{cityLocations.length !== 1 ? 's' : ''} —{' '}
+              {userCoords ? 'nearest first' : 'all locations'}
+            </Text>
             <TouchableOpacity onPress={toggleList}>
               <Text style={styles.listClose}>✕</Text>
             </TouchableOpacity>

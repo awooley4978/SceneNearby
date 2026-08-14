@@ -445,35 +445,31 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     marginTop: 2,
   },
+  // Bottom row stacks: rating on its own line, then the destination address
+  // as a full-width left-aligned two-line block. Full width guarantees the
+  // physical city/state/ZIP is never right-clipped or ellipsized.
   bottomRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
     marginTop: 8,
     paddingTop: 10,
     borderTopWidth: 1,
     borderTopColor: theme.colors.surface3 + '60',
   },
   ratingRow: {
-    flex: 1,
-    marginRight: 8,
+    marginBottom: 6,
   },
   address: {
     fontSize: 11,
     color: theme.colors.textTertiary,
-    maxWidth: '55%',
-    textAlign: 'right',
-    alignSelf: 'flex-end',
+    textAlign: 'left',
   },
   addressBlock: {
-    alignItems: 'flex-end',
-    maxWidth: '55%',
+    alignItems: 'flex-start',
   },
   addressLine2: {
     fontSize: 11,
     color: theme.colors.textTertiary,
     marginTop: 2,
-    textAlign: 'right',
+    textAlign: 'left',
   },
   arrivalBadge: {
     flexDirection: 'row',

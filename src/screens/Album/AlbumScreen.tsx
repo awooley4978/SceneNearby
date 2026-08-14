@@ -8,7 +8,6 @@ import {
   Image,
   ActivityIndicator,
 } from 'react-native';
-import { BackButton } from '../../components/BackButton';
 import { theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
 import { EmptyState } from '../../components/EmptyState';
@@ -128,15 +127,16 @@ export const AlbumScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      {/* Fixed header bar — one back control, same pattern as Admin screens */}
       <View style={styles.topBar}>
-        <BackButton />
         <TouchableOpacity
-          style={styles.closeButton}
-          onPress={() => navigation.navigate('Profile')}
-          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+          style={styles.backButton}
+          onPress={() => (navigation.canGoBack() ? navigation.goBack() : navigation.navigate('Profile'))}
+          activeOpacity={0.7}
         >
-          <Text style={styles.closeButtonText}>✕</Text>
+          <Text style={styles.backText}>‹ Back</Text>
         </TouchableOpacity>
+        <Text style={styles.topTitle}>Your Album</Text>
       </View>
       {content}
     </View>
@@ -150,25 +150,14 @@ const styles = StyleSheet.create({
   },
   topBar: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     paddingTop: 56,
     paddingBottom: 12,
-    paddingRight: 16,
+    paddingHorizontal: 16,
   },
-  closeButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: theme.colors.surface2,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  closeButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: theme.colors.textSecondary,
-  },
+  backButton: { paddingRight: 12 },
+  backText: { fontSize: 16, color: theme.colors.gold, fontWeight: '600' },
+  topTitle: { flex: 1, fontSize: 18, fontWeight: '700', color: theme.colors.textPrimary },
   centered: {
     flex: 1,
     justifyContent: 'center',
