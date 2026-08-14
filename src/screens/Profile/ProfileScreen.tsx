@@ -14,7 +14,6 @@ import { resetOnboarding, getUserSettings, setUserSettings } from '../../service
 import { Linking, Platform } from 'react-native';
 import { logPremiumUpgrade } from '../../services/analytics';
 import { useAuth } from '../../context/AuthContext';
-import { LocationDebugPanel } from '../../components/LocationDebugPanel';
 
 const ADMIN_EMAILS = ['awooley4978@gmail.com', 'scenenearbysupport@gmail.com'];
 
@@ -264,8 +263,6 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
         </TouchableOpacity>
       </View>
 
-      {/* Location debug (diagnostic) */}
-      <LocationDebugPanel />
       {/* App info */}
       <View style={styles.footer}>
         <Text style={styles.version}>Scene Nearby v1.0.0</Text>
