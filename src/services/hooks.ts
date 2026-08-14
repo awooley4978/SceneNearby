@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { apiClient } from './api';
 import type { ApiLocation, ApiLocationSummary } from './api';
-import type { FilmingLocation, MovieGroup, ActorGroup, LocationCategory, LocationRating } from '../models';
+import { LocationCategory, type FilmingLocation, type MovieGroup, type ActorGroup, type LocationRating } from '../models';
 
 // ── Generic API hook ──
 interface ApiState<T> {
