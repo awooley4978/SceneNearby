@@ -393,7 +393,7 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
   );
 
   return (
-    <View style={[styles.container, { paddingTop: Math.max(insets.top, 56) + 8 }]}>
+    <View style={[styles.container, { paddingTop: insets.top + 8 }]}>
       {loading ? (
         <View style={styles.listContent}>
           <ActivityIndicator size="large" color={theme.colors.gold} style={styles.loadingSpinner} />

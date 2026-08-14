@@ -278,16 +278,25 @@ export const LocationCard: React.FC<LocationCardProps> = ({
               {location.sceneDescription}
             </Text>
 
-            {/* Bottom row: rating + address */}
+            {/* Bottom row: rating + address (two-line: street / city) */}
             <View style={styles.bottomRow}>
               <View style={styles.ratingRow}>
                 {showRating && rating && (
                   <StarRating rating={rating.average} count={rating.count} size={11} showCount />
                 )}
               </View>
-              <Text style={styles.address} numberOfLines={1}>
-                📍 {location.address}
-              </Text>
+              {!!location.address && (
+                <View style={styles.addressBlock}>
+                  <Text style={styles.address} numberOfLines={1}>
+                    📍 {location.address.split('\n')[0]}
+                  </Text>
+                  <Text style={styles.addressLine2} numberOfLines={1}>
+                    {[location.city, location.country && location.country !== 'USA' ? location.country : null]
+                      .filter(Boolean)
+                      .join(', ')}
+                  </Text>
+                </View>
+              )}
             </View>
           </View>
         </Animated.View>
@@ -450,7 +459,19 @@ const styles = StyleSheet.create({
   address: {
     fontSize: 11,
     color: theme.colors.textTertiary,
-    maxWidth: '50%',
+    maxWidth: '55%',
+    textAlign: 'right',
+    alignSelf: 'flex-end',
+  },
+  addressBlock: {
+    alignItems: 'flex-end',
+    maxWidth: '55%',
+  },
+  addressLine2: {
+    fontSize: 11,
+    color: theme.colors.textTertiary,
+    marginTop: 2,
+    textAlign: 'right',
   },
   arrivalBadge: {
     flexDirection: 'row',

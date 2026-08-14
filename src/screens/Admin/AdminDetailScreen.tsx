@@ -268,8 +268,17 @@ export const AdminDetailScreen: React.FC<{ navigation: any; route: any }> = ({
           >
             <View style={styles.rowInfo}>
               <Text style={styles.rowTitle}>{loc.title}</Text>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('MovieDetail', { movieTitle: loc.movieOrShow })}
+                activeOpacity={0.6}
+                hitSlop={{ top: 4, bottom: 4 }}
+              >
+                <Text style={styles.rowMovie}>
+                  {loc.movieOrShow}{loc.year ? ` (${loc.year})` : ''}
+                </Text>
+              </TouchableOpacity>
               <Text style={styles.rowSub}>
-                {loc.movieOrShow}{loc.year ? ` (${loc.year})` : ''} — {loc.city}, {loc.country}
+                {loc.city}, {loc.country}
               </Text>
             </View>
             <Text style={styles.rowChevron}>›</Text>
@@ -432,6 +441,13 @@ const styles = StyleSheet.create({
   },
   rowInfo: { flex: 1 },
   rowTitle: { fontSize: 15, fontWeight: '600', color: theme.colors.textPrimary },
+  rowMovie: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: theme.colors.gold,
+    marginTop: 2,
+    alignSelf: 'flex-start',
+  },
   rowSub: { fontSize: 12, color: theme.colors.textSecondary, marginTop: 2 },
   rowChevron: { fontSize: 20, color: theme.colors.textTertiary },
   approvalActions: { flexDirection: 'row', alignItems: 'center', gap: 8 },

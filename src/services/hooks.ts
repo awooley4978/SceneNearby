@@ -36,19 +36,38 @@ function useApiData<T>(fetcher: () => Promise<T>, deps: any[] = []): ApiState<T>
 }
 
 // ── Transform API location to app model ──
+/**
+ * The API sends category as a lowercase slug ('drama', 'sciFi', ...) while the
+ * app's LocationCategory enum values are capitalized ('Drama', 'Sci-Fi', ...).
+ * categoryColors/categoryIcons are keyed by the enum, so an un-normalized
+ * category made every genre indicator/color lookup undefined. Normalize here —
+ * the single source of truth for category → color is still models/categoryColors.
+ */
+function normalizeCategory(cat: string): LocationCategory {
+  switch ((cat || '').toLowerCase()) {
+    case 'drama': return LocationCategory.drama;
+    case 'comedy': return LocationCategory.comedy;
+    case 'scifi':
+    case 'sci-fi': return LocationCategory.sciFi;
+    case 'action': return LocationCategory.action;
+    case 'romance': return LocationCategory.romance;
+    case 'horror': return LocationCategory.horror;
+    default: return cat as LocationCategory;
+  }
+}
 function toFilmingLocation(api: ApiLocation | ApiLocationSummary): FilmingLocation {
   return {
     id: api.id,
     title: api.title,
     movieOrShow: api.movieOrShow,
     year: api.year,
-    category: api.category as LocationCategory,
+    category: normalizeCategory(api.category),
     latitude: api.latitude,
     longitude: api.longitude,
-    address: (api as ApiLocation).address || '',
+    address: api.address || '',
     city: api.city,
     country: api.country,
-    sceneDescription: (api as ApiLocation).sceneDescription || '',
+    sceneDescription: api.sceneDescription || '',
     funFact: (api as ApiLocation).funFact || '',
     quote: (api as ApiLocation).quote || null,
     quoteAttribution: (api as ApiLocation).quoteAttribution || null,
@@ -56,7 +75,7 @@ function toFilmingLocation(api: ApiLocation | ApiLocationSummary): FilmingLocati
     // isMovie is present in full payloads and (since 2026-08-14) summary payloads too.
     isMovie: Boolean(api.isMovie),
     distanceFromUser: api.distance,
-    actors: (api as ApiLocation).actors || [],
+    actors: api.actors || [],
     imageUrl: api.imageUrl || undefined,
     focalPoint: api.focalPoint || undefined,
   };
@@ -151,10 +170,18 @@ export function useMovieGroups() {
       }
       map.get(key)!.locationIds.push(loc.id);
     }
-    return Array.from(map.values()).map(g => ({
+    const groups = Array.from(map.values()).map(g => ({
       ...g,
       locationCount: g.locationIds.length,
     }));
+    // Deterministic order: alphabetical A–Z by title, ignoring a leading
+    // "The " for sorting only (display keeps the full title). Year breaks ties.
+    return groups.sort((a, b) => {
+      const sortKey = (t: string) => t.replace(/^The\s+/i, '').toLowerCase();
+      const byTitle = sortKey(a.title).localeCompare(sortKey(b.title));
+      if (byTitle !== 0) return byTitle;
+      return (a.year || 0) - (b.year || 0);
+    });
   })();
 
   return { movieGroups, loading, error, refetch, allLocations: locations };

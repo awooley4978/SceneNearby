@@ -49,21 +49,11 @@ function traceAt(label: string, lat: number, lng: number, locs: Loc[]) {
   // Near You = top 5 of the radius-bounded set
   const nearYou = feed.slice(0, 5);
   console.log(`8. Near You (<=${activeRadius}mi, top 5): ${nearYou.map((l) => `${l.id}@${l.distanceFromUser!.toFixed(1)}mi`).join(', ')}`);
-  // More to Discover = OUTSIDE the radius, capped at 50/100mi, deduped by movie, top 20
-  const outer = withDist.filter((l) => l.distanceFromUser! > activeRadius!);
-  let outerCap = 50;
-  if (outer.filter((l) => l.distanceFromUser! <= 50).length < 20) outerCap = 100;
-  const outerIn = outer.filter((l) => l.distanceFromUser! <= outerCap);
-  const movieMap = new Map<string, Loc>();
-  for (const l of outerIn) {
-    const k = l.movieOrShow;
-    if (!movieMap.has(k) || movieMap.get(k)!.distanceFromUser! > l.distanceFromUser!) movieMap.set(k, l);
-  }
-  const more = Array.from(movieMap.values()).sort((a, b) => (a.distanceFromUser || 0) - (b.distanceFromUser || 0)).slice(0, 20);
-  console.log(`9. "More to Discover" (${activeRadius}mi < d <= ${outerCap}mi, deduped, top 20): ${more.length} rows`);
-  console.log(`   ${more.map((l) => `${l.id}@${l.distanceFromUser!.toFixed(1)}mi (${l.movieOrShow})`).join(' | ')}`);
-  const totalVisible = nearYou.length + more.length + feed.length;
-  console.log(`→ page shows ${nearYou.length} NearYou cards + ${feed.length} feed cards + ${more.length} MoreToDiscover rows = ${totalVisible} visible items; pill reads "Within ${activeRadius} mi" but ${more.length} rows are OUTSIDE that radius`);
+  // The former "🌍 More to Discover" section (OUTSIDE the radius, up to 50/100mi)
+  // was REMOVED (84f8bab) — the radius-bounded feed above is the single source
+  // of truth; every card on the page comes from the same array as the pill.
+  const totalVisible = feed.length;
+  console.log(`→ page shows ${feed.length} feed cards (Near You = top 5) = ${totalVisible} visible items, all drawn from the SAME radius-bounded array as the "Within ${activeRadius} mi" pill; no beyond-radius rows exist anymore`);
 }
 
 const locs = await apiClient.getAllLocations();

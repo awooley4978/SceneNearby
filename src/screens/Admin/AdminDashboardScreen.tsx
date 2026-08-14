@@ -154,7 +154,7 @@ export const AdminDashboardScreen: React.FC<{ navigation: any }> = ({ navigation
       <View style={styles.topBar}>
         <TouchableOpacity
           style={styles.backButton}
-          onPress={() => navigation.navigate('Profile')}
+          onPress={() => (navigation.canGoBack() ? navigation.goBack() : navigation.navigate('Profile'))}
           activeOpacity={0.7}
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
         >

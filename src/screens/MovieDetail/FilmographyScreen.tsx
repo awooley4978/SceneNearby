@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, TextInput, ActivityIndicator } from 'react-native';
-import { BackButton } from '../../components/BackButton';
 import { theme } from '../../theme';
 import { useMovieGroups } from '../../services/hooks';
 import { categoryColors } from '../../models';
@@ -51,7 +50,19 @@ export const FilmographyScreen: React.FC<{ navigation: any }> = ({ navigation })
 
   return (
     <View style={styles.container}>
-      <BackButton />
+      {/* Fixed header bar — matches the Admin page back-button treatment */}
+      <View style={styles.topBar}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+          activeOpacity={0.7}
+          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+        >
+          <Text style={styles.backText}>‹ Back</Text>
+        </TouchableOpacity>
+        <Text style={styles.topBarTitle}>All Movies & Shows</Text>
+        <View style={styles.topBarSpacer} />
+      </View>
       <View style={styles.searchBar}>
         <Text style={styles.searchIcon}>🔍</Text>
         <TextInput
@@ -100,6 +111,23 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: theme.colors.background,
   },
+  topBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingTop: 56,
+    paddingBottom: 12,
+    paddingHorizontal: 16,
+    backgroundColor: theme.colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.surface3,
+  },
+  backButton: {
+    paddingVertical: 8,
+    paddingRight: 12,
+  },
+  backText: { fontSize: 16, color: theme.colors.gold, fontWeight: '600' },
+  topBarTitle: { fontSize: 16, fontWeight: '700', color: theme.colors.textSecondary },
+  topBarSpacer: { width: 44 },
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',

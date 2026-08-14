@@ -57,8 +57,11 @@ export interface ApiLocationSummary {
   category: string;
   latitude: number;
   longitude: number;
+  address: string;
   city: string;
   country: string;
+  sceneDescription: string;
+  actors: string[];
   imageUrl: string | null;
   focalPoint: { x: number; y: number } | null;
   /** Movie (true) vs TV show (false); present in both summary and full payloads. */
