@@ -6,9 +6,11 @@ import {
   TouchableOpacity,
   TextInput,
   StyleSheet,
+  Alert,
 } from 'react-native';
 import { theme } from '../../theme';
 import type { FilmingLocation } from '../../models';
+import { apiClient, type PhotoSubmission } from '../../services/api';
 import {
   EMPTY_FILTERS,
   applyDetailFilters,
@@ -21,7 +23,7 @@ import {
 interface AdminDetailParams {
   type: string;
   label: string;
-  items: FilmingLocation[];
+  items: any[];
 }
 
 type FilterChip = { value: string; label: string };
@@ -58,6 +60,24 @@ export const AdminDetailScreen: React.FC<{ navigation: any; route: any }> = ({
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
+  // ── Pending photo approvals (type === 'pendingApproval') ──
+  const isApproval = type === 'pendingApproval';
+  const [localPending, setLocalPending] = useState<PhotoSubmission[] | null>(null);
+  const [actingOn, setActingOn] = useState<string | null>(null);
+  const pendingItems = localPending ?? (items as PhotoSubmission[]);
+  const decide = async (sub: PhotoSubmission, decision: 'approve' | 'reject') => {
+    setActingOn(sub.id);
+    try {
+      if (decision === 'approve') await apiClient.approveSubmission(sub.id);
+      else await apiClient.rejectSubmission(sub.id);
+      setLocalPending((prev) => (prev ?? (items as PhotoSubmission[])).filter((s) => s.id !== sub.id));
+    } catch (err) {
+      Alert.alert('Action failed', err instanceof Error ? err.message : String(err));
+    } finally {
+      setActingOn(null);
+    }
+  };
+
   const clearAllFilters = () => setFilters(EMPTY_FILTERS);
 
   const renderChips = (
@@ -86,6 +106,58 @@ export const AdminDetailScreen: React.FC<{ navigation: any; route: any }> = ({
       })}
     </ScrollView>
   );
+
+  if (isApproval) {
+    return (
+      <View style={styles.container}>
+        {/* Header bar */}
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <Text style={styles.backText}>‹ Back</Text>
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>{label}</Text>
+          <Text style={styles.headerCount}>{pendingItems.length}</Text>
+        </View>
+        <ScrollView style={styles.list} contentContainerStyle={styles.listContent}>
+          {pendingItems.length === 0 ? (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyEmoji}>✅</Text>
+              <Text style={styles.emptyTitle}>All caught up</Text>
+              <Text style={styles.emptySub}>No photos awaiting approval.</Text>
+            </View>
+          ) : (
+            pendingItems.map((sub) => (
+              <View key={sub.id} style={styles.row}>
+                <View style={styles.rowInfo}>
+                  <Text style={styles.rowTitle}>{sub.location_name || sub.location_id}</Text>
+                  <Text style={styles.rowSub}>
+                    {sub.status} • {sub.id} •{' '}
+                    {sub.submitted_at ? new Date(sub.submitted_at).toLocaleDateString() : ''}
+                  </Text>
+                </View>
+                <View style={styles.approvalActions}>
+                  <TouchableOpacity
+                    style={[styles.actionButton, styles.approveButton]}
+                    onPress={() => decide(sub, 'approve')}
+                    disabled={actingOn === sub.id}
+                  >
+                    <Text style={styles.actionText}>✓ Approve</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.actionButton, styles.rejectButton]}
+                    onPress={() => decide(sub, 'reject')}
+                    disabled={actingOn === sub.id}
+                  >
+                    <Text style={styles.actionText}>✕</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ))
+          )}
+        </ScrollView>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -362,4 +434,14 @@ const styles = StyleSheet.create({
   rowTitle: { fontSize: 15, fontWeight: '600', color: theme.colors.textPrimary },
   rowSub: { fontSize: 12, color: theme.colors.textSecondary, marginTop: 2 },
   rowChevron: { fontSize: 20, color: theme.colors.textTertiary },
+  approvalActions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  actionButton: {
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderWidth: 1,
+  },
+  approveButton: { backgroundColor: '#22C55E22', borderColor: '#22C55E' },
+  rejectButton: { backgroundColor: '#EF444422', borderColor: '#EF4444' },
+  actionText: { fontSize: 12, fontWeight: '700', color: theme.colors.textPrimary },
 });

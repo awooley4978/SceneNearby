@@ -11,7 +11,7 @@ import { theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
 import { computeAdminStats, type AdminStats } from '../../services/AdminService';
 import { useAllLocationsFull } from '../../services/hooks';
-import { apiClient } from '../../services/api';
+import { apiClient, type PhotoSubmission } from '../../services/api';
 
 const ADMIN_EMAILS = ['awooley4978@gmail.com', 'scenenearbysupport@gmail.com'];
 
@@ -33,6 +33,7 @@ export const AdminDashboardScreen: React.FC<{ navigation: any }> = ({ navigation
     refetch: refetchLocations,
   } = useAllLocationsFull();
   const [stats, setStats] = useState<AdminStats | null>(null);
+  const [pendingSubmissions, setPendingSubmissions] = useState<PhotoSubmission[]>([]);
   const [loading, setLoading] = useState(true);
   const [statsError, setStatsError] = useState<string | null>(null);
   const [retryTick, setRetryTick] = useState(0);
@@ -63,6 +64,16 @@ export const AdminDashboardScreen: React.FC<{ navigation: any }> = ({ navigation
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
+      });
+    // Fetch the pending submissions themselves so "Photos Awaiting Approval"
+    // opens a real list instead of an empty one (server count = list length).
+    apiClient
+      .getSubmissions('pending')
+      .then((subs) => {
+        if (!cancelled) setPendingSubmissions(subs);
+      })
+      .catch(() => {
+        /* count still comes from getStats; list just stays empty on failure */
       });
     return () => {
       cancelled = true;
@@ -125,6 +136,11 @@ export const AdminDashboardScreen: React.FC<{ navigation: any }> = ({ navigation
         break;
       case 'missingDescriptions':
         items = stats.missingDescriptionItems;
+        break;
+      case 'pendingApproval':
+        // Real pending submissions — the dashboard count (stats.pendingApproval)
+        // and this list both come from the server's status='pending' query.
+        items = pendingSubmissions;
         break;
       default:
         items = [];

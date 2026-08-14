@@ -1,22 +1,26 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, TextInput, ActivityIndicator } from 'react-native';
 import { BackButton } from '../../components/BackButton';
 import { theme } from '../../theme';
 import { useMovieGroups } from '../../services/hooks';
 import { categoryColors } from '../../models';
 import { StarRating } from '../../components/StarRating';
 import { MoviePoster } from '../../components/MoviePoster';
+import { EmptyState } from '../../components/EmptyState';
 import type { MovieGroup } from '../../models';
 
 export const FilmographyScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [search, setSearch] = useState('');
-  const { movieGroups } = useMovieGroups();
+  const { movieGroups, loading, error, refetch } = useMovieGroups();
 
+  // movieGroups must stay in the deps: it is [] while loading and only fills in
+  // after the fetch resolves. Memoizing on [search] alone captured the initial
+  // empty snapshot forever — the list rendered "No movies found" permanently.
   const filtered = useMemo(() => {
     if (!search.trim()) return movieGroups;
     const q = search.toLowerCase();
     return movieGroups.filter((g) => g.title.toLowerCase().includes(q));
-  }, [search]);
+  }, [search, movieGroups]);
 
   const renderMovie = ({ item }: { item: MovieGroup }) => {
     const catColor = categoryColors[item.category];
@@ -58,18 +62,35 @@ export const FilmographyScreen: React.FC<{ navigation: any }> = ({ navigation })
           onChangeText={setSearch}
         />
       </View>
-      <FlatList
-        data={filtered}
-        keyExtractor={(item) => item.title}
-        renderItem={renderMovie}
-        contentContainerStyle={styles.list}
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={
-          <View style={styles.empty}>
-            <Text style={styles.emptyText}>No movies found</Text>
-          </View>
-        }
-      />
+      {loading ? (
+        <View style={styles.empty}>
+          <ActivityIndicator size="large" color={theme.colors.gold} />
+          <Text style={[styles.emptyText, { marginTop: 10 }]}>Loading filmography…</Text>
+        </View>
+      ) : error ? (
+        <EmptyState
+          emoji="⚠️"
+          title="Couldn't load filmography"
+          subtitle={error}
+          actionLabel="Try Again"
+          onAction={refetch}
+        />
+      ) : (
+        <FlatList
+          data={filtered}
+          keyExtractor={(item) => item.title}
+          renderItem={renderMovie}
+          contentContainerStyle={styles.list}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <View style={styles.empty}>
+              <Text style={styles.emptyText}>
+                {search.trim() ? `No movies or shows match "${search.trim()}"` : 'No movies found'}
+              </Text>
+            </View>
+          }
+        />
+      )}
     </View>
   );
 };

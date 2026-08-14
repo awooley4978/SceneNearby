@@ -69,6 +69,19 @@ export interface ApiLocationSummary {
 export interface ApiError {
   error: string;
 }
+/** A photo submission row from GET /api/submissions (photo_submissions table). */
+export interface PhotoSubmission {
+  id: string;
+  location_id: string;
+  location_name: string;
+  status: 'pending' | 'approved' | 'rejected' | 'needs_review';
+  submitted_at: string;
+  reviewed_by?: string | null;
+  photo_path?: string | null;
+  user_info?: string | null;
+  comment?: string | null;
+  app_name?: string;
+}
 
 class ApiClient {
   private baseUrl: string;
@@ -77,7 +90,7 @@ class ApiClient {
     this.baseUrl = baseUrl;
   }
 
-  private async fetchJson<T>(path: string): Promise<T> {
+  private async fetchJson<T>(path: string, init?: RequestInit): Promise<T> {
     const controller = new AbortController();
     // AbortController alone is not enough on RN/iOS (the abort can fail to
     // reject an already-stalled request), so race the fetch against a hard
@@ -93,7 +106,12 @@ class ApiClient {
       let response: Response;
       try {
         response = await Promise.race([
-          fetch(`${this.baseUrl}${path}`, { signal: controller.signal, headers: FETCH_HEADERS }),
+          fetch(`${this.baseUrl}${path}`, {
+            signal: controller.signal,
+            headers: { ...FETCH_HEADERS, ...(init?.headers ?? {}) },
+            method: init?.method,
+            body: init?.body,
+          }),
           timedOut,
         ]);
       } catch (err) {
@@ -183,6 +201,27 @@ class ApiClient {
   /** Moderation stats */
   async getStats(): Promise<{ total_submissions: number; pending_moderation: number }> {
     return this.fetchJson(`/api/stats`);
+  }
+  /** Photo submissions, optionally filtered by status (e.g. 'pending'). */
+  async getSubmissions(status?: string): Promise<PhotoSubmission[]> {
+    const q = status ? `?status=${encodeURIComponent(status)}` : '';
+    return this.fetchJson<PhotoSubmission[]>(`/api/submissions${q}`);
+  }
+  /** Approve a pending photo submission. */
+  async approveSubmission(id: string): Promise<{ success: boolean; public_url?: string }> {
+    return this.fetchJson(`/api/approve/${encodeURIComponent(id)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reviewed_by: 'owner' }),
+    });
+  }
+  /** Reject a pending photo submission. */
+  async rejectSubmission(id: string): Promise<{ success: boolean }> {
+    return this.fetchJson(`/api/reject/${encodeURIComponent(id)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reviewed_by: 'owner' }),
+    });
   }
 }
 
