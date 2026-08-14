@@ -45,6 +45,15 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
   const [userCity, setUserCity] = useState<string>('');
   const [userCoords, setUserCoords] = useState<{ lat: number; lng: number } | null>(null);
 
+  // ── Visible-region tracking ──────────────────────────────────────────────
+  // The controlled `region` state only changes programmatically (onboarding
+  // center, target-location center). `onRegionChangeComplete` keeps a separate
+  // copy of the region the user ACTUALLY sees so the List can mirror the
+  // visible map. It is deliberately NOT fed back into `region` — the map keeps
+  // its current controlled behavior, and city-welcome detection stays keyed to
+  // the programmatic region (no welcome-modal side effects on pan/zoom).
+  const [visibleRegion, setVisibleRegion] = useState<Region | null>(null);
+
   // ── Dev-only: trigger notification card with mock proximity data ──
   // Cycle through real locations: each triple-tap shows the next one.
   const [devNotifVisible, setDevNotifVisible] = useState(false);
@@ -144,23 +153,40 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
     }
   }, [targetLat, targetLng]);
 
-  // List view mirrors the map: every marker rendered (allLocations) is listed,
-  // ordered nearest-first from the user's location. It is deliberately NOT
-  // filtered by the database `city` label — that field is a metro grouping
-  // (e.g. AT&T Stadium has city="Dallas"), so an exact-label match would hide
-  // locations from users physically near them (reported: "0 in Arlington"
-  // while AT&T Stadium is 4.1 mi away and its pin renders on this map).
-  const cityLocations = useMemo(() => {
-    if (!userCoords) return allLocations;
-    const sorted = [...allLocations];
-    const { lat, lng } = userCoords;
-    sorted.sort(
-      (a, b) =>
-        calculateDistance(lat, lng, a.latitude, a.longitude) -
-        calculateDistance(lat, lng, b.latitude, b.longitude),
+  // ── List scope = the visible map region ──────────────────────────────────
+  // The List mirrors the geography the map currently represents: only
+  // locations whose coordinates fall inside the current viewport are listed,
+  // ordered nearest-first from the user's location.
+  //
+  // This deliberately avoids BOTH failure modes seen in the field:
+  //  · metro-label matching (the `city` column is a metro grouping — e.g.
+  //    AT&T Stadium has city="Dallas" — so an exact-label match returned
+  //    "0 in Arlington" while the pin rendered 4.1 mi away), and
+  //  · the unfiltered global array (the R9 fix returned all 210 worldwide).
+  //
+  // The viewport is the screen's own designed geographic context: the map is
+  // centered on the user's active city (delta 0.5) on load, and the List
+  // follows pan/zoom via `visibleRegion`. No new radius model is introduced.
+  const visibleLocations = useMemo(() => {
+    const base = visibleRegion ?? region;
+    const latMin = base.latitude - base.latitudeDelta / 2;
+    const latMax = base.latitude + base.latitudeDelta / 2;
+    const lngMin = base.longitude - base.longitudeDelta / 2;
+    const lngMax = base.longitude + base.longitudeDelta / 2;
+    const inView = allLocations.filter(
+      (l) =>
+        l.latitude >= latMin &&
+        l.latitude <= latMax &&
+        l.longitude >= lngMin &&
+        l.longitude <= lngMax,
     );
-    return sorted;
-  }, [allLocations, userCoords]);
+    const origin = userCoords ?? { lat: base.latitude, lng: base.longitude };
+    return [...inView].sort(
+      (a, b) =>
+        calculateDistance(origin.lat, origin.lng, a.latitude, a.longitude) -
+        calculateDistance(origin.lat, origin.lng, b.latitude, b.longitude),
+    );
+  }, [allLocations, userCoords, region, visibleRegion]);
 
   const handleMarkerPress = (location: FilmingLocation) => {
     setSelectedLocation(location);
@@ -221,6 +247,7 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
         ref={mapRef}
         style={styles.map}
         region={region}
+        onRegionChangeComplete={setVisibleRegion}
         showsUserLocation
         showsCompass
         mapPadding={{ top: 60, right: 16, bottom: showList ? 280 : 120, left: 16 }}
@@ -296,15 +323,15 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
         <View style={styles.listPanel}>
           <View style={styles.listHeader}>
             <Text style={styles.listTitle}>
-              📍 {cityLocations.length} location{cityLocations.length !== 1 ? 's' : ''} —{' '}
-              {userCoords ? 'nearest first' : 'all locations'}
+              📍 {visibleLocations.length} location{visibleLocations.length !== 1 ? 's' : ''} —{' '}
+              {userCoords ? 'nearest first' : 'in view'}
             </Text>
             <TouchableOpacity onPress={toggleList}>
               <Text style={styles.listClose}>✕</Text>
             </TouchableOpacity>
           </View>
           <FlatList
-            data={cityLocations}
+            data={visibleLocations}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <LocationCard
