@@ -16,6 +16,7 @@ import { DistanceBadge } from './DistanceBadge';
 import { StarRating } from './StarRating';
 import { useRatingMap } from '../services/hooks';
 import { useSaved } from '../context/SavedContext';
+import { formatCardAddress } from '../utils/address';
 
 interface LocationCardProps {
   location: FilmingLocation;
@@ -44,6 +45,7 @@ export const LocationCard: React.FC<LocationCardProps> = ({
   index = 0,
 }) => {
   const rating = location.rating;
+  const cardAddress = formatCardAddress(location.address, location.city, location.country);
   const { isSaved: checkSaved, toggleSave: contextToggle } = useSaved();
   const isSaved = checkSaved(location.id);
   const [imageError, setImageError] = useState(false);
@@ -278,23 +280,23 @@ export const LocationCard: React.FC<LocationCardProps> = ({
               {location.sceneDescription}
             </Text>
 
-            {/* Bottom row: rating + address (two-line: street / city) */}
+            {/* Bottom row: rating + destination address (street / city, state ZIP) */}
             <View style={styles.bottomRow}>
               <View style={styles.ratingRow}>
                 {showRating && rating && (
                   <StarRating rating={rating.average} count={rating.count} size={11} showCount />
                 )}
               </View>
-              {!!location.address && (
+              {cardAddress.line1 !== '' && (
                 <View style={styles.addressBlock}>
                   <Text style={styles.address} numberOfLines={1}>
-                    📍 {location.address.split('\n')[0]}
+                    📍 {cardAddress.line1}
                   </Text>
-                  <Text style={styles.addressLine2} numberOfLines={1}>
-                    {[location.city, location.country && location.country !== 'USA' ? location.country : null]
-                      .filter(Boolean)
-                      .join(', ')}
-                  </Text>
+                  {cardAddress.line2 !== '' && (
+                    <Text style={styles.addressLine2} numberOfLines={1}>
+                      {cardAddress.line2}
+                    </Text>
+                  )}
                 </View>
               )}
             </View>
