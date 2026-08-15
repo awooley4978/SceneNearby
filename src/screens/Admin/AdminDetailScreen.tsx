@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { theme } from '../../theme';
 import type { FilmingLocation } from '../../models';
-import { apiClient, submissionPhotoUrl, type PhotoSubmission } from '../../services/api';
+import { apiClient, submissionPhotoUrl, REJECTION_REASONS, type PhotoSubmission } from '../../services/api';
 import {
   EMPTY_FILTERS,
   applyDetailFilters,
@@ -75,13 +75,51 @@ export const AdminDetailScreen: React.FC<{ navigation: any; route: any }> = ({
   const [localPending, setLocalPending] = useState<PhotoSubmission[] | null>(null);
   const [actingOn, setActingOn] = useState<string | null>(null);
   const [previewSub, setPreviewSub] = useState<PhotoSubmission | null>(null);
+  const [rejectSub, setRejectSub] = useState<PhotoSubmission | null>(null);
+  const [rejectReason, setRejectReason] = useState<string | null>(null);
+  const [rejectNote, setRejectNote] = useState('');
   const pendingItems = localPending ?? (items as PhotoSubmission[]);
+  const removeFromPending = (id: string) =>
+    setLocalPending((prev) => (prev ?? (items as PhotoSubmission[])).filter((s) => s.id !== id));
   const decide = async (sub: PhotoSubmission, decision: 'approve' | 'reject') => {
     setActingOn(sub.id);
     try {
       if (decision === 'approve') await apiClient.approveSubmission(sub.id);
-      else await apiClient.rejectSubmission(sub.id);
-      setLocalPending((prev) => (prev ?? (items as PhotoSubmission[])).filter((s) => s.id !== sub.id));
+      else await apiClient.rejectSubmission(sub.id, rejectReason || 'Other');
+      removeFromPending(sub.id);
+    } catch (err) {
+      Alert.alert('Action failed', err instanceof Error ? err.message : String(err));
+    } finally {
+      setActingOn(null);
+    }
+  };
+  /** Open the required-reason rejection modal for a submission. */
+  const openReject = (sub: PhotoSubmission) => {
+    setPreviewSub(null);
+    setRejectSub(sub);
+    setRejectReason(null);
+    setRejectNote('');
+  };
+  /** Finalize a rejection once the admin has picked a reason. */
+  const confirmReject = async () => {
+    if (!rejectSub || !rejectReason) return;
+    setActingOn(rejectSub.id);
+    try {
+      const res = await apiClient.rejectSubmission(
+        rejectSub.id,
+        rejectReason,
+        rejectReason === 'Other' && rejectNote.trim() ? rejectNote.trim() : undefined,
+      );
+      removeFromPending(rejectSub.id);
+      setRejectSub(null);
+      setRejectReason(null);
+      setRejectNote('');
+      Alert.alert(
+        'Photo rejected',
+        res.email_sent
+          ? `Reason saved. The submitter was emailed at ${rejectSub.user_info}.`
+          : 'Reason saved. No email was sent (no submitter email on file).',
+      );
     } catch (err) {
       Alert.alert('Action failed', err instanceof Error ? err.message : String(err));
     } finally {
@@ -180,7 +218,7 @@ export const AdminDetailScreen: React.FC<{ navigation: any; route: any }> = ({
                     </TouchableOpacity>
                     <TouchableOpacity
                       style={[styles.actionButton, styles.rejectButton]}
-                      onPress={() => decide(sub, 'reject')}
+                      onPress={() => openReject(sub)}
                       disabled={actingOn === sub.id}
                     >
                       <Text style={styles.actionText}>✕</Text>
@@ -242,9 +280,7 @@ export const AdminDetailScreen: React.FC<{ navigation: any; route: any }> = ({
                 <TouchableOpacity
                   style={[styles.actionButton, styles.rejectButton, styles.modalAction]}
                   onPress={() => {
-                    const sub = previewSub;
-                    setPreviewSub(null);
-                    if (sub) decide(sub, 'reject');
+                    if (previewSub) openReject(previewSub);
                   }}
                   disabled={previewSub ? actingOn === previewSub.id : false}
                 >
@@ -255,6 +291,77 @@ export const AdminDetailScreen: React.FC<{ navigation: any; route: any }> = ({
                   onPress={() => setPreviewSub(null)}
                 >
                   <Text style={styles.actionText}>Close</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
+        {/* Reject photo — required reason before finalizing */}
+        <Modal
+          visible={rejectSub !== null}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setRejectSub(null)}
+        >
+          <View style={styles.modalBackdrop}>
+            <View style={styles.modalCard}>
+              <Text style={styles.modalTitle} numberOfLines={2}>
+                Reject photo
+              </Text>
+              <Text style={styles.modalMeta}>
+                {rejectSub?.location_name || rejectSub?.location_id || 'Submission'}
+                {rejectSub?.user_info ? ` • by ${rejectSub.user_info}` : ''}
+              </Text>
+              <Text style={styles.rejectHint}>Select a reason — required to finalize the rejection.</Text>
+              <ScrollView style={styles.rejectList} nestedScrollEnabled>
+                {REJECTION_REASONS.map((reason) => {
+                  const selected = rejectReason === reason;
+                  return (
+                    <TouchableOpacity
+                      key={reason}
+                      style={[styles.rejectOption, selected && styles.rejectOptionActive]}
+                      onPress={() => setRejectReason(reason)}
+                    >
+                      <View style={[styles.rejectDot, selected && styles.rejectDotActive]}>
+                        {selected ? <Text style={styles.rejectDotCheck}>✓</Text> : null}
+                      </View>
+                      <Text style={[styles.rejectOptionText, selected && styles.rejectOptionTextActive]}>
+                        {reason}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+                {rejectReason === 'Other' ? (
+                  <TextInput
+                    style={styles.rejectNoteInput}
+                    placeholder="Short note for the submitter (optional)"
+                    placeholderTextColor={theme.colors.textTertiary}
+                    value={rejectNote}
+                    onChangeText={setRejectNote}
+                    maxLength={500}
+                    multiline
+                  />
+                ) : null}
+              </ScrollView>
+              <View style={styles.modalActions}>
+                <TouchableOpacity
+                  style={[styles.actionButton, styles.closeButton, styles.modalAction]}
+                  onPress={() => setRejectSub(null)}
+                >
+                  <Text style={styles.actionText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.actionButton,
+                    styles.rejectButton,
+                    styles.modalAction,
+                    !rejectReason && styles.actionDisabled,
+                  ]}
+                  onPress={confirmReject}
+                  disabled={!rejectReason || (rejectSub ? actingOn === rejectSub.id : false)}
+                >
+                  <Text style={styles.actionText}>✕ Reject Photo</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -645,4 +752,48 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   modalAction: { flex: 1, alignItems: 'center' },
+  actionDisabled: { opacity: 0.4 },
+
+  // Reject reason modal
+  rejectHint: { fontSize: 13, color: theme.colors.textSecondary, marginTop: 10 },
+  rejectList: { marginTop: 10, maxHeight: 340 },
+  rejectOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: theme.colors.surface3,
+    marginBottom: 8,
+    backgroundColor: theme.colors.surface2,
+  },
+  rejectOptionActive: { borderColor: '#EF4444', backgroundColor: '#EF444412' },
+  rejectDot: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 1.5,
+    borderColor: theme.colors.textTertiary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  rejectDotActive: { borderColor: '#EF4444', backgroundColor: '#EF4444' },
+  rejectDotCheck: { fontSize: 12, fontWeight: '900', color: '#FFFFFF' },
+  rejectOptionText: { fontSize: 14, color: theme.colors.textPrimary, flex: 1 },
+  rejectOptionTextActive: { fontWeight: '700', color: '#FCA5A5' },
+  rejectNoteInput: {
+    borderWidth: 1,
+    borderColor: theme.colors.surface3,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    color: theme.colors.textPrimary,
+    fontSize: 14,
+    minHeight: 64,
+    textAlignVertical: 'top',
+    marginBottom: 8,
+    backgroundColor: theme.colors.surface2,
+  },
 });
