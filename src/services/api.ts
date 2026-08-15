@@ -84,7 +84,25 @@ export interface PhotoSubmission {
   user_info?: string | null;
   comment?: string | null;
   app_name?: string;
+  rejection_reason?: string | null;
+  rejection_note?: string | null;
+  rejection_email_sent?: number | null;
+  rejection_email_to?: string | null;
 }
+
+/**
+ * Rejection reasons an admin must pick before a photo rejection is finalized.
+ * Mirrors REJECTION_REASONS in nearby-api/src/types.ts — keep in sync.
+ */
+export const REJECTION_REASONS = [
+  'Blurry / out of focus',
+  'Wrong location',
+  'Inappropriate content',
+  'Poor / unclear view of the location',
+  'Duplicate photo',
+  'Other',
+] as const;
+export type RejectionReason = (typeof REJECTION_REASONS)[number];
 
 // Public Cloudflare R2 bucket serving submission photos. Pending submissions
 // store the R2 object key in `photo_path` (not a URL); the public URL is
@@ -230,12 +248,24 @@ class ApiClient {
       body: JSON.stringify({ reviewed_by: 'owner' }),
     });
   }
-  /** Reject a pending photo submission. */
-  async rejectSubmission(id: string): Promise<{ success: boolean }> {
+  /**
+   * Reject a pending photo submission. A rejection_reason is required by the
+   * API; rejection_note is optional (used when the reason is "Other"). The
+   * API responds with email_sent when it attempted a submitter email.
+   */
+  async rejectSubmission(
+    id: string,
+    rejectionReason: RejectionReason | string,
+    rejectionNote?: string,
+  ): Promise<{ success: boolean; email_sent?: boolean }> {
     return this.fetchJson(`/api/reject/${encodeURIComponent(id)}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ reviewed_by: 'owner' }),
+      body: JSON.stringify({
+        reviewed_by: 'owner',
+        rejection_reason: rejectionReason,
+        rejection_note: rejectionNote?.trim() || undefined,
+      }),
     });
   }
 }
