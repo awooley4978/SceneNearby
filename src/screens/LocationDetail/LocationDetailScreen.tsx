@@ -436,7 +436,6 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
         {/* Location info */}
         <SectionCard icon="📍" title="Location" elevated fadeDelay={440}>
           <Text style={styles.bodyText}>{location.address}</Text>
-          <Text style={styles.bodyText}>{location.city}, {location.country}</Text>
           <Text style={styles.coords}>
             {location.latitude.toFixed(4)}, {location.longitude.toFixed(4)}
           </Text>
