@@ -86,6 +86,18 @@ export interface PhotoSubmission {
   app_name?: string;
 }
 
+// Public Cloudflare R2 bucket serving submission photos. Pending submissions
+// store the R2 object key in `photo_path` (not a URL); the public URL is
+// `${PUBLIC_BUCKET_URL}/${photo_path}` — same construction the API uses when it
+// approves a photo (nearby-api/src/r2.ts).
+const R2_PUBLIC_BUCKET_URL = 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev';
+
+/** Public URL for a submission's photo, or null when the submission has none. */
+export function submissionPhotoUrl(sub: PhotoSubmission): string | null {
+  if (!sub.photo_path) return null;
+  return `${R2_PUBLIC_BUCKET_URL}/${sub.photo_path}`;
+}
+
 class ApiClient {
   private baseUrl: string;
 

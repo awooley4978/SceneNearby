@@ -215,6 +215,20 @@ export const AdminDashboardScreen: React.FC<{ navigation: any }> = ({ navigation
         <Text style={styles.chevron}>›</Text>
       </TouchableOpacity>
 
+      {/* Location Research entry — reads Firestore research_* collections (web
+          Admin parity: staging /admin → Location Research) */}
+      <TouchableOpacity
+        style={styles.totalCard}
+        onPress={() => navigation.navigate('AdminResearch')}
+      >
+        <Text style={styles.totalEmoji}>🔬</Text>
+        <View>
+          <Text style={styles.totalLabel}>Location Research</Text>
+          <Text style={styles.totalSub}>Review & approve research candidates</Text>
+        </View>
+        <Text style={styles.chevron}>›</Text>
+      </TouchableOpacity>
+
       {/* Stat cards grid */}
       <View style={styles.grid}>
         {cards.map((card) => (
@@ -312,6 +326,7 @@ const styles = StyleSheet.create({
   },
   totalEmoji: { fontSize: 32, marginRight: 14 },
   totalLabel: { fontSize: 13, color: theme.colors.textSecondary },
+  totalSub: { fontSize: 11, color: theme.colors.textTertiary, marginTop: 2 },
   totalValue: { fontSize: 28, fontWeight: '800', color: theme.colors.textPrimary },
   chevron: { fontSize: 28, color: theme.colors.gold, marginLeft: 'auto' },
 

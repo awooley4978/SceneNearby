@@ -405,28 +405,6 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
         </View>
       )}
 
-      {/* More to Discover — beyond the radius-bounded feed, deduped per title */}
-      {!searchQuery && selectedCategory === 'all' && selectedType === 'all' && sortMode === 'default' && moreToDiscover.length > 0 && (
-        <View style={styles.moreSection}>
-          <Text style={styles.moreTitle}>🌍 More to Discover</Text>
-          {moreToDiscover.map((loc, idx) => (
-            <TouchableOpacity
-              key={loc.id}
-              style={[styles.moreRow, idx === moreToDiscover.length - 1 && styles.moreRowLast]}
-              onPress={() => navigation.navigate('LocationDetail', { locationId: loc.id })}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.moreMovie} numberOfLines={1}>
-                🎬 {loc.movieOrShow}
-              </Text>
-              <Text style={styles.moreDistance}>
-                {Math.round(loc.distanceFromUser!)} mi away
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      )}
-
       {/* Results count */}
       <View style={styles.resultsHeader}>
         <View style={styles.sectionTitleLeft}>
@@ -444,6 +422,36 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
       </View>
     </View>
   );
+
+  // "More to Discover" renders BELOW the local results (ListFooterComponent) —
+  // order on screen: Near You → local results → More to Discover. Content and
+  // logic are the restored section, unchanged.
+  const renderMoreToDiscover = () => {
+    if (searchQuery || selectedCategory !== 'all' || selectedType !== 'all' || sortMode !== 'default') {
+      return null;
+    }
+    if (moreToDiscover.length === 0) return null;
+    return (
+      <View style={styles.moreSection}>
+        <Text style={styles.moreTitle}>🌍 More to Discover</Text>
+        {moreToDiscover.map((loc, idx) => (
+          <TouchableOpacity
+            key={loc.id}
+            style={[styles.moreRow, idx === moreToDiscover.length - 1 && styles.moreRowLast]}
+            onPress={() => navigation.navigate('LocationDetail', { locationId: loc.id })}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.moreMovie} numberOfLines={1}>
+              🎬 {loc.movieOrShow}
+            </Text>
+            <Text style={styles.moreDistance}>
+              {Math.round(loc.distanceFromUser!)} mi away
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    );
+  };
 
   return (
     <View style={[styles.container, { paddingTop: insets.top + 8 }]}>
@@ -517,6 +525,7 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
           />
         )}
         ListHeaderComponent={renderHeader}
+        ListFooterComponent={renderMoreToDiscover}
         ListEmptyComponent={
           loading ? null : (
             <EmptyState
