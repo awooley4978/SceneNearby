@@ -23,7 +23,8 @@
           "waze",
           "maps",
           "comgooglemaps"
-        ]
+        ],
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
