@@ -23,6 +23,7 @@ import { AuthScreen } from '../screens/Auth/AuthScreen';
 import { UploadPhotoScreen } from '../screens/Upload/UploadPhotoScreen';
 import { AdminDashboardScreen } from '../screens/Admin/AdminDashboardScreen';
 import { AdminDetailScreen } from '../screens/Admin/AdminDetailScreen';
+import { AdminResearchScreen } from '../screens/Admin/AdminResearchScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -147,6 +148,7 @@ function ProfileStack() {
       <Stack.Screen name="Auth" component={AuthScreen} options={{ title: 'Sign In', headerShown: false, animation: 'fade' as any, presentation: 'modal' as any }} />
       <Stack.Screen name="AdminDashboard" component={AdminDashboardScreen} options={{ headerShown: false }} />
       <Stack.Screen name="AdminDetail" component={AdminDetailScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="AdminResearch" component={AdminResearchScreen} options={{ headerShown: false }} />
       {sharedScreens}
     </Stack.Navigator>
   );

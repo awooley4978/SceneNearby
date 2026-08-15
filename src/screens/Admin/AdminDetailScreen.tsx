@@ -7,10 +7,12 @@ import {
   TextInput,
   StyleSheet,
   Alert,
+  Image,
+  Modal,
 } from 'react-native';
 import { theme } from '../../theme';
 import type { FilmingLocation } from '../../models';
-import { apiClient, type PhotoSubmission } from '../../services/api';
+import { apiClient, submissionPhotoUrl, type PhotoSubmission } from '../../services/api';
 import {
   EMPTY_FILTERS,
   applyDetailFilters,
@@ -72,6 +74,7 @@ export const AdminDetailScreen: React.FC<{ navigation: any; route: any }> = ({
   // ── Pending photo approvals (type === 'pendingApproval') ──
   const [localPending, setLocalPending] = useState<PhotoSubmission[] | null>(null);
   const [actingOn, setActingOn] = useState<string | null>(null);
+  const [previewSub, setPreviewSub] = useState<PhotoSubmission | null>(null);
   const pendingItems = localPending ?? (items as PhotoSubmission[]);
   const decide = async (sub: PhotoSubmission, decision: 'approve' | 'reject') => {
     setActingOn(sub.id);
@@ -134,35 +137,129 @@ export const AdminDetailScreen: React.FC<{ navigation: any; route: any }> = ({
               <Text style={styles.emptySub}>No photos awaiting approval.</Text>
             </View>
           ) : (
-            pendingItems.map((sub) => (
-              <View key={sub.id} style={styles.row}>
-                <View style={styles.rowInfo}>
-                  <Text style={styles.rowTitle}>{sub.location_name || sub.location_id}</Text>
-                  <Text style={styles.rowSub}>
-                    {sub.status} • {sub.id} •{' '}
-                    {sub.submitted_at ? new Date(sub.submitted_at).toLocaleDateString() : ''}
-                  </Text>
-                </View>
-                <View style={styles.approvalActions}>
+            pendingItems.map((sub) => {
+              const photoUrl = submissionPhotoUrl(sub);
+              return (
+                <View key={sub.id} style={styles.row}>
+                  {/* Tappable row + thumbnail → opens the full preview modal */}
                   <TouchableOpacity
-                    style={[styles.actionButton, styles.approveButton]}
-                    onPress={() => decide(sub, 'approve')}
-                    disabled={actingOn === sub.id}
+                    style={styles.rowPreview}
+                    onPress={() => setPreviewSub(sub)}
+                    activeOpacity={0.7}
                   >
-                    <Text style={styles.actionText}>✓ Approve</Text>
+                    {photoUrl ? (
+                      <Image source={{ uri: photoUrl }} style={styles.thumb} />
+                    ) : (
+                      <View style={[styles.thumb, styles.thumbEmpty]}>
+                        <Text style={styles.thumbEmptyText}>🖼</Text>
+                      </View>
+                    )}
+                    <View style={styles.rowInfo}>
+                      <Text style={styles.rowTitle} numberOfLines={1}>
+                        {sub.location_name || sub.location_id}
+                      </Text>
+                      <Text style={styles.rowSub}>
+                        {sub.status} • {sub.id} •{' '}
+                        {sub.submitted_at ? new Date(sub.submitted_at).toLocaleDateString() : ''}
+                      </Text>
+                      {sub.comment ? (
+                        <Text style={styles.rowComment} numberOfLines={1}>
+                          “{sub.comment}”
+                        </Text>
+                      ) : null}
+                    </View>
+                    <Text style={styles.rowChevron}>👁</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[styles.actionButton, styles.rejectButton]}
-                    onPress={() => decide(sub, 'reject')}
-                    disabled={actingOn === sub.id}
-                  >
-                    <Text style={styles.actionText}>✕</Text>
-                  </TouchableOpacity>
+                  <View style={styles.approvalActions}>
+                    <TouchableOpacity
+                      style={[styles.actionButton, styles.approveButton]}
+                      onPress={() => decide(sub, 'approve')}
+                      disabled={actingOn === sub.id}
+                    >
+                      <Text style={styles.actionText}>✓ Approve</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[styles.actionButton, styles.rejectButton]}
+                      onPress={() => decide(sub, 'reject')}
+                      disabled={actingOn === sub.id}
+                    >
+                      <Text style={styles.actionText}>✕</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
-              </View>
-            ))
+              );
+            })
           )}
         </ScrollView>
+
+        {/* Full preview of the tapped submission photo + actions */}
+        <Modal
+          visible={previewSub !== null}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setPreviewSub(null)}
+        >
+          <View style={styles.modalBackdrop}>
+            <View style={styles.modalCard}>
+              <Text style={styles.modalTitle} numberOfLines={2}>
+                {previewSub?.location_name || previewSub?.location_id || 'Submission'}
+              </Text>
+              <Text style={styles.modalMeta}>
+                {previewSub?.id} •{' '}
+                {previewSub?.submitted_at
+                  ? new Date(previewSub.submitted_at).toLocaleDateString()
+                  : ''}
+              </Text>
+              {previewSub && submissionPhotoUrl(previewSub) ? (
+                <Image
+                  source={{ uri: submissionPhotoUrl(previewSub)! }}
+                  style={styles.modalImage}
+                  resizeMode="contain"
+                />
+              ) : (
+                <View style={styles.modalNoImage}>
+                  <Text style={styles.modalNoImageText}>No image on file for this submission</Text>
+                </View>
+              )}
+              {previewSub?.comment ? (
+                <Text style={styles.modalComment}>“{previewSub.comment}”</Text>
+              ) : null}
+              {previewSub?.user_info ? (
+                <Text style={styles.modalMeta}>Submitted by: {previewSub.user_info}</Text>
+              ) : null}
+              <View style={styles.modalActions}>
+                <TouchableOpacity
+                  style={[styles.actionButton, styles.approveButton, styles.modalAction]}
+                  onPress={() => {
+                    const sub = previewSub;
+                    setPreviewSub(null);
+                    if (sub) decide(sub, 'approve');
+                  }}
+                  disabled={previewSub ? actingOn === previewSub.id : false}
+                >
+                  <Text style={styles.actionText}>✓ Approve</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.actionButton, styles.rejectButton, styles.modalAction]}
+                  onPress={() => {
+                    const sub = previewSub;
+                    setPreviewSub(null);
+                    if (sub) decide(sub, 'reject');
+                  }}
+                  disabled={previewSub ? actingOn === previewSub.id : false}
+                >
+                  <Text style={styles.actionText}>✕ Reject</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.actionButton, styles.closeButton, styles.modalAction]}
+                  onPress={() => setPreviewSub(null)}
+                >
+                  <Text style={styles.actionText}>Close</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </View>
     );
   }
@@ -447,8 +544,32 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.surface3 + '60',
   },
+  rowPreview: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 10,
+  },
+  thumb: {
+    width: 44,
+    height: 44,
+    borderRadius: 8,
+    backgroundColor: theme.colors.surface2,
+    marginRight: 12,
+  },
+  thumbEmpty: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  thumbEmptyText: { fontSize: 18 },
   rowInfo: { flex: 1 },
   rowTitle: { fontSize: 15, fontWeight: '600', color: theme.colors.textPrimary },
+  rowComment: {
+    fontSize: 12,
+    fontStyle: 'italic',
+    color: theme.colors.textSecondary,
+    marginTop: 2,
+  },
   rowMovie: {
     fontSize: 12,
     fontWeight: '600',
@@ -457,7 +578,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   rowSub: { fontSize: 12, color: theme.colors.textSecondary, marginTop: 2 },
-  rowChevron: { fontSize: 20, color: theme.colors.textTertiary },
+  rowChevron: { fontSize: 18, color: theme.colors.textTertiary },
   approvalActions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   actionButton: {
     borderRadius: 8,
@@ -467,5 +588,61 @@ const styles = StyleSheet.create({
   },
   approveButton: { backgroundColor: '#22C55E22', borderColor: '#22C55E' },
   rejectButton: { backgroundColor: '#EF444422', borderColor: '#EF4444' },
+  closeButton: { backgroundColor: theme.colors.surface2, borderColor: theme.colors.surface3 },
   actionText: { fontSize: 12, fontWeight: '700', color: theme.colors.textPrimary },
+
+  // Photo preview modal
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.75)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  modalCard: {
+    width: '100%',
+    maxWidth: 480,
+    backgroundColor: theme.colors.surface,
+    borderRadius: 16,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: theme.colors.gold + '40',
+  },
+  modalTitle: {
+    fontSize: 17,
+    fontWeight: '700',
+    color: theme.colors.textPrimary,
+    marginBottom: 4,
+  },
+  modalMeta: { fontSize: 12, color: theme.colors.textSecondary, marginTop: 2 },
+  modalImage: {
+    width: '100%',
+    height: 320,
+    borderRadius: 12,
+    backgroundColor: theme.colors.surface2,
+    marginTop: 14,
+  },
+  modalNoImage: {
+    height: 160,
+    borderRadius: 12,
+    backgroundColor: theme.colors.surface2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 14,
+  },
+  modalNoImageText: { fontSize: 13, color: theme.colors.textSecondary },
+  modalComment: {
+    fontSize: 14,
+    fontStyle: 'italic',
+    color: theme.colors.textPrimary,
+    marginTop: 12,
+    lineHeight: 20,
+  },
+  modalActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 8,
+    marginTop: 16,
+  },
+  modalAction: { flex: 1, alignItems: 'center' },
 });
