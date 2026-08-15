@@ -23,15 +23,15 @@ import {
   type VerificationStatus,
 } from '../../services/research';
 
-type StatusFilterKey = 'all' | VerificationStatus;
+// Same filter options as the web Location Research screen (ResearchMovieDetail.tsx).
+type FilterKey = 'gte90' | 'gte75' | 'ready' | 'needs' | 'missingPhoto';
 
-const STATUS_FILTERS: { key: StatusFilterKey; label: string }[] = [
-  { key: 'all', label: 'All' },
-  { key: 'ready_for_review', label: 'Ready' },
-  { key: 'verified', label: 'Verified' },
-  { key: 'approved', label: 'Approved' },
-  { key: 'needs_research', label: 'Needs Research' },
-  { key: 'rejected', label: 'Rejected' },
+const FILTERS: { key: FilterKey; label: string }[] = [
+  { key: 'gte90', label: '90%+' },
+  { key: 'gte75', label: '75%+' },
+  { key: 'ready', label: 'Ready for Review' },
+  { key: 'needs', label: 'Needs Research' },
+  { key: 'missingPhoto', label: 'Missing/Unverified Photo' },
 ];
 
 export const AdminResearchScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
@@ -39,7 +39,7 @@ export const AdminResearchScreen: React.FC<{ navigation: any }> = ({ navigation 
   const [photos, setPhotos] = useState<ResearchPhotoCandidate[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [filter, setFilter] = useState<StatusFilterKey>('all');
+  const [activeFilters, setActiveFilters] = useState<Set<FilterKey>>(new Set());
   const [actingOn, setActingOn] = useState<string | null>(null);
   const [detailCandidate, setDetailCandidate] = useState<ResearchCandidate | null>(null);
   const [retryTick, setRetryTick] = useState(0);
@@ -85,12 +85,29 @@ export const AdminResearchScreen: React.FC<{ navigation: any }> = ({ navigation 
   }, [photos]);
 
   const filtered = useMemo(() => {
-    const list = filter === 'all' ? candidates : candidates.filter((c) => c.verification_status === filter);
+    // Mirrors the web Admin's filter semantics: empty selection = show all;
+    // otherwise a candidate passes if ANY active filter matches.
+    const list = candidates.filter((c) => {
+      if (activeFilters.size === 0) return true;
+      const uses = (photoByCandidate.get(c.id) ?? []).map((p) => p.use_status);
+      const missingPhoto = uses.some((u) => u === 'no_photo_found' || u === 'unknown');
+      for (const key of activeFilters) {
+        const ok =
+          key === 'gte90' ? c.confidence >= 90 :
+          key === 'gte75' ? c.confidence >= 75 :
+          key === 'ready' ? c.verification_status === 'ready_for_review' :
+          key === 'needs' ? c.verification_status === 'needs_research' :
+          key === 'missingPhoto' ? missingPhoto :
+          false;
+        if (ok) return true;
+      }
+      return false;
+    });
     return [...list].sort((a, b) => {
       if (b.confidence !== a.confidence) return b.confidence - a.confidence;
       return STATUS_SORT_ORDER[a.verification_status] - STATUS_SORT_ORDER[b.verification_status];
     });
-  }, [candidates, filter]);
+  }, [candidates, activeFilters, photoByCandidate]);
 
   const decide = async (candidate: ResearchCandidate, status: VerificationStatus) => {
     setActingOn(candidate.id);
@@ -155,20 +172,32 @@ export const AdminResearchScreen: React.FC<{ navigation: any }> = ({ navigation 
             <View style={styles.summaryChip}><Text style={styles.summaryChipText}>❌ {stats.rejected} rejected</Text></View>
           </View>
 
-          {/* Quick status filters */}
+          {/* Quick filters — compact pills, same options as web Admin */}
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipRow}>
-            {STATUS_FILTERS.map((f) => {
-              const active = filter === f.key;
+            {FILTERS.map((f) => {
+              const active = activeFilters.has(f.key);
               return (
                 <TouchableOpacity
                   key={f.key}
                   style={[styles.chip, active && styles.chipActive]}
-                  onPress={() => setFilter(f.key)}
+                  onPress={() =>
+                    setActiveFilters((prev) => {
+                      const next = new Set(prev);
+                      if (next.has(f.key)) next.delete(f.key);
+                      else next.add(f.key);
+                      return next;
+                    })
+                  }
                 >
                   <Text style={[styles.chipText, active && styles.chipTextActive]}>{f.label}</Text>
                 </TouchableOpacity>
               );
             })}
+            {activeFilters.size > 0 && (
+              <TouchableOpacity style={[styles.chip, styles.chipClear]} onPress={() => setActiveFilters(new Set())}>
+                <Text style={styles.chipText}>Clear</Text>
+              </TouchableOpacity>
+            )}
           </ScrollView>
 
           <ScrollView style={styles.list} contentContainerStyle={styles.listContent}>
@@ -387,18 +416,21 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   summaryChipText: { fontSize: 12, fontWeight: '600', color: theme.colors.textSecondary },
-  chipRow: { flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 12 },
+  chipRow: { flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 10 },
   chip: {
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-    borderRadius: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 999,
     backgroundColor: theme.colors.surface2,
     marginRight: 8,
     borderWidth: 1,
     borderColor: theme.colors.surface3,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   chipActive: { backgroundColor: theme.colors.gold + '20', borderColor: theme.colors.gold },
-  chipText: { fontSize: 13, fontWeight: '500', color: theme.colors.textSecondary },
+  chipClear: { borderColor: theme.colors.gold + '66' },
+  chipText: { fontSize: 12, fontWeight: '500', color: theme.colors.textSecondary },
   chipTextActive: { color: theme.colors.gold, fontWeight: '700' },
   list: { flex: 1 },
   listContent: { paddingBottom: 40 },
