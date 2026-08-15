@@ -11,3 +11,4 @@ web-build/
 .env
 .metro-cache/
 scripts/watchdog.log
+node_modules
