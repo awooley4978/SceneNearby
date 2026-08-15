@@ -1,10 +1,9 @@
 import { Platform } from 'react-native';
 
-// Public API base URL — port 3000 is the team's public surface
-// API must run on port 3000 for external access
+// Public API base URL — production points at the Fly.io host (R12: cloud host migration)
 const API_BASE = __DEV__
   ? 'http://localhost:3000'
-  : 'https://b118a520627ac1a10a1362a93ff3b3f5.ctonew.app';
+  : 'https://scene-nearby-api.fly.dev';
 
 export interface PhotoUploadRequest {
   app_name: string;

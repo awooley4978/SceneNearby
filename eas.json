@@ -14,7 +14,7 @@
     "preview": {
       "distribution": "internal",
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://b118a520627ac1a10a1362a93ff3b3f5.ctonew.app"
+        "EXPO_PUBLIC_API_URL": "https://scene-nearby-api.fly.dev"
       },
       "ios": {
         "buildConfiguration": "Release"
@@ -22,7 +22,7 @@
     },
     "production": {
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://b118a520627ac1a10a1362a93ff3b3f5.ctonew.app"
+        "EXPO_PUBLIC_API_URL": "https://scene-nearby-api.fly.dev"
       },
       "ios": {
         "buildConfiguration": "Release"
