@@ -15,7 +15,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '../../theme';
 import { LocationCategory, categoryColors } from '../../models';
-import { useAllLocations, useActorGroups } from '../../services/hooks';
+import { useAllLocations, useActorGroups, useMovieGroups } from '../../services/hooks';
 import { calculateDistance } from '../../services/geo';
 import { LocationCard } from '../../components/LocationCard';
 import { CardSkeleton } from '../../components/SkeletonLoader';
@@ -62,6 +62,19 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
   // ── API data ──
   const { locations: allLocations, loading, error, refetch } = useAllLocations();
   const { actorGroups } = useActorGroups();
+  const { movieGroups } = useMovieGroups();
+
+  // Total filming-location count per movie/show title (independent of any
+  // query/filter/radius state). Used so search-result subtitles show the
+  // title's real total (e.g. Stranger Things = 14) instead of only the
+  // locations that happened to match the current search query.
+  const movieCountByKey = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const g of movieGroups) {
+      map.set(`${g.title}||${g.year}`, g.locationCount);
+    }
+    return map;
+  }, [movieGroups]);
 
   // Derived helpers that used to come from sampleData
   const allLocationsWithActors = allLocations;
@@ -107,11 +120,14 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
       const key = `${first.movieOrShow}||${first.year}`;
       if (!addedMovies.has(key)) {
         addedMovies.add(key);
+        // Total count for the title from the full dataset (query-independent),
+        // falling back to the matched count only if the group is missing.
+        const total = movieCountByKey.get(key) ?? locs.length;
         results.push({
           type: first.isMovie ? 'movie' : 'show',
           id: `movie-${key}`,
           label: first.movieOrShow,
-          subtitle: `${first.year} • ${locs.length} location${locs.length !== 1 ? 's' : ''}`,
+          subtitle: `${first.year} • ${total} location${total !== 1 ? 's' : ''}`,
           data: { movieTitle: first.movieOrShow },
         });
       }
@@ -159,31 +175,14 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
   const userLocation = useUserLocation();
 
   // Constants
-  const RADIUS_STAGES = [3, 5, 10, 25, 50];
   const ARRIVAL_THRESHOLD_MILES = 0.1;
-
-  // Progressive radius: smallest stage with >=1 result, defaults to max (50) if 0
-  const activeRadius = useMemo(() => {
-    if (userLocation.latitude === null || userLocation.longitude === null) return null;
-    // Don't expand during active search -- use max radius
-    if (searchQuery.trim()) return RADIUS_STAGES[RADIUS_STAGES.length - 1];
-
-    let base = selectedCategory === 'all'
-      ? allLocations
-      : locationsByCategory(selectedCategory as LocationCategory);
-    if (selectedType === 'movies') base = base.filter((l) => l.isMovie);
-    else if (selectedType === 'shows') base = base.filter((l) => !l.isMovie);
-
-    const withDist = base.map((loc) => ({
-      ...loc,
-      distanceFromUser: calculateDistance(userLocation.latitude!, userLocation.longitude!, loc.latitude, loc.longitude) / 1609.34,
-    }));
-
-    for (const stage of RADIUS_STAGES) {
-      if (withDist.some((loc) => loc.distanceFromUser! <= stage)) return stage;
-    }
-    return RADIUS_STAGES[RADIUS_STAGES.length - 1]; // fallback: max radius
-  }, [userLocation.latitude, userLocation.longitude, searchQuery, selectedCategory, selectedType]);
+  // Fixed discovery radius (owner-directed 2026-08-14): the Discover feed is
+  // strictly distance-bounded at a consistent 5-mile default. Toggling
+  // All/Movies/TV Shows or categories must NOT change the radius, so there is
+  // no progressive-expansion fallback (that used to show 50mi on first render
+  // then collapse to 5mi after any toggle).
+  const DEFAULT_RADIUS_MILES = 5;
+  const activeRadius = DEFAULT_RADIUS_MILES;
 
   // Filtered locations (for the main feed)
   const filteredLocations = (() => {
@@ -217,7 +216,7 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
       }));
       // Filter to within radius — skip when searching so all matching results show
       if (!searchQuery.trim()) {
-        const radius = activeRadius ?? RADIUS_STAGES[RADIUS_STAGES.length - 1];
+        const radius = activeRadius ?? DEFAULT_RADIUS_MILES;
         result = result.filter((loc) => loc.distanceFromUser! <= radius);
       }
     }
@@ -241,9 +240,41 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
     const withDist = allLocations.map((loc) => ({
       ...loc,
       distanceFromUser: calculateDistance(userLocation.latitude!, userLocation.longitude!, loc.latitude, loc.longitude) / 1609.34,
-    })).filter((loc) => loc.distanceFromUser! <= (activeRadius ?? RADIUS_STAGES[RADIUS_STAGES.length - 1]));
+    })).filter((loc) => loc.distanceFromUser! <= (activeRadius ?? DEFAULT_RADIUS_MILES));
     return withDist.sort((a, b) => (a.distanceFromUser || 0) - (b.distanceFromUser || 0)).slice(0, 5);
   }, [userLocation.latitude, userLocation.longitude, activeRadius]);
+
+  // "More to Discover" — beyond the 5-mile feed, deduped per movie/show, up to
+  // 20 titles, nearest-first. Restored from the git-history implementation
+  // (41bfa09) and adapted to the API-driven hooks — not a redesign.
+  const moreToDiscover = useMemo(() => {
+    if (userLocation.latitude === null || userLocation.longitude === null) return [];
+    if (activeRadius === null) return [];
+
+    const withDist = allLocations.map((loc) => ({
+      ...loc,
+      distanceFromUser: calculateDistance(userLocation.latitude!, userLocation.longitude!, loc.latitude, loc.longitude) / 1609.34,
+    }));
+
+    let outer = withDist.filter((loc) => loc.distanceFromUser! > activeRadius);
+
+    let outerCap = 50;
+    const within50 = outer.filter((loc) => loc.distanceFromUser! <= 50);
+    if (within50.length < 20) outerCap = 100;
+
+    outer = outer.filter((loc) => loc.distanceFromUser! <= outerCap);
+
+    const movieMap = new Map<string, typeof outer[0]>();
+    for (const loc of outer) {
+      const key = loc.movieOrShow;
+      if (!movieMap.has(key) || movieMap.get(key)!.distanceFromUser! > loc.distanceFromUser!) {
+        movieMap.set(key, loc);
+      }
+    }
+    return Array.from(movieMap.values())
+      .sort((a, b) => (a.distanceFromUser || 0) - (b.distanceFromUser || 0))
+      .slice(0, 20);
+  }, [userLocation.latitude, userLocation.longitude, activeRadius, allLocations]);
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -374,6 +405,28 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
         </View>
       )}
 
+      {/* More to Discover — beyond the radius-bounded feed, deduped per title */}
+      {!searchQuery && selectedCategory === 'all' && selectedType === 'all' && sortMode === 'default' && moreToDiscover.length > 0 && (
+        <View style={styles.moreSection}>
+          <Text style={styles.moreTitle}>🌍 More to Discover</Text>
+          {moreToDiscover.map((loc, idx) => (
+            <TouchableOpacity
+              key={loc.id}
+              style={[styles.moreRow, idx === moreToDiscover.length - 1 && styles.moreRowLast]}
+              onPress={() => navigation.navigate('LocationDetail', { locationId: loc.id })}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.moreMovie} numberOfLines={1}>
+                🎬 {loc.movieOrShow}
+              </Text>
+              <Text style={styles.moreDistance}>
+                {Math.round(loc.distanceFromUser!)} mi away
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
+
       {/* Results count */}
       <View style={styles.resultsHeader}>
         <View style={styles.sectionTitleLeft}>
@@ -469,8 +522,8 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
             <EmptyState
               emoji="🎬"
               title="No locations found"
-              subtitle={activeRadius === 50 && !searchQuery
-                ? `No filming locations within ${RADIUS_STAGES[RADIUS_STAGES.length - 1]} miles`
+              subtitle={!searchQuery && selectedCategory === 'all' && selectedType === 'all'
+                ? `No filming locations within ${DEFAULT_RADIUS_MILES} miles`
                 : "Try adjusting your search or filters"}
             />
           )
@@ -549,13 +602,40 @@ const styles = StyleSheet.create({
   sortChipTextActive: { color: theme.colors.gold },
 
   sectionTitleLeft: { flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1 },
-  radiusPill: {
-    backgroundColor: theme.colors.gold + '18',
+  radiusPill: {    backgroundColor: theme.colors.gold + '18',
     paddingHorizontal: 10, paddingVertical: 4,
     borderRadius: 12,
     borderWidth: 1, borderColor: theme.colors.gold + '30',
   },
   radiusPillText: { fontSize: 11, fontWeight: '600', color: theme.colors.gold },
+  moreSection: {
+    marginBottom: 20,
+    backgroundColor: theme.colors.surface,
+    borderRadius: 14,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: theme.colors.surface3,
+  },
+  moreTitle: {
+    fontSize: 16, fontWeight: '700',
+    color: theme.colors.gold,
+    marginBottom: 12,
+  },
+  moreRow: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    paddingVertical: 12,
+    borderBottomWidth: 1, borderBottomColor: theme.colors.surface2,
+  },
+  moreRowLast: { borderBottomWidth: 0 },
+  moreMovie: {
+    flex: 1, fontSize: 14, fontWeight: '600',
+    color: theme.colors.textPrimary,
+    marginRight: 12,
+  },
+  moreDistance: {
+    fontSize: 13, fontWeight: '600',
+    color: theme.colors.textSecondary,
+  },
   sectionTitleRow: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     marginBottom: 12,

@@ -147,6 +147,7 @@ function ProfileStack() {
       <Stack.Screen name="Auth" component={AuthScreen} options={{ title: 'Sign In', headerShown: false, animation: 'fade' as any, presentation: 'modal' as any }} />
       <Stack.Screen name="AdminDashboard" component={AdminDashboardScreen} options={{ headerShown: false }} />
       <Stack.Screen name="AdminDetail" component={AdminDetailScreen} options={{ headerShown: false }} />
+      {sharedScreens}
     </Stack.Navigator>
   );
 }
