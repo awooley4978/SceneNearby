@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Image, ImageBackground,
   View,
   Text,
@@ -122,15 +122,22 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
     );
   };
 
-  // Page indicator dots
+  // Auto-advance off the cinematic title card (page 0) so startup is fully
+  // automatic — no tap needed to begin onboarding.
+  useEffect(() => {
+    if (currentPage !== 0) return;
+    const t = setTimeout(() => goToPage(1), 1800);
+    return () => clearTimeout(t);
+  }, [currentPage]);
+
+  // Page indicator dots (non-interactive — progress indicator only)
   const renderDots = () => (
     <View style={styles.dots}>
       {Array.from({ length: totalPages }).map((_, i) => {
         const isActive = currentPage === i;
         return (
-          <TouchableOpacity
+          <View
             key={i}
-            onPress={() => goToPage(i)}
             style={[styles.dot, isActive && styles.dotActive]}
           />
         );
