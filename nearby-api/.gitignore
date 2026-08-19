@@ -1,0 +1,9 @@
+# Scene Nearby API — monorepo subdirectory
+# Secrets and runtime junk never enter version control.
+node_modules/
+.env
+.env.*
+*.log
+uploads/
+tmp/
+.DS_Store

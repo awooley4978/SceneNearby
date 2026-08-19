@@ -1,0 +1,30 @@
+# Scene Nearby API — Fly.io app config
+# Stable HTTPS: https://scene-nearby-api.fly.dev  (auto TLS, force HTTPS)
+app = "scene-nearby-api"
+primary_region = "dfw"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "8080"
+  DB_DRIVER = "libsql"
+  R2_BUCKET_NAME = "scene-nearby-images"
+
+[vm]
+  size = "shared-cpu-1x"
+  memory = "256mb"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "off"   # always-on API — never suspend on idle
+  auto_start_machines = true
+  min_machines_running = 1
+
+[[http_service.checks]]
+  grace_period = "15s"
+  interval = "15s"
+  timeout = "5s"
+  method = "get"
+  path = "/health"
