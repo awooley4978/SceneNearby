@@ -10,6 +10,7 @@
 //      (never deleted) as the audit trail.
 import { runQuery, esc } from "../db";
 import { readResearchCollection, writeResearchDoc, isFirestoreEnabled } from "./firestore";
+import { hasValidVerification, verificationReport, REQUIRED_VERIFIED_FIELDS } from "./verification";
 
 export const ADMIN_EMAILS = ["awooley4978@gmail.com", "scenenearbysupport@gmail.com"];
 export const LOCATION_CATEGORIES = ["drama", "comedy", "sciFi", "action", "romance", "horror"];
@@ -161,6 +162,17 @@ async function buildPreview(
   if (typeIsMovie === 0 && !movieId) warnings.push("movie type unknown — defaults to TV show");
   if (!best) warnings.push("no reusable photo found — card will use the app's fallback image");
 
+  // VALIDATION GATE (owner directive 2026-08-19): the worker is candidate discovery
+  // only. Surface exactly which required fields lack an independent verification
+  // attestation so the Admin UI (and this writer) can refuse unverified data.
+  const vReport = verificationReport(candidate);
+  if (!vReport.overall) {
+    const missing = vReport.fields.filter((f) => !f.verified).map((f) => f.field);
+    warnings.push(`NOT VERIFIED — missing attestation for: ${missing.join(", ")}. Verify these fields before adding (required: ${REQUIRED_VERIFIED_FIELDS.join(", ")}).`);
+  } else if (vReport.attestation) {
+    warnings.push(`Verified by ${vReport.attestation.verified_by} (${vReport.attestation.source})`);
+  }
+
   return {
     locationId: await nextLocationId(city),
     title: String(candidate.name ?? ""),
@@ -225,6 +237,19 @@ export async function addCandidateToProduction(
   if (!candidate) throw new Error("Candidate not found in research_candidates");
   if (candidate.verification_status !== "approved") {
     throw new Error(`Candidate is '${candidate.verification_status}' — only approved candidates can be added`);
+  }
+  // VALIDATION GATE (owner directive 2026-08-19): the worker is candidate discovery
+  // only. A one-click "approved" is no longer enough — the candidate must carry a
+  // verification attestation covering every required field before it may enter the
+  // live `locations` table. This is the non-bypassable choke point.
+  if (!hasValidVerification(candidate)) {
+    const v = verificationReport(candidate);
+    const missing = v.fields.filter((f) => !f.verified).map((f) => f.field);
+    throw new Error(
+      `Candidate is NOT independently verified (worker output is discovery-only). ` +
+      `Missing verification for: ${missing.join(", ")}. ` +
+      `Required: ${REQUIRED_VERIFIED_FIELDS.join(", ")}. Use the Verify action to attest these fields before adding.`
+    );
   }
   if (candidate.region_level === true) {
     throw new Error("Region-level candidates cannot be added — they are not specific filming locations");

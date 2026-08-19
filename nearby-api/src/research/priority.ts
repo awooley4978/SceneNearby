@@ -488,7 +488,9 @@ async function writePriorityCandidates(
       fun_fact: "",
       episode: null,
       confidence: c.confidence,
-      verification_status: c.confidence < 75 || !hasPin ? "needs_research" : "ready_for_review",
+      // VALIDATION (owner directive 2026-08-19): worker = discovery only. Never
+      // self-grades ready. Usable only via human verification attestation before add.
+      verification_status: "needs_research",
       research_notes: c.researchNote
         ? c.researchNote
         : `Priority request "${pr.value}" (${pr.kind}). Auto-discovered via Wikipedia/Wikidata P915 + Nominatim + Commons. Sources: ${c.sources.length}, photos: ${c.photos.length}.`,

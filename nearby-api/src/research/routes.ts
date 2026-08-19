@@ -18,6 +18,7 @@ import {
 import { researchWorkerStatus, researchWorkerTick } from "./worker";
 import { isFirestoreEnabled } from "./firestore";
 import { addCandidateToProduction, previewCandidate } from "./add-to-production";
+import { recordVerification, clearVerification, verificationReport, REQUIRED_VERIFIED_FIELDS, getCandidate } from "./verification";
 import {
   listPriorityRequests,
   createPriorityRequest,
@@ -134,6 +135,51 @@ export function registerResearchRoutes(router: Router): void {
     const body = await readJson(req);
     await updateResearchConfig({ pause_research: body?.pause === true });
     return json({ config: await getResearchConfig() });
+  });
+  // ── Verification (owner directive 2026-08-19) ──
+  // The worker is candidate discovery ONLY. A candidate becomes usable only after an
+  // explicit human verification attestation covering the required fields. These
+  // endpoints record / clear / inspect that attestation.
+  //
+  // Read-only field-by-field gate report for a candidate.
+  router.get("/api/research/candidates/:id/verification", async (req, params) => {
+    const cand = await getCandidate(params.id);
+    if (!cand) return error("Candidate not found", 404);
+    return json({
+      candidate_id: params.id,
+      required_fields: REQUIRED_VERIFIED_FIELDS,
+      report: verificationReport(cand),
+    });
+  });
+  // Record a verification attestation (admin-gated, requires all required fields + a source).
+  router.post("/api/research/candidates/:id/verify", async (req, params) => {
+    const body = await readJson(req);
+    const verifiedBy = typeof body?.verified_by === "string" ? body.verified_by.trim() : "";
+    const source = typeof body?.source === "string" ? body.source.trim() : "";
+    const note = typeof body?.note === "string" ? body.note : undefined;
+    let fields: string[] = [];
+    if (Array.isArray(body?.fields)) {
+      fields = (body.fields as unknown[]).filter((f): f is string => typeof f === "string");
+    }
+    if (!verifiedBy) return error("verified_by (admin email) is required");
+    try {
+      const attestation = await recordVerification(params.id, verifiedBy, fields as any, source, note);
+      return json({ ok: true, verification: attestation, candidate_id: params.id }, 200);
+    } catch (err) {
+      return error(err instanceof Error ? err.message : "Verify failed", /not authorized/i.test(err instanceof Error ? err.message : "") ? 403 : 409);
+    }
+  });
+  // Clear a verification attestation (re-open the candidate for review).
+  router.post("/api/research/candidates/:id/unverify", async (req, params) => {
+    const body = await readJson(req);
+    const verifiedBy = typeof body?.verified_by === "string" ? body.verified_by.trim() : "";
+    if (!verifiedBy) return error("verified_by (admin email) is required");
+    try {
+      await clearVerification(params.id, verifiedBy);
+      return json({ ok: true });
+    } catch (err) {
+      return error(err instanceof Error ? err.message : "Unverify failed", 403);
+    }
   });
   // ── Add approved candidate → production (EXPLICIT owner action) ──
   // Phase 1: read-only preview — production fields + live duplicate scan. NO writes.
