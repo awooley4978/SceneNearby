@@ -17,6 +17,16 @@
 API_DIR=/home/team/shared/nearby-api
 LOG=/tmp/api-watchdog.log
 
+# Single-instance guard: only ONE watchdog may supervise :3001. If boot and a
+# manual launch both start it, the loser exits; the winner keeps fd 9 (and the
+# flock) open for the life of the loop below.
+LOCK=/tmp/api-watchdog.lock
+exec 9>"$LOCK"
+if ! flock -n 9; then
+  echo "$(date -Is) another watchdog already running; exiting" >> "$LOG"
+  exit 0
+fi
+
 log() { echo "$(date -Is) $*" >> "$LOG"; }
 
 # Real health check: HTTP GET /health must return JSON containing "ok".

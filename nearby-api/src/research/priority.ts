@@ -100,11 +100,16 @@ async function ensureTable(): Promise<void> {
       completion_type TEXT
     )`
   );
-  // Migration: add completion_type if the table predates it (safe to ignore if present).
+  // Migration: add completion_type ONLY if it's absent. Always ALTERing (then
+  // relying on a catch) previously threw an unhandled "duplicate column name:
+  // completion_type" that crashed the whole API. Guard on the live schema first.
   try {
-    await runQuery(`ALTER TABLE ${TABLE} ADD COLUMN completion_type TEXT`);
+    const cols = (await runQuery(`PRAGMA table_info(${TABLE})`)) as Record<string, unknown>[];
+    if (!cols.some((c) => String(c.name) === "completion_type")) {
+      await runQuery(`ALTER TABLE ${TABLE} ADD COLUMN completion_type TEXT`);
+    }
   } catch {
-    /* column already exists */
+    /* column already exists, or PRAGMA/ALTER unavailable — non-fatal */
   }
 }
 

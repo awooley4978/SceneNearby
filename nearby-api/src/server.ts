@@ -409,19 +409,39 @@ router.get("/api/places/:placeId", async (req, params) => {
 
 // ── Server handler ──
 
-function handleRequest(req: Request): Response | Promise<Response> {
+async function handleRequest(req: Request): Promise<Response> {
   const url = new URL(req.url);
   const method = req.method;
   if (method === "OPTIONS") return corsPreflight();
 
   const match = router.match(method, url.pathname);
-  if (match) return match.handler(req, match.params);
+  if (match) {
+    try {
+      return await match.handler(req, match.params);
+    } catch (err) {
+      // A single route error must NEVER kill the whole API (historically an
+      // unhandled rejection here crashed the process and took /api down until a
+      // manual restart). Isolate it and surface a clean 500 instead.
+      console.error(`Route error: ${method} ${url.pathname}`, err);
+      return error("Internal server error", 500);
+    }
+  }
   return error("Not found", 404);
 }
 
 // ── Start server ──
 registerResearchRoutes(router);
 startResearchWorker();
+
+// Crash-proofing: never let a stray top-level rejection/exception kill the API.
+// The watchdog restarts the process if it truly wedges, so logging and keeping
+// the listener alive is the safer default for an HTTP API.
+process.on("unhandledRejection", (reason) => {
+  console.error("Unhandled promise rejection (ignored):", reason);
+});
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught exception (ignored):", err);
+});
 
 console.log(`
   ╔══════════════════════════════════════════╗
