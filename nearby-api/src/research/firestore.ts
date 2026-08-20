@@ -128,8 +128,23 @@ export async function readResearchCollection(collection: string, limit = 500): P
     const out: Record<string, any> = { id: d.name.split("/").pop() };
     for (const [k, v] of Object.entries(d.fields ?? {})) {
       const fv = v as any;
-      if (fv.stringValue !== undefined) out[k] = fv.stringValue;
-      else if (fv.booleanValue !== undefined) out[k] = fv.booleanValue;
+      if (fv.stringValue !== undefined) {
+        // writeResearchDoc serializes nested objects/arrays via JSON.stringify
+        // (see toFields). Round-trip them back here so structures like the
+        // R28 verification attestation (an object with a `fields` array) come
+        // back as real objects/arrays instead of opaque JSON strings — the gate
+        // reads verification.fields directly. Plain strings are left untouched.
+        const raw = fv.stringValue;
+        if (raw && (raw.startsWith("{") || raw.startsWith("["))) {
+          try {
+            out[k] = JSON.parse(raw);
+            continue;
+          } catch {
+            /* not JSON — fall through to plain string */
+          }
+        }
+        out[k] = raw;
+      } else if (fv.booleanValue !== undefined) out[k] = fv.booleanValue;
       else if (fv.integerValue !== undefined) out[k] = Number(fv.integerValue);
       else if (fv.doubleValue !== undefined) out[k] = fv.doubleValue;
       else if (fv.arrayValue) out[k] = fv.arrayValue.values?.map((x: any) => x.stringValue ?? x) ?? [];
