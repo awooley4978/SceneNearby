@@ -104,6 +104,72 @@ export async function insertSubmission(sub: PhotoSubmission): Promise<void> {
   await runQuery(sql);
 }
 
+/**
+ * Insert a guided community contribution (photo -> movie/show -> filming
+ * location -> description). Every contribution is stored pending-only here and
+ * flows through admin moderation; nothing in this table auto-publishes. All new
+ * columns are additive and nullable-safe.
+ */
+export async function insertContribution(sub: PhotoSubmission): Promise<void> {
+  const sql = `INSERT INTO photo_submissions (
+    id, app_name, location_id, location_name, user_info, photo_path, photo_public_url,
+    comment, description, submitted_at, reviewed_by, reviewed_at, status,
+    movie_or_show, proposed_movie_json, proposed_location_json,
+    submitter_uid, display_name, allow_public_credit, rights_confirmed,
+    photo_kind, source_evidence, source, featured
+  ) VALUES (
+    ${esc(sub.id)}, ${esc(sub.app_name)}, ${esc(sub.location_id ?? "unknown")}, ${esc(sub.location_name ?? "Unknown location")},
+    ${esc(sub.user_info ?? null)}, ${esc(sub.photo_path)}, NULL,
+    ${esc(sub.comment ?? null)}, ${esc(sub.description ?? null)}, ${esc(sub.submitted_at)}, NULL, NULL,
+    ${esc(sub.status)},
+    ${esc(sub.movie_or_show ?? null)}, ${esc(sub.proposed_movie_json ?? null)}, ${esc(sub.proposed_location_json ?? null)},
+    ${esc(sub.submitter_uid ?? null)}, ${esc(sub.display_name ?? null)}, ${sub.allow_public_credit == null ? 1 : sub.allow_public_credit},
+    ${sub.rights_confirmed ? 1 : 0}, ${esc(sub.photo_kind ?? "community")}, ${esc(sub.source_evidence ?? null)},
+    ${esc(sub.source ?? "community")}, 0
+  )`;
+  await runQuery(sql);
+}
+
+/** Latest approved community photos (for the approved gallery). */
+export async function getApprovedCommunityPhotos(limit = 100): Promise<PhotoSubmission[]> {
+  return (await runQuery(
+    `SELECT * FROM photo_submissions WHERE status = 'approved' ORDER BY submitted_at DESC LIMIT ${Math.max(1, Math.min(500, limit))}`
+  )) as PhotoSubmission[];
+}
+
+/** Approved community photos tied to a single location (for its community gallery). */
+export async function getApprovedCommunityByLocation(locationId: string): Promise<PhotoSubmission[]> {
+  return (await runQuery(
+    `SELECT * FROM photo_submissions WHERE status = 'approved' AND location_id = ${esc(locationId)} ORDER BY COALESCE(featured,0) DESC, submitted_at DESC`
+  )) as PhotoSubmission[];
+}
+
+/** The currently-featured community photo for a location (0 or 1). */
+export async function getFeaturedByLocation(locationId: string): Promise<PhotoSubmission | null> {
+  const rows = (await runQuery(
+    `SELECT * FROM photo_submissions WHERE status = 'approved' AND location_id = ${esc(locationId)} AND featured = 1 ORDER BY featured_at DESC LIMIT 1`
+  )) as PhotoSubmission[];
+  return rows.length > 0 ? rows[0] : null;
+}
+
+/**
+ * Set/unset the featured community photo for a location. Selecting a new
+ * featured photo clears any previous one for that location first (the previous
+ * photo stays approved in the gallery — it is never deleted or un-attributed).
+ */
+export async function setFeatured(locationId: string, submissionId: string | null, featuredBy: string): Promise<void> {
+  // Clear any existing featured photo for this location (reversible; photo stays in gallery).
+  await runQuery(
+    `UPDATE photo_submissions SET featured = 0, featured_at = NULL WHERE location_id = ${esc(locationId)} AND featured = 1`
+  );
+  if (submissionId) {
+    const now = new Date().toISOString();
+    await runQuery(
+      `UPDATE photo_submissions SET featured = 1, featured_at = ${esc(now)} WHERE id = ${esc(submissionId)} AND location_id = ${esc(locationId)}`
+    );
+  }
+}
+
 export async function approveSubmission(id: string, reviewedBy: string, publicUrl: string): Promise<void> {
   const now = new Date().toISOString();
   await runQuery(

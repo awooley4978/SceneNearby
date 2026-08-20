@@ -31,6 +31,20 @@ export interface PhotoSubmission {
   rejection_note?: string | null;
   rejection_email_sent?: number | null;
   rejection_email_to?: string | null;
+  // ── guided community-contribution fields ──
+  movie_or_show?: string | null;
+  proposed_movie_json?: string | null; // {"movie_title","year","type"} for a NEW title
+  proposed_location_json?: string | null; // {"place_name","address","scene_description","source_evidence"}
+  description?: string | null;
+  submitter_uid?: string | null;
+  display_name?: string | null;
+  allow_public_credit?: number | null;
+  rights_confirmed?: number | null;
+  photo_kind?: string | null; // "community" | "official"
+  featured?: number | null;
+  featured_at?: string | null;
+  source_evidence?: string | null;
+  source?: string | null; // "community" | "studio" | ...
 }
 
 export interface GalleryPhoto {

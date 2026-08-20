@@ -27,6 +27,8 @@ import { sendEmail } from "./email";
 import { REJECTION_REASONS } from "./types";
 import { registerResearchRoutes } from "./research/routes";
 import { startResearchWorker } from "./research/worker";
+import { registerContributionRoutes } from "./contributions";
+import { runMigrations } from "./migrations";
 import type { PhotoSubmission, FilmingLocation, LocationSummary, LocationRecord, RejectionReason } from "./types";
 
 const PORT = parseInt(process.env.PORT || "8080", 10);
@@ -431,7 +433,12 @@ async function handleRequest(req: Request): Promise<Response> {
 
 // ── Start server ──
 registerResearchRoutes(router);
+registerContributionRoutes(router);
 startResearchWorker();
+// Apply additive schema migrations at boot (idempotent, never destructive).
+runMigrations().catch((err) => {
+  console.error("Migration failed (continuing):", err);
+});
 
 // Crash-proofing: never let a stray top-level rejection/exception kill the API.
 // The watchdog restarts the process if it truly wedges, so logging and keeping
