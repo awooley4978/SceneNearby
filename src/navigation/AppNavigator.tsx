@@ -21,6 +21,7 @@ import { AlbumScreen } from '../screens/Album/AlbumScreen';
 import { LocationAlbumScreen } from '../screens/Album/LocationAlbumScreen';
 import { AuthScreen } from '../screens/Auth/AuthScreen';
 import { UploadPhotoScreen } from '../screens/Upload/UploadPhotoScreen';
+import { ContributeScreen } from '../screens/Contribute/ContributeScreen';
 import { AdminDashboardScreen } from '../screens/Admin/AdminDashboardScreen';
 import { AdminDetailScreen } from '../screens/Admin/AdminDetailScreen';
 import { AdminResearchScreen } from '../screens/Admin/AdminResearchScreen';
@@ -107,6 +108,11 @@ const sharedScreens = (
       name="Upload"
       component={UploadPhotoScreen}
       options={{ title: 'Upload Photo', headerShown: false, animation: 'fade' as any, presentation: 'modal' as any }}
+    />
+    <Stack.Screen
+      name="Contribute"
+      component={ContributeScreen}
+      options={{ headerShown: false, animation: 'fade' as any, presentation: 'modal' as any }}
     />
   </>
 );
@@ -219,6 +225,18 @@ const CustomTabBar: React.FC<{
     [navigation, scaleAnims, glowAnims],
   );
 
+  // Opens the guided contribution flow (a modal registered in every tab stack).
+  const handleContribute = useCallback(() => {
+    try {
+      const activeKey = state.routes[state.index]?.key;
+      if (activeKey) {
+        descriptors[activeKey]?.navigation?.navigate('Contribute');
+      }
+    } catch {
+      /* ignore */
+    }
+  }, [state, descriptors]);
+
   return (
     <View style={styles.tabBar}>
       {/* Active indicator — slides horizontally */}
@@ -296,6 +314,16 @@ const CustomTabBar: React.FC<{
           </TouchableOpacity>
         );
       })}
+
+      {/* Raised center "+" — opens the contribution flow */}
+      <TouchableOpacity
+        style={styles.contributeButton}
+        onPress={handleContribute}
+        activeOpacity={0.85}
+        accessibilityLabel="Add a photo and describe a filming location"
+      >
+        <Text style={styles.contributeIcon}>+</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -367,5 +395,30 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '600',
     marginTop: 2,
+  },
+  contributeButton: {
+    position: 'absolute',
+    top: -18,
+    left: '50%',
+    marginLeft: -31,
+    width: 62,
+    height: 62,
+    borderRadius: 31,
+    backgroundColor: theme.colors.gold,
+    borderWidth: 5,
+    borderColor: theme.colors.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: theme.colors.gold,
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 10,
+  },
+  contributeIcon: {
+    fontSize: 36,
+    fontWeight: '700',
+    color: theme.colors.black,
+    marginTop: -4,
   },
 });
