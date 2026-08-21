@@ -34,6 +34,13 @@ export interface ApiLocation {
   isMovie: boolean;
   imageUrl: string | null;
   focalPoint: { x: number; y: number } | null;
+  photoAttribution?: {
+    photographer: string | null;
+    license: string | null;
+    licenseUrl: string | null;
+    sourceUrl: string | null;
+    modified: string | null;
+  } | null;
   remoteDestination: {
     country?: string;
     island?: string;

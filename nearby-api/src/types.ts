@@ -83,6 +83,14 @@ export interface RemoteDestination {
   travel_time?: string;
 }
 
+export interface PhotoAttribution {
+  photographer: string | null;
+  license: string | null;
+  licenseUrl: string | null;
+  sourceUrl: string | null;
+  modified: string | null;
+}
+
 export interface LocationRecord {
   id: string;
   title: string;
@@ -108,6 +116,7 @@ export interface LocationRecord {
   estimated_visit_time: string | null;
   worth_it_percentage: number | null;
   worth_it_votes: number | null;
+  photo_attribution_json?: string | null;
 }
 
 export interface FilmingLocation {
@@ -138,6 +147,7 @@ export interface FilmingLocation {
   addedAt: string | null;
   source: "research" | "manual";
   approvedBy: string | null;
+  photoAttribution: PhotoAttribution | null;
 }
 
 export interface LocationSummary {
@@ -157,4 +167,5 @@ export interface LocationSummary {
   focalPoint: { x: number; y: number } | null;
   isMovie: boolean;
   distance?: number;
+  photoAttribution?: PhotoAttribution | null;
 }

@@ -21,6 +21,7 @@ import { useSaved } from '../../context/SavedContext';
 import { useUserLocation } from '../../hooks/useUserLocation';
 import { MapPlaceholder } from '../../components/MapPlaceholder';
 import { SmartHeroImage } from '../../components/SmartHeroImage';
+import { PhotoAttribution } from '../../components/PhotoAttribution';
 import { WorthTheVisit } from '../../components/WorthTheVisit';
 import { EstimatedVisitTime } from '../../components/EstimatedVisitTime';
 import { VisitorTips } from '../../components/VisitorTips';
@@ -297,7 +298,12 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
 
           {/* Corner brackets — featured-location frame */}
           <LocationFrame />
-
+          {/* Compact photo attribution (licensed images) — tappable license */}
+          {location.imageUrl && location.photoAttribution && (
+            <View style={styles.attributionOverlay}>
+              <PhotoAttribution attribution={location.photoAttribution} />
+            </View>
+          )}
           {/* Hero content */}
           <View style={styles.heroContent}>
             <Pressable onPress={handleViewMovie} style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}>
@@ -510,6 +516,13 @@ const styles = StyleSheet.create({
   heroOverlay: {
     ...StyleSheet.absoluteFillObject,
     zIndex: 1,
+  },
+  attributionOverlay: {
+    position: 'absolute',
+    top: 14,
+    right: 12,
+    zIndex: 4,
+    maxWidth: '80%',
   },
   heroContent: {
     paddingHorizontal: 20,

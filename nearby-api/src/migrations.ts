@@ -106,4 +106,13 @@ export async function runMigrations(): Promise<void> {
     "source",
     "TEXT NOT NULL DEFAULT 'community'"
   );
+  // ── locations: photo attribution / license metadata ──
+  // JSON blob { photographer, license, licenseUrl, sourceUrl, modified } so the
+  // app can render a compact attribution line with a per-photo tappable license
+  // link and a changes-made indicator when the license requires disclosure.
+  await addColumn(
+    "locations",
+    "photo_attribution_json",
+    "TEXT"
+  );
 }

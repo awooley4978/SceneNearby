@@ -8,6 +8,7 @@
 //      added_at, approved_by, research_candidate_id) and flags the candidate
 //      in Firestore so it can't be added twice. Research record is retained
 //      (never deleted) as the audit trail.
+import { licenseUrlFor } from "../photoAttribution";
 import { runQuery, esc } from "../db";
 import { readResearchCollection, writeResearchDoc, isFirestoreEnabled } from "./firestore";
 import { hasValidVerification, verificationReport, REQUIRED_VERIFIED_FIELDS } from "./verification";
@@ -272,17 +273,26 @@ export async function addCandidateToProduction(
   }
 
   const addedAt = new Date().toISOString();
+  const photoAttributionJson = preview.photoMeta
+    ? JSON.stringify({
+        photographer: preview.photoMeta.creator ?? null,
+        license: preview.photoMeta.license ?? null,
+        licenseUrl: preview.photoMeta.license ? licenseUrlFor(preview.photoMeta.license) : null,
+        sourceUrl: preview.photoMeta.sourceUrl ?? null,
+        modified: null,
+      })
+    : null;
   const sql = `INSERT INTO locations (
     id, title, movie_or_show, year, category, latitude, longitude, address, city, country,
     scene_description, fun_fact, quote, quote_attribution, then_and_now, is_movie, image_url,
     focal_point_x, focal_point_y, remote_destination_json, actors_json, estimated_visit_time,
-    worth_it_percentage, worth_it_votes, added_at, source, approved_by, research_candidate_id
+    worth_it_percentage, worth_it_votes, added_at, source, approved_by, research_candidate_id, photo_attribution_json
   ) VALUES (
     ${esc(preview.locationId)}, ${esc(preview.title)}, ${esc(preview.movieOrShow)}, ${preview.year},
     ${esc(category)}, ${lat}, ${lng}, ${esc(preview.address)}, ${esc(preview.city)}, ${esc(preview.country)},
     ${esc(preview.sceneDescription)}, ${esc(preview.funFact)}, NULL, NULL, NULL, ${preview.isMovie ? 1 : 0}, ${esc(preview.imageUrl)},
     NULL, NULL, NULL, '[]', NULL, NULL, NULL,
-    ${esc(addedAt)}, 'research', ${esc(approvedBy)}, ${esc(candidateId)}
+    ${esc(addedAt)}, 'research', ${esc(approvedBy)}, ${esc(candidateId)}, ${photoAttributionJson ? `${esc(photoAttributionJson)}` : 'NULL'}
   )`;
   await runQuery(sql);
 

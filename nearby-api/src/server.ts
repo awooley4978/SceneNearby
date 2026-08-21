@@ -29,6 +29,7 @@ import { registerResearchRoutes } from "./research/routes";
 import { startResearchWorker } from "./research/worker";
 import { registerContributionRoutes } from "./contributions";
 import { runMigrations } from "./migrations";
+import { parsePhotoAttribution } from "./photoAttribution";
 import type { PhotoSubmission, FilmingLocation, LocationSummary, LocationRecord, RejectionReason } from "./types";
 
 const PORT = parseInt(process.env.PORT || "8080", 10);
@@ -259,6 +260,7 @@ function transformLocation(rec: LocationRecord): FilmingLocation {
   
   let remoteDestination = null;
   try { remoteDestination = rec.remote_destination_json ? JSON.parse(rec.remote_destination_json) : null; } catch { /* keep null */ }
+  const photoAttribution = parsePhotoAttribution(rec.photo_attribution_json ?? null);
 
   return {
     id: rec.id,
@@ -278,6 +280,7 @@ function transformLocation(rec: LocationRecord): FilmingLocation {
     thenAndNow: rec.then_and_now,
     isMovie: rec.is_movie === 1,
     imageUrl: rec.image_url,
+    photoAttribution,
     focalPoint: (rec.focal_point_x != null && rec.focal_point_y != null) ? { x: rec.focal_point_x, y: rec.focal_point_y } : null,
     remoteDestination,
     actors,
@@ -309,6 +312,7 @@ function toSummary(loc: FilmingLocation): LocationSummary {
     focalPoint: loc.focalPoint,
     isMovie: loc.isMovie,
     distance: loc.distance,
+    photoAttribution: loc.photoAttribution ?? null,
   };
 }
 
