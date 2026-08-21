@@ -10,7 +10,6 @@ import {
   ScrollView,
   Alert,
   Linking,
-  Switch,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
@@ -28,8 +27,8 @@ import type {
   ContributionLocationOption,
 } from '../../services/contributionService';
 
-// Guided community contribution flow:
-//   Photo -> Movie/Show -> Filming Location -> Details -> Submit
+// Guided community contribution flow (fast path for someone on vacation):
+//   Photo -> Movie/Show -> Location -> Last Step -> Submitted
 // Every submission lands PENDING-ONLY and goes through admin moderation.
 
 type Step = 'photo' | 'movie' | 'location' | 'details' | 'success';
@@ -44,12 +43,10 @@ interface Draft {
   proposeMovieTitle: string;
   proposeMovieYear: string;
   proposeMovieType: 'movie' | 'show';
-  proposePlaceName: string;
-  proposeAddress: string;
-  proposeScene: string;
-  // details
-  description: string;
-  allowPublicCredit: boolean;
+  proposeCity: string; // "City & state/province", e.g. "Arlington, TX"
+  proposeExactLocation: string; // "Exact location or address", e.g. "AT&T Stadium, 1 AT&T Way"
+  // last step
+  anonymous: boolean;
   displayName: string;
 }
 
@@ -61,11 +58,9 @@ const emptyDraft: Draft = {
   proposeMovieTitle: '',
   proposeMovieYear: '',
   proposeMovieType: 'movie',
-  proposePlaceName: '',
-  proposeAddress: '',
-  proposeScene: '',
-  description: '',
-  allowPublicCredit: true,
+  proposeCity: '',
+  proposeExactLocation: '',
+  anonymous: false,
   displayName: '',
 };
 
@@ -161,19 +156,26 @@ export const ContributeScreen: React.FC = () => {
   }, [step, draft.movieTitle]);
 
   const canContinuePhoto = !!draft.photo;
+  const hasMovieSelection = !!draft.movieTitle;
   const canContinueMovie =
-    !!(draft.movieTitle || draft.proposeMovieTitle.trim()) &&
-    (!!draft.movieTitle || true); // new-title path fine with just a name
-  const canContinueLocation =
-    !!draft.locationId ||
-    !!draft.proposePlaceName.trim();
-  const canSubmit =
-    rightsConfirmed &&
-    !!draft.photo &&
-    (!!draft.movieTitle || !!draft.proposeMovieTitle.trim()) &&
-    (!!draft.locationId || !!draft.proposePlaceName.trim());
+    !!draft.movieTitle || !!draft.proposeMovieTitle.trim();
+  const hasLocationSelection = !!draft.locationId;
+  const hasNewLocation = !!draft.proposeCity.trim() || !!draft.proposeExactLocation.trim();
+  const canContinueLocation = hasLocationSelection || hasNewLocation;
 
-  const goDetailsNext = canContinueLocation;
+  // Final step can submit only when the permission is confirmed AND the user
+  // has chosen how to be shown (a name, or anonymous).
+  const canSubmit =
+    rightsConfirmed && (!!draft.displayName.trim() || draft.anonymous) && !!draft.photo;
+
+  // If the user picks anonymous, drop the entered name so it isn't sent.
+  const toggleAnonymous = () => {
+    setDraft((d) => ({
+      ...d,
+      anonymous: !d.anonymous,
+      displayName: !d.anonymous ? '' : d.displayName,
+    }));
+  };
 
   const handleSubmit = async () => {
     if (!rightsConfirmed) {
@@ -193,23 +195,22 @@ export const ContributeScreen: React.FC = () => {
             }
           : undefined;
       const proposedLocation =
-        !draft.locationId && draft.proposePlaceName.trim()
+        !draft.locationId && hasNewLocation
           ? {
-              place_name: draft.proposePlaceName.trim(),
-              address: draft.proposeAddress.trim() || undefined,
-              scene_description: draft.proposeScene.trim() || undefined,
+              place_name: draft.proposeExactLocation.trim() || draft.proposeCity.trim() || undefined,
+              city: draft.proposeCity.trim() || undefined,
             }
           : undefined;
       const res = await submitContribution({
         location_id: draft.locationId || undefined,
-        location_name: draft.locationName || undefined,
+        location_name: draft.locationName || proposedLocation?.place_name || undefined,
         movie_or_show: draft.movieTitle || undefined,
         proposed_movie_json: proposedMovie,
         proposed_location_json: proposedLocation,
-        description: draft.description.trim() || undefined,
         submitter_uid: user?.uid || undefined,
-        display_name: draft.displayName.trim() || user?.displayName || undefined,
-        allow_public_credit: draft.allowPublicCredit,
+        display_name: draft.anonymous ? undefined : draft.displayName.trim() || user?.displayName || undefined,
+        // anonymous users don't get a public credit; named users do
+        allow_public_credit: !draft.anonymous,
         rights_confirmed: true,
         photo: {
           uri: draft.photo.uri,
@@ -255,13 +256,11 @@ export const ContributeScreen: React.FC = () => {
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-        {/* ── STEP: PHOTO ── */}
+        {/* ── STEP 1: PHOTO ── */}
         {step === 'photo' && (
           <View>
-            <Text style={styles.title}>📸 Show us the spot</Text>
-            <Text style={styles.subtitle}>
-              Snap or pick a photo of the filming location. This is the one thing we always need.
-            </Text>
+            <Text style={styles.title}>Show us the spot 📸</Text>
+            <Text style={styles.subtitle}>Snap or choose a photo of the filming location.</Text>
             {draft.photo ? (
               <Image source={{ uri: draft.photo.uri }} style={styles.previewImage} resizeMode="cover" />
             ) : (
@@ -288,7 +287,7 @@ export const ContributeScreen: React.FC = () => {
           </View>
         )}
 
-        {/* ── STEP: MOVIE ── */}
+        {/* ── STEP 2: MOVIE OR SHOW ── */}
         {step === 'movie' && (
           <View>
             <Text style={styles.title}>🎞️ Which movie or show?</Text>
@@ -296,49 +295,76 @@ export const ContributeScreen: React.FC = () => {
               Pick an existing title, or add one we haven't listed yet.
             </Text>
 
-            <Text style={styles.label}>Search Scene Nearby</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Type a movie or TV show…"
-              placeholderTextColor={theme.colors.textTertiary}
-              value={titleQuery}
-              onChangeText={setTitleQuery}
-            />
-            {loadingTitles ? (
-              <ActivityIndicator color={theme.colors.gold} style={{ marginVertical: 12 }} />
-            ) : (
-              <ScrollView style={styles.titleList} nestedScrollEnabled>
-                {titles.map((t) => {
-                  const selected = draft.movieTitle === t.title;
-                  return (
-                    <TouchableOpacity
-                      key={t.title}
-                      style={[styles.optionRow, selected && styles.optionRowSelected]}
-                      onPress={() => {
-                        set({ movieTitle: t.title, proposeMovieTitle: '' });
-                        setTitleQuery('');
-                      }}
-                    >
-                      <Text style={[styles.optionText, selected && styles.optionTextSelected]}>
-                        {selected ? '✓ ' : ''}{t.title}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })}
-                {titles.length === 0 && !loadingTitles && (
-                  <Text style={styles.hint}>No matching titles yet.</Text>
-                )}
-              </ScrollView>
-            )}
-
-            <View style={styles.dividerOr}>
-              <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>or add a new one</Text>
-              <View style={styles.dividerLine} />
-            </View>
-
-            {!draft.movieTitle ? (
+            {hasMovieSelection ? (
+              // Selected title — clear feedback that the tap worked.
               <View>
+                <Text style={styles.label}>Movie or show</Text>
+                <View style={styles.selectedCard}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.selectedCheck}>✓ {draft.movieTitle}</Text>
+                    <Text style={styles.selectedSub}>Existing title in Scene Nearby</Text>
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => {
+                      set({ movieTitle: '' });
+                      setTitleQuery('');
+                    }}
+                    style={styles.changeButton}
+                  >
+                    <Text style={styles.changeButtonText}>Change</Text>
+                  </TouchableOpacity>
+                </View>
+                <TouchableOpacity
+                  onPress={() => set({ movieTitle: '', proposeMovieTitle: '' })}
+                  style={styles.linkButton}
+                >
+                  <Text style={styles.linkText}>Add a different/new title instead</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.primaryButton}
+                  onPress={() => setStep('location')}
+                >
+                  <Text style={styles.primaryButtonText}>Continue</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View>
+                <Text style={styles.label}>Search Scene Nearby</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Type a movie or TV show…"
+                  placeholderTextColor={theme.colors.textTertiary}
+                  value={titleQuery}
+                  onChangeText={setTitleQuery}
+                />
+                {loadingTitles ? (
+                  <ActivityIndicator color={theme.colors.gold} style={{ marginVertical: 12 }} />
+                ) : (
+                  <ScrollView style={styles.titleList} nestedScrollEnabled>
+                    {titles.map((t) => (
+                      <TouchableOpacity
+                        key={t.title}
+                        style={styles.optionRow}
+                        onPress={() => {
+                          set({ movieTitle: t.title, proposeMovieTitle: '' });
+                          setTitleQuery('');
+                        }}
+                      >
+                        <Text style={styles.optionText}>{t.title}</Text>
+                      </TouchableOpacity>
+                    ))}
+                    {titles.length === 0 && !loadingTitles && (
+                      <Text style={styles.hint}>No matching titles yet.</Text>
+                    )}
+                  </ScrollView>
+                )}
+
+                <View style={styles.dividerOr}>
+                  <View style={styles.dividerLine} />
+                  <Text style={styles.dividerText}>or add a new one</Text>
+                  <View style={styles.dividerLine} />
+                </View>
+
                 <Text style={styles.label}>Title</Text>
                 <TextInput
                   style={styles.input}
@@ -369,104 +395,107 @@ export const ContributeScreen: React.FC = () => {
                     </TouchableOpacity>
                   ))}
                 </View>
-              </View>
-            ) : (
-              <TouchableOpacity onPress={() => set({ movieTitle: '' })} style={styles.linkButton}>
-                <Text style={styles.linkText}>Add a different/new title instead</Text>
-              </TouchableOpacity>
-            )}
 
-            <TouchableOpacity
-              style={[styles.primaryButton, !canContinueMovie && styles.disabled]}
-              disabled={!canContinueMovie}
-              onPress={() => setStep('location')}
-            >
-              <Text style={styles.primaryButtonText}>Continue</Text>
-            </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.primaryButton, !canContinueMovie && styles.disabled]}
+                  disabled={!canContinueMovie}
+                  onPress={() => setStep('location')}
+                >
+                  <Text style={styles.primaryButtonText}>Continue</Text>
+                </TouchableOpacity>
+              </View>
+            )}
           </View>
         )}
 
-        {/* ── STEP: LOCATION ── */}
+        {/* ── STEP 3: LOCATION ── */}
         {step === 'location' && (
           <View>
-            <Text style={styles.title}>📍 Where was it filmed?</Text>
-            <Text style={styles.subtitle}>
-              {draft.movieTitle
-                ? `Pick a ${draft.movieTitle} location, or tell us about one we missed.`
-                : 'Tell us about the filming location.'}
-            </Text>
+            <Text style={styles.title}>📍 Where was this filmed?</Text>
 
-            {draft.movieTitle && locations.length > 0 && (
-              <ScrollView style={styles.titleList} nestedScrollEnabled>
-                {locations.map((loc) => {
-                  const selected = draft.locationId === loc.locationId;
-                  return (
-                    <TouchableOpacity
-                      key={loc.locationId}
-                      style={[styles.optionRow, selected && styles.optionRowSelected]}
-                      onPress={() =>
-                        set({ locationId: loc.locationId, locationName: loc.title, proposePlaceName: '' })
-                      }
-                    >
-                      <View style={{ flex: 1 }}>
-                        <Text style={[styles.optionText, selected && styles.optionTextSelected]}>
-                          {selected ? '✓ ' : ''}{loc.title}
-                        </Text>
-                        {!!loc.city && <Text style={styles.optionSub}>{loc.city}</Text>}
-                      </View>
-                    </TouchableOpacity>
-                  );
-                })}
-              </ScrollView>
-            )}
-            {draft.movieTitle && loadingLocations && (
-              <ActivityIndicator color={theme.colors.gold} style={{ marginVertical: 12 }} />
+            {draft.movieTitle ? (
+              <Text style={styles.subtitle}>
+                Pick a {draft.movieTitle} location we already have, or tell us about one we missed.
+              </Text>
+            ) : (
+              <Text style={styles.subtitle}>Tell us where the location is.</Text>
             )}
 
-            {!draft.locationId ? (
+            {hasLocationSelection ? (
               <View>
-                {draft.movieTitle && locations.length > 0 && (
-                  <View style={styles.dividerOr}>
-                    <View style={styles.dividerLine} />
-                    <Text style={styles.dividerText}>or a spot we missed</Text>
-                    <View style={styles.dividerLine} />
+                <View style={styles.selectedCard}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.selectedCheck}>✓ {draft.locationName}</Text>
+                    <Text style={styles.selectedSub}>Known Scene Nearby location</Text>
                   </View>
-                )}
-                <Text style={styles.label}>Place / address</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="e.g. Astoria Column, Oregon"
-                  placeholderTextColor={theme.colors.textTertiary}
-                  value={draft.proposePlaceName}
-                  onChangeText={(v) => set({ proposePlaceName: v, locationName: v })}
-                />
-                <Text style={styles.label}>Street address (optional)</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="e.g. 1 Columbia River Scenic Hwy"
-                  placeholderTextColor={theme.colors.textTertiary}
-                  value={draft.proposeAddress}
-                  onChangeText={(v) => set({ proposeAddress: v })}
-                />
-                <Text style={styles.label}>What happens there in the scene? (optional)</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="e.g. The kids race bikes up the hill"
-                  placeholderTextColor={theme.colors.textTertiary}
-                  value={draft.proposeScene}
-                  onChangeText={(v) => set({ proposeScene: v })}
-                  multiline
-                />
+                  <TouchableOpacity
+                    onPress={() => set({ locationId: '', locationName: '' })}
+                    style={styles.changeButton}
+                  >
+                    <Text style={styles.changeButtonText}>Change</Text>
+                  </TouchableOpacity>
+                </View>
+                <TouchableOpacity
+                  onPress={() => set({ locationId: '', locationName: '' })}
+                  style={styles.linkButton}
+                >
+                  <Text style={styles.linkText}>Tell us about a different spot instead</Text>
+                </TouchableOpacity>
               </View>
             ) : (
-              <TouchableOpacity onPress={() => set({ locationId: '', locationName: '' })} style={styles.linkButton}>
-                <Text style={styles.linkText}>Tell us about a different spot instead</Text>
-              </TouchableOpacity>
+              draft.movieTitle && (
+                <View>
+                  {locations.length > 0 && (
+                    <ScrollView style={styles.titleList} nestedScrollEnabled>
+                      {locations.map((loc) => (
+                        <TouchableOpacity
+                          key={loc.locationId}
+                          style={styles.optionRow}
+                          onPress={() =>
+                            set({ locationId: loc.locationId, locationName: loc.title, proposeCity: '', proposeExactLocation: '' })
+                          }
+                        >
+                          <Text style={styles.optionText}>{loc.title}</Text>
+                          {!!loc.city && <Text style={styles.optionSub}>{loc.city}</Text>}
+                        </TouchableOpacity>
+                      ))}
+                    </ScrollView>
+                  )}
+                  {loadingLocations && (
+                    <ActivityIndicator color={theme.colors.gold} style={{ marginVertical: 12 }} />
+                  )}
+                  {locations.length > 0 && (
+                    <View style={styles.dividerOr}>
+                      <View style={styles.dividerLine} />
+                      <Text style={styles.dividerText}>or a spot we missed</Text>
+                      <View style={styles.dividerLine} />
+                    </View>
+                  )}
+                </View>
+              )
             )}
 
+            {/* New-spot fields */}
+            <Text style={styles.label}>City & state/province</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Arlington, TX  ·  Lyon, France"
+              placeholderTextColor={theme.colors.textTertiary}
+              value={draft.proposeCity}
+              onChangeText={(v) => set({ proposeCity: v })}
+            />
+            <Text style={styles.label}>Exact location or address (optional)</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="AT&T Stadium, 1 AT&T Way"
+              placeholderTextColor={theme.colors.textTertiary}
+              value={draft.proposeExactLocation}
+              onChangeText={(v) => set({ proposeExactLocation: v, locationName: v })}
+            />
+
             <TouchableOpacity
-              style={[styles.primaryButton, !goDetailsNext && styles.disabled]}
-              disabled={!goDetailsNext}
+              style={[styles.primaryButton, !canContinueLocation && styles.disabled]}
+              disabled={!canContinueLocation}
               onPress={() => setStep('details')}
             >
               <Text style={styles.primaryButtonText}>Continue</Text>
@@ -474,88 +503,78 @@ export const ContributeScreen: React.FC = () => {
           </View>
         )}
 
-        {/* ── STEP: DETAILS ── */}
+        {/* ── STEP 4: LAST STEP (permission + how to show the photo) ── */}
         {step === 'details' && (
           <View>
-            <Text style={styles.title}>✍️ A few final touches</Text>
-            <Text style={styles.subtitle}>
-              Add context and choose how you'd like to appear. Then submit — it goes to our review queue.
-            </Text>
+            <Text style={styles.title}>Almost done!</Text>
 
-            <Text style={styles.label}>Description (optional)</Text>
-            <TextInput
-              style={[styles.input, styles.multiInput]}
-              placeholder="What should visitors know about this spot?"
-              placeholderTextColor={theme.colors.textTertiary}
-              value={draft.description}
-              onChangeText={(v) => set({ description: v })}
-              multiline
-            />
-
-            <Text style={styles.label}>Display name (optional)</Text>
-            <TextInput
-              style={styles.input}
-              placeholder={user?.displayName || 'Your name'}
-              placeholderTextColor={theme.colors.textTertiary}
-              value={draft.displayName}
-              onChangeText={(v) => set({ displayName: v })}
-            />
-
-            <View style={styles.switchRow}>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.switchLabel}>Give me credit publicly</Text>
-                <Text style={styles.switchHint}>Show my display name with the photo</Text>
-              </View>
-              <Switch
-                value={draft.allowPublicCredit}
-                onValueChange={(v) => set({ allowPublicCredit: v })}
-                trackColor={{ true: theme.colors.gold, false: theme.colors.surface3 }}
-                thumbColor={theme.colors.black}
-              />
-            </View>
-
-            {/* Rights affirmation */}
+            <Text style={styles.label}>Photo permission</Text>
             <TouchableOpacity style={styles.affirmationRow} onPress={() => setRightsConfirmed((v) => !v)}>
               <View style={[styles.checkbox, rightsConfirmed && styles.checkboxChecked]}>
                 {rightsConfirmed && <Text style={styles.checkboxMark}>✓</Text>}
               </View>
-              <Text style={styles.affirmationText}>
-                I took this photo or have permission to share it, and it's my own work.
-              </Text>
+              <Text style={styles.affirmationText}>I took this photo or have permission to share it.</Text>
             </TouchableOpacity>
+
+            <Text style={styles.label}>How should we show your photo?</Text>
+
+            {/* Anonymous toggle */}
+            <TouchableOpacity style={styles.affirmationRow} onPress={toggleAnonymous}>
+              <View style={[styles.checkbox, draft.anonymous && styles.checkboxChecked]}>
+                {draft.anonymous && <Text style={styles.checkboxMark}>✓</Text>}
+              </View>
+              <Text style={styles.affirmationText}>Keep me anonymous</Text>
+            </TouchableOpacity>
+
+            <Text style={styles.label}>Name to show (optional)</Text>
+            <TextInput
+              style={[styles.input, draft.anonymous && styles.disabledInput]}
+              placeholder="Your name"
+              placeholderTextColor={theme.colors.textTertiary}
+              value={draft.anonymous ? '' : draft.displayName}
+              onChangeText={(v) => set({ displayName: v })}
+              editable={!draft.anonymous}
+            />
+            <Text style={styles.hint}>Example: “Photo by Linda”</Text>
 
             {!!submitError && <Text style={styles.errorText}>{submitError}</Text>}
 
-            <TouchableOpacity
-              style={[styles.primaryButton, !canSubmit && styles.disabled]}
-              disabled={!canSubmit}
-              onPress={handleSubmit}
-            >
-              {submitting ? (
-                <ActivityIndicator color={theme.colors.black} />
-              ) : (
-                <Text style={styles.primaryButtonText}>Submit for review</Text>
-              )}
-            </TouchableOpacity>
+            {/* Reveal the submit action only once the final step is complete. */}
+            {canSubmit && (
+              <TouchableOpacity
+                style={styles.primaryButton}
+                disabled={submitting}
+                onPress={handleSubmit}
+              >
+                {submitting ? (
+                  <ActivityIndicator color={theme.colors.black} />
+                ) : (
+                  <Text style={styles.primaryButtonText}>Submit for Review</Text>
+                )}
+              </TouchableOpacity>
+            )}
             <TouchableOpacity style={styles.linkButton} onPress={() => setStep('location')}>
               <Text style={styles.linkText}>← Back</Text>
             </TouchableOpacity>
           </View>
         )}
 
-        {/* ── STEP: SUCCESS ── */}
+        {/* ── SUCCESS ── */}
         {step === 'success' && (
           <View style={styles.centered}>
             <Text style={styles.successEmoji}>🎉</Text>
             <Text style={styles.title}>Thank you!</Text>
             <Text style={styles.subtitle}>
-              Your photo is in our review queue. Once approved, it'll appear with credit on the
+              Your photo is in our review queue. Once approved, it'll be shown on the
               {draft.locationName ? ` ${draft.locationName}` : ''} location.
             </Text>
             <TouchableOpacity style={styles.primaryButton} onPress={close}>
               <Text style={styles.primaryButtonText}>Done</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.linkButton} onPress={() => { setDraft({ ...emptyDraft }); setRightsConfirmed(false); setStep('photo'); }}>
+            <TouchableOpacity
+              style={styles.linkButton}
+              onPress={() => { setDraft({ ...emptyDraft }); setRightsConfirmed(false); setStep('photo'); }}
+            >
               <Text style={styles.linkText}>Contribute another photo</Text>
             </TouchableOpacity>
           </View>
@@ -604,17 +623,23 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.surface, borderRadius: 12, paddingHorizontal: 16, paddingVertical: 12,
     fontSize: 15, color: theme.colors.textPrimary, borderWidth: 1, borderColor: theme.colors.surface3,
   },
-  multiInput: { minHeight: 80, textAlignVertical: 'top' },
+  disabledInput: { opacity: 0.4 },
   titleList: { maxHeight: 220 },
   optionRow: {
     backgroundColor: theme.colors.surface, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12,
     marginBottom: 6, borderWidth: 1, borderColor: theme.colors.surface3,
   },
-  optionRowSelected: { borderColor: theme.colors.gold, backgroundColor: theme.colors.surface2 },
   optionText: { fontSize: 15, color: theme.colors.textPrimary },
-  optionTextSelected: { color: theme.colors.goldLight },
   optionSub: { fontSize: 12, color: theme.colors.textTertiary, marginTop: 2 },
   hint: { color: theme.colors.textTertiary, marginVertical: 8 },
+  selectedCard: {
+    flexDirection: 'row', alignItems: 'center', backgroundColor: theme.colors.surface, borderRadius: 12,
+    padding: 14, borderWidth: 1, borderColor: theme.colors.gold,
+  },
+  selectedCheck: { fontSize: 17, fontWeight: '700', color: theme.colors.goldLight },
+  selectedSub: { fontSize: 12, color: theme.colors.textTertiary, marginTop: 3 },
+  changeButton: { paddingHorizontal: 10, paddingVertical: 6 },
+  changeButtonText: { fontSize: 14, color: theme.colors.textTertiary, textDecorationLine: 'underline' },
   dividerOr: { flexDirection: 'row', alignItems: 'center', marginVertical: 16, gap: 10 },
   dividerLine: { flex: 1, height: 1, backgroundColor: theme.colors.surface3 },
   dividerText: { fontSize: 12, color: theme.colors.textTertiary },
@@ -627,13 +652,7 @@ const styles = StyleSheet.create({
   pillTextSelected: { color: theme.colors.goldLight, fontWeight: '700' },
   linkButton: { paddingVertical: 12, alignItems: 'center' },
   linkText: { fontSize: 14, color: theme.colors.textTertiary, textDecorationLine: 'underline' },
-  switchRow: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: theme.colors.surface,
-    borderRadius: 12, padding: 14, marginTop: 20, borderWidth: 1, borderColor: theme.colors.surface3,
-  },
-  switchLabel: { fontSize: 15, fontWeight: '600', color: theme.colors.textPrimary },
-  switchHint: { fontSize: 12, color: theme.colors.textTertiary, marginTop: 2 },
-  affirmationRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginTop: 20 },
+  affirmationRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginTop: 8 },
   checkbox: {
     width: 22, height: 22, borderRadius: 6, borderWidth: 2, borderColor: theme.colors.surface3,
     alignItems: 'center', justifyContent: 'center', marginTop: 1,
@@ -644,6 +663,7 @@ const styles = StyleSheet.create({
   errorText: { fontSize: 14, color: '#ff6b6b', textAlign: 'center', marginTop: 16 },
   primaryButton: {
     backgroundColor: theme.colors.gold, borderRadius: 12, paddingVertical: 16, alignItems: 'center', marginTop: 24,
+    alignSelf: 'stretch',
   },
   primaryButtonText: { fontSize: 16, fontWeight: '700', color: theme.colors.black },
   disabled: { opacity: 0.45 },

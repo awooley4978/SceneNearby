@@ -40,6 +40,7 @@ interface ProposedMovie {
 interface ProposedLocation {
   place_name?: string;
   address?: string;
+  city?: string;
   scene_description?: string;
   source_evidence?: string;
 }
