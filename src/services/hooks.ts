@@ -78,6 +78,7 @@ function toFilmingLocation(api: ApiLocation | ApiLocationSummary): FilmingLocati
     actors: api.actors || [],
     imageUrl: api.imageUrl || undefined,
     focalPoint: api.focalPoint || undefined,
+    photoAttribution: (api as ApiLocation).photoAttribution ?? null,
   };
 }
 

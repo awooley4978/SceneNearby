@@ -12,6 +12,7 @@ import { FilmingLocation } from '../models';
 import { CategoryBadge } from './CategoryBadge';
 import { MapPlaceholder } from './MapPlaceholder';
 import { SmartHeroImage } from './SmartHeroImage';
+import { PhotoAttribution } from './PhotoAttribution';
 import { DistanceBadge } from './DistanceBadge';
 import { StarRating } from './StarRating';
 import { useRatingMap } from '../services/hooks';
@@ -251,6 +252,12 @@ export const LocationCard: React.FC<LocationCardProps> = ({
               </Animated.Text>
             </TouchableOpacity>
 
+            {/* Photo creator attribution — bottom-left, above the meta row (reusable) */}
+            {location.imageUrl && !imageError && location.photoAttribution && (
+              <View style={styles.heroAttribution} pointerEvents="box-none">
+                <PhotoAttribution attribution={location.photoAttribution} variant="card" />
+              </View>
+            )}
             {/* City and year overlay at bottom of hero */}
             <View style={styles.heroMeta}>
               <Text style={styles.heroCity}>{location.city}</Text>
@@ -386,6 +393,14 @@ const styles = StyleSheet.create({
   },
   heartIconFilled: {
     // Already has emoji color
+  },
+  heroAttribution: {
+    position: 'absolute',
+    bottom: 44,
+    left: 12,
+    right: 12,
+    zIndex: 12,
+    alignItems: 'flex-start',
   },
   heroMeta: {
     flexDirection: 'row',

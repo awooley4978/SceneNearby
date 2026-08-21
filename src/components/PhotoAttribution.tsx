@@ -6,24 +6,36 @@ import {
   licenseUrlFor,
 } from '../utils/photoAttribution';
 
+interface Props {
+  attribution: PhotoAttributionData | null | undefined;
+  /** Where the pill is rendered — affects text size/contrast. */
+  variant?: 'hero' | 'card';
+}
+
 /**
- * Compact photo-attribution line, e.g. "Photo: Gerardo Orlando · CC BY-SA 4.0".
+ * Reusable, compact photo attributribution treatment for any location photo:
+ *   📷 Gerardo Orlando · CC BY-SA 4.0
+ *   📷 Community contributor
  * The license name is tappable and opens that photo's official license page.
  * When the license requires it, a changes-made indicator is appended.
  * The raw URL is never shown — only the short license name.
  */
-export const PhotoAttribution: React.FC<{ attribution: PhotoAttributionData | null | undefined }> = ({
-  attribution,
-}) => {
+export const PhotoAttribution: React.FC<Props> = ({ attribution, variant = 'hero' }) => {
   if (!attribution) return null;
   const { photographer, license, licenseUrl, modified } = attribution;
-  // Nothing to show if there is neither a photographer nor a license.
-  if (!photographer && !license) return null;
+  // No license and no way to know a creator → nothing to show.
+  if (!license && !photographer) return null;
 
   const url = licenseUrlFor(license, licenseUrl);
   const openLicense = () => {
     if (url) Linking.openURL(url).catch(() => {});
   };
+
+  // The creator is recognition for a contributed photo. Anonymous contributors
+  // (no name) show "Community contributor" instead.
+  const creator = photographer && photographer.trim().length > 0
+    ? photographer.trim()
+    : 'Community contributor';
 
   const modifiedLabel =
     modified === 'cropped' ? 'modified: cropped'
@@ -31,27 +43,34 @@ export const PhotoAttribution: React.FC<{ attribution: PhotoAttributionData | nu
     : modified ? `modified: ${modified}`
     : null;
 
+  const small = variant === 'card';
+
   return (
-    <View style={styles.row} pointerEvents="box-none">
-      <Text style={styles.text} numberOfLines={1}>
-        {attribution.photographer ? `Photo: ${attribution.photographer}` : 'Photo'}
+    <View style={[styles.row, small && styles.rowSmall]}>
+      <Text style={[styles.cam, small && styles.camSmall]}>📷</Text>
+      <Text style={[styles.creator, small && styles.textSmall]} numberOfLines={1}>
+        {creator}
       </Text>
       {license ? (
         <>
-          <Text style={styles.dot}> · </Text>
+          <Text style={[styles.dot, small && styles.dotSmall]}> · </Text>
           {url ? (
             <TouchableOpacity onPress={openLicense} hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}>
-              <Text style={[styles.text, styles.license]} numberOfLines={1}>{license}</Text>
+              <Text style={[styles.creator, styles.license, small && styles.textSmall]} numberOfLines={1}>
+                {license}
+              </Text>
             </TouchableOpacity>
           ) : (
-            <Text style={styles.text} numberOfLines={1}>{license}</Text>
+            <Text style={[styles.creator, small && styles.textSmall]} numberOfLines={1}>{license}</Text>
           )}
         </>
       ) : null}
       {modifiedLabel ? (
         <>
-          <Text style={styles.dot}> · </Text>
-          <Text style={[styles.text, styles.modified]} numberOfLines={1}>{modifiedLabel}</Text>
+          <Text style={[styles.dot, small && styles.dotSmall]}> · </Text>
+          <Text style={[styles.creator, styles.modified, small && styles.textSmall]} numberOfLines={1}>
+            {modifiedLabel}
+          </Text>
         </>
       ) : null}
     </View>
@@ -65,26 +84,46 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'flex-start',
-    backgroundColor: 'rgba(0,0,0,0.45)',
-    borderRadius: 12,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
     maxWidth: '100%',
   },
-  text: {
-    color: 'rgba(255,255,255,0.85)',
-    fontSize: 11,
+  rowSmall: {
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    borderRadius: 5,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
   },
-  dot: {
-    color: 'rgba(255,255,255,0.6)',
+  cam: {
+    fontSize: 11,
+    marginRight: 4,
+  },
+  camSmall: {
+    fontSize: 10,
+    marginRight: 3,
+  },
+  creator: {
+    color: 'rgba(255,255,255,0.92)',
     fontSize: 11,
   },
   license: {
     color: theme.colors.goldLight,
     textDecorationLine: 'underline',
   },
+  dot: {
+    color: 'rgba(255,255,255,0.7)',
+    fontSize: 11,
+  },
+  dotSmall: {
+    fontSize: 10,
+  },
+  textSmall: {
+    fontSize: 10,
+  },
   modified: {
-    color: 'rgba(255,255,255,0.65)',
+    color: 'rgba(255,255,255,0.7)',
     fontStyle: 'italic',
   },
 });

@@ -61,6 +61,14 @@ export interface FilmingLocation {
   /** Focal point for smart cropping: { x, y } in range 0–1 (0=top/left, 1=bottom/right).
    *  Defaults to { x: 0.5, y: 0.5 } (center) when not set. */
   focalPoint?: { x: number; y: number };
+  /** Photo creator attribution + license (for licensed/credited photos). */
+  photoAttribution?: {
+    photographer: string | null;
+    license: string | null;
+    licenseUrl: string | null;
+    sourceUrl: string | null;
+    modified: string | null;
+  } | null;
 }
 
 export interface ActorGroup {
