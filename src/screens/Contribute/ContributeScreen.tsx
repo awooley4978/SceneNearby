@@ -228,7 +228,16 @@ export const ContributeScreen: React.FC = () => {
     }
   };
 
-  const close = () => navigation.goBack();
+  const close = useCallback(() => navigation.goBack(), [navigation]);
+
+  // The success state is a brief confirmation: after a short pause we
+  // automatically return to Scene Nearby. Tapping "Add another" restarts
+  // the flow before the auto-dismiss fires.
+  useEffect(() => {
+    if (step !== 'success') return;
+    const t = setTimeout(close, 4000);
+    return () => clearTimeout(t);
+  }, [step, close]);
 
   return (
     <KeyboardAvoidingView
