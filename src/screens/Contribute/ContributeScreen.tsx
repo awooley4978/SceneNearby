@@ -559,23 +559,22 @@ export const ContributeScreen: React.FC = () => {
           </View>
         )}
 
-        {/* ── SUCCESS ── */}
+        {/* ── SUCCESS — submission is the finish line, no separate Done ── */}
         {step === 'success' && (
           <View style={styles.centered}>
             <Text style={styles.successEmoji}>🎉</Text>
-            <Text style={styles.title}>Thank you!</Text>
+            <Text style={styles.title}>Submitted!</Text>
             <Text style={styles.subtitle}>
-              Your photo is in our review queue. Once approved, it'll be shown on the
+              Thanks — your photo is in our review queue. Once approved, it'll be shown on the
               {draft.locationName ? ` ${draft.locationName}` : ''} location.
             </Text>
-            <TouchableOpacity style={styles.primaryButton} onPress={close}>
-              <Text style={styles.primaryButtonText}>Done</Text>
-            </TouchableOpacity>
+            {/* Add another is a small opportunity, never a required action.
+                Submission is the finish line — exit happens via the header ✕. */}
             <TouchableOpacity
-              style={styles.linkButton}
+              style={styles.anotherButton}
               onPress={() => { setDraft({ ...emptyDraft }); setRightsConfirmed(false); setStep('photo'); }}
             >
-              <Text style={styles.linkText}>Contribute another photo</Text>
+              <Text style={styles.anotherButtonText}>＋ Contribute another</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -668,4 +667,9 @@ const styles = StyleSheet.create({
   primaryButtonText: { fontSize: 16, fontWeight: '700', color: theme.colors.black },
   disabled: { opacity: 0.45 },
   successEmoji: { fontSize: 64 },
+  anotherButton: {
+    marginTop: 32, alignSelf: 'center', paddingVertical: 10, paddingHorizontal: 20,
+    borderRadius: 20, backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.surface3,
+  },
+  anotherButtonText: { fontSize: 14, fontWeight: '600', color: theme.colors.textSecondary },
 });
