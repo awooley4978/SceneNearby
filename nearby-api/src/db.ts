@@ -191,6 +191,41 @@ export async function markRejectionEmail(id: string, sent: boolean, emailTo: str
   );
 }
 
+// ── Community contribution review (Stage B) ──
+// These helpers only flip MODERATION STATUS. Unlike the legacy /api/approve
+// path, they never promote a photo to the public gallery, never set a public
+// R2 URL, and never publish a proposed title/location. Rejection preserves the
+// audit record (UPDATE, not DELETE).
+
+/** List community contributions (photo_kind/source = 'community'), newest first. */
+export async function getContributions(status?: string): Promise<PhotoSubmission[]> {
+  const where = status ? `status = ${esc(status)} AND source = 'community'` : `source = 'community'`;
+  return (await runQuery(
+    `SELECT * FROM photo_submissions WHERE ${where} ORDER BY submitted_at DESC LIMIT 200`
+  )) as PhotoSubmission[];
+}
+
+/** Approve a community contribution: moderation status -> approved ONLY. */
+export async function approveContributionStatus(id: string, reviewedBy: string): Promise<void> {
+  const now = new Date().toISOString();
+  await runQuery(
+    `UPDATE photo_submissions SET status = 'approved', reviewed_by = ${esc(reviewedBy)}, reviewed_at = ${esc(now)} WHERE id = ${esc(id)}`
+  );
+}
+
+/** Reject a community contribution: moderation status -> rejected (record kept). */
+export async function rejectContributionStatus(
+  id: string,
+  reviewedBy: string,
+  reason: string | null,
+  note: string | null
+): Promise<void> {
+  const now = new Date().toISOString();
+  await runQuery(
+    `UPDATE photo_submissions SET status = 'rejected', reviewed_by = ${esc(reviewedBy)}, reviewed_at = ${esc(now)}, rejection_reason = ${esc(reason)}, rejection_note = ${esc(note)} WHERE id = ${esc(id)}`
+  );
+}
+
 export async function getSubmissionCount(): Promise<number> {
   const rows = (await runQuery("SELECT COUNT(*) as cnt FROM photo_submissions")) as { cnt: number }[];
   return rows[0]?.cnt ?? 0;

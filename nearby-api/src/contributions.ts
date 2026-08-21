@@ -17,6 +17,7 @@ import { randomUUID } from "node:crypto";
 import type { Router } from "./router";
 import { esc, runQuery } from "./db";
 import { insertContribution } from "./db";
+import { getContributions, getSubmission, approveContributionStatus, rejectContributionStatus } from "./db";
 import { uploadSubmissionPhoto } from "./r2";
 import { sendEmail } from "./email";
 import type { PhotoSubmission } from "./types";
@@ -206,6 +207,82 @@ export function registerContributionRoutes(router: Router): void {
     } catch (err) {
       console.error("Contribution error:", err);
       return error("Internal server error during contribution", 500);
+    }
+  });
+
+  // ── Stage B: Admin review queue ──
+  // Community contributions are reviewed here by moderation status only.
+  // Approve/reject NEVER publish a proposed title/location, never change hero
+  // imagery, and never surface a photo in the live app. Rejection preserves the
+  // audit record (never deletes).
+
+  const R2_PUBLIC = "https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.dev";
+
+  // GET /api/contributions/review?status=pending
+  router.get("/api/contributions/review", async (req) => {
+    try {
+      const url = new URL(req.url);
+      const status = url.searchParams.get("status") || undefined;
+      const rows = await getContributions(status);
+      return json(
+        rows.map((r) => ({
+          id: r.id,
+          status: r.status,
+          photo_url: r.photo_path ? `${R2_PUBLIC}/${r.photo_path}` : null,
+          movie_or_show: r.movie_or_show,
+          proposed_movie_json: r.proposed_movie_json ? JSON.parse(r.proposed_movie_json) : null,
+          location_id: r.location_id,
+          location_name: r.location_name,
+          proposed_location_json: r.proposed_location_json ? JSON.parse(r.proposed_location_json) : null,
+          description: r.description,
+          display_name: r.display_name,
+          allow_public_credit: r.allow_public_credit === 1,
+          rights_confirmed: r.rights_confirmed === 1,
+          submitter_uid: r.submitter_uid,
+          submitted_at: r.submitted_at,
+          reviewed_by: r.reviewed_by,
+          reviewed_at: r.reviewed_at,
+          rejection_reason: r.rejection_reason,
+          rejection_note: r.rejection_note,
+        }))
+      );
+    } catch (err) {
+      console.error("Contribution review list error:", err);
+      return error("Internal error reading contributions", 500);
+    }
+  });
+
+  // POST /api/contributions/review/:id/approve — status -> approved ONLY.
+  router.post("/api/contributions/review/:id/approve", async (req, params) => {
+    try {
+      const body = await req.json().catch(() => ({}));
+      const reviewedBy = (body as { reviewed_by?: string }).reviewed_by || "owner";
+      const sub = await getSubmission(params.id);
+      if (!sub) return error("Contribution not found", 404);
+      if (sub.status !== "pending") return error(`Contribution is already ${sub.status}`, 400);
+      await approveContributionStatus(params.id, reviewedBy);
+      return json({ success: true, message: "Approved (moderation only — not published)." });
+    } catch (err) {
+      console.error("Contribution approve error:", err);
+      return error("Internal error approving contribution", 500);
+    }
+  });
+
+  // POST /api/contributions/review/:id/reject — status -> rejected (record kept).
+  router.post("/api/contributions/review/:id/reject", async (req, params) => {
+    try {
+      const body = await req.json().catch(() => ({}));
+      const reviewedBy = (body as { reviewed_by?: string }).reviewed_by || "owner";
+      const reason = (body as { rejection_reason?: string | null }).rejection_reason ?? null;
+      const note = (body as { rejection_note?: string | null }).rejection_note ?? null;
+      const sub = await getSubmission(params.id);
+      if (!sub) return error("Contribution not found", 404);
+      if (sub.status !== "pending") return error(`Contribution is already ${sub.status}`, 400);
+      await rejectContributionStatus(params.id, reviewedBy, reason, note);
+      return json({ success: true, message: "Rejected (audit record retained)." });
+    } catch (err) {
+      console.error("Contribution reject error:", err);
+      return error("Internal error rejecting contribution", 500);
     }
   });
 }
