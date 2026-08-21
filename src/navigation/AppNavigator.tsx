@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, Fragment } from 'react';
 import { Animated, Text, View, StyleSheet, TouchableOpacity } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator, NativeStackNavigationOptions } from '@react-navigation/native-stack';
@@ -177,6 +177,12 @@ const CustomTabBar: React.FC<{
   const scaleAnims = useRef(TABS.map(() => new Animated.Value(1))).current;
   const glowAnims = useRef(TABS.map(() => new Animated.Value(0))).current;
 
+  // Five equal horizontal slots: Nearby | Discover | + | Saved | Profile.
+  // The '+' occupies the middle slot, so Saved/Profile are pushed one slot over.
+  const TOTAL_SLOTS = 5;
+  const slotOfRoute = (routeIndex: number) => (routeIndex >= 2 ? routeIndex + 1 : routeIndex);
+  const activeSlot = slotOfRoute(state.index);
+
   const handleTabPress = useCallback(
     (routeName: string, index: number) => {
       // Bounce animation
@@ -226,16 +232,18 @@ const CustomTabBar: React.FC<{
   );
 
   // Opens the guided contribution flow (a modal registered in every tab stack).
+  // 'Contribute' lives inside each tab's stack, so navigate into the active
+  // tab's stack rather than at the tab-bar level (where it is not registered).
   const handleContribute = useCallback(() => {
     try {
-      const activeKey = state.routes[state.index]?.key;
-      if (activeKey) {
-        descriptors[activeKey]?.navigation?.navigate('Contribute');
+      const activeRoute = state.routes[state.index];
+      if (activeRoute) {
+        navigation.navigate(activeRoute.name, { screen: 'Contribute' });
       }
     } catch {
       /* ignore */
     }
-  }, [state, descriptors]);
+  }, [state, navigation]);
 
   return (
     <View style={styles.tabBar}>
@@ -252,7 +260,7 @@ const CustomTabBar: React.FC<{
                 }),
               },
             ],
-            left: `${(state.index + 0.5) * (100 / TABS.length)}%`,
+            left: `${(activeSlot + 0.5) * (100 / TOTAL_SLOTS)}%`,
             marginLeft: -(40 / 2),
           },
         ]}
@@ -265,8 +273,10 @@ const CustomTabBar: React.FC<{
         const label = TABS[index]?.label || options.tabBarLabel || route.name;
 
         return (
-          <TouchableOpacity
-            key={route.name}
+          <Fragment key={route.key}>
+            {/* Reserve the middle slot for the raised '+' */}
+            {index === 2 && <View style={styles.tabSpacer} />}
+            <TouchableOpacity
             onPress={() => handleTabPress(route.name, index)}
             activeOpacity={1}
             style={styles.tabItem}
@@ -312,6 +322,7 @@ const CustomTabBar: React.FC<{
               {label}
             </Animated.Text>
           </TouchableOpacity>
+          </Fragment>
         );
       })}
 
@@ -373,6 +384,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingTop: 4,
+  },
+  tabSpacer: {
+    flex: 1,
   },
   tabIconContainer: {
     width: 40,
