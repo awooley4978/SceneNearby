@@ -11,6 +11,7 @@ import { Image, ImageBackground,
 import { theme } from '../../theme';
 import { DISCOVERY_FREQUENCIES, STORAGE_KEYS } from '../../models';
 import type { DiscoveryFrequency } from '../../models';
+import { logEvent } from '../../services/diagnostics';
 
 const { width, height } = Dimensions.get('window');
 
@@ -79,6 +80,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
   const [mediaInterests, setMediaInterests] = useState<string[]>(['movies', 'tv']);
   const flatListRef = useRef<FlatList>(null);
   const scrollX = useRef(new Animated.Value(0)).current;
+  const lastScrollLog = useRef(0);
 
   const totalPages = 8;
 
@@ -87,10 +89,22 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
     { useNativeDriver: false },
   );
 
+  // Diagnostic: throttle scroll logging (~every 500ms) — same scroll behavior
+  const onScrollLogged = (e: any) => {
+    onScroll(e);
+    const t = Date.now();
+    if (t - lastScrollLog.current > 500) {
+      lastScrollLog.current = t;
+      logEvent('onbScroll', String(Math.round(e.nativeEvent.contentOffset.x)));
+    }
+  };
+
   const onViewableItemsChanged = useCallback(
     ({ viewableItems }: any) => {
       if (viewableItems.length > 0) {
-        setCurrentPage(viewableItems[0].index || 0);
+        const idx = viewableItems[0].index || 0;
+        logEvent('onbPage', String(idx));
+        setCurrentPage(idx);
       }
     },
     [],
@@ -101,6 +115,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
   };
 
   const handleComplete = () => {
+    logEvent('letsGoPressed');
     onComplete({
       travelStyle,
       contentLoves,
@@ -261,6 +276,8 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
                       source={GENRE_IMAGES[item.label]}
                       style={styles.genreImage}
                       imageStyle={styles.genreImageStyle}
+                      onLoad={() => logEvent('genreImgLoaded', item.label)}
+                      onError={() => logEvent('genreImgError', item.label)}
                     >
                       <View style={styles.genreOverlay} />
                     </ImageBackground>
@@ -388,7 +405,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
-        onScroll={onScroll}
+        onScroll={onScrollLogged}
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
         scrollEventThrottle={16}
