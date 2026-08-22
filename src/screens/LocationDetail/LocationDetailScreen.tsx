@@ -519,10 +519,10 @@ const styles = StyleSheet.create({
   },
   attributionOverlay: {
     position: 'absolute',
-    top: 14,
-    right: 12,
+    bottom: 86,
+    left: 12,
     zIndex: 4,
-    maxWidth: '80%',
+    maxWidth: '82%',
   },
   heroContent: {
     paddingHorizontal: 20,
