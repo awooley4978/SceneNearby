@@ -13,6 +13,7 @@ import {
 import MapView, { Marker, Region } from 'react-native-maps';
 import Constants from 'expo-constants';
 import { theme } from '../../theme';
+import { useAuth } from '../../context/AuthContext';
 import { useAllLocations } from '../../services/hooks';
 import { categoryColors } from '../../models';
 import { LocationCard } from '../../components/LocationCard';
@@ -67,13 +68,22 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
   // Keep ref in sync with state so the handler never goes stale
   useEffect(() => { devNotifVisibleRef.current = devNotifVisible; }, [devNotifVisible]);
 
+// Only the owner's main emails can preview the proximity-notification card —
+// even in release/TestFlight builds (same allowlist that gates the Admin
+// Dashboard). Testers / other users get nothing.
+const ADMIN_EMAILS = ['awooley4978@gmail.com', 'scenenearbysupport@gmail.com'];
 const TEST_NOTIFICATION_ENABLED =
   ((Constants.expoConfig?.extra ??
     Constants.manifest?.extra) as Record<string, unknown> | undefined)?.
     enableTestNotification === true;
+  const { user } = useAuth();
+  const canPreviewTestNotification =
+    TEST_NOTIFICATION_ENABLED &&
+    !!user?.email &&
+    ADMIN_EMAILS.includes(user.email);
 
   const handleDevNotificationTrigger = () => {
-    if (!TEST_NOTIFICATION_ENABLED) return;
+    if (!canPreviewTestNotification) return;
     if (devTapTimer.current) clearTimeout(devTapTimer.current);
     devTapCount.current += 1;
     if (devTapCount.current >= 3) {

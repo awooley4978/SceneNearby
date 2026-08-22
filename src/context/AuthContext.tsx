@@ -40,8 +40,12 @@ const AuthContext = createContext<AuthContextType>({
   resetMagicLinkState: () => {},
 });
 
-// Dev bypass: skip Firebase auth entirely during development
-const DEV_BYPASS = true; // Enabled for admin testing — uses owner email
+// Dev bypass: skip Firebase auth entirely during development.
+// DEV-builds only. In release/TestFlight builds real Firebase auth runs so that
+// the signed-in email is genuine and email-gated features (admin dashboard,
+// test-notification preview) are truly restricted to allowlisted accounts —
+// not faked for every user as the owner.
+const DEV_BYPASS = __DEV__;
 
 const DEV_USER = {
   uid: 'dev-user-001',
