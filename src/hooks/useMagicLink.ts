@@ -14,8 +14,10 @@ export function useMagicLink() {
   const lastUrlRef = useRef<string | null>(null);
 
   useEffect(() => {
-    // Dev bypass: skip magic link handling entirely
-    if (true) return;
+    // Skip magic link handling only in dev builds. In release/TestFlight the
+    // listener MUST run so the app can claim the link instead of falling
+    // through to the Firebase web "error" page.
+    if (__DEV__) return;
     let mounted = true;
 
     // ── Cold start: check initial URL ──
