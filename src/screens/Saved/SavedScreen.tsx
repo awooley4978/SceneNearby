@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../../theme';
 import { useAllLocations } from '../../services/hooks';
 import { LocationCard } from '../../components/LocationCard';
@@ -80,7 +81,7 @@ export const SavedScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   ];
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Saved</Text>
         {loaded && savedLocations.length > 0 && (
@@ -141,7 +142,7 @@ export const SavedScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           showsVerticalScrollIndicator={false}
         />
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 const styles = StyleSheet.create({

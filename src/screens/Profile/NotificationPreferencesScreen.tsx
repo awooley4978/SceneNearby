@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { BackButton } from '../../components/BackButton';
 import { theme } from '../../theme';
 import { logNotificationPrefsUpdated } from '../../services/analytics';
@@ -53,7 +54,8 @@ export const NotificationPreferencesScreen: React.FC = () => {
   const frequencyOptions = Object.entries(DISCOVERY_FREQUENCIES) as [DiscoveryFrequency, typeof DISCOVERY_FREQUENCIES[DiscoveryFrequency]][];
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <ScrollView contentContainerStyle={styles.content}>
       <BackButton />
       {/* ──── Notification Types ──── */}
       <View style={styles.section}>
@@ -217,6 +219,7 @@ export const NotificationPreferencesScreen: React.FC = () => {
         </Text>
       </View>
     </ScrollView>
+    </SafeAreaView>
   );
 };
 
