@@ -14,7 +14,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.cairn.scenenearby",
-      "buildNumber": "8",
+      "buildNumber": "9",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Scene Nearby uses your location to show you nearby filming locations.",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "Scene Nearby uses your location to alert you when you're near a filming location.",
