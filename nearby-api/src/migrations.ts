@@ -115,4 +115,9 @@ export async function runMigrations(): Promise<void> {
     "photo_attribution_json",
     "TEXT"
   );
+  // Backfill the verified Wikimedia Commons attribution for Chippewa Square.
+  // This is idempotent so a later boot never overwrites an owner correction.
+  await runQuery(
+    `UPDATE locations SET photo_attribution_json = '{"photographer":"Michael Rivera","license":"CC BY-SA 4.0","licenseUrl":null,"sourceUrl":null,"modified":null}' WHERE id = 'sava-001' AND (photo_attribution_json IS NULL OR TRIM(photo_attribution_json) = '')`
+  );
 }
