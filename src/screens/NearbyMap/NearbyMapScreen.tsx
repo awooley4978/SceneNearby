@@ -11,6 +11,7 @@ import {
   Platform,
 } from 'react-native';
 import MapView, { Marker, Region } from 'react-native-maps';
+import Constants from 'expo-constants';
 import { theme } from '../../theme';
 import { useAllLocations } from '../../services/hooks';
 import { categoryColors } from '../../models';
@@ -66,8 +67,13 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
   // Keep ref in sync with state so the handler never goes stale
   useEffect(() => { devNotifVisibleRef.current = devNotifVisible; }, [devNotifVisible]);
 
+const TEST_NOTIFICATION_ENABLED =
+  ((Constants.expoConfig?.extra ??
+    Constants.manifest?.extra) as Record<string, unknown> | undefined)?.
+    enableTestNotification === true;
+
   const handleDevNotificationTrigger = () => {
-    if (!__DEV__) return;
+    if (!TEST_NOTIFICATION_ENABLED) return;
     if (devTapTimer.current) clearTimeout(devTapTimer.current);
     devTapCount.current += 1;
     if (devTapCount.current >= 3) {
