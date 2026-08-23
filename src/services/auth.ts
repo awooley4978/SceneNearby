@@ -28,7 +28,13 @@ export interface MagicLinkState {
 const MAGIC_LINK_STORAGE_KEY = 'scene_nearby_magic_link_email';
 
 export const actionCodeSettings: ActionCodeSettings = {
-  url: 'https://scenenearby.firebaseapp.com/__/auth/action',
+  // Continue URL must be a deep link the app can intercept (its own custom
+  // scheme), NOT Firebase's reserved /__/auth/action handler. Pointing it at
+  // the reserved handler makes the emailed link self-referential — no real
+  // destination is embedded and the handler errors with "Continue URL is
+  // required for email sign-in!". With this scheme link + handleCodeInApp, the
+  // app's Linking listener (useMagicLink) claims the link and completes sign-in.
+  url: 'scenenearby://auth',
   handleCodeInApp: true,
   iOS: {
     bundleId: 'com.cairn.scenenearby',
