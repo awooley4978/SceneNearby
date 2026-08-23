@@ -21,24 +21,37 @@ interface Props {
  * The raw URL is never shown — only the short license name.
  */
 /**
- * Generic hosting-site labels that are NOT a real photographer/creator. When a
- * photo's only attribution is one of these (no name and no license), there is
- * no meaningful attribution to show — per owner rule (08-23): "If a photo says
- * simply Wikimedia and no name or license, leave it off the attribution."
+ * Hosting-site prefixes that are NOT part of a real credit. Per owner rule
+ * (08-23): always leave the source word (Wikimedia, Flickr, Unsplash, Pixabay)
+ * off the attribution and only show what immediately follows it.
  */
-const GENERIC_SOURCE = /^(wikimedia|wikimedia commons|commons|commons\.wikimedia\.org)$/i;
+const SOURCE_PREFIX =
+  /^(?:wikimedia\s*commons|commons\.wikimedia\.org|wikimedia|flickr|unsplash|pixabay)(?:\s*[-–—:;]\s*|\s+)?/i;
+/** A bare host word with nothing meaningful after it (no credit at all). */
+const BARE_SOURCE = /^(?:wikimedia\s*commons|commons\.wikimedia\.org|wikimedia|flickr|unsplash|pixabay)$/i;
+
+/** Strip a leading hosting-site prefix, returning only the real credit. */
+function cleanCreator(raw: string | null | undefined): string {
+  if (!raw) return '';
+  let s = raw.trim();
+  // Repeatedly strip while a host prefix leads (e.g. "Flickr - Wikimedia - Name").
+  while (s) {
+    const stripped = s.replace(SOURCE_PREFIX, '');
+    if (stripped === s) break;
+    s = stripped.trim();
+  }
+  if (BARE_SOURCE.test(s)) return '';
+  return s;
+}
 
 export const PhotoAttribution: React.FC<Props> = ({ attribution, variant = 'hero' }) => {
   if (!attribution) return null;
   const { photographer, license, licenseUrl, modified } = attribution;
-  // A real creator requires an actual person/entity name, not a hosting site.
-  const hasRealPhotographer =
-    !!photographer &&
-    photographer.trim().length > 0 &&
-    !GENERIC_SOURCE.test(photographer.trim());
-  // No license and no verifiable creator → nothing to show. A bare "Wikimedia"
-  // (or similar source) is not a creator, so it does not count as attribution.
-  if (!license && !hasRealPhotographer) return null;
+  const creatorName = cleanCreator(photographer);
+  // No license and no verifiable creator → nothing to show. A bare host word
+  // like "Wikimedia" (or a prefix leaving nothing) is not a creator, so it does
+  // not count as attribution.
+  if (!license && !creatorName) return null;
 
   const url = licenseUrlFor(license, licenseUrl);
   const openLicense = () => {
@@ -47,9 +60,7 @@ export const PhotoAttribution: React.FC<Props> = ({ attribution, variant = 'hero
 
   // The creator is recognition for a contributed photo. Anonymous contributors
   // (no name) show "Community contributor" instead.
-  const creator = photographer && photographer.trim().length > 0
-    ? photographer.trim()
-    : 'Community contributor';
+  const creator = creatorName || 'Community contributor';
 
   const modifiedLabel =
     modified === 'cropped' ? 'modified: cropped'
