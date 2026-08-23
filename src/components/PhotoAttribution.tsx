@@ -20,11 +20,25 @@ interface Props {
  * When the license requires it, a changes-made indicator is appended.
  * The raw URL is never shown — only the short license name.
  */
+/**
+ * Generic hosting-site labels that are NOT a real photographer/creator. When a
+ * photo's only attribution is one of these (no name and no license), there is
+ * no meaningful attribution to show — per owner rule (08-23): "If a photo says
+ * simply Wikimedia and no name or license, leave it off the attribution."
+ */
+const GENERIC_SOURCE = /^(wikimedia|wikimedia commons|commons|commons\.wikimedia\.org)$/i;
+
 export const PhotoAttribution: React.FC<Props> = ({ attribution, variant = 'hero' }) => {
   if (!attribution) return null;
   const { photographer, license, licenseUrl, modified } = attribution;
-  // No license and no way to know a creator → nothing to show.
-  if (!license && !photographer) return null;
+  // A real creator requires an actual person/entity name, not a hosting site.
+  const hasRealPhotographer =
+    !!photographer &&
+    photographer.trim().length > 0 &&
+    !GENERIC_SOURCE.test(photographer.trim());
+  // No license and no verifiable creator → nothing to show. A bare "Wikimedia"
+  // (or similar source) is not a creator, so it does not count as attribution.
+  if (!license && !hasRealPhotographer) return null;
 
   const url = licenseUrlFor(license, licenseUrl);
   const openLicense = () => {
