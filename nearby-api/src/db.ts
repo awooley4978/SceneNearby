@@ -100,7 +100,7 @@ export async function getApprovedByLocation(locationId: string): Promise<PhotoSu
 
 export async function insertSubmission(sub: PhotoSubmission): Promise<void> {
   const { id, app_name, location_id, location_name, user_info, photo_path, comment, submitted_at, status } = sub;
-  const sql = `INSERT INTO photo_submissions (id, app_name, location_id, location_name, user_info, photo_path, comment, submitted_at, status) VALUES (${esc(id)}, ${esc(app_name)}, ${esc(location_id)}, ${esc(location_name)}, ${esc(user_info)}, ${esc(photo_path)}, ${esc(comment)}, ${esc(submitted_at)}, ${esc(status)})`;
+  const sql = `INSERT INTO photo_submissions (id, app_name, location_id, location_name, user_info, photo_path, comment, submitted_at, status, license, license_url) VALUES (${esc(id)}, ${esc(app_name)}, ${esc(location_id)}, ${esc(location_name)}, ${esc(user_info)}, ${esc(photo_path)}, ${esc(comment)}, ${esc(submitted_at)}, ${esc(status)}, ${esc(sub.license ?? null)}, ${esc(sub.license_url ?? null)})`;
   await runQuery(sql);
 }
 
@@ -116,7 +116,7 @@ export async function insertContribution(sub: PhotoSubmission): Promise<void> {
     comment, description, submitted_at, reviewed_by, reviewed_at, status,
     movie_or_show, proposed_movie_json, proposed_location_json,
     submitter_uid, display_name, allow_public_credit, rights_confirmed,
-    photo_kind, source_evidence, source, featured
+    photo_kind, source_evidence, source, featured, license, license_url
   ) VALUES (
     ${esc(sub.id)}, ${esc(sub.app_name)}, ${esc(sub.location_id ?? "unknown")}, ${esc(sub.location_name ?? "Unknown location")},
     ${esc(sub.user_info ?? null)}, ${esc(sub.photo_path)}, NULL,
@@ -125,7 +125,7 @@ export async function insertContribution(sub: PhotoSubmission): Promise<void> {
     ${esc(sub.movie_or_show ?? null)}, ${esc(sub.proposed_movie_json ?? null)}, ${esc(sub.proposed_location_json ?? null)},
     ${esc(sub.submitter_uid ?? null)}, ${esc(sub.display_name ?? null)}, ${sub.allow_public_credit == null ? 1 : sub.allow_public_credit},
     ${sub.rights_confirmed ? 1 : 0}, ${esc(sub.photo_kind ?? "community")}, ${esc(sub.source_evidence ?? null)},
-    ${esc(sub.source ?? "community")}, 0
+    ${esc(sub.source ?? "community")}, 0, ${esc(sub.license ?? null)}, ${esc(sub.license_url ?? null)}
   )`;
   await runQuery(sql);
 }
