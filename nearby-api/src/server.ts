@@ -102,6 +102,8 @@ router.post("/api/submissions", async (req) => {
     const locationName = formData.get("location_name") as string;
     const userInfo = formData.get("user_info") as string | null;
     const comment = formData.get("comment") as string | null;
+    const license = (formData.get("license") as string | null)?.trim() || null;
+    const licenseUrl = (formData.get("license_url") as string | null)?.trim() || null;
     const photo = formData.get("photo") as File | null;
 
     if (!appName || !locationId || !locationName) {
@@ -136,6 +138,8 @@ router.post("/api/submissions", async (req) => {
       reviewed_by: null,
       reviewed_at: null,
       status: "pending",
+      license,
+      license_url: licenseUrl,
     };
     await insertSubmission(submission);
 
@@ -233,7 +237,7 @@ router.post("/api/reject/:id", async (req, params) => {
 // GET /api/gallery/:locationId — Get approved photos for a location
 router.get("/api/gallery/:locationId", async (req, params) => {
   const photos = await getApprovedByLocation(params.locationId);
-  return json(photos.map((p) => ({ id: p.id, url: p.photo_public_url, submitted_by: p.user_info || "Anonymous", submitted_at: p.submitted_at, comment: p.comment })));
+  return json(photos.map((p) => ({ id: p.id, url: p.photo_public_url, submitted_by: p.user_info || "Anonymous", submitted_at: p.submitted_at, comment: p.comment, license: p.license ?? null, license_url: p.license_url ?? null, photographer: (p.display_name && p.allow_public_credit) ? p.display_name : null })));
 });
 
 // GET /api/gallery — All approved photos grouped by location
@@ -242,7 +246,7 @@ router.get("/api/gallery", async () => {
   const grouped: Record<string, unknown[]> = {};
   for (const p of photos) {
     if (!grouped[p.location_id]) grouped[p.location_id] = [];
-    grouped[p.location_id].push({ id: p.id, url: p.photo_public_url, submitted_by: p.user_info || "Anonymous", submitted_at: p.submitted_at, comment: p.comment });
+    grouped[p.location_id].push({ id: p.id, url: p.photo_public_url, submitted_by: p.user_info || "Anonymous", submitted_at: p.submitted_at, comment: p.comment, license: p.license ?? null, license_url: p.license_url ?? null, photographer: (p.display_name && p.allow_public_credit) ? p.display_name : null });
   }
   return json(grouped);
 });

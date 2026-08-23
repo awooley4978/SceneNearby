@@ -45,6 +45,10 @@ export interface PhotoSubmission {
   featured_at?: string | null;
   source_evidence?: string | null;
   source?: string | null; // "community" | "studio" | ...
+  // License captured at upload time (owner rule 08-23): every photo upload must
+  // carry a license that renders clickable to open the license.
+  license?: string | null;        // short name, e.g. "CC BY 4.0"
+  license_url?: string | null;    // resolvable license page
 }
 
 export interface GalleryPhoto {
@@ -53,6 +57,9 @@ export interface GalleryPhoto {
   submitted_by: string;
   submitted_at: string;
   comment: string | null;
+  license?: string | null;
+  license_url?: string | null;
+  photographer?: string | null; // public credit, when the submitter allows it
 }
 
 export interface HealthResponse {

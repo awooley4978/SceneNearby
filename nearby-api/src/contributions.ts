@@ -126,6 +126,8 @@ export function registerContributionRoutes(router: Router): void {
       const allowPublicCredit = (formData.get("allow_public_credit") as string) !== "false";
       const rightsConfirmed = (formData.get("rights_confirmed") as string) === "true";
       const sourceEvidence = (formData.get("source_evidence") as string) || null;
+      const license = (formData.get("license") as string)?.trim() || null;
+      const licenseUrl = (formData.get("license_url") as string)?.trim() || null;
 
       // ── Rights affirmation is required before submission ──
       if (!rightsConfirmed) {
@@ -171,6 +173,8 @@ export function registerContributionRoutes(router: Router): void {
         photo_kind: "community",
         source_evidence: sourceEvidence,
         source: "community",
+        license,
+        license_url: licenseUrl,
       };
 
       await insertContribution(sub);

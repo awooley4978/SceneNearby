@@ -106,6 +106,19 @@ export async function runMigrations(): Promise<void> {
     "source",
     "TEXT NOT NULL DEFAULT 'community'"
   );
+  // License captured at upload time (owner rule 08-23): every photo upload must
+  // carry a license that renders clickable. Store the short license name
+  // (e.g. "CC BY 4.0") and its resolvable URL; the app renders a tappable pill.
+  await addColumn(
+    "photo_submissions",
+    "license",
+    "TEXT"
+  );
+  await addColumn(
+    "photo_submissions",
+    "license_url",
+    "TEXT"
+  );
   // ── locations: photo attribution / license metadata ──
   // JSON blob { photographer, license, licenseUrl, sourceUrl, modified } so the
   // app can render a compact attribution line with a per-photo tappable license
@@ -114,10 +127,5 @@ export async function runMigrations(): Promise<void> {
     "locations",
     "photo_attribution_json",
     "TEXT"
-  );
-  // Backfill the verified Wikimedia Commons attribution for Chippewa Square.
-  // This is idempotent so a later boot never overwrites an owner correction.
-  await runQuery(
-    `UPDATE locations SET photo_attribution_json = '{"photographer":"Michael Rivera","license":"CC BY-SA 4.0","licenseUrl":null,"sourceUrl":null,"modified":null}' WHERE id = 'sava-001' AND (photo_attribution_json IS NULL OR TRIM(photo_attribution_json) = '')`
   );
 }
