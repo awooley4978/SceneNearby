@@ -14,6 +14,7 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import { theme } from '../../theme';
 import { uploadPhoto } from '../../services/photoService';
+import { LicensePicker } from '../../components/LicensePicker';
 import { useAuth } from '../../context/AuthContext';
 
 export const UploadPhotoScreen: React.FC<{ route: any; navigation: any }> = ({
@@ -25,6 +26,8 @@ export const UploadPhotoScreen: React.FC<{ route: any; navigation: any }> = ({
 
   const [photo, setPhoto] = useState<ImagePicker.ImagePickerAsset | null>(null);
   const [comment, setComment] = useState('');
+  const [license, setLicense] = useState<string | null>(null);
+  const [licenseUrl, setLicenseUrl] = useState<string | null>(null);
   const [status, setStatus] = useState<'idle' | 'picking' | 'preview' | 'uploading' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -94,6 +97,10 @@ export const UploadPhotoScreen: React.FC<{ route: any; navigation: any }> = ({
 
   const handleSubmit = useCallback(async () => {
     if (!photo) return;
+    if (!license) {
+      Alert.alert('Photo license required', 'Please choose a license for your photo before submitting.');
+      return;
+    }
     setStatus('uploading');
     setErrorMsg('');
 
@@ -107,6 +114,8 @@ export const UploadPhotoScreen: React.FC<{ route: any; navigation: any }> = ({
         location_name: locationName || 'Unknown location',
         user_info: user?.email || 'anonymous',
         comment: comment.trim() || undefined as any,
+        license,
+        license_url: licenseUrl || undefined,
         photo: {
           uri: photo.uri,
           type: mimeType,
@@ -119,11 +128,13 @@ export const UploadPhotoScreen: React.FC<{ route: any; navigation: any }> = ({
       setErrorMsg(err.message || 'Upload failed. Please try again.');
       setStatus('error');
     }
-  }, [photo, comment, locationId, locationName, user]);
+  }, [photo, comment, locationId, locationName, user, license, licenseUrl]);
 
   const reset = useCallback(() => {
     setPhoto(null);
     setComment('');
+    setLicense(null);
+    setLicenseUrl(null);
     setStatus('idle');
     setErrorMsg('');
   }, []);
@@ -183,6 +194,14 @@ export const UploadPhotoScreen: React.FC<{ route: any; navigation: any }> = ({
           onChangeText={setComment}
           multiline
           maxLength={200}
+        />
+
+        <LicensePicker
+          value={license}
+          onChange={(lic, url) => {
+            setLicense(lic);
+            setLicenseUrl(url);
+          }}
         />
 
         <TouchableOpacity style={styles.primaryButton} onPress={handleSubmit}>

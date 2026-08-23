@@ -11,6 +11,10 @@ export interface PhotoUploadRequest {
   location_name: string;
   user_info?: string;
   comment?: string;
+  // License captured at upload time (owner rule 08-23): every photo upload must
+  // carry a license that renders clickable to open the license.
+  license?: string;      // short name, e.g. "CC BY 4.0"
+  license_url?: string;  // resolvable license page
   photo: {
     uri: string;
     type: string;
@@ -41,6 +45,12 @@ export async function uploadPhoto(request: PhotoUploadRequest): Promise<PhotoUpl
   }
   if (request.comment) {
     formData.append('comment', request.comment);
+  }
+  if (request.license) {
+    formData.append('license', request.license);
+  }
+  if (request.license_url) {
+    formData.append('license_url', request.license_url);
   }
 
   // Append photo as file
