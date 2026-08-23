@@ -73,14 +73,16 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
 // Dashboard). Testers / other users get nothing.
 const ADMIN_EMAILS = ['awooley4978@gmail.com', 'scenenearbysupport@gmail.com'];
 const TEST_NOTIFICATION_ENABLED =
-  ((Constants.expoConfig?.extra ??
-    Constants.manifest?.extra) as Record<string, unknown> | undefined)?.
-    enableTestNotification === true;
+  (Constants.expoConfig?.extra as Record<string, unknown> | undefined)?.enableTestNotification === true;
   const { user } = useAuth();
+  // Match the allowlist case-insensitively — Firebase auth can return the
+  // email in mixed case depending on how the owner signed in, while the
+  // allowlist entries are lowercase. A case-sensitive includes() was silently
+  // blocking the owner's preview (same fix as the DiagnosticsOverlay gate).
   const canPreviewTestNotification =
     TEST_NOTIFICATION_ENABLED &&
     !!user?.email &&
-    ADMIN_EMAILS.includes(user.email);
+    ADMIN_EMAILS.includes((user.email || '').toLowerCase());
 
   const handleDevNotificationTrigger = () => {
     if (!canPreviewTestNotification) return;
