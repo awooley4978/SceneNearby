@@ -17,6 +17,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
 import { theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
+import { LicensePicker } from '../../components/LicensePicker';
 import {
   fetchTitles,
   fetchLocationsForTitle,
@@ -48,6 +49,9 @@ interface Draft {
   // last step
   anonymous: boolean;
   displayName: string;
+  // license captured at upload time (owner rule 08-23): renders clickable
+  license: string | null;
+  licenseUrl: string | null;
 }
 
 const emptyDraft: Draft = {
@@ -62,6 +66,8 @@ const emptyDraft: Draft = {
   proposeExactLocation: '',
   anonymous: false,
   displayName: '',
+  license: null as string | null,
+  licenseUrl: null as string | null,
 };
 
 export const ContributeScreen: React.FC = () => {
@@ -163,10 +169,11 @@ export const ContributeScreen: React.FC = () => {
   const hasNewLocation = !!draft.proposeCity.trim() || !!draft.proposeExactLocation.trim();
   const canContinueLocation = hasLocationSelection || hasNewLocation;
 
-  // Final step can submit only when the permission is confirmed AND the user
-  // has chosen how to be shown (a name, or anonymous).
+  // Final step can submit only when the permission is confirmed, a license is
+  // chosen (owner rule 08-23: every upload must carry a clickable license), and
+  // the user has chosen how to be shown (a name, or anonymous).
   const canSubmit =
-    rightsConfirmed && (!!draft.displayName.trim() || draft.anonymous) && !!draft.photo;
+    rightsConfirmed && !!draft.license && (!!draft.displayName.trim() || draft.anonymous) && !!draft.photo;
 
   // If the user picks anonymous, drop the entered name so it isn't sent.
   const toggleAnonymous = () => {
@@ -212,6 +219,8 @@ export const ContributeScreen: React.FC = () => {
         // anonymous users don't get a public credit; named users do
         allow_public_credit: !draft.anonymous,
         rights_confirmed: true,
+        license: draft.license || undefined,
+        license_url: draft.licenseUrl || undefined,
         photo: {
           uri: draft.photo.uri,
           type: draft.photo.mimeType || 'image/jpeg',
@@ -545,6 +554,11 @@ export const ContributeScreen: React.FC = () => {
               editable={!draft.anonymous}
             />
             <Text style={styles.hint}>Example: “Photo by Linda”</Text>
+
+            <LicensePicker
+              value={draft.license}
+              onChange={(lic, url) => set({ license: lic, licenseUrl: url })}
+            />
 
             {!!submitError && <Text style={styles.errorText}>{submitError}</Text>}
 

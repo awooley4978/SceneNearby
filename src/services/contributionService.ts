@@ -37,6 +37,10 @@ export interface SubmitContributionRequest {
   display_name?: string;
   allow_public_credit: boolean;
   rights_confirmed: boolean;
+  // License captured at upload time (owner rule 08-23): every photo upload must
+  // carry a license that renders clickable to open the license.
+  license?: string;      // short name, e.g. "CC BY 4.0"
+  license_url?: string;  // resolvable license page
   photo: { uri: string; type: string; fileName: string };
 }
 export interface SubmitContributionResponse {
@@ -88,6 +92,8 @@ export async function submitContribution(
   if (request.display_name) formData.append('display_name', request.display_name);
   formData.append('allow_public_credit', String(request.allow_public_credit));
   formData.append('rights_confirmed', String(request.rights_confirmed));
+  if (request.license) formData.append('license', request.license);
+  if (request.license_url) formData.append('license_url', request.license_url);
 
   formData.append('photo', {
     uri: request.photo.uri,
