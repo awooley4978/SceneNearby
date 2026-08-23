@@ -7,7 +7,7 @@ import { ErrorBoundary } from './src/components/ErrorBoundary';
 import { SplashScreen } from './src/screens/Splash/SplashScreen';
 import { OnboardingScreen } from './src/screens/Onboarding/OnboardingScreen';
 import { LocationSetupScreen } from './src/screens/Onboarding/LocationSetupScreen';
-import { AuthProvider } from './src/context/AuthContext';
+import { AuthProvider, useAuth } from './src/context/AuthContext';
 import { useMagicLink } from './src/hooks/useMagicLink';
 import { theme } from './src/theme';
 import {
@@ -21,6 +21,13 @@ import {
 // Diagnostics tracer (diagnostic-only): install before App renders so the
 // heartbeat, event log, and fatal overlay cover the whole session.
 installDiagnostics();
+
+// Only the owner's/admin's signed-in emails see the on-screen diagnostics UI.
+// The tracer itself (installDiagnostics) keeps recording for EVERY user — this
+// allowlist only gates which accounts VISUALLY see the overlay. External
+// TestFlight testers / anonymous users get nothing.
+const DIAG_ADMIN_EMAILS = ['awooley4978@gmail.com', 'scenenearbysupport@gmail.com'];
+
 export const resetOnboarding = async () => {
   await resetStorageOnboarding();
 };
@@ -69,11 +76,20 @@ const App: React.FC = () => {
   };
 
   // ── Diagnostics overlay: live event log + heartbeat + fatal screen ──
+  // Gated to the owner/admin allowlist only. External testers / anonymous
+  // users see nothing (the tracer still captures data for them in the
+  // background). Note: in pre-auth phases (splash/onboarding/location setup)
+  // there may be no signed-in email yet, so the overlay can hide there even
+  // for the owner — persisted snapshots still record onboarding-crash data.
   const DiagnosticsOverlay = () => {
+    const { user } = useAuth();
+    const isAdmin =
+      !!user?.email && DIAG_ADMIN_EMAILS.includes(user.email.toLowerCase());
     const [, forceRender] = useState(0);
     const [expanded, setExpanded] = useState(false);
     const [showRaw, setShowRaw] = useState(false);
     useEffect(() => subscribe(() => forceRender((t) => t + 1)), []);
+    if (!isAdmin) return null;
     const state = getState();
     const aliveAgo = state.lastHeartbeat
       ? Math.max(0, Math.round((Date.now() - state.lastHeartbeat) / 1000))
@@ -175,64 +191,29 @@ const App: React.FC = () => {
     );
   };
 
-  if (appPhase === 'loading') {
-    return (
-      <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-        <SafeAreaProvider>
-          <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
-          <DiagnosticsOverlay />
-        </SafeAreaProvider>
-      </View>
-    );
-  }
-  if (appPhase === 'splash') {
-    return (
-      <View style={{ flex: 1 }}>
-        <SafeAreaProvider>
-          <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
-          <SplashScreen onFinish={handleSplashFinish} />
-          <DiagnosticsOverlay />
-        </SafeAreaProvider>
-      </View>
-    );
-  }
-  if (appPhase === 'onboarding') {
-    return (
-      <View style={{ flex: 1 }}>
-        <SafeAreaProvider>
-          <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
-          <OnboardingScreen onComplete={handleOnboardingComplete} />
-          <DiagnosticsOverlay />
-        </SafeAreaProvider>
-      </View>
-    );
-  }
-  if (appPhase === 'locationSetup') {
-    return (
-      <View style={{ flex: 1 }}>
-        <SafeAreaProvider>
-          <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
-          <LocationSetupScreen
-            onboardingData={onboardingResult}
-            onComplete={handleLocationSetupComplete}
-          />
-          <DiagnosticsOverlay />
-        </SafeAreaProvider>
-      </View>
-    );
-  }
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
       <SafeAreaProvider>
-        <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
         <AuthProvider>
-          <MagicLinkListener>
-            <ErrorBoundary>
-              <AppNavigator />
-            </ErrorBoundary>
-          </MagicLinkListener>
+          <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
+          {appPhase === 'loading' && null}
+          {appPhase === 'splash' && <SplashScreen onFinish={handleSplashFinish} />}
+          {appPhase === 'onboarding' && <OnboardingScreen onComplete={handleOnboardingComplete} />}
+          {appPhase === 'locationSetup' && (
+            <LocationSetupScreen
+              onboardingData={onboardingResult}
+              onComplete={handleLocationSetupComplete}
+            />
+          )}
+          {appPhase === 'main' && (
+            <MagicLinkListener>
+              <ErrorBoundary>
+                <AppNavigator />
+              </ErrorBoundary>
+            </MagicLinkListener>
+          )}
+          <DiagnosticsOverlay />
         </AuthProvider>
-        <DiagnosticsOverlay />
       </SafeAreaProvider>
     </View>
   );
