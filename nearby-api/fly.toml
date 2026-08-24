@@ -12,8 +12,8 @@ primary_region = "dfw"
   R2_BUCKET_NAME = "scene-nearby-images"
 
 [vm]
-  size = "shared-cpu-1x"
-  memory = "256mb"
+  size = "shared-cpu-2x"
+  memory = "512mb"
 
 [http_service]
   internal_port = 8080

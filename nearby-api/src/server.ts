@@ -63,6 +63,66 @@ function corsPreflight(): Response {
   });
 }
 
+// ── Rate limiting ──
+// Simple in-memory fixed-window limiter per client IP. Runs entirely in-process
+// (single Fly machine), so a Module-scope Map is a correct, memory-light store.
+// This is the load-test SHOULD-FIX: without it, one runaway or buggy client can
+// saturate the single box and reproduce the 502s seen at high concurrency.
+// A clean 429 with Retry-After lets well-behaved clients back off instead.
+const RATE_WINDOW_MS = 60_000; // 60s window
+const RATE_LIMIT_PER_WINDOW = 300; // 300 req / min / IP (~5/s sustained — generous for a mobile user)
+const rateBuckets = new Map<string, { count: number; windowStart: number }>();
+
+function clientIp(req: Request): string {
+  // Fly's edge sets fly-client-ip; fall back to the first X-Forwarded-For entry.
+  const flyIp = req.headers.get("fly-client-ip");
+  if (flyIp) return flyIp;
+  const fwd = req.headers.get("x-forwarded-for");
+  if (fwd) return fwd.split(",")[0].trim();
+  return "unknown";
+}
+
+function rateLimited(req: Request, url: URL): Response | null {
+  // Never throttle health checks or CORS preflight — the platform depends on them.
+  if (req.method === "OPTIONS" || url.pathname === "/health") return null;
+  const ip = clientIp(req);
+  const now = Date.now();
+  const bucket = rateBuckets.get(ip);
+  if (!bucket || now - bucket.windowStart >= RATE_WINDOW_MS) {
+    rateBuckets.set(ip, { count: 1, windowStart: now });
+    // Opportunistic cleanup so the Map doesn't grow unboundedly.
+    if (rateBuckets.size > 10_000) {
+      for (const [k, b] of rateBuckets) {
+        if (now - b.windowStart >= RATE_WINDOW_MS) rateBuckets.delete(k);
+      }
+    }
+    return null;
+  }
+  bucket.count += 1;
+  if (bucket.count > RATE_LIMIT_PER_WINDOW) {
+    const retryAfter = Math.max(1, Math.ceil((RATE_WINDOW_MS - (now - bucket.windowStart)) / 1000));
+    const resp = new Response(JSON.stringify({ error: "Too many requests. Please slow down and try again in a moment." }), {
+      status: 429,
+      headers: {
+        "Content-Type": "application/json",
+        "Retry-After": String(retryAfter),
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      },
+    });
+    return resp;
+  }
+  return null;
+}
+
+// ── /api/stats cache ──
+// Load-test SHOULD-FIX: stats runs two full-table COUNT(*) on every call and was
+// 2x slower than every other endpoint under load. Cache the result briefly so
+// it stays fresh enough while leaving the DB alone on the hot path.
+const STATS_CACHE_MS = 30_000;
+let statsCache: { value: unknown; at: number } | null = null;
+
 /** Loose but strict enough email check for submitter notifications. */
 function isEmail(value: string | null | undefined): value is string {
   return typeof value === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
@@ -251,9 +311,15 @@ router.get("/api/gallery", async () => {
   return json(grouped);
 });
 
-// GET /api/stats — System statistics
+// GET /api/stats — System statistics (cached briefly — see STATS_CACHE_MS)
 router.get("/api/stats", async () => {
-  return json({ total_submissions: await getSubmissionCount(), pending_moderation: await getPendingCount() });
+  const now = Date.now();
+  if (statsCache && now - statsCache.at < STATS_CACHE_MS) {
+    return json(statsCache.value);
+  }
+  const value: unknown = { total_submissions: await getSubmissionCount(), pending_moderation: await getPendingCount() };
+  statsCache = { value, at: now };
+  return json(value);
 });
 
 // ── Location helpers ──
@@ -423,6 +489,10 @@ async function handleRequest(req: Request): Promise<Response> {
   const url = new URL(req.url);
   const method = req.method;
   if (method === "OPTIONS") return corsPreflight();
+
+  // Enforce per-IP rate limit before routing (except /health & OPTIONS).
+  const limited = rateLimited(req, url);
+  if (limited) return limited;
 
   const match = router.match(method, url.pathname);
   if (match) {
