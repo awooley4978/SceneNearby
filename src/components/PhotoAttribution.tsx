@@ -1,5 +1,14 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Linking } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Linking,
+  Modal,
+  TouchableWithoutFeedback,
+  Pressable,
+} from 'react-native';
 import { theme } from '../theme';
 import {
   PhotoAttributionData,
@@ -45,8 +54,9 @@ function cleanCreator(raw: string | null | undefined): string {
 }
 
 export const PhotoAttribution: React.FC<Props> = ({ attribution, variant = 'hero' }) => {
+  const [open, setOpen] = useState(false);
   if (!attribution) return null;
-  const { photographer, license, licenseUrl, modified } = attribution;
+  const { photographer, license, licenseUrl, sourceUrl, modified } = attribution;
   const creatorName = cleanCreator(photographer);
   // No license and no verifiable creator → nothing to show. A bare host word
   // like "Wikimedia" (or a prefix leaving nothing) is not a creator, so it does
@@ -54,8 +64,12 @@ export const PhotoAttribution: React.FC<Props> = ({ attribution, variant = 'hero
   if (!license && !creatorName) return null;
 
   const url = licenseUrlFor(license, licenseUrl);
-  const openLicense = () => {
-    if (url) Linking.openURL(url).catch(() => {});
+  // Owner rule (08-24): tapping the license never leaves the app directly.
+  // It opens an easily-dismissed in-app sheet with explicit actions instead.
+  const openSheet = () => setOpen(true);
+  const openExternal = (target: string | null) => {
+    setOpen(false);
+    if (target) Linking.openURL(target).catch(() => {});
   };
 
   // The creator is recognition for a contributed photo. Anonymous contributors
@@ -71,34 +85,82 @@ export const PhotoAttribution: React.FC<Props> = ({ attribution, variant = 'hero
   const small = variant === 'card';
 
   return (
-    <View style={[styles.row, small && styles.rowSmall]}>
-      <Text style={[styles.cam, small && styles.camSmall]}>📷</Text>
-      <Text style={[styles.creator, small && styles.textSmall]} numberOfLines={1}>
-        {creator}
-      </Text>
-      {license ? (
-        <>
-          <Text style={[styles.dot, small && styles.dotSmall]}> · </Text>
-          {url ? (
-            <TouchableOpacity onPress={openLicense} hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}>
+    <>
+      <View style={[styles.row, small && styles.rowSmall]}>
+        <Text style={[styles.cam, small && styles.camSmall]}>📷</Text>
+        <Text style={[styles.creator, small && styles.textSmall]} numberOfLines={1}>
+          {creator}
+        </Text>
+        {license ? (
+          <>
+            <Text style={[styles.dot, small && styles.dotSmall]}> · </Text>
+            <TouchableOpacity
+              onPress={openSheet}
+              hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
+              accessibilityRole="button"
+            >
               <Text style={[styles.creator, styles.license, small && styles.textSmall]} numberOfLines={1}>
                 {license}
               </Text>
             </TouchableOpacity>
-          ) : (
-            <Text style={[styles.creator, small && styles.textSmall]} numberOfLines={1}>{license}</Text>
-          )}
-        </>
-      ) : null}
-      {modifiedLabel ? (
-        <>
-          <Text style={[styles.dot, small && styles.dotSmall]}> · </Text>
-          <Text style={[styles.creator, styles.modified, small && styles.textSmall]} numberOfLines={1}>
-            {modifiedLabel}
-          </Text>
-        </>
-      ) : null}
-    </View>
+          </>
+        ) : null}
+        {modifiedLabel ? (
+          <>
+            <Text style={[styles.dot, small && styles.dotSmall]}> · </Text>
+            <Text style={[styles.creator, styles.modified, small && styles.textSmall]} numberOfLines={1}>
+              {modifiedLabel}
+            </Text>
+          </>
+        ) : null}
+      </View>
+
+      <Modal
+        visible={open}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setOpen(false)}
+      >
+        <TouchableWithoutFeedback onPress={() => setOpen(false)}>
+          <View style={styles.backdrop}>
+            <TouchableWithoutFeedback onPress={() => {}}>
+              <View style={styles.sheet}>
+                <View style={styles.grabber} />
+                <Text style={styles.sheetTitle}>Photo credit</Text>
+                <Text style={styles.sheetCreator} numberOfLines={2}>{creator}</Text>
+                {license ? (
+                  <Text style={styles.sheetLicense} numberOfLines={2}>{license}</Text>
+                ) : null}
+
+                {sourceUrl ? (
+                  <Pressable
+                    style={({ pressed }) => [styles.sheetAction, pressed && styles.sheetActionPressed]}
+                    onPress={() => openExternal(sourceUrl)}
+                  >
+                    <Text style={styles.sheetActionText}>View source</Text>
+                  </Pressable>
+                ) : null}
+                {url ? (
+                  <Pressable
+                    style={({ pressed }) => [styles.sheetAction, pressed && styles.sheetActionPressed]}
+                    onPress={() => openExternal(url)}
+                  >
+                    <Text style={styles.sheetActionText}>View license</Text>
+                  </Pressable>
+                ) : null}
+
+                <Pressable
+                  style={({ pressed }) => [styles.sheetClose, pressed && styles.sheetActionPressed]}
+                  onPress={() => setOpen(false)}
+                >
+                  <Text style={styles.sheetCloseText}>Close</Text>
+                </Pressable>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
+    </>
   );
 };
 
@@ -150,5 +212,71 @@ const styles = StyleSheet.create({
   modified: {
     color: 'rgba(255,255,255,0.7)',
     fontStyle: 'italic',
+  },
+  backdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    justifyContent: 'flex-end',
+  },
+  sheet: {
+    backgroundColor: theme.colors.background,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    paddingBottom: 34,
+  },
+  grabber: {
+    alignSelf: 'center',
+    width: 40,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: 'rgba(255,255,255,0.25)',
+    marginBottom: 16,
+  },
+  sheetTitle: {
+    color: 'rgba(255,255,255,0.6)',
+    fontSize: 12,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+    marginBottom: 8,
+  },
+  sheetCreator: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  sheetLicense: {
+    color: theme.colors.goldLight,
+    fontSize: 14,
+    marginTop: 4,
+    marginBottom: 16,
+  },
+  sheetAction: {
+    borderColor: 'rgba(255,255,255,0.2)',
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    marginBottom: 10,
+  },
+  sheetActionPressed: {
+    opacity: 0.6,
+  },
+  sheetActionText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  sheetClose: {
+    marginTop: 4,
+    paddingVertical: 12,
+  },
+  sheetCloseText: {
+    color: 'rgba(255,255,255,0.6)',
+    fontSize: 15,
+    textAlign: 'center',
   },
 });

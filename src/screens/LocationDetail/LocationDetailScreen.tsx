@@ -298,18 +298,19 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
 
           {/* Corner brackets — featured-location frame */}
           <LocationFrame />
-          {/* Compact photo attribution (licensed images) — tappable license */}
-          {location.imageUrl && location.photoAttribution && (
-            <View style={styles.attributionOverlay}>
-              <PhotoAttribution attribution={location.photoAttribution} />
-            </View>
-          )}
           {/* Hero content */}
           <View style={styles.heroContent}>
             <Pressable onPress={handleViewMovie} style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}>
               <Text style={styles.showName}>{location.movieOrShow}</Text>
             </Pressable>
             <Text style={styles.locationTitle}>{location.title}</Text>
+            {/* Photo attribution - dedicated in-flow metadata row beneath the
+                location name (never overlaps hero content on any screen size) */}
+            {location.photoAttribution && (
+              <View style={styles.attributionRow}>
+                <PhotoAttribution attribution={location.photoAttribution} variant="hero" />
+              </View>
+            )}
           </View>
 
           {/* Clean metadata row — dark strip at hero bottom */}
@@ -517,16 +518,14 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     zIndex: 1,
   },
-  attributionOverlay: {
-    position: 'absolute',
-    bottom: 86,
-    left: 12,
-    zIndex: 4,
-    maxWidth: '82%',
+  attributionRow: {
+    marginTop: 2,
+    marginBottom: 18,
+    alignSelf: 'flex-start',
   },
   heroContent: {
     paddingHorizontal: 20,
-    paddingBottom: 28,
+    paddingBottom: 56,
     position: 'relative',
     zIndex: 3,
   },
@@ -541,7 +540,7 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: '800',
     color: theme.colors.white,
-    marginBottom: 16,
+    marginBottom: 10,
     letterSpacing: -0.5,
     textShadowColor: 'rgba(0,0,0,0.6)',
     textShadowOffset: { width: 0, height: 2 },
