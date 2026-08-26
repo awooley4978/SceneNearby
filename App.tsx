@@ -76,11 +76,13 @@ const App: React.FC = () => {
   };
 
   // ── Diagnostics overlay: live event log + heartbeat + fatal screen ──
-  // Gated to the owner/admin allowlist only. External testers / anonymous
-  // users see nothing (the tracer still captures data for them in the
-  // background). Note: in pre-auth phases (splash/onboarding/location setup)
-  // there may be no signed-in email yet, so the overlay can hide there even
-  // for the owner — persisted snapshots still record onboarding-crash data.
+  // DEV-ONLY. The visible overlay is gated behind __DEV__, so it NEVER renders
+  // in production/TestFlight release builds for ANY user (regardless of signed-in
+  // email) — a hard removal from release UI, not merely an owner-email gate.
+  // Within dev builds it is additionally restricted to the owner/admin allowlist.
+  // The tracer itself (installDiagnostics) continues capturing snapshot data for
+  // EVERY user in the background — only this on-screen overlay is removed from
+  // release builds. (Persisted snapshots still record onboarding-crash data.)
   const DiagnosticsOverlay = () => {
     const { user } = useAuth();
     const isAdmin =
@@ -89,7 +91,7 @@ const App: React.FC = () => {
     const [expanded, setExpanded] = useState(false);
     const [showRaw, setShowRaw] = useState(false);
     useEffect(() => subscribe(() => forceRender((t) => t + 1)), []);
-    if (!isAdmin) return null;
+    if (!__DEV__ || !isAdmin) return null;
     const state = getState();
     const aliveAgo = state.lastHeartbeat
       ? Math.max(0, Math.round((Date.now() - state.lastHeartbeat) / 1000))
