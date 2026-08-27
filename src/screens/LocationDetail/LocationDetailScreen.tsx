@@ -22,6 +22,7 @@ import { useUserLocation } from '../../hooks/useUserLocation';
 import { MapPlaceholder } from '../../components/MapPlaceholder';
 import { SmartHeroImage } from '../../components/SmartHeroImage';
 import { PhotoAttribution } from '../../components/PhotoAttribution';
+import { isAllRightsReservedPhoto } from '../../utils/photoAttribution';
 import { WorthTheVisit } from '../../components/WorthTheVisit';
 import { EstimatedVisitTime } from '../../components/EstimatedVisitTime';
 import { VisitorTips } from '../../components/VisitorTips';
@@ -270,7 +271,7 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
         <View style={styles.hero}>
           <BackButton />
           <View style={styles.heroImageWrap}>
-            {location.imageUrl && !imageError ? (
+            {location.imageUrl && !imageError && !isAllRightsReservedPhoto(location.photoAttribution) ? (
               <SmartHeroImage
                 imageUrl={location.imageUrl}
                 focalPoint={location.focalPoint}
@@ -306,7 +307,7 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
             <Text style={styles.locationTitle}>{location.title}</Text>
             {/* Photo attribution - dedicated in-flow metadata row beneath the
                 location name (never overlaps hero content on any screen size) */}
-            {location.photoAttribution && (
+            {location.photoAttribution && !isAllRightsReservedPhoto(location.photoAttribution) && (
               <View style={styles.attributionRow}>
                 <PhotoAttribution attribution={location.photoAttribution} variant="hero" />
               </View>

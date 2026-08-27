@@ -52,3 +52,19 @@ export function licenseUrlFor(
   const ver = m ? `${m[1]}.${m[2]}` : '4.0';
   return `https://creativecommons.org/licenses/${path}/${ver}/`;
 }
+
+/** License value under which a photo may not be re-displayed. */
+export const ALL_RIGHTS_RESERVED_LICENSE = 'All Rights Reserved';
+
+/**
+ * Whether a photo's attribution marks it "All Rights Reserved" — under the
+ * owner rule (08-27) such a photo is treated as needing a photo and must NOT
+ * render, here and everywhere it would otherwise display. Data is left
+ * untouched; this is solely a render-time predicate, so a future licensed
+ * replacement just works.
+ */
+export function isAllRightsReservedPhoto(attribution?: {
+  license?: string | null;
+} | null): boolean {
+  return attribution?.license === ALL_RIGHTS_RESERVED_LICENSE;
+}
