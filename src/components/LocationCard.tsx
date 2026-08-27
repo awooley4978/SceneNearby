@@ -18,6 +18,7 @@ import { StarRating } from './StarRating';
 import { useRatingMap } from '../services/hooks';
 import { useSaved } from '../context/SavedContext';
 import { formatCardAddress } from '../utils/address';
+import { isAllRightsReservedPhoto } from '../utils/photoAttribution';
 
 interface LocationCardProps {
   location: FilmingLocation;
@@ -165,7 +166,7 @@ export const LocationCard: React.FC<LocationCardProps> = ({
           {/* ── Hero Image Area ── */}
           <View style={styles.hero}>
             {/* Location image with gradient fallback */}
-            {location.imageUrl && !imageError ? (
+            {location.imageUrl && !imageError && !isAllRightsReservedPhoto(location.photoAttribution) ? (
               <SmartHeroImage
                 imageUrl={location.imageUrl}
                 focalPoint={location.focalPoint}
@@ -253,7 +254,7 @@ export const LocationCard: React.FC<LocationCardProps> = ({
             </TouchableOpacity>
 
             {/* Photo creator attribution — bottom-left, above the meta row (reusable) */}
-            {location.imageUrl && !imageError && location.photoAttribution && (
+            {location.imageUrl && !imageError && location.photoAttribution && !isAllRightsReservedPhoto(location.photoAttribution) && (
               <View style={styles.heroAttribution} pointerEvents="box-none">
                 <PhotoAttribution attribution={location.photoAttribution} variant="card" />
               </View>
