@@ -27,7 +27,7 @@
       "ios": {
         "buildConfiguration": "Release"
       },
-      "autoIncrement": true
+      "autoIncrement": false
     }
   },
   "submit": {

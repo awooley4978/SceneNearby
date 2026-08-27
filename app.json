@@ -14,7 +14,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.cairn.scenenearby",
-      "buildNumber": "12",
+      "buildNumber": "14",
       "associatedDomains": [
         "applinks:scenenearby.firebaseapp.com"
       ],
