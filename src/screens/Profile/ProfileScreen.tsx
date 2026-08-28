@@ -8,32 +8,22 @@ import {
   Alert,
 } from 'react-native';
 import { theme } from '../../theme';
-import { availableCityPacks, defaultUserSettings } from '../../models';
-import type { MapStyleOption } from '../../models';
+import { defaultUserSettings } from '../../models';
 import { resetOnboarding, getUserSettings, setUserSettings, getVisitedLocations } from '../../services/StorageService';
-import { Linking, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { logPremiumUpgrade } from '../../services/analytics';
 import { useAuth } from '../../context/AuthContext';
 import { useSaved } from '../../context/SavedContext';
+import { useEntitlement } from '../../context/EntitlementContext';
 import { getUserAlbum } from '../../services/albumService';
 
 const ADMIN_EMAILS = ['awooley4978@gmail.com', 'scenenearbysupport@gmail.com'];
-
-// V1 is a free download with NO monetization. The Go Premium and City Packs
-// sections are hidden for V1, but the underlying monetization code (handlers,
-// state, markup) is intentionally kept intact below so a future monetization
-// release can re-enable them by flipping this to false. No payments/IAP/StoreKit
-// are implemented here.
-const V1_HIDE_PREMIUM_AND_CITY_PACKS = true;
 
 export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const insets = useSafeAreaInsets();
   const { user, signOut: authSignOut } = useAuth();
   const { savedIds } = useSaved();
+  const { status, price, restore, ui } = useEntitlement();
   const [settings, setSettings] = useState(defaultUserSettings);
-  const [isPremium, setIsPremium] = useState(false);
-  const [purchasedPacks, setPurchasedPacks] = useState<string[]>([]);
   const [navApp, setNavApp] = useState<string | null>(null);
   const [photoCount, setPhotoCount] = useState(0);
   const [visitedCount, setVisitedCount] = useState(0);
@@ -83,15 +73,6 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
     saves: savedIds.size,
     photos: photoCount,
     visited: visitedCount,
-  };
-
-  const handleBuyPremium = () => {
-    logPremiumUpgrade();
-    setIsPremium(true);
-  };
-
-  const handleBuyPack = (packId: string) => {
-    setPurchasedPacks((prev) => [...prev, packId]);
   };
 
   return (
@@ -163,52 +144,53 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
         </TouchableOpacity>
       </View>
 
-      {/* Premium upgrade — hidden in V1 (free); re-enable by flipping V1_HIDE_PREMIUM_AND_CITY_PACKS */}
-      {!V1_HIDE_PREMIUM_AND_CITY_PACKS && !isPremium && (
-        <View style={styles.premiumCard}>
-          <Text style={styles.premiumEmoji}>⭐</Text>
-          <Text style={styles.premiumTitle}>Go Premium</Text>
-          <Text style={styles.premiumDesc}>
-            Unlock unlimited location views, remove daily limits, and get early access to new City Packs.
-          </Text>
-          <TouchableOpacity style={styles.premiumButton} onPress={handleBuyPremium}>
-            <Text style={styles.premiumButtonText}>Upgrade — $4.99</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-
-      {/* City Packs — hidden in V1 (free); re-enable by flipping V1_HIDE_PREMIUM_AND_CITY_PACKS */}
-      {!V1_HIDE_PREMIUM_AND_CITY_PACKS && (
+      {/* Lifetime access — real entitlement status from the verified IAP flow */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>🏙️ City Packs</Text>
-        {availableCityPacks.map((pack) => {
-          const owned = purchasedPacks.includes(pack.id);
-          return (
-            <View key={pack.id} style={styles.packRow}>
-              <View style={styles.packInfo}>
-                <Text style={styles.packEmoji}>{pack.emoji}</Text>
-                <View style={styles.packText}>
-                  <Text style={styles.packName}>{pack.cityName}</Text>
-                  <Text style={styles.packDesc}>{pack.description}</Text>
-                </View>
-              </View>
-              {owned ? (
-                <View style={styles.ownedBadge}>
-                  <Text style={styles.ownedText}>✓ Owned</Text>
-                </View>
-              ) : (
-                <TouchableOpacity
-                  style={styles.buyButton}
-                  onPress={() => handleBuyPack(pack.id)}
-                >
-                  <Text style={styles.buyText}>${pack.price}</Text>
-                </TouchableOpacity>
-              )}
-            </View>
-          );
-        })}
+        <Text style={styles.sectionTitle}>⭐ Scene Nearby</Text>
+        {status === 'unlocked' ? (
+          <View style={styles.lifetimeCard}>
+            <Text style={styles.lifetimeEmoji}>🏆</Text>
+            <Text style={styles.lifetimeTitle}>Unlocked ✓</Text>
+            <Text style={styles.lifetimeDesc}>
+              You have full access to every location, list, and surprise — for good.
+            </Text>
+          </View>
+        ) : status === 'locked' ? (
+          <View style={styles.lifetimeCard}>
+            <Text style={styles.lifetimeEmoji}>🔓</Text>
+            <Text style={styles.lifetimeTitle}>Keep exploring with lifetime access</Text>
+            <Text style={styles.lifetimeDesc}>
+              Unlock Scene Nearby for $4.99. One payment gives you worldwide access for
+              life—plus new locations as we add them.
+            </Text>
+            <TouchableOpacity
+              style={styles.lifetimeButton}
+              onPress={() => navigation.navigate('Paywall')}
+              disabled={ui === 'restoring'}
+            >
+              <Text style={styles.lifetimeButtonText}>Unlock Lifetime — {price ?? '$4.99'}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.restoreButton}
+              onPress={restore}
+              disabled={ui === 'restoring'}
+            >
+              <Text style={styles.restoreText}>
+                {ui === 'restoring' ? 'Restoring…' : 'Restore Purchases'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={styles.lifetimeCard}>
+            <Text style={styles.lifetimeEmoji}>⏳</Text>
+            <Text style={styles.lifetimeTitle}>Your 7-day trial is active</Text>
+            <Text style={styles.lifetimeDesc}>
+              Enjoy full access to Scene Nearby. After your trial, lifetime access is a
+              one-time $4.99 purchase.
+            </Text>
+          </View>
+        )}
       </View>
-      )}
 
       {/* Settings — link to Notification Preferences */}
       <View style={styles.section}>
@@ -348,39 +330,46 @@ const styles = StyleSheet.create({
   statValue: { fontSize: 22, fontWeight: '700', color: theme.colors.gold },
   statLabel: { fontSize: 12, color: theme.colors.textSecondary, marginTop: 2 },
   statDivider: { width: 1, height: 30, backgroundColor: theme.colors.surface3 },
-  premiumCard: {
-    marginHorizontal: 16, padding: 20, backgroundColor: theme.colors.gold + '12',
-    borderRadius: 16, borderWidth: 1, borderColor: theme.colors.gold + '30',
-    marginBottom: 20, alignItems: 'center',
+  lifetimeCard: {
+    backgroundColor: theme.colors.surface,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: theme.colors.gold + '30',
+    padding: 20,
+    alignItems: 'center',
   },
-  premiumEmoji: { fontSize: 40, marginBottom: 10 },
-  premiumTitle: { fontSize: 20, fontWeight: '700', color: theme.colors.gold, marginBottom: 8 },
+  lifetimeEmoji: { fontSize: 40, marginBottom: 10 },
+  lifetimeTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: theme.colors.gold,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  lifetimeDesc: {
+    fontSize: 14,
+    color: theme.colors.textSecondary,
+    textAlign: 'center',
+    lineHeight: 20,
+    marginBottom: 16,
+  },
+  lifetimeButton: {
+    backgroundColor: theme.colors.gold,
+    paddingHorizontal: 32,
+    paddingVertical: 12,
+    borderRadius: 12,
+  },
+  lifetimeButtonText: { color: theme.colors.black, fontWeight: '700', fontSize: 16 },
+  restoreButton: { paddingVertical: 10, marginTop: 4 },
+  restoreText: { color: theme.colors.textSecondary, fontSize: 14, fontWeight: '600' },
   authRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: theme.colors.surface2, padding: 14, borderRadius: 12 },
   authInfo: { flex: 1 },
   authEmail: { fontSize: 14, fontWeight: '600', color: theme.colors.textPrimary },
   authStatus: { fontSize: 12, color: theme.colors.textTertiary, marginTop: 2 },
   authButton: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 10, backgroundColor: theme.colors.gold },
   authButtonText: { fontSize: 13, fontWeight: '700', color: theme.colors.black },
-  premiumDesc: { fontSize: 14, color: theme.colors.textSecondary, textAlign: 'center', lineHeight: 20, marginBottom: 16 },
-  premiumButton: { backgroundColor: theme.colors.gold, paddingHorizontal: 32, paddingVertical: 12, borderRadius: 12 },
-  premiumButtonText: { color: theme.colors.black, fontWeight: '700', fontSize: 16 },
   section: { paddingHorizontal: 16, marginBottom: 20 },
   sectionTitle: { fontSize: 18, fontWeight: '700', color: theme.colors.textPrimary, marginBottom: 12, marginTop: 4 },
-
-  // Pack styles
-  packRow: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    backgroundColor: theme.colors.surface, padding: 14, borderRadius: 12, marginBottom: 8,
-  },
-  packInfo: { flexDirection: 'row', alignItems: 'center', flex: 1 },
-  packEmoji: { fontSize: 28, marginRight: 12 },
-  packText: { flex: 1 },
-  packName: { fontSize: 15, fontWeight: '600', color: theme.colors.textPrimary },
-  packDesc: { fontSize: 12, color: theme.colors.textSecondary, marginTop: 2 },
-  ownedBadge: { paddingHorizontal: 12, paddingVertical: 6, backgroundColor: theme.colors.success + '20', borderRadius: 8 },
-  ownedText: { fontSize: 12, fontWeight: '600', color: theme.colors.success },
-  buyButton: { paddingHorizontal: 16, paddingVertical: 8, backgroundColor: theme.colors.gold, borderRadius: 8 },
-  buyText: { fontSize: 13, fontWeight: '700', color: theme.colors.black },
 
   // Settings link row
   navLinkRow: {

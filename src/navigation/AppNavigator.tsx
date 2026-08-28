@@ -26,6 +26,8 @@ import { ContributeScreen } from '../screens/Contribute/ContributeScreen';
 import { AdminDashboardScreen } from '../screens/Admin/AdminDashboardScreen';
 import { AdminDetailScreen } from '../screens/Admin/AdminDetailScreen';
 import { AdminResearchScreen } from '../screens/Admin/AdminResearchScreen';
+import { PaywallScreen } from '../screens/Paywall/PaywallScreen';
+import { useEntitlement } from '../context/EntitlementContext';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -119,6 +121,12 @@ const sharedScreens = (
       name="Contribute"
       component={ContributeScreen}
       options={{ headerShown: false, animation: 'fade' as any, presentation: 'modal' as any }}
+    />
+    <Stack.Screen
+      name="Paywall"
+      component={PaywallScreen}
+      options={{ headerShown: false, animation: 'fade' as any, presentation: 'modal' as any }}
+      initialParams={{ canClose: true }}
     />
   </>
 );
@@ -345,23 +353,52 @@ const CustomTabBar: React.FC<{
   );
 };
 
+// ── App-wide gate (T-M4) ──
+// When a user is locked (7-day trial expired, not unlocked), the content tabs
+// (Nearby / Discover / Saved) render the paywall instead. Profile stays reachable
+// so sign-in/account, Restore Purchases, privacy/support, and the paywall remain
+// always available (approved gate scope, owner 08-28).
+const Gate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { status } = useEntitlement();
+  if (status === 'locked') {
+    return <PaywallScreen />;
+  }
+  return <>{children}</>;
+};
+
+const GatedNearby: React.FC = () => (
+  <Gate>
+    <NearbyStack />
+  </Gate>
+);
+const GatedDiscover: React.FC = () => (
+  <Gate>
+    <DiscoverStack />
+  </Gate>
+);
+const GatedSaved: React.FC = () => (
+  <Gate>
+    <SavedStack />
+  </Gate>
+);
+
 export const AppNavigator: React.FC = () => {
   return (
     <SavedProvider>
-    <NavigationContainer>
-      <Tab.Navigator
-        tabBar={(props) => <CustomTabBar {...props} />}
-        screenOptions={{
-          headerShown: false,
-        }}
-        initialRouteName="Discover"
-      >
-        <Tab.Screen name="Nearby" component={NearbyStack} />
-        <Tab.Screen name="Discover" component={DiscoverStack} />
-        <Tab.Screen name="Saved" component={SavedStack} />
-        <Tab.Screen name="Profile" component={ProfileStack} />
-      </Tab.Navigator>
-    </NavigationContainer>
+      <NavigationContainer>
+        <Tab.Navigator
+          tabBar={(props) => <CustomTabBar {...props} />}
+          screenOptions={{
+            headerShown: false,
+          }}
+          initialRouteName="Discover"
+        >
+          <Tab.Screen name="Nearby" component={GatedNearby} />
+          <Tab.Screen name="Discover" component={GatedDiscover} />
+          <Tab.Screen name="Saved" component={GatedSaved} />
+          <Tab.Screen name="Profile" component={ProfileStack} />
+        </Tab.Navigator>
+      </NavigationContainer>
     </SavedProvider>
   );
 };

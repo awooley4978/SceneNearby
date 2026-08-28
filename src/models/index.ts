@@ -205,8 +205,6 @@ export interface UserSettings {
   mapStyle: MapStyleOption;
   distanceUnit: DistanceUnit;
   notificationsEnabled: boolean;
-  isPremium: boolean;
-  purchasedCityPacks: string[];
   dailyLocationCount: number;
   lastDailyReset: number;
   savedLocationIds: string[];
@@ -219,8 +217,6 @@ export const defaultUserSettings: UserSettings = {
   mapStyle: 'standard',
   distanceUnit: 'metric',
   notificationsEnabled: true,
-  isPremium: false,
-  purchasedCityPacks: [],
   dailyLocationCount: 0,
   lastDailyReset: Date.now(),
   savedLocationIds: ['nyc-002', 'nyc-007', 'la-001', 'ldn-006'],
@@ -228,24 +224,6 @@ export const defaultUserSettings: UserSettings = {
   notificationPrefs: defaultNotificationPreferences,
   navApp: null,
 };
-
-// ── City Pack ──
-export interface CityPack {
-  id: string;
-  cityName: string;
-  emoji: string;
-  price: number;
-  locationCount: number;
-  description: string;
-}
-
-export const availableCityPacks: CityPack[] = [
-  { id: 'nyc-deep', cityName: 'New York City', emoji: '🗽', price: 1.99, locationCount: 15, description: "Dive deeper into NYC's most iconic film locations" },
-  { id: 'la-deep', cityName: 'Los Angeles', emoji: '🎬', price: 1.99, locationCount: 15, description: "Explore Hollywood's backyard like never before" },
-  { id: 'london-deep', cityName: 'London', emoji: '🎭', price: 1.99, locationCount: 15, description: "From Baker Street to Hogwarts — London's cinematic soul" },
-  { id: 'paris', cityName: 'Paris', emoji: '🗼', price: 1.99, locationCount: 12, description: 'Amour, cinéma, et la ville lumière' },
-  { id: 'tokyo', cityName: 'Tokyo', emoji: '🗾', price: 1.99, locationCount: 12, description: 'Neon-lit streets from your favorite films' },
-];
 
 // ── Movie/Show Grouping ──
 export interface MovieGroup {

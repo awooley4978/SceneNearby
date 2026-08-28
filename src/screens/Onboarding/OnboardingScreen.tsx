@@ -82,7 +82,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
   const scrollX = useRef(new Animated.Value(0)).current;
   const lastScrollLog = useRef(0);
 
-  const totalPages = 8;
+  const totalPages = 9;
 
   const onScroll = Animated.event(
     [{ nativeEvent: { contentOffset: { x: scrollX } } }],
@@ -366,6 +366,19 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
         );
         case 7: return (
           <View style={styles.page}>
+            <Text style={styles.pageEmoji}>💎</Text>
+            <Text style={styles.pageTitle}>Your first 7 days are on us.</Text>
+            <Text style={styles.pageSubtitle}>Explore Scene Nearby and find memorable places wherever you are.</Text>
+            <View style={styles.pricingInfo}>
+              <Text style={styles.pricingInfoText}>
+                Then unlock lifetime access for $4.99. One payment gives you worldwide access for
+                life—plus new locations as we add them.
+              </Text>
+            </View>
+          </View>
+        );
+        case 8: return (
+          <View style={styles.page}>
             <Text style={styles.pageEmoji}>🎉</Text>
             <Text style={styles.pageTitle}>You're ready.</Text>
             <Text style={styles.pageSubtitle}>Let's find something amazing.</Text>
@@ -509,6 +522,19 @@ const styles = StyleSheet.create({
   pageEmoji: { fontSize: 60, marginBottom: 20 },
   pageTitle: { fontSize: 24, fontWeight: '700', color: theme.colors.textPrimary, textAlign: 'center', marginBottom: 12 },
   pageSubtitle: { fontSize: 16, color: theme.colors.textSecondary, textAlign: 'center', lineHeight: 22, marginBottom: 24 },
+  pricingNote: {
+    fontSize: 13, color: theme.colors.textTertiary, textAlign: 'center',
+    lineHeight: 18, marginBottom: 24, paddingHorizontal: 24,
+  },
+  pricingInfo: {
+    backgroundColor: theme.colors.surface, borderRadius: 20, padding: 22, marginBottom: 12,
+    width: '100%', borderWidth: 1, borderColor: theme.colors.gold + '20',
+    shadowColor: theme.colors.gold, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 12, elevation: 6,
+  },
+  pricingInfoText: {
+    fontSize: 15, color: theme.colors.textSecondary, textAlign: 'center',
+    lineHeight: 22, paddingHorizontal: 8,
+  },
   notifCard: {
     backgroundColor: theme.colors.surface, borderRadius: 20, padding: 20, paddingTop: 12,
     width: '100%', marginBottom: 16, borderWidth: 1, borderColor: theme.colors.gold + '20',
