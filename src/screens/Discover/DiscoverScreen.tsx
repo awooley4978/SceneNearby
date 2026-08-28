@@ -278,7 +278,7 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
       distanceFromUser: calculateDistance(userLocation.latitude!, userLocation.longitude!, loc.latitude, loc.longitude) / 1609.34,
     })).filter((loc) => loc.distanceFromUser! <= (activeRadius ?? DEFAULT_RADIUS_MILES));
     return withDist.sort((a, b) => (a.distanceFromUser || 0) - (b.distanceFromUser || 0)).slice(0, 5);
-  }, [userLocation.latitude, userLocation.longitude, activeRadius]);
+  }, [userLocation.latitude, userLocation.longitude, activeRadius, allLocations]);
   // Group "Near You" by physical place (same title + coords) — one card per
   // place with the remaining films under "Also filmed here". Place-centric
   // browsing only; search results are untouched.
