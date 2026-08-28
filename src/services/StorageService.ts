@@ -11,6 +11,7 @@ const KEYS = {
   DISMISSED_LOCATIONS: '@scenenearby/dismissed_locations',
   USER_WORTHIT_VOTE: '@scenenearby/user_worthit_vote',
   USER_VISIT_TIME: '@scenenearby/user_visit_time',
+  TRIAL_NOTICE_DISMISSED: '@scenenearby/trial_notice_dismissed',
 };
 
 // ── Onboarding ──
@@ -47,6 +48,16 @@ export async function resetOnboarding(): Promise<void> {
     const { setDestinationContext } = await import('./destinationContext');
     await setDestinationContext(null);
   } catch {}
+}
+// ── Trial notice (one-time post-onboarding modal over the map) ──
+export async function getTrialNoticeDismissed(): Promise<boolean> {
+  try {
+    const val = await AsyncStorage.getItem(KEYS.TRIAL_NOTICE_DISMISSED);
+    return val === 'true';
+  } catch { return false; }
+}
+export async function setTrialNoticeDismissed(val: boolean): Promise<void> {
+  try { await AsyncStorage.setItem(KEYS.TRIAL_NOTICE_DISMISSED, String(val)); } catch {}
 }
 
 // ── Saved Locations ──

@@ -9,6 +9,7 @@ import {
   Animated,
   Linking,
   Platform,
+  Modal,
 } from 'react-native';
 import MapView, { Marker, Region } from 'react-native-maps';
 import Constants from 'expo-constants';
@@ -23,7 +24,7 @@ import { StarRating } from '../../components/StarRating';
 import { CategoryBadge } from '../../components/CategoryBadge';
 import { MoviePoster } from '../../components/MoviePoster';
 import { DiscoveryNotificationCard } from '../../components/DiscoveryNotificationCard';
-import { getOnboardingData } from '../../services/StorageService';
+import { getOnboardingData, getTrialNoticeDismissed, setTrialNoticeDismissed } from '../../services/StorageService';
 import { useSaved } from '../../context/SavedContext';
 import { useCityDetection } from '../../hooks/useCityDetection';
 import { CityWelcomeModal } from '../../components/CityWelcomeModal';
@@ -36,6 +37,7 @@ const { width, height } = Dimensions.get('window');
 export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ navigation, route }) => {
   const [selectedLocation, setSelectedLocation] = useState<FilmingLocation | null>(null);
   const [showList, setShowList] = useState(false);
+  const [showTrialNotice, setShowTrialNotice] = useState(false);
   const { savedIds, toggleSave: toggleSaved } = useSaved();
   const { locations: allLocations } = useAllLocations();
   const mapRef = useRef<MapView>(null);
@@ -70,6 +72,18 @@ export const NearbyMapScreen: React.FC<{ navigation: any; route?: any }> = ({ na
 
   // Keep ref in sync with state so the handler never goes stale
   useEffect(() => { devNotifVisibleRef.current = devNotifVisible; }, [devNotifVisible]);
+  // One-time trial notice: show over the map once after onboarding, unless the
+  // user has already dismissed it. Persisted so it never auto-shows again.
+  useEffect(() => {
+    (async () => {
+      const dismissed = await getTrialNoticeDismissed();
+      if (!dismissed) setShowTrialNotice(true);
+    })();
+  }, []);
+  const handleDismissTrialNotice = () => {
+    setShowTrialNotice(false);
+    setTrialNoticeDismissed(true);
+  };
 
 // Only the owner's main emails can preview the proximity-notification card —
 // even in release/TestFlight builds (same allowlist that gates the Admin
@@ -470,6 +484,27 @@ const TEST_NOTIFICATION_ENABLED =
           }}
         />
       )}
+      {/* One-time trial notice — shown over the map once after onboarding */}
+      <Modal visible={showTrialNotice} transparent animationType="fade">
+        <View style={styles.trialOverlay}>
+          <View style={styles.trialCard}>
+            <Text style={styles.trialTitle}>Your first 7 days are on us.</Text>
+            <Text style={styles.trialSubtitle}>
+              Explore Scene Nearby and find memorable places wherever you are.
+            </Text>
+            {/* Thin centered gold divider — UI element */}
+            <View style={styles.trialDivider} />
+            <Text style={styles.trialPricing}>
+              Then unlock lifetime access for $4.99.
+              {'\n'}
+              One payment gives you worldwide access for life—plus new locations as we add them.
+            </Text>
+            <TouchableOpacity style={styles.trialButton} onPress={handleDismissTrialNotice} activeOpacity={0.8}>
+              <Text style={styles.trialButtonText}>Start Exploring</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -529,4 +564,64 @@ const styles = StyleSheet.create({
   listTitle: { fontSize: 16, fontWeight: '700', color: theme.colors.textPrimary },
   listClose: { fontSize: 18, color: theme.colors.textTertiary, padding: 4 },
   listContent: { paddingHorizontal: 16, paddingBottom: 20 },
+  // One-time trial notice modal
+  trialOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  trialCard: {
+    width: '100%',
+    maxWidth: 360,
+    backgroundColor: theme.colors.surface,
+    borderRadius: 20,
+    padding: 24,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.4,
+    shadowRadius: 16,
+    elevation: 12,
+  },
+  trialTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: theme.colors.textPrimary,
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  trialSubtitle: {
+    fontSize: 15,
+    color: theme.colors.textSecondary,
+    textAlign: 'center',
+    lineHeight: 21,
+  },
+  trialDivider: {
+    width: 48,
+    height: 2,
+    backgroundColor: theme.colors.gold,
+    borderRadius: 1,
+    marginVertical: 18,
+  },
+  trialPricing: {
+    fontSize: 15,
+    color: theme.colors.textSecondary,
+    textAlign: 'center',
+    lineHeight: 22,
+    marginBottom: 22,
+  },
+  trialButton: {
+    alignSelf: 'stretch',
+    backgroundColor: theme.colors.gold,
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  trialButtonText: {
+    color: theme.colors.black,
+    fontWeight: '700',
+    fontSize: 16,
+  },
 });
