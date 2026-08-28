@@ -188,6 +188,13 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
               Enjoy full access to Scene Nearby. After your trial, lifetime access is a
               one-time $4.99 purchase.
             </Text>
+            <TouchableOpacity
+              style={styles.lifetimeButton}
+              onPress={() => navigation.navigate('Paywall')}
+              disabled={ui === 'restoring'}
+            >
+              <Text style={styles.lifetimeButtonText}>Unlock Lifetime — {price ?? '$4.99'}</Text>
+            </TouchableOpacity>
           </View>
         )}
       </View>
