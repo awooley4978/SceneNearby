@@ -26,10 +26,23 @@ export function isValidCoordinate(lat: number | null, lng: number | null): boole
 }
 
 /**
+ * How long (ms) the UI shows the "Locating you…" state before we give up waiting
+ * on a first GPS fix. The watcher keeps running past this and will still hand off
+ * to live GPS the instant a fix arrives — this is only a guard so the screen does
+ * not hang silently on a cold/indoor location service (which can otherwise take
+ * 10+ minutes to satisfy `getCurrentPositionAsync` at Balanced accuracy).
+ */
+const FIRST_FIX_TIMEOUT_MS = 10_000;
+
+/**
  * Hook that provides the user's current location.
  *
  * Priority:
- * 1. Real GPS via expo-location (if permission granted) — watches for position changes
+ * 1. Real GPS via expo-location (if permission granted) — a watcher is started
+ *    immediately after permission is granted, and its FIRST callback populates
+ *    live GPS. Driving from the watcher (instead of `getCurrentPositionAsync`)
+ *    avoids blocking on a single fix, which can take minutes on a cold/indoor
+ *    location service. The watcher keeps running and refines accuracy over time.
  * 2. Onboarding data (activeCityLat/activeCityLng) if permission denied
  * 3. null if no data available (no distance is displayed)
  *
@@ -50,6 +63,7 @@ export function useUserLocation(): UserLocation {
   useEffect(() => {
     let mounted = true;
     let watcher: Location.LocationSubscription | null = null;
+    let firstFixTimer: ReturnType<typeof setTimeout> | null = null;
 
     async function getLocation() {
       try {
@@ -58,27 +72,9 @@ export function useUserLocation(): UserLocation {
         if (!mounted) return;
 
         if (status === 'granted') {
-          const loc = await Location.getCurrentPositionAsync({
-            accuracy: Location.Accuracy.Balanced,
-          });
-
-          if (!mounted) return;
-
-          const { latitude, longitude } = loc.coords;
-
-          // Only set valid coordinates
-          if (isValidCoordinate(latitude, longitude)) {
-            setLocation({
-              latitude,
-              longitude,
-              isGps: true,
-              isLoading: false,
-              permissionDenied: false,
-              error: null,
-            });
-          }
-
-          // Watch for position changes — recalculates distances as user moves
+          // Start the watcher immediately — its first callback is our GPS handoff.
+          // This replaces the previous `getCurrentPositionAsync` one-shot, which can
+          // block for minutes before ANY fix (the V1 location-handoff bug).
           watcher = await Location.watchPositionAsync(
             {
               accuracy: Location.Accuracy.Balanced,
@@ -87,11 +83,11 @@ export function useUserLocation(): UserLocation {
             },
             (newLoc) => {
               if (!mounted) return;
-              const { latitude: newLat, longitude: newLng } = newLoc.coords;
-              if (isValidCoordinate(newLat, newLng)) {
+              const { latitude, longitude } = newLoc.coords;
+              if (isValidCoordinate(latitude, longitude)) {
                 setLocation({
-                  latitude: newLat,
-                  longitude: newLng,
+                  latitude,
+                  longitude,
                   isGps: true,
                   isLoading: false,
                   permissionDenied: false,
@@ -100,6 +96,19 @@ export function useUserLocation(): UserLocation {
               }
             }
           );
+
+          // Guard: if no fix arrives in time, surface an explicit "still locating"
+          // state instead of silently hanging on an empty feed. The watcher keeps
+          // running and still hands off to GPS when the first fix lands.
+          firstFixTimer = setTimeout(() => {
+            if (!mounted) return;
+            setLocation((prev) => ({
+              ...prev,
+              isLoading: false,
+              error: 'Still determining your location',
+            }));
+          }, FIRST_FIX_TIMEOUT_MS);
+
           return;
         }
 
@@ -166,6 +175,7 @@ export function useUserLocation(): UserLocation {
     return () => {
       mounted = false;
       if (watcher) watcher.remove();
+      if (firstFixTimer) clearTimeout(firstFixTimer);
     };
   }, []);
 
