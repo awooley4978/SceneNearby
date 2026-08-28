@@ -14,25 +14,50 @@ import { resetOnboarding, getUserSettings, setUserSettings } from '../../service
 import { Linking, Platform } from 'react-native';
 import { logPremiumUpgrade } from '../../services/analytics';
 import { useAuth } from '../../context/AuthContext';
+import { useSaved } from '../../context/SavedContext';
+import { getUserAlbum } from '../../services/albumService';
 
 const ADMIN_EMAILS = ['awooley4978@gmail.com', 'scenenearbysupport@gmail.com'];
 
 export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { user, signOut: authSignOut } = useAuth();
+  const { savedIds } = useSaved();
   const [settings, setSettings] = useState(defaultUserSettings);
   const [isPremium, setIsPremium] = useState(false);
   const [purchasedPacks, setPurchasedPacks] = useState<string[]>([]);
   const [navApp, setNavApp] = useState<string | null>(null);
+  const [photoCount, setPhotoCount] = useState(0);
 
   // Load saved nav preference
   React.useEffect(() => {
     getUserSettings(defaultUserSettings).then((s) => setNavApp(s.navApp));
   }, []);
 
+  // Genuine per-user counts only — no placeholder/demo numbers. Saved comes from
+  // the SavedContext (AsyncStorage-backed); Photos from the user's Firestore
+  // album (0 / hidden when signed out). "Visited" is not reliably tracked, so it
+  // is intentionally not shown.
+  React.useEffect(() => {
+    if (!user?.uid) {
+      setPhotoCount(0);
+      return;
+    }
+    let active = true;
+    getUserAlbum(user.uid)
+      .then(({ photos }) => {
+        if (active) setPhotoCount(photos.length);
+      })
+      .catch(() => {
+        if (active) setPhotoCount(0);
+      });
+    return () => {
+      active = false;
+    };
+  }, [user?.uid]);
+
   const stats = {
-    saves: 4,
-    totalLocations: 27,
-    citiesVisited: 3,
+    saves: savedIds.size,
+    photos: photoCount,
   };
 
   const handleBuyPremium = () => {
@@ -63,13 +88,8 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
         </View>
         <View style={styles.statDivider} />
         <View style={styles.statBox}>
-          <Text style={styles.statValue}>{stats.totalLocations}</Text>
-          <Text style={styles.statLabel}>Locations</Text>
-        </View>
-        <View style={styles.statDivider} />
-        <View style={styles.statBox}>
-          <Text style={styles.statValue}>{stats.citiesVisited}</Text>
-          <Text style={styles.statLabel}>Cities</Text>
+          <Text style={styles.statValue}>{stats.photos}</Text>
+          <Text style={styles.statLabel}>Photos</Text>
         </View>
       </View>
 

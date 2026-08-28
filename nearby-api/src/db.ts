@@ -116,7 +116,7 @@ export async function insertContribution(sub: PhotoSubmission): Promise<void> {
     comment, description, submitted_at, reviewed_by, reviewed_at, status,
     movie_or_show, proposed_movie_json, proposed_location_json,
     submitter_uid, display_name, allow_public_credit, rights_confirmed,
-    photo_kind, source_evidence, source, featured, license, license_url
+    community_permission, photo_kind, source_evidence, source, featured, license, license_url
   ) VALUES (
     ${esc(sub.id)}, ${esc(sub.app_name)}, ${esc(sub.location_id ?? "unknown")}, ${esc(sub.location_name ?? "Unknown location")},
     ${esc(sub.user_info ?? null)}, ${esc(sub.photo_path)}, NULL,
@@ -124,7 +124,7 @@ export async function insertContribution(sub: PhotoSubmission): Promise<void> {
     ${esc(sub.status)},
     ${esc(sub.movie_or_show ?? null)}, ${esc(sub.proposed_movie_json ?? null)}, ${esc(sub.proposed_location_json ?? null)},
     ${esc(sub.submitter_uid ?? null)}, ${esc(sub.display_name ?? null)}, ${sub.allow_public_credit == null ? 1 : sub.allow_public_credit},
-    ${sub.rights_confirmed ? 1 : 0}, ${esc(sub.photo_kind ?? "community")}, ${esc(sub.source_evidence ?? null)},
+    ${sub.rights_confirmed ? 1 : 0}, ${esc(sub.community_permission ?? null)}, ${esc(sub.photo_kind ?? "community")}, ${esc(sub.source_evidence ?? null)},
     ${esc(sub.source ?? "community")}, 0, ${esc(sub.license ?? null)}, ${esc(sub.license_url ?? null)}
   )`;
   await runQuery(sql);

@@ -221,6 +221,7 @@ export const ContributeScreen: React.FC = () => {
         rights_confirmed: true,
         license: draft.license || undefined,
         license_url: draft.licenseUrl || undefined,
+        community_permission: 'display',
         photo: {
           uri: draft.photo.uri,
           type: draft.photo.mimeType || 'image/jpeg',

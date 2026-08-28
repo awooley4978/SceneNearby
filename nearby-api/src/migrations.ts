@@ -77,6 +77,13 @@ export async function runMigrations(): Promise<void> {
     "rights_confirmed",
     "INTEGER NOT NULL DEFAULT 0"
   );
+  // Community permission tag ('display') stored separately from CC licensing
+  // (license/license_url stay NULL for community submissions). Additive.
+  await addColumn(
+    "photo_submissions",
+    "community_permission",
+    "TEXT"
+  );
   // All community submissions are pending-only; admin approval flips status.
   // photo_kind distinguishes community vs official/studio imagery on approval.
   await addColumn(
