@@ -225,7 +225,9 @@ export const NotificationPreferencesScreen: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background },
-  content: { paddingBottom: 60 },
+  // Leave room below the shared absolute BackButton (top: 50) so the first
+  // section title starts beneath the safe-area/header region on iOS.
+  content: { paddingTop: 56, paddingBottom: 60 },
   section: { paddingHorizontal: 16, paddingTop: 24 },
   sectionTitle: { fontSize: 18, fontWeight: '700', color: theme.colors.textPrimary, marginBottom: 12 },
   sectionSubtitle: { fontSize: 13, color: theme.colors.textSecondary, marginBottom: 12, marginTop: -8 },
