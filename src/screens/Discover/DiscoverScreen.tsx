@@ -89,7 +89,10 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
     return map;
   }, [allLocations]);
 
-  // Search results with grouping — computed on every render for reliability
+  // Search results with grouping — computed from the live input. Search is
+  // intentionally limited to movies/shows/actors; city/destination search is
+  // reserved for a future version so common city letters do not make every
+  // query return the same titles.
   const q = searchQuery.trim().toLowerCase();
   const searchResults = ((): SearchResultItem[] => {
     if (!q) return [];
@@ -103,7 +106,6 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
       (loc) =>
         loc.title.toLowerCase().includes(q) ||
         loc.movieOrShow.toLowerCase().includes(q) ||
-        loc.city.toLowerCase().includes(q) ||
         loc.actors?.some((a) => a.toLowerCase().includes(q)),
     );
 
@@ -199,12 +201,11 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
     }
 
     if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
+      const q = searchQuery.trim().toLowerCase();
       result = result.filter(
         (loc) =>
           loc.title.toLowerCase().includes(q) ||
-          loc.movieOrShow.toLowerCase().includes(q) ||
-          loc.city.toLowerCase().includes(q),
+          loc.movieOrShow.toLowerCase().includes(q),
       );
     }
 
