@@ -126,6 +126,7 @@ const sharedScreens = (
       name="Paywall"
       component={PaywallScreen}
       options={{ headerShown: false, animation: 'fade' as any, presentation: 'modal' as any }}
+      initialParams={{ canClose: true }}
     />
   </>
 );

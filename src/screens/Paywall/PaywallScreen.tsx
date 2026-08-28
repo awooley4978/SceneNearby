@@ -18,6 +18,7 @@ import { useEntitlement } from '../../context/EntitlementContext';
 
 interface Props {
   navigation?: any;
+  route?: any;
   /** When true, emit a "close" affordance (e.g. from a modal). Omitted on full gate. */
   canClose?: boolean;
   onClose?: () => void;
@@ -26,9 +27,13 @@ interface Props {
 const PRIVACY_URL = 'https://scenenearby.web.app/privacy';
 const SUPPORT_EMAIL = 'scenenearbysupport@gmail.com';
 
-export const PaywallScreen: React.FC<Props> = ({ canClose, onClose }) => {
+export const PaywallScreen: React.FC<Props> = ({ navigation, route, canClose, onClose }) => {
   const insets = useSafeAreaInsets();
   const { price, ui, message, purchase, restore, status, daysLeft } = useEntitlement();
+
+  // When presented as a navigation modal, canClose comes via route params.
+  const closeable = canClose === true || (navigation && route?.params?.canClose === true);
+  const dismiss = onClose ?? (() => navigation?.goBack?.());
 
   const priceDisplay = price ?? '$4.99';
   const busy = ui === 'purchasing' || ui === 'restoring' || ui === 'pending';
@@ -42,9 +47,9 @@ export const PaywallScreen: React.FC<Props> = ({ canClose, onClose }) => {
       style={styles.container}
       contentContainerStyle={[styles.content, { paddingTop: insets.top + 32, paddingBottom: insets.bottom + 32 }]}
     >
-      {canClose && (
+      {closeable && (
         <View style={styles.closeRow}>
-          <TouchableOpacity onPress={onClose} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
+          <TouchableOpacity onPress={dismiss} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
             <Text style={styles.closeText}>Close</Text>
           </TouchableOpacity>
         </View>
