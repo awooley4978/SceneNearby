@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '../../theme';
-import { LocationCategory, categoryColors } from '../../models';
+import { LocationCategory, categoryColors, CITIES } from '../../models';
 import { useAllLocations, useActorGroups, useMovieGroups } from '../../services/hooks';
 import { calculateDistance } from '../../services/geo';
 import { LocationCard } from '../../components/LocationCard';
@@ -44,11 +44,20 @@ type SortMode = 'default' | 'rating' | 'nearest';
 type SearchMode = 'all' | 'actor';
 
 interface SearchResultItem {
-  type: 'location' | 'movie' | 'show' | 'actor';
+  type: 'location' | 'movie' | 'show' | 'actor' | 'city';
   id: string;
   label: string;
   subtitle: string;
   data: any;
+}
+
+// Region suffix for a destination search result (e.g. "London, UK"). Pulls the
+// short state/country label from the curated CITIES metro table where the city
+// is a known metro; otherwise falls back to the location's stored country.
+const cityRegionByMetro = new Map<string, string>(CITIES.map((c) => [c.name.toLowerCase(), c.state]));
+function formatCityLabel(city: string, fallbackCountry?: string): string {
+  const region = cityRegionByMetro.get(city.trim().toLowerCase()) || fallbackCountry;
+  return region ? `${city.trim()}, ${region}` : city.trim();
 }
 
 export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
@@ -152,6 +161,29 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
       }
     }
 
+    // Extract city/destination matches — a distinct searchable type. Built from
+    // the app's metro/city grouping (loc.city), deduped by city, and surfaced
+    // as its own result row (e.g. "📍 London, UK — Explore locations").
+    // Selecting one opens a pure content Destination view of that city's
+    // locations — it never changes the user's home/GPS location, notifications,
+    // or preferences, and it is NOT folded into the location feed filter below.
+    const cityMatched = new Map<string, FilmingLocation>();
+    for (const loc of allLocationsWithActors) {
+      const c = (loc.city || '').trim();
+      if (!c) continue;
+      if (!c.toLowerCase().includes(q)) continue;
+      if (!cityMatched.has(c)) cityMatched.set(c, loc);
+    }
+    for (const [c, loc] of cityMatched) {
+      results.push({
+        type: 'city',
+        id: `city-${c}`,
+        label: formatCityLabel(c, loc.country),
+        subtitle: 'Explore locations',
+        data: { city: c },
+      });
+    }
+
     return results;
   })();
 
@@ -159,7 +191,8 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
   const filteredSearchResults = useMemo(() => {
     if (selectedType === 'all') return searchResults;
     return searchResults.filter((item) => {
-      if (item.type === 'actor') return false; // actors don't match movie/show filter
+      // actors and cities aren't movies/shows — hidden when a type filter is active
+      if (item.type === 'actor' || item.type === 'city') return false;
       if (selectedType === 'movies') return item.type === 'movie';
       if (selectedType === 'shows') return item.type === 'show';
       return true;
@@ -296,11 +329,13 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
       navigation.navigate('ActorDetail', { actorName: item.data.actorName });
     } else if (item.type === 'movie' || item.type === 'show') {
       navigation.navigate('MovieDetail', { movieTitle: item.data.movieTitle });
+    } else if (item.type === 'city') {
+      navigation.navigate('Destination', { city: item.data.city });
     }
   };
 
   const renderSearchResult = ({ item }: { item: SearchResultItem }) => {
-    const emoji = item.type === 'movie' ? '🎬' : item.type === 'show' ? '📺' : '🎭';
+    const emoji = item.type === 'movie' ? '🎬' : item.type === 'show' ? '📺' : item.type === 'city' ? '📍' : '🎭';
     return (
       <TouchableOpacity
         style={styles.searchResultRow}

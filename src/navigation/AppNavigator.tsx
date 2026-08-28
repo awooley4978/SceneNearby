@@ -17,6 +17,7 @@ import { MovieDetailScreen } from '../screens/MovieDetail/MovieDetailScreen';
 import { FilmographyScreen } from '../screens/MovieDetail/FilmographyScreen';
 import { PhotoGalleryScreen } from '../screens/PhotoGallery/PhotoGalleryScreen';
 import { ActorDetailScreen } from '../screens/Discover/ActorDetailScreen';
+import { DestinationScreen } from '../screens/Discover/DestinationScreen';
 import { AlbumScreen } from '../screens/Album/AlbumScreen';
 import { LocationAlbumScreen } from '../screens/Album/LocationAlbumScreen';
 import { AuthScreen } from '../screens/Auth/AuthScreen';
@@ -102,6 +103,11 @@ const sharedScreens = (
     <Stack.Screen
       name="ActorDetail"
       component={ActorDetailScreen}
+      options={{ headerShown: false, ...stackOptions, cardStyleInterpolator } as any}
+    />
+    <Stack.Screen
+      name="Destination"
+      component={DestinationScreen}
       options={{ headerShown: false, ...stackOptions, cardStyleInterpolator } as any}
     />
     <Stack.Screen
