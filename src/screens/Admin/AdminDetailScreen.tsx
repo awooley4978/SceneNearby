@@ -1,7 +1,8 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   View,
   Text,
+  ActivityIndicator,
   ScrollView,
   TouchableOpacity,
   TextInput,
@@ -90,6 +91,37 @@ export const AdminDetailScreen: React.FC<{ navigation: any; route: any }> = ({
   const [rejectSub, setRejectSub] = useState<PhotoSubmission | null>(null);
   const [rejectReason, setRejectReason] = useState<string | null>(null);
   const [rejectNote, setRejectNote] = useState('');
+  // Load/error state for the queue's own fetch. The dashboard pre-fetches the
+  // pending list and passes it via route params, but that call can fail
+  // silently and leave a misleading "All caught up". This screen therefore
+  // re-fetches the pending submissions itself on mount so the REAL pending
+  // items are always shown, with an explicit error + Retry when the network
+  // call fails instead of a fake empty state.
+  const [queueLoading, setQueueLoading] = useState(isApproval);
+  const [queueError, setQueueError] = useState<string | null>(null);
+  const [queueAttempt, setQueueAttempt] = useState(0);
+  useEffect(() => {
+    if (!isApproval) return;
+    let cancelled = false;
+    setQueueLoading(true);
+    setQueueError(null);
+    apiClient
+      .getPendingContributions()
+      .then((subs) => {
+        if (cancelled) return;
+        setLocalPending(subs);
+        setQueueLoading(false);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        setQueueError(err instanceof Error ? err.message : String(err));
+        setQueueLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [isApproval, queueAttempt]);
+  const retryQueue = () => setQueueAttempt((n) => n + 1);
   const pendingItems = localPending ?? (items as PhotoSubmission[]);
   const removeFromPending = (id: string) =>
     setLocalPending((prev) => (prev ?? (items as PhotoSubmission[])).filter((s) => s.id !== id));
@@ -180,7 +212,21 @@ export const AdminDetailScreen: React.FC<{ navigation: any; route: any }> = ({
           <Text style={styles.headerCount}>{pendingItems.length}</Text>
         </View>
         <ScrollView style={styles.list} contentContainerStyle={styles.listContent}>
-          {pendingItems.length === 0 ? (
+          {queueLoading ? (
+            <View style={styles.emptyState}>
+              <ActivityIndicator size="large" color={theme.colors.gold} />
+              <Text style={styles.emptySub}>Loading pending photos…</Text>
+            </View>
+          ) : queueError ? (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyEmoji}>⚠️</Text>
+              <Text style={styles.emptyTitle}>Couldn't load the queue</Text>
+              <Text style={styles.emptySub}>{queueError}</Text>
+              <TouchableOpacity style={styles.retryButton} onPress={retryQueue} activeOpacity={0.7}>
+                <Text style={styles.retryButtonText}>Retry</Text>
+              </TouchableOpacity>
+            </View>
+          ) : pendingItems.length === 0 ? (
             <View style={styles.emptyState}>
               <Text style={styles.emptyEmoji}>✅</Text>
               <Text style={styles.emptyTitle}>All caught up</Text>
@@ -708,6 +754,14 @@ const styles = StyleSheet.create({
   emptyEmoji: { fontSize: 48, marginBottom: 12 },
   emptyTitle: { fontSize: 20, fontWeight: '700', color: theme.colors.textPrimary, marginBottom: 4 },
   emptySub: { fontSize: 14, color: theme.colors.textSecondary, textAlign: 'center' },
+  retryButton: {
+    marginTop: 16,
+    paddingVertical: 10,
+    paddingHorizontal: 28,
+    borderRadius: 24,
+    backgroundColor: theme.colors.gold,
+  },
+  retryButtonText: { color: theme.colors.white, fontSize: 15, fontWeight: '700' },
 
   // List
   list: { flex: 1 },
