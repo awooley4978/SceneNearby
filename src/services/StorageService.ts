@@ -117,6 +117,13 @@ async function addLocationToList(key: string, locationId: string): Promise<void>
 export async function isLocationVisited(locationId: string): Promise<boolean> {
   return isLocationInList(KEYS.VISITED_LOCATIONS, locationId);
 }
+/** All visited location IDs (the source populated by the visit gate). */
+export async function getVisitedLocations(): Promise<string[]> {
+  try {
+    const raw = await AsyncStorage.getItem(KEYS.VISITED_LOCATIONS);
+    return raw ? (JSON.parse(raw) as string[]) : [];
+  } catch { return []; }
+}
 
 export async function isGateAnswered(locationId: string): Promise<boolean> {
   const [visited, dismissed] = await Promise.all([
