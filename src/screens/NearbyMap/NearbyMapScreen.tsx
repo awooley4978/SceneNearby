@@ -134,6 +134,23 @@ const TEST_NOTIFICATION_ENABLED =
   // If navigated from location detail, center on that location
   const targetLat = route?.params?.centerLat;
   const targetLng = route?.params?.centerLng;
+  // Optional fitted-region deltas — passed by a destination's "View on Map" so
+  // the whole destination is framed at once (not just the 0.05 single-spot zoom).
+  const targetLatDelta = route?.params?.centerLatDelta;
+  const targetLngDelta = route?.params?.centerLngDelta;
+  // Optional destination focus: when arriving from a destination's "View on
+  // Map", limit the pins to that destination's locations only so the user sees
+  // exactly the places they navigated to.
+  const focusCity = route?.params?.focusCity;
+
+  // Pins shown on the map. Normal use pins every location; a focused
+  // destination view pins only that destination's locations. No count/DB-size
+  // indicator is introduced by the focused view.
+  const mapLocations = useMemo(() => {
+    if (!focusCity) return allLocations;
+    const needle = focusCity.trim().toLowerCase();
+    return allLocations.filter((l) => (l.city || '').trim().toLowerCase() === needle);
+  }, [allLocations, focusCity]);
 
   // Load user coordinates from onboarding data
   useEffect(() => {
@@ -163,15 +180,15 @@ const TEST_NOTIFICATION_ENABLED =
       const targetRegion = {
         latitude: targetLat,
         longitude: targetLng,
-        latitudeDelta: 0.05,
-        longitudeDelta: 0.05,
+        latitudeDelta: targetLatDelta ?? 0.05,
+        longitudeDelta: targetLngDelta ?? 0.05,
       };
       setRegion(targetRegion);
       setTimeout(() => {
         mapRef.current?.animateToRegion(targetRegion, 500);
       }, 300);
     }
-  }, [targetLat, targetLng]);
+  }, [targetLat, targetLng, targetLatDelta, targetLngDelta]);
 
   // ── List scope = the visible map region ──────────────────────────────────
   // The List mirrors the geography the map currently represents: only
@@ -279,7 +296,7 @@ const TEST_NOTIFICATION_ENABLED =
         showsCompass
         mapPadding={{ top: 60, right: 16, bottom: showList ? 280 : 120, left: 16 }}
       >
-        {allLocations.map(renderCluster)}
+        {mapLocations.map(renderCluster)}
       </MapView>
 
       {/* Header — descriptive only */}
@@ -287,7 +304,9 @@ const TEST_NOTIFICATION_ENABLED =
         <TouchableOpacity onPress={handleDevNotificationTrigger} activeOpacity={0.7}>
           <Text style={styles.headerTitle}>📍 Nearby</Text>
         </TouchableOpacity>
-        {userCity ? (
+        {focusCity ? (
+          <Text style={styles.headerSubtitle}>Filming locations in {focusCity}</Text>
+        ) : userCity ? (
           <Text style={styles.headerSubtitle}>Exploring locations near {userCity}</Text>
         ) : (
           <Text style={styles.headerSubtitle}>{allLocations.length} filming locations worldwide</Text>
