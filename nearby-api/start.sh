@@ -16,5 +16,5 @@ export R2_BUCKET_NAME="${R2_BUCKET_NAME:-scene-nearby-images}"
 export PORT=3001
 cd /home/team/shared/nearby-api
 echo "=== start.sh $(date -Is) ===" >> /tmp/server.log
-nohup bun run src/server.ts >> /tmp/server.log 2>&1 &
+nohup env DISABLE_RESEARCH_WORKER=1 bun run src/server.ts >> /tmp/server.log 2>&1 &
 echo "Server PID: $!"

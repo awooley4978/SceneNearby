@@ -86,6 +86,15 @@ export async function researchWorkerTick(): Promise<{ handled: boolean; jobId?: 
 
 /** Start the poll loop (called once from server.ts). */
 export function startResearchWorker(intervalMs = 60_000): void {
+  // Gate the worker entirely. It performs heavy synchronous DB work through
+  // the team-db CLI (execSync), which BLOCKS Bun's single-threaded event loop
+  // and freezes /health past the watchdog timeout — causing clean restarts in
+  // environments where it runs needlessly (the local sandbox). It must run only
+  // where it is actually wanted (the live Fly API / production research queue).
+  if (process.env.DISABLE_RESEARCH_WORKER === "1") {
+    console.log("[research-worker] disabled via DISABLE_RESEARCH_WORKER");
+    return;
+  }
   if (startedAt) return;
   startedAt = Date.now();
   const loop = async () => {
