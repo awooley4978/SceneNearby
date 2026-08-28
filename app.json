@@ -15,9 +15,6 @@
       "supportsTablet": false,
       "bundleIdentifier": "com.cairn.scenenearby",
       "buildNumber": "20",
-      "entitlements": {
-        "com.apple.InAppPurchase": true
-      },
       "associatedDomains": [
         "applinks:scenenearby.firebaseapp.com"
       ],
