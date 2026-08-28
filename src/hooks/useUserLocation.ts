@@ -1,11 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import * as Location from 'expo-location';
 import { getOnboardingData } from '../services/StorageService';
+import {
+  getDestinationContextSync,
+  useDestinationContext,
+} from '../services/destinationContext';
 
 export interface UserLocation {
   latitude: number | null;
   longitude: number | null;
-  /** Whether the location came from real GPS (true) or onboarding fallback (false) */
+  /** Whether the location came from real GPS (true) or onboarding/fallback (false) */
   isGps: boolean;
   /** Whether we're still loading the location */
   isLoading: boolean;
@@ -26,13 +30,25 @@ export function isValidCoordinate(lat: number | null, lng: number | null): boole
 }
 
 /**
- * How long (ms) the UI shows the "Locating you…" state before we give up waiting
- * on a first GPS fix. The watcher keeps running past this and will still hand off
- * to live GPS the instant a fix arrives — this is only a guard so the screen does
- * not hang silently on a cold/indoor location service (which can otherwise take
- * 10+ minutes to satisfy `getCurrentPositionAsync` at Balanced accuracy).
+ * Resolve the authoritative "fallback" coordinates for non-GPS browsing.
+ *
+ * Priority (T-DST, owner-approved 08-28):
+ *  1. The STICKY destination context, when one is active — a selected
+ *     destination overrides the home-city fallback (and the GPS-fallback
+ *     path) so the app stays anchored on that destination.
+ *  2. The onboarding home-city data (activeCityLat/Lng), which is the existing
+ *     behavior when no destination is active.
+ * Returns null when neither is available.
  */
-const FIRST_FIX_TIMEOUT_MS = 10_000;
+function resolveFallback(destination: { latitude: number; longitude: number } | null, onboardingCoords: { lat: number; lng: number } | null): { lat: number; lng: number } | null {
+  if (destination && isValidCoordinate(destination.latitude, destination.longitude)) {
+    return { lat: destination.latitude, lng: destination.longitude };
+  }
+  if (onboardingCoords && isValidCoordinate(onboardingCoords.lat, onboardingCoords.lng)) {
+    return onboardingCoords;
+  }
+  return null;
+}
 
 /**
  * Hook that provides the user's current location.
@@ -40,17 +56,17 @@ const FIRST_FIX_TIMEOUT_MS = 10_000;
  * Priority:
  * 1. Real GPS via expo-location (if permission granted) — a watcher is started
  *    immediately after permission is granted, and its FIRST callback populates
- *    live GPS. Driving from the watcher (instead of `getCurrentPositionAsync`)
- *    avoids blocking on a single fix, which can take minutes on a cold/indoor
- *    location service. The watcher keeps running and refines accuracy over time.
- * 2. Onboarding data (activeCityLat/activeCityLng) if permission denied
- * 3. null if no data available (no distance is displayed)
+ *    live GPS. The watcher keeps running and refines accuracy over time.
+ * 2. STICKY destination context (when active) if permission denied / no GPS.
+ * 3. Onboarding data (activeCityLat/activeCityLng) as the home-city fallback.
+ * 4. null if no data available (no distance is displayed).
  *
- * When GPS is available, coordinates are validated before being returned.
- * When GPS is unavailable, the hook falls back to onboarding data.
- * The hook never returns invalid coordinates.
+ * When GPS is available it always wins; when it is not, the hook falls back to
+ * the destination context (if active) then onboarding data. The fallback
+ * re-resolves reactively whenever the destination context changes.
  */
 export function useUserLocation(): UserLocation {
+  const destination = useDestinationContext();
   const [location, setLocation] = useState<UserLocation>({
     latitude: null,
     longitude: null,
@@ -59,6 +75,45 @@ export function useUserLocation(): UserLocation {
     permissionDenied: false,
     error: null,
   });
+
+  // Load onboarding coords once — used as the fallback source of truth.
+  const [onboardingCoords, setOnboardingCoords] = useState<{ lat: number; lng: number } | null>(null);
+
+  // Resolve the current non-GPS fallback from destination + onboarding.
+  const applyFallback = useCallback(() => {
+    const dest = getDestinationContextSync();
+    const fb = resolveFallback(dest, onboardingCoords);
+    setLocation((prev) => {
+      if (prev.isGps) return prev; // real GPS always wins once we have it
+      if (fb) {
+        return {
+          latitude: fb.lat,
+          longitude: fb.lng,
+          isGps: false,
+          isLoading: false,
+          permissionDenied: true,
+          error: prev.isLoading ? null : prev.error,
+        };
+      }
+      return prev;
+    });
+  }, [onboardingCoords]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const data = await getOnboardingData();
+        if (data?.activeCityLat && data?.activeCityLng) {
+          setOnboardingCoords({ lat: data.activeCityLat, lng: data.activeCityLng });
+        }
+      } catch {}
+    })();
+  }, []);
+
+  // Re-resolve fallback when onboarding coords land and when destination changes.
+  useEffect(() => {
+    applyFallback();
+  }, [applyFallback, destination]);
 
   useEffect(() => {
     let mounted = true;
@@ -73,8 +128,6 @@ export function useUserLocation(): UserLocation {
 
         if (status === 'granted') {
           // Start the watcher immediately — its first callback is our GPS handoff.
-          // This replaces the previous `getCurrentPositionAsync` one-shot, which can
-          // block for minutes before ANY fix (the V1 location-handoff bug).
           watcher = await Location.watchPositionAsync(
             {
               accuracy: Location.Accuracy.Balanced,
@@ -102,70 +155,37 @@ export function useUserLocation(): UserLocation {
           // running and still hands off to GPS when the first fix lands.
           firstFixTimer = setTimeout(() => {
             if (!mounted) return;
-            setLocation((prev) => ({
-              ...prev,
-              isLoading: false,
-              error: 'Still determining your location',
-            }));
-          }, FIRST_FIX_TIMEOUT_MS);
+            setLocation((prev) => {
+              if (prev.isGps) return prev;
+              return {
+                ...prev,
+                isLoading: false,
+                error: 'Still determining your location',
+              };
+            });
+          }, 10_000);
 
           return;
         }
 
-        // Permission denied — fall back to onboarding data
+        // Permission denied — fall back to destination context, then onboarding.
         setLocation((prev) => ({
           ...prev,
           permissionDenied: true,
         }));
-
-        try {
-          const onboardingData = await getOnboardingData();
-          if (!mounted) return;
-
-          if (onboardingData?.activeCityLat && onboardingData?.activeCityLng) {
-            const onboardingLat = onboardingData.activeCityLat;
-            const onboardingLng = onboardingData.activeCityLng;
-            if (isValidCoordinate(onboardingLat, onboardingLng)) {
-              setLocation({
-                latitude: onboardingLat,
-                longitude: onboardingLng,
-                isGps: false,
-                isLoading: false,
-                permissionDenied: true,
-                error: null,
-              });
-            } else {
-              setLocation((prev) => ({
-                ...prev,
-                isLoading: false,
-                error: 'Invalid onboarding coordinates',
-              }));
-            }
-          } else {
-            // No data available — stay null, don't display distance
-            setLocation((prev) => ({
-              ...prev,
-              isLoading: false,
-              error: 'No location data available',
-            }));
-          }
-        } catch {
-          if (!mounted) return;
-          setLocation((prev) => ({
-            ...prev,
-            isLoading: false,
-            error: 'Failed to load onboarding data',
-          }));
-        }
+        applyFallback();
       } catch (err: any) {
         if (!mounted) return;
+        // A thrown permission/error — fall back if we have a destination.
+        const dest = getDestinationContextSync();
+        const fb = resolveFallback(dest, onboardingCoords);
         setLocation({
-          latitude: null,
-          longitude: null,
+          latitude: fb?.lat ?? null,
+          longitude: fb?.lng ?? null,
           isGps: false,
           isLoading: false,
-          permissionDenied: false,
-          error: err?.message || 'Failed to get location',
+          permissionDenied: !!dest,
+          error: fb ? null : err?.message || 'Failed to get location',
         });
       }
     }
@@ -177,6 +197,7 @@ export function useUserLocation(): UserLocation {
       if (watcher) watcher.remove();
       if (firstFixTimer) clearTimeout(firstFixTimer);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return location;

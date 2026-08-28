@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BackButton } from '../../components/BackButton';
@@ -6,6 +6,7 @@ import { theme } from '../../theme';
 import { useAllLocations } from '../../services/hooks';
 import { LocationCard } from '../../components/LocationCard';
 import { EmptyState } from '../../components/EmptyState';
+import { setDestinationContext, getDestinationContextSync } from '../../services/destinationContext';
 
 /**
  * Destination screen — reached from Discover search when the user picks a
@@ -58,6 +59,38 @@ export const DestinationScreen: React.FC<{ route: any; navigation: any }> = ({
     const lngDelta = Math.max((maxLng - minLng) * 1.6, 0.08);
     return { centerLat, centerLng, centerLatDelta: latDelta, centerLngDelta: lngDelta, focusCity: city };
   }, [cityLocations, city]);
+
+  // ── T-DST: STICKY destination browsing context ──────────────────────────
+  // While this Destination is active it overrides the home-city (and GPS)
+  // fallback so the app stays anchored to this destination across Discover /
+  // map / distance surfaces. Set once we have the destination's coordinates.
+  useEffect(() => {
+    if (!city || !mapRegion) return;
+    setDestinationContext({
+      city,
+      latitude: mapRegion.centerLat,
+      longitude: mapRegion.centerLng,
+    });
+  }, [city, mapRegion]);
+
+  // Clear the sticky context ONLY when this screen instance is actually
+  // removed (explicit exit from destination browsing). Runs on unmount only —
+  // it does not fire on dep changes. Guarded so a DIFFERENT destination that
+  // the user switched to isn't wiped by the previous screen's teardown.
+  useEffect(() => {
+    const citySnapshot = city;
+    return () => {
+      const current = getDestinationContextSync();
+      if (
+        current &&
+        current.city &&
+        current.city.trim().toLowerCase() === (citySnapshot || '').trim().toLowerCase()
+      ) {
+        setDestinationContext(null);
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const openMap = () => {
     if (!mapRegion) return;
