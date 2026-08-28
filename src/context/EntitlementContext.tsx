@@ -91,9 +91,15 @@ export const EntitlementProvider: React.FC<{ children: React.ReactNode }> = ({ c
     try {
       await startPurchase();
       // Outcome arrives via listener; keep UI busy until it does.
-    } catch {
+    } catch (err) {
       setUi('idle');
-      setMessage('Could not start the purchase. Please try again.');
+      // Surface the real expo-iap error (code/message) — helps on-device QA
+      // diagnose purchase-START failures rather than a generic message.
+      console.warn('[iap] startPurchase failed:', err);
+      const code = (err as { code?: string })?.code;
+      const detail = err instanceof Error ? err.message : String(err ?? '');
+      const shown = code && !/cancel/i.test(code) ? code : detail;
+      setMessage(shown ? `Could not start the purchase (${shown}). Please try again.` : 'Could not start the purchase. Please try again.');
     }
   }, []);
 

@@ -104,12 +104,13 @@ async function handleVerifiedTransaction(purchase: Purchase): Promise<void> {
 
 export async function initializeIAP(): Promise<void> {
   if (initialized) return;
-  initialized = true;
   try {
     await initConnection();
-  } catch {
-    // IAP may be unavailable (not an App Store install / sandbox). Non-fatal.
-    return;
+  } catch (err) {
+    // Never cache a failed init as "initialized": a later purchase/restore must
+    // retry the connection. Surface the real error so callers can log it.
+    initialized = false;
+    throw err;
   }
 
   purchaseUpdatedListener(async (purchase) => {
@@ -154,6 +155,8 @@ export async function initializeIAP(): Promise<void> {
       emit({ type: 'failed', error: error.message || 'Purchase failed' });
     }
   });
+
+  initialized = true;
 }
 
 export async function loadProduct(): Promise<{ product?: unknown; price?: string | null }> {
@@ -168,7 +171,9 @@ export async function loadProduct(): Promise<{ product?: unknown; price?: string
 }
 
 export async function startPurchase(): Promise<void> {
-  await initializeIAP().catch(() => {});
+  // No catch here: a failed init or request must propagate so the caller can
+  // surface (and log) the real expo-iap error instead of a generic message.
+  await initializeIAP();
   await requestPurchase({
     request: { apple: { sku: PRODUCT_ID }, google: { skus: [PRODUCT_ID] } },
     type: 'in-app',

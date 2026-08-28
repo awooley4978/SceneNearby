@@ -29,7 +29,7 @@ const SUPPORT_EMAIL = 'scenenearbysupport@gmail.com';
 
 export const PaywallScreen: React.FC<Props> = ({ navigation, route, canClose, onClose }) => {
   const insets = useSafeAreaInsets();
-  const { price, ui, message, purchase, restore, status, daysLeft } = useEntitlement();
+  const { price, ui, message, purchase, restore } = useEntitlement();
 
   // When presented as a navigation modal, canClose comes via route params.
   const closeable = canClose === true || (navigation && route?.params?.canClose === true);
@@ -57,10 +57,10 @@ export const PaywallScreen: React.FC<Props> = ({ navigation, route, canClose, on
 
       <View style={styles.hero}>
         <Text style={styles.heroEmoji}>🎬</Text>
-        <Text style={styles.heroTitle}>Unlock Scene Nearby</Text>
+        <Text style={styles.heroTitle}>Keep exploring with lifetime access</Text>
         <Text style={styles.heroSub}>
-          Your 7-day free trial has ended. Unlock every filming location, list, and
-          surprise near you — for good.
+          Unlock Scene Nearby for $4.99. One payment gives you worldwide access for
+          life—plus new locations as we add them.
         </Text>
       </View>
 
@@ -68,12 +68,6 @@ export const PaywallScreen: React.FC<Props> = ({ navigation, route, canClose, on
         <Text style={styles.priceAmount}>{priceDisplay}</Text>
         <Text style={styles.priceNote}>One-time · Lifetime access · No subscription</Text>
       </View>
-
-      {status === 'trialActive' && typeof daysLeft === 'number' && daysLeft > 0 && (
-        <Text style={styles.trialNote}>
-          Your trial is still active — you have {daysLeft} day{daysLeft === 1 ? '' : 's'} left.
-        </Text>
-      )}
 
       {message ? <Text style={styles.message}>{message}</Text> : null}
 
@@ -86,7 +80,7 @@ export const PaywallScreen: React.FC<Props> = ({ navigation, route, canClose, on
         {busy ? (
           <ActivityIndicator color={theme.colors.black} />
         ) : (
-          <Text style={styles.primaryButtonText}>Continue — {priceDisplay}</Text>
+          <Text style={styles.primaryButtonText}>Unlock Lifetime — {priceDisplay}</Text>
         )}
       </TouchableOpacity>
 
@@ -102,8 +96,8 @@ export const PaywallScreen: React.FC<Props> = ({ navigation, route, canClose, on
       </TouchableOpacity>
 
       <Text style={styles.legal}>
-        Payment is processed by Apple. This is a one-time purchase that gives you
-        lifetime access on this and, with sign-in, your other devices.
+        Payment is processed by Apple. This is a one-time purchase — no subscription
+        and no recurring charge — that gives you lifetime access.
       </Text>
 
       <View style={styles.links}>
@@ -150,12 +144,6 @@ const styles = StyleSheet.create({
   },
   priceAmount: { fontSize: 40, fontWeight: '800', color: theme.colors.textPrimary, marginBottom: 6 },
   priceNote: { fontSize: 14, color: theme.colors.textSecondary },
-  trialNote: {
-    fontSize: 13,
-    color: theme.colors.goldLight,
-    textAlign: 'center',
-    marginBottom: 16,
-  },
   message: {
     fontSize: 14,
     color: theme.colors.success,

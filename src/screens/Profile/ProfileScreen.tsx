@@ -22,7 +22,7 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
   const insets = useSafeAreaInsets();
   const { user, signOut: authSignOut } = useAuth();
   const { savedIds } = useSaved();
-  const { status, daysLeft, price, restore, ui } = useEntitlement();
+  const { status, price, restore, ui } = useEntitlement();
   const [settings, setSettings] = useState(defaultUserSettings);
   const [navApp, setNavApp] = useState<string | null>(null);
   const [photoCount, setPhotoCount] = useState(0);
@@ -150,34 +150,25 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
         {status === 'unlocked' ? (
           <View style={styles.lifetimeCard}>
             <Text style={styles.lifetimeEmoji}>🏆</Text>
-            <Text style={styles.lifetimeTitle}>Lifetime Unlocked</Text>
+            <Text style={styles.lifetimeTitle}>Unlocked ✓</Text>
             <Text style={styles.lifetimeDesc}>
               You have full access to every location, list, and surprise — for good.
             </Text>
           </View>
-        ) : (
+        ) : status === 'locked' ? (
           <View style={styles.lifetimeCard}>
-            <Text style={styles.lifetimeEmoji}>⏳</Text>
-            <Text style={styles.lifetimeTitle}>
-              {status === 'locked'
-                ? 'Trial ended'
-                : typeof daysLeft === 'number'
-                ? `Trial active — ${daysLeft} day${daysLeft === 1 ? '' : 's'} left`
-                : 'Free trial'}
-            </Text>
+            <Text style={styles.lifetimeEmoji}>🔓</Text>
+            <Text style={styles.lifetimeTitle}>Keep exploring with lifetime access</Text>
             <Text style={styles.lifetimeDesc}>
-              {status === 'locked'
-                ? 'Unlock lifetime access for all filming locations.'
-                : `Start with 7 days free, then unlock lifetime access for a one-time purchase of $4.99.`}
+              Unlock Scene Nearby for $4.99. One payment gives you worldwide access for
+              life—plus new locations as we add them.
             </Text>
             <TouchableOpacity
               style={styles.lifetimeButton}
               onPress={() => navigation.navigate('Paywall')}
               disabled={ui === 'restoring'}
             >
-              <Text style={styles.lifetimeButtonText}>
-                {status === 'locked' ? `Unlock — ${price ?? '$4.99'}` : 'See plans'}
-              </Text>
+              <Text style={styles.lifetimeButtonText}>Unlock Lifetime — {price ?? '$4.99'}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.restoreButton}
@@ -188,6 +179,15 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
                 {ui === 'restoring' ? 'Restoring…' : 'Restore Purchases'}
               </Text>
             </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={styles.lifetimeCard}>
+            <Text style={styles.lifetimeEmoji}>⏳</Text>
+            <Text style={styles.lifetimeTitle}>Your 7-day trial is active</Text>
+            <Text style={styles.lifetimeDesc}>
+              Enjoy full access to Scene Nearby. After your trial, lifetime access is a
+              one-time $4.99 purchase.
+            </Text>
           </View>
         )}
       </View>
