@@ -95,6 +95,28 @@ export interface PhotoSubmission {
   rejection_note?: string | null;
   rejection_email_sent?: number | null;
   rejection_email_to?: string | null;
+  // ── Rich contribution fields (from GET /api/contributions/review) ──
+  photo_url?: string | null;
+  movie_or_show?: string | null;
+  proposed_movie_json?: {
+    movie_title?: string;
+    year?: number | null;
+    type?: string;
+    [k: string]: unknown;
+  } | null;
+  proposed_location_json?: {
+    title?: string;
+    address?: string | null;
+    city?: string | null;
+    description?: string | null;
+    [k: string]: unknown;
+  } | null;
+  description?: string | null;
+  display_name?: string | null;
+  allow_public_credit?: boolean;
+  rights_confirmed?: boolean;
+  submitter_uid?: string | null;
+  reviewed_at?: string | null;
 }
 
 /**
@@ -119,6 +141,8 @@ const R2_PUBLIC_BUCKET_URL = 'https://pub-d11c6004b03c42edb2633f3ec6a9317b.r2.de
 
 /** Public URL for a submission's photo, or null when the submission has none. */
 export function submissionPhotoUrl(sub: PhotoSubmission): string | null {
+  // The rich contributions endpoint returns photo_url directly (full R2 URL).
+  if (sub.photo_url) return sub.photo_url;
   if (!sub.photo_path) return null;
   return `${R2_PUBLIC_BUCKET_URL}/${sub.photo_path}`;
 }
@@ -246,6 +270,18 @@ class ApiClient {
   async getSubmissions(status?: string): Promise<PhotoSubmission[]> {
     const q = status ? `?status=${encodeURIComponent(status)}` : '';
     return this.fetchJson<PhotoSubmission[]>(`/api/submissions${q}`);
+  }
+  /**
+   * Rich contribution review list (photo submissions with full submitted
+   * context: movie/show, proposed title/location, description, contributor
+   * display name, rights confirmation, audit). Used by the in-app Admin's
+   * "Photos Awaiting Approval" to show the complete submission before
+   * approve/reject.
+   */
+  async getPendingContributions(): Promise<PhotoSubmission[]> {
+    return this.fetchJson<PhotoSubmission[]>(
+      `/api/contributions/review?status=pending`,
+    );
   }
   /** Approve a pending photo submission. */
   async approveSubmission(id: string): Promise<{ success: boolean; public_url?: string }> {

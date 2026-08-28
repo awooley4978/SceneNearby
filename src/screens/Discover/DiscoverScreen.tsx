@@ -276,6 +276,13 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
       .slice(0, 20);
   }, [userLocation.latitude, userLocation.longitude, activeRadius, allLocations]);
 
+  // Default view = no search, no category/type filter, default sort. In this
+  // state Discover reads simply: "Near You" (within radius) then "More to
+  // Discover" (beyond radius). The within-radius All-Locations feed is
+  // redundant here (covers the same locations as Near You), so it is suppressed.
+  const isDefaultView =
+    !searchQuery && selectedCategory === 'all' && selectedType === 'all' && sortMode === 'default';
+
   const onRefresh = () => {
     setRefreshing(true);
     setTimeout(() => setRefreshing(false), 1000);
@@ -405,27 +412,32 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
         </View>
       )}
 
-      {/* Results count */}
-      <View style={styles.resultsHeader}>
-        <View style={styles.sectionTitleLeft}>
-          <Text style={styles.sectionTitle}>
-            {searchQuery || selectedCategory !== 'all' || selectedType !== 'all'
-              ? `${filteredLocations.length} Results`
-              : 'All Locations'}
-          </Text>
-          {!searchQuery && activeRadius && (
-            <View style={styles.radiusPill}>
-              <Text style={styles.radiusPillText}>Within {activeRadius} mi</Text>
-            </View>
-          )}
+      {/* Results count — hidden in default view (Near You covers within-radius;
+          "More to Discover" covers beyond-radius), shown only when searching or
+          filtering so users see the result count for the active filter. */}
+      {!isDefaultView && (
+        <View style={styles.resultsHeader}>
+          <View style={styles.sectionTitleLeft}>
+            <Text style={styles.sectionTitle}>
+              {searchQuery || selectedCategory !== 'all' || selectedType !== 'all'
+                ? `${filteredLocations.length} Results`
+                : 'All Locations'}
+            </Text>
+            {!searchQuery && activeRadius && (
+              <View style={styles.radiusPill}>
+                <Text style={styles.radiusPillText}>Within {activeRadius} mi</Text>
+              </View>
+            )}
+          </View>
         </View>
-      </View>
+      )}
     </View>
   );
 
-  // "More to Discover" renders BELOW the local results (ListFooterComponent) —
-  // order on screen: Near You → local results → More to Discover. Content and
-  // logic are the restored section, unchanged.
+  // "More to Discover" renders below Near You in default view
+  // (ListFooterComponent of the main FlatList). In default view the within-radius
+  // feed is suppressed (Near You covers it), so the footer is the only body
+  // content after the header. Logic is the restored section, unchanged.
   const renderMoreToDiscover = () => {
     if (searchQuery || selectedCategory !== 'all' || selectedType !== 'all' || sortMode !== 'default') {
       return null;
@@ -514,7 +526,7 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
         </View>
       )}
       <FlatList
-        data={filteredLocations}
+        data={isDefaultView ? [] : filteredLocations}
         keyExtractor={(item) => item.id}
         extraData={searchQuery}
         renderItem={({ item }) => (
@@ -527,7 +539,7 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
         ListHeaderComponent={renderHeader}
         ListFooterComponent={renderMoreToDiscover}
         ListEmptyComponent={
-          loading ? null : (
+          isDefaultView ? null : loading ? null : (
             <EmptyState
               emoji="🎬"
               title="No locations found"

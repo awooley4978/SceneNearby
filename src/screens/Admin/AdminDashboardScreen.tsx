@@ -67,8 +67,10 @@ export const AdminDashboardScreen: React.FC<{ navigation: any }> = ({ navigation
       });
     // Fetch the pending submissions themselves so "Photos Awaiting Approval"
     // opens a real list instead of an empty one (server count = list length).
+    // Uses the rich /api/contributions/review list so each pending item carries
+    // its full submitted context for the detail view.
     apiClient
-      .getSubmissions('pending')
+      .getPendingContributions()
       .then((subs) => {
         if (!cancelled) setPendingSubmissions(subs);
       })
