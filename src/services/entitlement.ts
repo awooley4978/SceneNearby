@@ -43,7 +43,14 @@ export interface Entitlement {
 async function secureGet(key: string): Promise<string | null> {
   try {
     return await SecureStore.getItemAsync(key);
-  } catch {
+  } catch (err) {
+    // DIAGNOSTIC: surface the real expo-secure-store error (owner 08-28, T-M5
+    // grant blocker) instead of swallowing it. Behavior unchanged (returns null).
+    console.warn(`[entitlement] secureGet failed for key=${key}`, {
+      name: (err as Error)?.name,
+      message: (err as Error)?.message,
+      code: (err as { code?: string })?.code,
+    }, err);
     return null;
   }
 }
@@ -51,7 +58,15 @@ async function secureSet(key: string, value: string): Promise<boolean> {
   try {
     await SecureStore.setItemAsync(key, value);
     return true;
-  } catch {
+  } catch (err) {
+    // DIAGNOSTIC: surface the real expo-secure-store error (owner 08-28, T-M5
+    // grant blocker). The Keychain write here drives grantUnlock()'s return
+    // value (false => "Could not save your purchase...").
+    console.warn(`[entitlement] secureSet failed for key=${key}`, {
+      name: (err as Error)?.name,
+      message: (err as Error)?.message,
+      code: (err as { code?: string })?.code,
+    }, err);
     return false;
   }
 }
@@ -93,8 +108,14 @@ async function readFirestore(uid: string): Promise<FirestoreEntitlement | null> 
 async function writeFirestore(uid: string, data: FirestoreEntitlement): Promise<void> {
   try {
     await setDoc(doc(db, 'entitlements', uid), { ...data, updatedAt: Date.now() }, { merge: true });
-  } catch {
-    // Non-fatal: Keychain still holds device state; mirror retries next write.
+  } catch (err) {
+    // DIAGNOSTIC: surface the real Firestore write error (owner 08-28, T-M5
+    // grant blocker). Still non-fatal (Keychain holds device state).
+    console.warn(`[entitlement] writeFirestore failed for uid=${uid}`, {
+      name: (err as Error)?.name,
+      message: (err as Error)?.message,
+      code: (err as { code?: string })?.code,
+    }, err);
   }
 }
 

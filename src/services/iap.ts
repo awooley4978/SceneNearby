@@ -84,16 +84,28 @@ async function verifyOnServer(transactionId: string, environment?: string): Prom
 async function handleVerifiedTransaction(purchase: Purchase): Promise<void> {
   const transactionId = tid(purchase);
   const environment = iosEnvironment(purchase);
-  // Guardrail: hold a durable pending-grant marker BEFORE finishing, so even if
-  // local persistence hiccups, next launch's retryPendingGrant re-persists it.
-  await setPendingGrant(transactionId).catch(() => {});
+  // DIAGNOSTIC: trace each persistence step so the physical-device console
+  // shows exactly where the grant fails (owner 08-28, T-M5 grant blocker).
+  try {
+    await setPendingGrant(transactionId);
+    console.log(`[iap] handleVerifiedTransaction: setPendingGrant ok (tid=${transactionId}, env=${environment})`);
+  } catch (err) {
+    console.warn('[iap] handleVerifiedTransaction: setPendingGrant FAILED', err);
+  }
   const granted = await grantUnlock(transactionId);
+  console.log(`[iap] handleVerifiedTransaction: grantUnlock=${granted} (tid=${transactionId}, env=${environment})`);
   if (!granted) {
     // Keep the pending marker — verified purchase must not be lost.
+    console.warn('[iap] handleVerifiedTransaction: grantUnlock returned false — emitting save-failure, pending marker kept');
     emit({ type: 'failed', error: 'Could not save your purchase — it will be restored automatically.' });
     return;
   }
-  await clearPendingGrant().catch(() => {});
+  try {
+    await clearPendingGrant();
+    console.log('[iap] handleVerifiedTransaction: clearPendingGrant ok');
+  } catch (err) {
+    console.warn('[iap] handleVerifiedTransaction: clearPendingGrant FAILED', err);
+  }
   try {
     await finishTransaction({ purchase, isConsumable: false });
   } catch {
