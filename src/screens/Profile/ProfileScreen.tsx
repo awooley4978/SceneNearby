@@ -10,8 +10,9 @@ import {
 import { theme } from '../../theme';
 import { availableCityPacks, defaultUserSettings } from '../../models';
 import type { MapStyleOption } from '../../models';
-import { resetOnboarding, getUserSettings, setUserSettings } from '../../services/StorageService';
+import { resetOnboarding, getUserSettings, setUserSettings, getVisitedLocations } from '../../services/StorageService';
 import { Linking, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { logPremiumUpgrade } from '../../services/analytics';
 import { useAuth } from '../../context/AuthContext';
 import { useSaved } from '../../context/SavedContext';
@@ -27,6 +28,7 @@ const ADMIN_EMAILS = ['awooley4978@gmail.com', 'scenenearbysupport@gmail.com'];
 const V1_HIDE_PREMIUM_AND_CITY_PACKS = true;
 
 export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
+  const insets = useSafeAreaInsets();
   const { user, signOut: authSignOut } = useAuth();
   const { savedIds } = useSaved();
   const [settings, setSettings] = useState(defaultUserSettings);
@@ -34,6 +36,7 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
   const [purchasedPacks, setPurchasedPacks] = useState<string[]>([]);
   const [navApp, setNavApp] = useState<string | null>(null);
   const [photoCount, setPhotoCount] = useState(0);
+  const [visitedCount, setVisitedCount] = useState(0);
 
   // Load saved nav preference
   React.useEffect(() => {
@@ -42,8 +45,8 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
 
   // Genuine per-user counts only — no placeholder/demo numbers. Saved comes from
   // the SavedContext (AsyncStorage-backed); Photos from the user's Firestore
-  // album (0 / hidden when signed out). "Visited" is not reliably tracked, so it
-  // is intentionally not shown.
+  // album (0 / hidden when signed out); Visited from the visit-gate storage list
+  // (getVisitedLocations — the source the "I've Visited" gate writes to).
   React.useEffect(() => {
     if (!user?.uid) {
       setPhotoCount(0);
@@ -62,9 +65,24 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
     };
   }, [user?.uid]);
 
+  React.useEffect(() => {
+    let active = true;
+    getVisitedLocations()
+      .then((ids) => {
+        if (active) setVisitedCount(ids.length);
+      })
+      .catch(() => {
+        if (active) setVisitedCount(0);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
   const stats = {
     saves: savedIds.size,
     photos: photoCount,
+    visited: visitedCount,
   };
 
   const handleBuyPremium = () => {
@@ -77,7 +95,10 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={[styles.content, { paddingTop: insets.top }]}
+    >
       {/* Profile header */}
       <View style={styles.header}>
         <View style={styles.avatar}>
@@ -97,6 +118,11 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
         <View style={styles.statBox}>
           <Text style={styles.statValue}>{stats.photos}</Text>
           <Text style={styles.statLabel}>Photos</Text>
+        </View>
+        <View style={styles.statDivider} />
+        <View style={styles.statBox}>
+          <Text style={styles.statValue}>{stats.visited}</Text>
+          <Text style={styles.statLabel}>Visited</Text>
         </View>
       </View>
 

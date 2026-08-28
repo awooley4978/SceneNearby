@@ -8,8 +8,7 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { BackButton } from '../../components/BackButton';
+import { useNavigation } from '@react-navigation/native';
 import { theme } from '../../theme';
 import { logNotificationPrefsUpdated } from '../../services/analytics';
 import {
@@ -25,6 +24,7 @@ import type {
 import { NotificationService } from '../../services/NotificationService';
 
 export const NotificationPreferencesScreen: React.FC = () => {
+  const navigation = useNavigation() as any;
   const [prefs, setPrefs] = useState<NotificationPreferences>(defaultNotificationPreferences);
 
   const updatePref = <K extends keyof NotificationPreferences>(
@@ -54,9 +54,20 @@ export const NotificationPreferencesScreen: React.FC = () => {
   const frequencyOptions = Object.entries(DISCOVERY_FREQUENCIES) as [DiscoveryFrequency, typeof DISCOVERY_FREQUENCIES[DiscoveryFrequency]][];
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <View style={styles.container}>
+      {/* Fixed header bar — same treatment as the Album secondary screen:
+          "‹ Back" beside the page title. */}
+      <View style={styles.topBar}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => (navigation.canGoBack() ? navigation.goBack() : navigation.navigate('Profile'))}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.backText}>‹ Back</Text>
+        </TouchableOpacity>
+        <Text style={styles.topTitle}>Notification Types</Text>
+      </View>
       <ScrollView contentContainerStyle={styles.content}>
-      <BackButton />
       {/* ──── Notification Types ──── */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>🔔 Notification Types</Text>
@@ -219,15 +230,25 @@ export const NotificationPreferencesScreen: React.FC = () => {
         </Text>
       </View>
     </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background },
-  // Leave room below the shared absolute BackButton (top: 50) so the first
-  // section title starts beneath the safe-area/header region on iOS.
-  content: { paddingTop: 56, paddingBottom: 60 },
+  // Fixed header bar — same treatment as the Album secondary screen (‹ Back
+  // beside the page title), including the same top clearance.
+  topBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingTop: 56,
+    paddingBottom: 12,
+    paddingHorizontal: 16,
+  },
+  backButton: { paddingRight: 12 },
+  backText: { fontSize: 16, color: theme.colors.gold, fontWeight: '600' },
+  topTitle: { flex: 1, fontSize: 18, fontWeight: '700', color: theme.colors.textPrimary },
+  content: { paddingBottom: 60 },
   section: { paddingHorizontal: 16, paddingTop: 24 },
   sectionTitle: { fontSize: 18, fontWeight: '700', color: theme.colors.textPrimary, marginBottom: 12 },
   sectionSubtitle: { fontSize: 13, color: theme.colors.textSecondary, marginBottom: 12, marginTop: -8 },
