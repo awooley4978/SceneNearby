@@ -19,6 +19,13 @@ import { getUserAlbum } from '../../services/albumService';
 
 const ADMIN_EMAILS = ['awooley4978@gmail.com', 'scenenearbysupport@gmail.com'];
 
+// V1 is a free download with NO monetization. The Go Premium and City Packs
+// sections are hidden for V1, but the underlying monetization code (handlers,
+// state, markup) is intentionally kept intact below so a future monetization
+// release can re-enable them by flipping this to false. No payments/IAP/StoreKit
+// are implemented here.
+const V1_HIDE_PREMIUM_AND_CITY_PACKS = true;
+
 export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { user, signOut: authSignOut } = useAuth();
   const { savedIds } = useSaved();
@@ -130,8 +137,8 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
         </TouchableOpacity>
       </View>
 
-      {/* Premium upgrade */}
-      {!isPremium && (
+      {/* Premium upgrade — hidden in V1 (free); re-enable by flipping V1_HIDE_PREMIUM_AND_CITY_PACKS */}
+      {!V1_HIDE_PREMIUM_AND_CITY_PACKS && !isPremium && (
         <View style={styles.premiumCard}>
           <Text style={styles.premiumEmoji}>⭐</Text>
           <Text style={styles.premiumTitle}>Go Premium</Text>
@@ -144,7 +151,8 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
         </View>
       )}
 
-      {/* City Packs */}
+      {/* City Packs — hidden in V1 (free); re-enable by flipping V1_HIDE_PREMIUM_AND_CITY_PACKS */}
+      {!V1_HIDE_PREMIUM_AND_CITY_PACKS && (
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>🏙️ City Packs</Text>
         {availableCityPacks.map((pack) => {
@@ -174,6 +182,7 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
           );
         })}
       </View>
+      )}
 
       {/* Settings — link to Notification Preferences */}
       <View style={styles.section}>
