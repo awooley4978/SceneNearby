@@ -125,6 +125,7 @@ export function registerContributionRoutes(router: Router): void {
       const displayName = (formData.get("display_name") as string) || null;
       const allowPublicCredit = (formData.get("allow_public_credit") as string) !== "false";
       const rightsConfirmed = (formData.get("rights_confirmed") as string) === "true";
+      const communityPermission = (formData.get("community_permission") as string) || null;
       const sourceEvidence = (formData.get("source_evidence") as string) || null;
       const license = (formData.get("license") as string)?.trim() || null;
       const licenseUrl = (formData.get("license_url") as string)?.trim() || null;
@@ -170,6 +171,7 @@ export function registerContributionRoutes(router: Router): void {
         display_name: allowPublicCredit ? displayName : null,
         allow_public_credit: allowPublicCredit ? 1 : 0,
         rights_confirmed: 1,
+        community_permission: communityPermission,
         photo_kind: "community",
         source_evidence: sourceEvidence,
         source: "community",

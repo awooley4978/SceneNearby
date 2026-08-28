@@ -40,6 +40,7 @@ export interface PhotoSubmission {
   display_name?: string | null;
   allow_public_credit?: number | null;
   rights_confirmed?: number | null;
+  community_permission?: string | null; // "display" for own/community photos
   photo_kind?: string | null; // "community" | "official"
   featured?: number | null;
   featured_at?: string | null;

@@ -41,6 +41,8 @@ export interface SubmitContributionRequest {
   // carry a license that renders clickable to open the license.
   license?: string;      // short name, e.g. "CC BY 4.0"
   license_url?: string;  // resolvable license page
+  /** Community permission tag for own/community photos ('display'). */
+  community_permission?: string;
   photo: { uri: string; type: string; fileName: string };
 }
 export interface SubmitContributionResponse {
@@ -94,6 +96,9 @@ export async function submitContribution(
   formData.append('rights_confirmed', String(request.rights_confirmed));
   if (request.license) formData.append('license', request.license);
   if (request.license_url) formData.append('license_url', request.license_url);
+  if (request.community_permission) {
+    formData.append('community_permission', request.community_permission);
+  }
 
   formData.append('photo', {
     uri: request.photo.uri,
