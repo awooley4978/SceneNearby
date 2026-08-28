@@ -8,6 +8,7 @@ import { SplashScreen } from './src/screens/Splash/SplashScreen';
 import { OnboardingScreen } from './src/screens/Onboarding/OnboardingScreen';
 import { LocationSetupScreen } from './src/screens/Onboarding/LocationSetupScreen';
 import { AuthProvider, useAuth } from './src/context/AuthContext';
+import { EntitlementProvider } from './src/context/EntitlementContext';
 import { useMagicLink } from './src/hooks/useMagicLink';
 import { theme } from './src/theme';
 import {
@@ -208,11 +209,13 @@ const App: React.FC = () => {
             />
           )}
           {appPhase === 'main' && (
-            <MagicLinkListener>
-              <ErrorBoundary>
-                <AppNavigator />
-              </ErrorBoundary>
-            </MagicLinkListener>
+            <EntitlementProvider>
+              <MagicLinkListener>
+                <ErrorBoundary>
+                  <AppNavigator />
+                </ErrorBoundary>
+              </MagicLinkListener>
+            </EntitlementProvider>
           )}
           <DiagnosticsOverlay />
         </AuthProvider>
