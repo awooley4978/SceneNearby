@@ -2,7 +2,7 @@
   "expo": {
     "name": "Scene Nearby",
     "slug": "scene-nearby",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "scheme": "scenenearby",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -14,7 +14,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.cairn.scenenearby",
-      "buildNumber": "15",
+      "buildNumber": "16",
       "entitlements": {
         "com.apple.InAppPurchase": true
       },
