@@ -30,6 +30,18 @@ interface AdminDetailParams {
 
 type FilterChip = { value: string; label: string };
 
+/** A labeled detail row in the full submission preview. */
+const Field: React.FC<{ label: string; value: string; italic?: boolean }> = ({
+  label,
+  value,
+  italic,
+}) => (
+  <View style={styles.fieldRow}>
+    <Text style={styles.fieldLabel}>{label}</Text>
+    <Text style={[styles.fieldValue, italic && styles.fieldValueItalic]}>{value}</Text>
+  </View>
+);
+
 export const AdminDetailScreen: React.FC<{ navigation: any; route: any }> = ({
   navigation,
   route,
@@ -245,26 +257,84 @@ export const AdminDetailScreen: React.FC<{ navigation: any; route: any }> = ({
               <Text style={styles.modalMeta}>
                 {previewSub?.id} •{' '}
                 {previewSub?.submitted_at
-                  ? new Date(previewSub.submitted_at).toLocaleDateString()
+                  ? new Date(previewSub.submitted_at).toLocaleString()
                   : ''}
               </Text>
-              {previewSub && submissionPhotoUrl(previewSub) ? (
-                <Image
-                  source={{ uri: submissionPhotoUrl(previewSub)! }}
-                  style={styles.modalImage}
-                  resizeMode="contain"
+              <ScrollView style={styles.modalScroll} showsVerticalScrollIndicator>
+                {previewSub && submissionPhotoUrl(previewSub) ? (
+                  <Image
+                    source={{ uri: submissionPhotoUrl(previewSub)! }}
+                    style={styles.modalImage}
+                    resizeMode="contain"
+                  />
+                ) : (
+                  <View style={styles.modalNoImage}>
+                    <Text style={styles.modalNoImageText}>No image on file for this submission</Text>
+                  </View>
+                )}
+                {/* ── Full submitted detail ── */}
+                {previewSub?.movie_or_show ? (
+                  <Field label="Movie / Show" value={previewSub.movie_or_show} />
+                ) : null}
+                {previewSub?.proposed_movie_json ? (
+                  <Field
+                    label="Proposed New Title"
+                    value={
+                      previewSub.proposed_movie_json.movie_title
+                        ? `${previewSub.proposed_movie_json.movie_title}${
+                            previewSub.proposed_movie_json.year
+                              ? ` (${previewSub.proposed_movie_json.year})`
+                              : ''
+                          }${
+                            previewSub.proposed_movie_json.type
+                              ? ` — ${previewSub.proposed_movie_json.type}`
+                              : ''
+                          }`
+                        : JSON.stringify(previewSub.proposed_movie_json)
+                    }
+                  />
+                ) : null}
+                {previewSub?.location_name ? (
+                  <Field label="Location / Name" value={previewSub.location_name} />
+                ) : null}
+                {previewSub?.proposed_location_json ? (
+                  <Field
+                    label="Proposed Location"
+                    value={
+                      [
+                        previewSub.proposed_location_json.title,
+                        previewSub.proposed_location_json.address,
+                        previewSub.proposed_location_json.city,
+                      ]
+                        .filter(Boolean)
+                        .join(' · ') || JSON.stringify(previewSub.proposed_location_json)
+                    }
+                  />
+                ) : null}
+                {previewSub?.comment ? (
+                  <Field label="Notes" value={previewSub.comment} italic />
+                ) : null}
+                {previewSub?.description ? (
+                  <Field label="Scene / Description" value={previewSub.description} italic />
+                ) : null}
+                {previewSub?.display_name ? (
+                  <Field label="Contributor" value={previewSub.display_name} />
+                ) : null}
+                {previewSub?.allow_public_credit === false || (previewSub && !previewSub.display_name) ? (
+                  <Field label="Contributor" value="Anonymous community contributor" />
+                ) : null}
+                <Field
+                  label="Photo rights"
+                  value={
+                    previewSub?.rights_confirmed
+                      ? 'Confirmed rights to share this photo'
+                      : 'Not confirmed'
+                  }
                 />
-              ) : (
-                <View style={styles.modalNoImage}>
-                  <Text style={styles.modalNoImageText}>No image on file for this submission</Text>
-                </View>
-              )}
-              {previewSub?.comment ? (
-                <Text style={styles.modalComment}>“{previewSub.comment}”</Text>
-              ) : null}
-              {previewSub?.user_info ? (
-                <Text style={styles.modalMeta}>Submitted by: {previewSub.user_info}</Text>
-              ) : null}
+                {previewSub?.submitter_uid ? (
+                  <Field label="Submitter UID" value={previewSub.submitter_uid} />
+                ) : null}
+              </ScrollView>
               <View style={styles.modalActions}>
                 <TouchableOpacity
                   style={[styles.actionButton, styles.approveButton, styles.modalAction]}
@@ -722,6 +792,30 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   modalMeta: { fontSize: 12, color: theme.colors.textSecondary, marginTop: 2 },
+  modalScroll: { maxHeight: 420, marginTop: 4 },
+  fieldRow: {
+    marginTop: 12,
+    paddingTop: 10,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: theme.colors.textSecondary + '33',
+  },
+  fieldLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 0.4,
+    color: theme.colors.textSecondary,
+    marginBottom: 3,
+  },
+  fieldValue: {
+    fontSize: 14,
+    color: theme.colors.textPrimary,
+    lineHeight: 20,
+  },
+  fieldValueItalic: {
+    fontStyle: 'italic',
+    color: theme.colors.textSecondary,
+  },
   modalImage: {
     width: '100%',
     height: 320,
