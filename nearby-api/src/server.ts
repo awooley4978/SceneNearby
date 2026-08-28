@@ -28,6 +28,7 @@ import { REJECTION_REASONS } from "./types";
 import { registerResearchRoutes } from "./research/routes";
 import { startResearchWorker } from "./research/worker";
 import { registerContributionRoutes } from "./contributions";
+import { registerEntitlementRoutes } from "./entitlements";
 import { runMigrations } from "./migrations";
 import { parsePhotoAttribution } from "./photoAttribution";
 import type { PhotoSubmission, FilmingLocation, LocationSummary, LocationRecord, RejectionReason } from "./types";
@@ -512,6 +513,7 @@ async function handleRequest(req: Request): Promise<Response> {
 // ── Start server ──
 registerResearchRoutes(router);
 registerContributionRoutes(router);
+registerEntitlementRoutes(router);
 startResearchWorker();
 // Apply additive schema migrations at boot (idempotent, never destructive).
 runMigrations().catch((err) => {
