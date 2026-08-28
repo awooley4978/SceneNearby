@@ -449,23 +449,42 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
               <Text style={styles.viewMapChevron}>›</Text>
             </TouchableOpacity>
           </View>
-          {groupedNearYou.map(({ primary, others }) => (
-            <View key={primary.id} style={styles.nearYouGroup}>
-              <LocationCard
-                key={primary.id}
-                location={primary}
-                onPress={() => navigation.navigate('LocationDetail', { locationId: primary.id })}
-                onMoviePress={() => navigation.navigate('MovieDetail', { movieTitle: primary.movieOrShow })}
-              />
-              <AlsoFilmedHere
-                others={others}
-                onPressTitle={(loc) => navigation.navigate('LocationDetail', { locationId: loc.id })}
-                showDistance
-                getDistance={(loc) => (loc as FilmingLocation).distanceFromUser ?? null}
-              />
+          {userLocation.isLoading ? (
+            <View style={styles.locatingRow}>
+              <ActivityIndicator size="small" color={theme.colors.gold} />
+              <Text style={styles.locatingText}>Locating you…</Text>
+              <Text style={styles.locatingSubtext}>Detecting your location while we look for nearby spots</Text>
             </View>
-          ))}
-        </View>
+          ) : userLocation.permissionDenied && !userLocation.isGps ? (
+            <View style={styles.locatingRow}>
+              <Text style={styles.locatingSubtext}>
+                Live location unavailable — showing locations around your home city.
+              </Text>
+            </View>
+          ) : userLocation.latitude === null ? (
+            <View style={styles.locatingRow}>
+              <ActivityIndicator size="small" color={theme.colors.gold} />
+              <Text style={styles.locatingText}>Still determining your location…</Text>
+              <Text style={styles.locatingSubtext}>Your live position will appear as soon as it's ready</Text>
+            </View>
+          ) : (
+            groupedNearYou.map(({ primary, others }) => (
+              <View key={primary.id} style={styles.nearYouGroup}>
+                <LocationCard
+                  key={primary.id}
+                  location={primary}
+                  onPress={() => navigation.navigate('LocationDetail', { locationId: primary.id })}
+                  onMoviePress={() => navigation.navigate('MovieDetail', { movieTitle: primary.movieOrShow })}
+                />
+                <AlsoFilmedHere
+                  others={others}
+                  onPressTitle={(loc) => navigation.navigate('LocationDetail', { locationId: loc.id })}
+                  showDistance
+                  getDistance={(loc) => (loc as FilmingLocation).distanceFromUser ?? null}
+                />
+              </View>
+            ))
+          )}        </View>
       )}
 
       {/* Results count — hidden in default view (Near You covers within-radius;
@@ -724,6 +743,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     marginBottom: 12,
   },
+  locatingRow: {
+    flexDirection: 'row', alignItems: 'center', gap: 10,
+    padding: 16, backgroundColor: theme.colors.surface, borderRadius: 12,
+    borderWidth: 1, borderColor: theme.colors.gold + '20',
+  },
+  locatingText: { fontSize: 15, fontWeight: '600', color: theme.colors.textPrimary },
+  locatingSubtext: { fontSize: 13, color: theme.colors.textSecondary, flexShrink: 1 },
   viewMapButton: {
     flexDirection: 'row', alignItems: 'center', gap: 4,
     paddingHorizontal: 12, paddingVertical: 6,
