@@ -49,6 +49,9 @@ let fatal: FatalInfo | null = null;
 let lastSessionSnapshot: DiagSnapshot | null = null;
 let heartbeatTimer: ReturnType<typeof setInterval> | null = null;
 let snapshotTimer: ReturnType<typeof setInterval> | null = null;
+// Module-scope install is intentionally fire-and-forget. Guard the async startup
+// window too, otherwise two callers can both wrap console/ErrorUtils.
+let installing = false;
 const listeners = new Set<() => void>();
 
 const now = () => Date.now();
@@ -106,62 +109,68 @@ function safeStringify(value: unknown): string {
  * BEFORE the app renders so the fatal overlay + heartbeat cover the whole session.
  */
 export async function installDiagnostics() {
-  if (heartbeatTimer) {
+  if (heartbeatTimer || installing) {
     return;
   }
-
-  // 1) Promote the previous session's final snapshot BEFORE any new writes:
-  //    whatever is in diag_curr_session right now is the last state before the
-  //    previous termination. Copy it to diag_prev_session so it survives forever.
+  installing = true;
   try {
-    const raw = await AsyncStorage.getItem(CURR_KEY);
-    if (raw) {
-      lastSessionSnapshot = JSON.parse(raw) as DiagSnapshot;
-      await AsyncStorage.setItem(PREV_KEY, raw);
-    }
-  } catch {
-    lastSessionSnapshot = null;
-  }
-
-  // 2) Heartbeat
-  lastHeartbeat = now();
-  heartbeatTimer = setInterval(() => {
-    lastHeartbeat = now();
-  }, HEARTBEAT_MS);
-
-  // 3) Periodic tiny snapshot (1.5s — NOT every event)
-  snapshotTimer = setInterval(persistSnapshot, SNAPSHOT_MS);
-
-  // 4) ErrorUtils chaining — capture original, pass through unchanged
-  const ErrorUtilsAny = (globalThis as any).ErrorUtils;
-  if (ErrorUtilsAny && typeof ErrorUtilsAny.setGlobalHandler === 'function') {
-    const originalHandler: unknown =
-      typeof ErrorUtilsAny.getGlobalHandler === 'function'
-        ? ErrorUtilsAny.getGlobalHandler()
-        : ErrorUtilsAny.globalHandler;
-    ErrorUtilsAny.setGlobalHandler((error: any, isFatal?: boolean) => {
-      const message = error ? safeStringify(error.message ?? error) : String(error);
-      const stack = error && error.stack ? String(error.stack) : undefined;
-      fatal = { message, stack, isFatal };
-      logEvent('jsFatal', message.slice(0, 120));
-      persistSnapshot(); // persist the fatal immediately — it may be the last write
-      if (typeof originalHandler === 'function') {
-        originalHandler(error, isFatal); // same arguments, never swallowed
+    // 1) Promote the previous session's final snapshot BEFORE any new writes:
+    //    whatever is in diag_curr_session right now is the last state before the
+    //    previous termination. Copy it to diag_prev_session first, then read the
+    //    promoted key for the overlay. New writes never touch diag_prev_session.
+    try {
+      const raw = await AsyncStorage.getItem(CURR_KEY);
+      if (raw) {
+        await AsyncStorage.setItem(PREV_KEY, raw);
       }
-    });
+      const previous = await AsyncStorage.getItem(PREV_KEY);
+      lastSessionSnapshot = previous ? JSON.parse(previous) as DiagSnapshot : null;
+    } catch {
+      lastSessionSnapshot = null;
+    }
+
+    // 2) Heartbeat
+    lastHeartbeat = now();
+    heartbeatTimer = setInterval(() => {
+      lastHeartbeat = now();
+    }, HEARTBEAT_MS);
+
+    // 3) Periodic tiny snapshot (1.5s — NOT every event)
+    snapshotTimer = setInterval(persistSnapshot, SNAPSHOT_MS);
+
+    // 4) ErrorUtils chaining — capture original, pass through unchanged
+    const ErrorUtilsAny = (globalThis as any).ErrorUtils;
+    if (ErrorUtilsAny && typeof ErrorUtilsAny.setGlobalHandler === 'function') {
+      const originalHandler: unknown =
+        typeof ErrorUtilsAny.getGlobalHandler === 'function'
+          ? ErrorUtilsAny.getGlobalHandler()
+          : ErrorUtilsAny.globalHandler;
+      ErrorUtilsAny.setGlobalHandler((error: any, isFatal?: boolean) => {
+        const message = error ? safeStringify(error.message ?? error) : String(error);
+        const stack = error && error.stack ? String(error.stack) : undefined;
+        fatal = { message, stack, isFatal };
+        logEvent('jsFatal', message.slice(0, 120));
+        persistSnapshot(); // persist the fatal immediately — it may be the last write
+        if (typeof originalHandler === 'function') {
+          originalHandler(error, isFatal); // same arguments, never swallowed
+        }
+      });
+    }
+
+    // 5) console capture — log, then pass through to the real console
+    const origError = console.error.bind(console);
+    console.error = (...args: unknown[]) => {
+      logEvent('console.error', args.map(safeStringify).join(' ').slice(0, 160));
+      origError(...args);
+    };
+    const origWarn = console.warn.bind(console);
+    console.warn = (...args: unknown[]) => {
+      logEvent('console.warn', args.map(safeStringify).join(' ').slice(0, 160));
+      origWarn(...args);
+    };
+
+    logEvent('diagInstalled', `prev=${lastSessionSnapshot ? 'yes' : 'no'}`);
+  } finally {
+    installing = false;
   }
-
-  // 5) console capture — log, then pass through to the real console
-  const origError = console.error.bind(console);
-  console.error = (...args: unknown[]) => {
-    logEvent('console.error', args.map(safeStringify).join(' ').slice(0, 160));
-    origError(...args);
-  };
-  const origWarn = console.warn.bind(console);
-  console.warn = (...args: unknown[]) => {
-    logEvent('console.warn', args.map(safeStringify).join(' ').slice(0, 160));
-    origWarn(...args);
-  };
-
-  logEvent('diagInstalled', `prev=${lastSessionSnapshot ? 'yes' : 'no'}`);
 }
