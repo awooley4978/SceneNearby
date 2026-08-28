@@ -14,7 +14,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.cairn.scenenearby",
-      "buildNumber": "16",
+      "buildNumber": "20",
       "entitlements": {
         "com.apple.InAppPurchase": true
       },
