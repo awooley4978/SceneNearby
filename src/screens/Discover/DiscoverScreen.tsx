@@ -18,6 +18,8 @@ import { LocationCategory, categoryColors, CITIES } from '../../models';
 import { useAllLocations, useActorGroups, useMovieGroups } from '../../services/hooks';
 import { calculateDistance } from '../../services/geo';
 import { LocationCard } from '../../components/LocationCard';
+import { AlsoFilmedHere } from '../../components/AlsoFilmedHere';
+import { groupLocationsByPlace } from '../../services/placeGrouping';
 import { CardSkeleton } from '../../components/SkeletonLoader';
 import { EmptyState } from '../../components/EmptyState';
 import { useUserLocation } from '../../hooks/useUserLocation';
@@ -277,6 +279,10 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
     })).filter((loc) => loc.distanceFromUser! <= (activeRadius ?? DEFAULT_RADIUS_MILES));
     return withDist.sort((a, b) => (a.distanceFromUser || 0) - (b.distanceFromUser || 0)).slice(0, 5);
   }, [userLocation.latitude, userLocation.longitude, activeRadius]);
+  // Group "Near You" by physical place (same title + coords) — one card per
+  // place with the remaining films under "Also filmed here". Place-centric
+  // browsing only; search results are untouched.
+  const groupedNearYou = useMemo(() => groupLocationsByPlace(nearYou), [nearYou]);
 
   // "More to Discover" — beyond the 5-mile feed, deduped per movie/show, up to
   // 20 titles, nearest-first. Restored from the git-history implementation
@@ -309,6 +315,12 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
       .sort((a, b) => (a.distanceFromUser || 0) - (b.distanceFromUser || 0))
       .slice(0, 20);
   }, [userLocation.latitude, userLocation.longitude, activeRadius, allLocations]);
+  // Group "More to Discover" by physical place too, so multiple films shot at
+  // the same location collapse to one row + "Also filmed here".
+  const groupedMoreToDiscover = useMemo(
+    () => groupLocationsByPlace(moreToDiscover),
+    [moreToDiscover],
+  );
 
   // Default view = no search, no category/type filter, default sort. In this
   // state Discover reads simply: "Near You" (within radius) then "More to
@@ -456,16 +468,23 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
               <Text style={styles.locatingSubtext}>Your live position will appear as soon as it's ready</Text>
             </View>
           ) : (
-            nearYou.map((loc) => (
-              <LocationCard
-                key={loc.id}
-                location={loc}
-                onPress={() => navigation.navigate('LocationDetail', { locationId: loc.id })}
-                onMoviePress={() => navigation.navigate('MovieDetail', { movieTitle: loc.movieOrShow })}
-              />
+            groupedNearYou.map(({ primary, others }) => (
+              <View key={primary.id} style={styles.nearYouGroup}>
+                <LocationCard
+                  key={primary.id}
+                  location={primary}
+                  onPress={() => navigation.navigate('LocationDetail', { locationId: primary.id })}
+                  onMoviePress={() => navigation.navigate('MovieDetail', { movieTitle: primary.movieOrShow })}
+                />
+                <AlsoFilmedHere
+                  others={others}
+                  onPressTitle={(loc) => navigation.navigate('LocationDetail', { locationId: loc.id })}
+                  showDistance
+                  getDistance={(loc) => (loc as FilmingLocation).distanceFromUser ?? null}
+                />
+              </View>
             ))
-          )}
-        </View>
+          )}        </View>
       )}
 
       {/* Results count — hidden in default view (Near You covers within-radius;
@@ -502,20 +521,27 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
     return (
       <View style={styles.moreSection}>
         <Text style={styles.moreTitle}>🌍 More to Discover</Text>
-        {moreToDiscover.map((loc, idx) => (
-          <TouchableOpacity
-            key={loc.id}
-            style={[styles.moreRow, idx === moreToDiscover.length - 1 && styles.moreRowLast]}
-            onPress={() => navigation.navigate('LocationDetail', { locationId: loc.id })}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.moreMovie} numberOfLines={1}>
-              🎬 {loc.movieOrShow}
-            </Text>
-            <Text style={styles.moreDistance}>
-              {Math.round(loc.distanceFromUser!)} mi away
-            </Text>
-          </TouchableOpacity>
+        {groupedMoreToDiscover.map(({ primary, others }, idx) => (
+          <View key={primary.id}>
+            <TouchableOpacity
+              style={[styles.moreRow, !others.length && idx === groupedMoreToDiscover.length - 1 && styles.moreRowLast]}
+              onPress={() => navigation.navigate('LocationDetail', { locationId: primary.id })}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.moreMovie} numberOfLines={1}>
+                🎬 {primary.movieOrShow}
+              </Text>
+              <Text style={styles.moreDistance}>
+                {Math.round(primary.distanceFromUser!)} mi away
+              </Text>
+            </TouchableOpacity>
+            <AlsoFilmedHere
+              others={others}
+              onPressTitle={(loc) => navigation.navigate('LocationDetail', { locationId: loc.id })}
+              showDistance
+              getDistance={(loc) => (loc as FilmingLocation).distanceFromUser ?? null}
+            />
+          </View>
         ))}
       </View>
     );
@@ -733,6 +759,7 @@ const styles = StyleSheet.create({
   viewMapButtonText: { fontSize: 12, fontWeight: '600', color: theme.colors.gold },
   viewMapChevron: { fontSize: 16, color: theme.colors.gold, fontWeight: '300', marginTop: -1 },
   nearYouSection: { marginBottom: 16 },
+  nearYouGroup: { marginBottom: 12 },
   sectionTitle: { fontSize: 20, fontWeight: '700', color: theme.colors.textPrimary, marginBottom: 12 },
   resultsHeader: { marginTop: 4, marginBottom: 8 },
   emptyState: { alignItems: 'center', paddingVertical: 60 },

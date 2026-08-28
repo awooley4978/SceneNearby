@@ -17,6 +17,8 @@ import { useAuth } from '../../context/AuthContext';
 import { useAllLocations } from '../../services/hooks';
 import { categoryColors } from '../../models';
 import { LocationCard } from '../../components/LocationCard';
+import { AlsoFilmedHere } from '../../components/AlsoFilmedHere';
+import { groupLocationsByPlace } from '../../services/placeGrouping';
 import { StarRating } from '../../components/StarRating';
 import { CategoryBadge } from '../../components/CategoryBadge';
 import { MoviePoster } from '../../components/MoviePoster';
@@ -205,6 +207,13 @@ const TEST_NOTIFICATION_ENABLED =
         calculateDistance(origin.lat, origin.lng, b.latitude, b.longitude),
     );
   }, [allLocations, userCoords, region, visibleRegion]);
+  // Group the list by physical place (same title + coords) — one card per
+  // place, remaining films under "Also filmed here". Place-centric browsing
+  // only; map pins and underlying records untouched.
+  const groupedVisibleLocations = useMemo(
+    () => groupLocationsByPlace(visibleLocations),
+    [visibleLocations],
+  );
 
   const handleMarkerPress = (location: FilmingLocation) => {
     setSelectedLocation(location);
@@ -349,16 +358,25 @@ const TEST_NOTIFICATION_ENABLED =
             </TouchableOpacity>
           </View>
           <FlatList
-            data={visibleLocations}
-            keyExtractor={(item) => item.id}
+            data={groupedVisibleLocations}
+            keyExtractor={(item) => item.primary.id}
             renderItem={({ item }) => (
-              <LocationCard
-                location={item}
-                onPress={() => {
-                  handleMarkerPress(item);
-                  setShowList(false);
-                }}
-              />
+              <View>
+                <LocationCard
+                  location={item.primary}
+                  onPress={() => {
+                    handleMarkerPress(item.primary);
+                    setShowList(false);
+                  }}
+                />
+                <AlsoFilmedHere
+                  others={item.others}
+                  onPressTitle={(loc) => {
+                    handleMarkerPress(loc);
+                    setShowList(false);
+                  }}
+                />
+              </View>
             )}
             contentContainerStyle={styles.listContent}
             showsVerticalScrollIndicator={false}
