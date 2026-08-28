@@ -28,6 +28,7 @@ import { useSaved } from '../../context/SavedContext';
 import { useCityDetection } from '../../hooks/useCityDetection';
 import { CityWelcomeModal } from '../../components/CityWelcomeModal';
 import { calculateDistance } from '../../services/geo';
+import { useDestinationContext } from '../../services/destinationContext';
 import type { FilmingLocation } from '../../models';
 
 const { width, height } = Dimensions.get('window');
@@ -143,16 +144,26 @@ const TEST_NOTIFICATION_ENABLED =
   // exactly the places they navigated to.
   const focusCity = route?.params?.focusCity;
 
+  // T-DST: sticky destination browsing context. When active it overrides the
+  // home-city default region and the distance-ordering origin (same contract as
+  // useUserLocation). Normal Nearby behavior (no destination) is unchanged.
+  const destination = useDestinationContext();
+
   // Pins shown on the map. Normal use pins every location; a focused
-  // destination view pins only that destination's locations. No count/DB-size
+  // destination view pins only that destination's locations. When no explicit
+  // focusCity is passed but a STICKY destination is active, pins mirror that
+  // destination too so the map stays anchored on it. No count/DB-size
   // indicator is introduced by the focused view.
   const mapLocations = useMemo(() => {
-    if (!focusCity) return allLocations;
-    const needle = focusCity.trim().toLowerCase();
-    return allLocations.filter((l) => (l.city || '').trim().toLowerCase() === needle);
-  }, [allLocations, focusCity]);
+    const needle = (focusCity || destination?.city || '').trim().toLowerCase();
+    return needle
+      ? allLocations.filter((l) => (l.city || '').trim().toLowerCase() === needle)
+      : allLocations;
+  }, [allLocations, focusCity, destination?.city]);
 
-  // Load user coordinates from onboarding data
+  // Load user coordinates from onboarding data. When a STICKY destination is
+  // active it wins over the onboarding home-city for the default region and for
+  // the distance-ordering origin.
   useEffect(() => {
     (async () => {
       try {
@@ -160,11 +171,14 @@ const TEST_NOTIFICATION_ENABLED =
         if (data?.activeCityLat && data?.activeCityLng) {
           setUserCoords({ lat: data.activeCityLat, lng: data.activeCityLng });
           setUserCity(data.activeCity || '');
-          // If no target provided, center on user
+          // If no target provided, center on the sticky destination (if active)
+          // otherwise the home city.
           if (!targetLat) {
+            const regionLat = destination?.latitude ?? data.activeCityLat;
+            const regionLng = destination?.longitude ?? data.activeCityLng;
             setRegion({
-              latitude: data.activeCityLat,
-              longitude: data.activeCityLng,
+              latitude: regionLat,
+              longitude: regionLng,
               latitudeDelta: 0.5,
               longitudeDelta: 0.5,
             });
@@ -172,7 +186,7 @@ const TEST_NOTIFICATION_ENABLED =
         }
       } catch {}
     })();
-  }, []);
+  }, [destination?.latitude, destination?.longitude]);
 
   // If target location provided, center map on it
   useEffect(() => {
@@ -217,13 +231,17 @@ const TEST_NOTIFICATION_ENABLED =
         l.longitude >= lngMin &&
         l.longitude <= lngMax,
     );
-    const origin = userCoords ?? { lat: base.latitude, lng: base.longitude };
+    // Distance-ordering origin: prefer the STICKY destination (when active),
+    // else the onboarding home-city, else the map's own base.
+    const origin = destination
+      ? { lat: destination.latitude, lng: destination.longitude }
+      : userCoords ?? { lat: base.latitude, lng: base.longitude };
     return [...inView].sort(
       (a, b) =>
         calculateDistance(origin.lat, origin.lng, a.latitude, a.longitude) -
         calculateDistance(origin.lat, origin.lng, b.latitude, b.longitude),
     );
-  }, [allLocations, userCoords, region, visibleRegion]);
+  }, [allLocations, userCoords, region, visibleRegion, destination]);
   // Group the list by physical place (same title + coords) — one card per
   // place, remaining films under "Also filmed here". Place-centric browsing
   // only; map pins and underlying records untouched.
@@ -306,6 +324,8 @@ const TEST_NOTIFICATION_ENABLED =
         </TouchableOpacity>
         {focusCity ? (
           <Text style={styles.headerSubtitle}>Filming locations in {focusCity}</Text>
+        ) : destination ? (
+          <Text style={styles.headerSubtitle}>Filming locations in {destination.city}</Text>
         ) : userCity ? (
           <Text style={styles.headerSubtitle}>Exploring locations near {userCity}</Text>
         ) : (

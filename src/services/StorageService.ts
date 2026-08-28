@@ -41,6 +41,12 @@ export async function resetOnboarding(): Promise<void> {
   try {
     await AsyncStorage.multiRemove([KEYS.ONBOARDING_COMPLETE, KEYS.ONBOARDING_DATA]);
   } catch {}
+  // Clear any STICKY destination browsing context (T-DST) — onboarding reset
+  // is one of the approved clearing conditions.
+  try {
+    const { setDestinationContext } = await import('./destinationContext');
+    await setDestinationContext(null);
+  } catch {}
 }
 
 // ── Saved Locations ──
