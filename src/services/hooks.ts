@@ -92,14 +92,58 @@ function computeRating(loc: ApiLocation): LocationRating | undefined {
 
 // ── Hooks ──
 
-/** Fetch all locations (paginated) */
+// Shared cache + in-flight dedup for the "all locations" fetch.
+// Every consumer of useAllLocations() (Discover, NearbyMap -- its own call plus
+// useCityDetection -- and Saved) used to fire its own getAllLocations(): a
+// paginated 2-request loop (offset 0 and 200). Mounting Discover fires three of
+// these concurrently (its own + via useActorGroups + via useMovieGroups), Map
+// fires two, and Saved one. Under tab-hopping that produced many duplicate
+// full-location fetches per session. These module-level holders make every
+// consumer share ONE in-flight request and ONE cached result: the first consumer
+// triggers the paginated getAllLocations(), concurrent consumers subscribe to
+// the same promise (no duplicate network call), and later consumers read the
+// cache directly. refetch() clears the cache so pull-to-refresh / error-retry
+// still forces a fresh network call. Only the all-locations-summary path is
+// deduped; every other hook (by id / nearby / search / city / full) keeps
+// existing behaviour.
+let allLocationsCache: ApiLocationSummary[] | null = null;
+let allLocationsInFlight: Promise<ApiLocationSummary[]> | null = null;
+
+function fetchAllLocationsShared(): Promise<ApiLocationSummary[]> {
+  if (allLocationsCache) return Promise.resolve(allLocationsCache);
+  if (!allLocationsInFlight) {
+    allLocationsInFlight = apiClient
+      .getAllLocations()
+      .then((data) => {
+        allLocationsCache = data;
+        return data;
+      })
+      .finally(() => {
+        allLocationsInFlight = null;
+      });
+  }
+  return allLocationsInFlight;
+}
+
+function clearAllLocationsCache(): void {
+  allLocationsCache = null;
+  allLocationsInFlight = null;
+}
+
+/** Fetch all locations (paginated; shared cache + in-flight dedup) */
 export function useAllLocations() {
   const result = useApiData<ApiLocationSummary[]>(
-    () => apiClient.getAllLocations(),
+    () => fetchAllLocationsShared(),
     [],
   );
   const locations = result.data?.map(toFilmingLocation) ?? [];
-  return { ...result, locations };
+  // Preserve refetch as a genuine fresh fetch: clear the shared cache so this
+  // and subsequent consumers re-fetch instead of serving stale data.
+  const refetch = () => {
+    clearAllLocationsCache();
+    result.refetch();
+  };
+  return { ...result, locations, refetch };
 }
 /**
  * Fetch all locations with full detail (descriptions, fun facts, quotes,
