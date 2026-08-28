@@ -98,8 +98,13 @@ function rateLimited(req: Request, url: URL): Response | null {
     }
     return null;
   }
-  bucket.count += 1;
-  if (bucket.count > RATE_LIMIT_PER_WINDOW) {
+  // If already over the limit, return the 429 WITHOUT incrementing the bucket.
+  // Previously we incremented then checked, so every 429 bumped the count too —
+  // once a burst tipped a bucket over 300, each subsequent 429 pushed it higher
+  // and kept the whole IP pinned for the full 60s window. By not counting the
+  // 429 rejections themselves, the bucket stops climbing the moment it tips, so
+  // once the client backs off the IP recovers as soon as the window rolls over.
+  if (bucket.count >= RATE_LIMIT_PER_WINDOW) {
     const retryAfter = Math.max(1, Math.ceil((RATE_WINDOW_MS - (now - bucket.windowStart)) / 1000));
     const resp = new Response(JSON.stringify({ error: "Too many requests. Please slow down and try again in a moment." }), {
       status: 429,
@@ -113,6 +118,8 @@ function rateLimited(req: Request, url: URL): Response | null {
     });
     return resp;
   }
+  // Request will be served — count it toward the limit.
+  bucket.count += 1;
   return null;
 }
 
