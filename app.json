@@ -15,6 +15,9 @@
       "supportsTablet": false,
       "bundleIdentifier": "com.cairn.scenenearby",
       "buildNumber": "15",
+      "entitlements": {
+        "com.apple.InAppPurchase": true
+      },
       "associatedDomains": [
         "applinks:scenenearby.firebaseapp.com"
       ],
@@ -49,7 +52,9 @@
         }
       ],
       "expo-dev-client",
-      "expo-splash-screen"
+      "expo-splash-screen",
+      "expo-secure-store",
+      "expo-iap"
     ],
     "extra": {
       "enableTestNotification": true,
