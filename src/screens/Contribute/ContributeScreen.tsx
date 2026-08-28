@@ -17,7 +17,6 @@ import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
 import { theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
-import { LicensePicker } from '../../components/LicensePicker';
 import {
   fetchTitles,
   fetchLocationsForTitle,
@@ -49,9 +48,6 @@ interface Draft {
   // last step
   anonymous: boolean;
   displayName: string;
-  // license captured at upload time (owner rule 08-23): renders clickable
-  license: string | null;
-  licenseUrl: string | null;
 }
 
 const emptyDraft: Draft = {
@@ -66,8 +62,6 @@ const emptyDraft: Draft = {
   proposeExactLocation: '',
   anonymous: false,
   displayName: '',
-  license: null as string | null,
-  licenseUrl: null as string | null,
 };
 
 export const ContributeScreen: React.FC = () => {
@@ -169,11 +163,10 @@ export const ContributeScreen: React.FC = () => {
   const hasNewLocation = !!draft.proposeCity.trim() || !!draft.proposeExactLocation.trim();
   const canContinueLocation = hasLocationSelection || hasNewLocation;
 
-  // Final step can submit only when the permission is confirmed, a license is
-  // chosen (owner rule 08-23: every upload must carry a clickable license), and
-  // the user has chosen how to be shown (a name, or anonymous).
+  // Final step can submit only when the permission is confirmed and the user has
+  // chosen how to be shown (a name, or anonymous).
   const canSubmit =
-    rightsConfirmed && !!draft.license && (!!draft.displayName.trim() || draft.anonymous) && !!draft.photo;
+    rightsConfirmed && (!!draft.displayName.trim() || draft.anonymous) && !!draft.photo;
 
   // If the user picks anonymous, drop the entered name so it isn't sent.
   const toggleAnonymous = () => {
@@ -219,8 +212,6 @@ export const ContributeScreen: React.FC = () => {
         // anonymous users don't get a public credit; named users do
         allow_public_credit: !draft.anonymous,
         rights_confirmed: true,
-        license: draft.license || undefined,
-        license_url: draft.licenseUrl || undefined,
         community_permission: 'display',
         photo: {
           uri: draft.photo.uri,
@@ -527,12 +518,19 @@ export const ContributeScreen: React.FC = () => {
           <View>
             <Text style={styles.title}>Almost done!</Text>
 
-            <Text style={styles.label}>Photo permission</Text>
+            {/* Approved plain-English permission language (owner 08-28). */}
+            <Text style={styles.affirmationLead}>
+              By submitting this photo, you confirm you took it or have permission
+              to share it, and you give Scene Nearby permission to display it in
+              the Scene Nearby app and website. You keep ownership of your photo.
+            </Text>
             <TouchableOpacity style={styles.affirmationRow} onPress={() => setRightsConfirmed((v) => !v)}>
               <View style={[styles.checkbox, rightsConfirmed && styles.checkboxChecked]}>
                 {rightsConfirmed && <Text style={styles.checkboxMark}>✓</Text>}
               </View>
-              <Text style={styles.affirmationText}>I took this photo or have permission to share it.</Text>
+              <Text style={styles.affirmationText}>
+                I took this photo or have permission to share it with Scene Nearby.
+              </Text>
             </TouchableOpacity>
 
             <Text style={styles.label}>How should we show your photo?</Text>
@@ -555,11 +553,6 @@ export const ContributeScreen: React.FC = () => {
               editable={!draft.anonymous}
             />
             <Text style={styles.hint}>Example: “Photo by Linda”</Text>
-
-            <LicensePicker
-              value={draft.license}
-              onChange={(lic, url) => set({ license: lic, licenseUrl: url })}
-            />
 
             {!!submitError && <Text style={styles.errorText}>{submitError}</Text>}
 
@@ -682,6 +675,7 @@ const styles = StyleSheet.create({
   },
   checkboxChecked: { borderColor: theme.colors.gold, backgroundColor: theme.colors.gold },
   checkboxMark: { color: theme.colors.black, fontWeight: '900', fontSize: 14 },
+  affirmationLead: { fontSize: 13, color: theme.colors.textSecondary, lineHeight: 19, marginTop: 2 },
   affirmationText: { flex: 1, fontSize: 13, color: theme.colors.textSecondary, lineHeight: 19 },
   errorText: { fontSize: 14, color: '#ff6b6b', textAlign: 'center', marginTop: 16 },
   primaryButton: {
