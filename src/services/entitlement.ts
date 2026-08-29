@@ -24,12 +24,12 @@ const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3001';
 const FETCH_TIMEOUT_MS = 6000;
 
 // Keychain keys (survive reinstalls on the same device).
-const K_TRIAL_STARTED_AT = 'entitlement/trialStartedAt';
-const K_UNLOCKED = 'entitlement/unlocked';
-const K_UNLOCK_TRANSACTION_ID = 'entitlement/unlockTransactionId';
+const K_TRIAL_STARTED_AT = 'entitlement.trialStartedAt';
+const K_UNLOCKED = 'entitlement.unlocked';
+const K_UNLOCK_TRANSACTION_ID = 'entitlement.unlockTransactionId';
 // Durable "pending grant" marker: server verified OK, but entitlement persistence
 // didn't complete — retry on next launch so we never lose a verified purchase.
-const K_PENDING_GRANT = 'entitlement/pendingGrant';
+const K_PENDING_GRANT = 'entitlement.pendingGrant';
 
 export type EntitlementStatus = 'trialActive' | 'locked' | 'unlocked';
 
