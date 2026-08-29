@@ -77,13 +77,15 @@ const App: React.FC = () => {
   };
 
   // ── Diagnostics overlay: live event log + heartbeat + fatal screen ──
-  // DEV-ONLY. The visible overlay is gated behind __DEV__, so it NEVER renders
-  // in production/TestFlight release builds for ANY user (regardless of signed-in
-  // email) — a hard removal from release UI, not merely an owner-email gate.
-  // Within dev builds it is additionally restricted to the owner/admin allowlist.
-  // The tracer itself (installDiagnostics) continues capturing snapshot data for
-  // EVERY user in the background — only this on-screen overlay is removed from
-  // release builds. (Persisted snapshots still record onboarding-crash data.)
+  // DIAGNOSTIC (owner 08-28 / T-M5 build 25): the __DEV__ gate was REMOVED so
+  // the overlay is observable in release/TestFlight builds — but ONLY when
+  // signed in with an owner/admin email (the allowlist below). In release
+  // builds console.warn is not bridged to the device console, so this on-screen
+  // viewer (fed by the AsyncStorage-persisted diagnostics log) is the only
+  // observable capture path. It is a diagnostic display for admin accounts
+  // only — regular/anonymous users see nothing, and no behavior changes.
+  // The tracer (installDiagnostics) continues capturing snapshot data for
+  // every user in the background regardless of this overlay.
   const DiagnosticsOverlay = () => {
     const { user } = useAuth();
     const isAdmin =
@@ -92,12 +94,6 @@ const App: React.FC = () => {
     const [expanded, setExpanded] = useState(false);
     const [showRaw, setShowRaw] = useState(false);
     useEffect(() => subscribe(() => forceRender((t) => t + 1)), []);
-    // DIAGNOSTIC (owner 08-28 / T-M5 build 25): __DEV__ gate removed so the
-    // overlay is readable in release/TestFlight when signed in with an admin
-    // email. In release builds console.warn is not bridged to the device
-    // console, so this on-screen viewer (fed by the AsyncStorage-persisted
-    // diagnostics log) is the only observable capture path. Diagnostic display
-    // only — visible solely to admin emails; no entitlement behavior change.
     if (!isAdmin) return null;
     const state = getState();
     const aliveAgo = state.lastHeartbeat
