@@ -288,8 +288,12 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
             intensity={0.04}
           />
 
-          {/* Gradient overlay: dark at bottom, fading into page */}
-          <View style={styles.heroOverlay}>
+          {/* Gradient overlay: dark at bottom, fading into page.
+              pointerEvents="none" so the full-hero gradient does NOT swallow
+              taps meant for the MapPlaceholder "Be the first to add a photo"
+              pill beneath it (that pill routes to the same Upload flow as the
+              lower Add Photo control). */}
+          <View style={styles.heroOverlay} pointerEvents="none">
             <LinearGradient
               colors={['transparent', 'rgba(10,10,10,0.4)', theme.colors.background]}
               locations={[0, 0.45, 1]}
