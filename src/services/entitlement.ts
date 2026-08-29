@@ -13,6 +13,7 @@ import * as SecureStore from 'expo-secure-store';
 import { getCurrentUser } from './auth';
 import { db } from './firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { logEvent } from './diagnostics';
 
 export const PRODUCT_ID = 'com.cairn.scenenearby.lifetime';
 export const TRIAL_DAYS = 7;
@@ -46,11 +47,14 @@ async function secureGet(key: string): Promise<string | null> {
   } catch (err) {
     // DIAGNOSTIC: surface the real expo-secure-store error (owner 08-28, T-M5
     // grant blocker) instead of swallowing it. Behavior unchanged (returns null).
+    const e = err as { name?: string; message?: string; code?: string };
+    const detail = `key=${key} :: name=${e?.name} :: message=${e?.message} :: code=${e?.code}`;
     console.warn(`[entitlement] secureGet failed for key=${key}`, {
-      name: (err as Error)?.name,
-      message: (err as Error)?.message,
-      code: (err as { code?: string })?.code,
+      name: e?.name,
+      message: e?.message,
+      code: e?.code,
     }, err);
+    logEvent('secureGetFailed', detail);
     return null;
   }
 }
@@ -62,11 +66,14 @@ async function secureSet(key: string, value: string): Promise<boolean> {
     // DIAGNOSTIC: surface the real expo-secure-store error (owner 08-28, T-M5
     // grant blocker). The Keychain write here drives grantUnlock()'s return
     // value (false => "Could not save your purchase...").
+    const e2 = err as { name?: string; message?: string; code?: string };
+    const detail2 = `key=${key} :: name=${e2?.name} :: message=${e2?.message} :: code=${e2?.code}`;
     console.warn(`[entitlement] secureSet failed for key=${key}`, {
-      name: (err as Error)?.name,
-      message: (err as Error)?.message,
-      code: (err as { code?: string })?.code,
+      name: e2?.name,
+      message: e2?.message,
+      code: e2?.code,
     }, err);
+    logEvent('secureSetFailed', detail2);
     return false;
   }
 }

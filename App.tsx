@@ -92,7 +92,13 @@ const App: React.FC = () => {
     const [expanded, setExpanded] = useState(false);
     const [showRaw, setShowRaw] = useState(false);
     useEffect(() => subscribe(() => forceRender((t) => t + 1)), []);
-    if (!__DEV__ || !isAdmin) return null;
+    // DIAGNOSTIC (owner 08-28 / T-M5 build 25): __DEV__ gate removed so the
+    // overlay is readable in release/TestFlight when signed in with an admin
+    // email. In release builds console.warn is not bridged to the device
+    // console, so this on-screen viewer (fed by the AsyncStorage-persisted
+    // diagnostics log) is the only observable capture path. Diagnostic display
+    // only — visible solely to admin emails; no entitlement behavior change.
+    if (!isAdmin) return null;
     const state = getState();
     const aliveAgo = state.lastHeartbeat
       ? Math.max(0, Math.round((Date.now() - state.lastHeartbeat) / 1000))

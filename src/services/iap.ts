@@ -23,6 +23,7 @@ import {
   setPendingGrant,
   clearPendingGrant,
 } from './entitlement';
+import { logEvent } from './diagnostics';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3001';
 const FETCH_TIMEOUT_MS = 10000;
@@ -89,20 +90,24 @@ async function handleVerifiedTransaction(purchase: Purchase): Promise<void> {
   try {
     await setPendingGrant(transactionId);
     console.log(`[iap] handleVerifiedTransaction: setPendingGrant ok (tid=${transactionId}, env=${environment})`);
+    logEvent('iapStep', `setPendingGrant ok tid=${transactionId} env=${environment}`);
   } catch (err) {
     console.warn('[iap] handleVerifiedTransaction: setPendingGrant FAILED', err);
   }
   const granted = await grantUnlock(transactionId);
   console.log(`[iap] handleVerifiedTransaction: grantUnlock=${granted} (tid=${transactionId}, env=${environment})`);
+  logEvent('iapStep', `grantUnlock=${granted} tid=${transactionId} env=${environment}`);
   if (!granted) {
     // Keep the pending marker — verified purchase must not be lost.
     console.warn('[iap] handleVerifiedTransaction: grantUnlock returned false — emitting save-failure, pending marker kept');
+    logEvent('iapStep', 'grantUnlock=false -> save-failure emitted, pending kept');
     emit({ type: 'failed', error: 'Could not save your purchase — it will be restored automatically.' });
     return;
   }
   try {
     await clearPendingGrant();
     console.log('[iap] handleVerifiedTransaction: clearPendingGrant ok');
+    logEvent('iapStep', 'clearPendingGrant ok');
   } catch (err) {
     console.warn('[iap] handleVerifiedTransaction: clearPendingGrant FAILED', err);
   }
