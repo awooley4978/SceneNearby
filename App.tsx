@@ -77,15 +77,13 @@ const App: React.FC = () => {
   };
 
   // ── Diagnostics overlay: live event log + heartbeat + fatal screen ──
-  // DIAGNOSTIC (owner 08-28 / T-M5 build 25): the __DEV__ gate was REMOVED so
-  // the overlay is observable in release/TestFlight builds — but ONLY when
-  // signed in with an owner/admin email (the allowlist below). In release
-  // builds console.warn is not bridged to the device console, so this on-screen
-  // viewer (fed by the AsyncStorage-persisted diagnostics log) is the only
-  // observable capture path. It is a diagnostic display for admin accounts
-  // only — regular/anonymous users see nothing, and no behavior changes.
-  // The tracer (installDiagnostics) continues capturing snapshot data for
-  // every user in the background regardless of this overlay.
+  // RELEASE (owner 08-29 / T-M5): diagnostic phase complete (Build 26 PASS).
+  // The overlay is DISABLED in release/TestFlight builds (__DEV__ is false) so
+  // the final RC is clean — this rendered diagnostic viewer is not shipped to
+  // users. It remains available in __DEV__ builds only for future QA. To keep
+  // this a narrow change, the viewer code is retained but gated; the tracer
+  // (installDiagnostics) and the logEvent capture in entitlement/iap services
+  // are UNCHANGED and continue to persist snapshot data in the background.
   const DiagnosticsOverlay = () => {
     const { user } = useAuth();
     const isAdmin =
@@ -94,7 +92,7 @@ const App: React.FC = () => {
     const [expanded, setExpanded] = useState(false);
     const [showRaw, setShowRaw] = useState(false);
     useEffect(() => subscribe(() => forceRender((t) => t + 1)), []);
-    if (!isAdmin) return null;
+    if (!__DEV__ || !isAdmin) return null;
     const state = getState();
     const aliveAgo = state.lastHeartbeat
       ? Math.max(0, Math.round((Date.now() - state.lastHeartbeat) / 1000))
