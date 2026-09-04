@@ -168,7 +168,12 @@ async function fetchMovieLocations(title: string): Promise<TrustedMatch | null> 
   if (!titleMatches(extractPageTitle(pageRaw) || "", title) && !text.toLowerCase().includes(norm(title))) {
     return null;
   }
-  const locations = extractVenueNames(text);
+  // Venue names come from the structured "film location" captions only.
+  // Running the venue regex over the full page text also captures cast names
+  // (e.g. "Anthony Michael Hall"), prose mentions (e.g. "Michael Bay"), and
+  // unrelated film titles (e.g. "London Boulevard"), all of which sit OUTSIDE
+  // the caption blocks.
+  const locations = extractCaptionVenues(pageRaw);
   if (locations.length === 0) return null;
   return { pageUrl, locations };
 }
@@ -193,6 +198,21 @@ function extractVenueNames(text: string): string[] {
     if (name.length >= 3 && name.length <= 60 && PLACE_SUFFIX.test(name)) out.add(name);
   }
   return [...out];
+}
+
+/** movie-locations.com wraps each photo's venue in a `<div class="cap">…</div>`
+ * caption ("…film location: <venue>, <address>, <city>"). Extract venue names
+ * from those caption blocks ONLY. Running the venue regex over the whole page
+ * also matches cast names (Anthony Michael Hall), prose mentions (Michael Bay),
+ * and unrelated film titles (London Boulevard) that all live OUTSIDE the
+ * captions, which is how the earlier false positives got minted. */
+function extractCaptionVenues(html: string): string[] {
+  const capRe = /<div[^>]*class="[^"]*\bcap\b[^"]*"[^>]*>([\s\S]*?)<\/div>/gi;
+  const parts: string[] = [];
+  let m: RegExpExecArray | null;
+  while ((m = capRe.exec(html)) !== null) parts.push(stripHtml(m[1]));
+  if (parts.length === 0) return [];
+  return extractVenueNames(parts.join(" "));
 }
 
 /** Query both trusted sites for the title and return any matches. */
