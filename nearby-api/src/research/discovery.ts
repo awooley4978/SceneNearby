@@ -32,6 +32,9 @@ export interface ResolvedTitle {
   director: string | null;
   plot: string | null;
   filmingLocations: string[];
+  /** Per-location source provenance: which of wikidata vs wikipedia-section
+   *  supplied each filming location (for distinct-source counting). */
+  locationSources: { name: string; kind: "wikidata" | "wikipedia-section" }[];
   /** City/region context from section titles ("Filming in Chicago" -> ["Chicago"]). */
   filmingContexts: string[];
 }
@@ -49,8 +52,12 @@ export async function resolveTitle(title: string, year: number, type: MovieType)
     director: null,
     plot: null,
     filmingLocations: [],
+    locationSources: [],
     filmingContexts: [],
   };
+
+  const wikidataLocations: string[] = [];
+  const wikipediaLocations: string[] = [];
 
   // 1. Search Wikipedia for the title (+year when present).
   const searchQuery = `${title}${year ? ` ${year}` : ""} ${type === "show" ? "TV series" : "film"}`;
@@ -125,7 +132,7 @@ export async function resolveTitle(title: string, year: number, type: MovieType)
     out.cast = out.cast.slice(0, 12);
     for (const id of filmIds) {
       const nm = labels.get(id);
-      if (nm && nm !== id) out.filmingLocations.push(nm);
+      if (nm && nm !== id) wikidataLocations.push(nm);
     }
     // P364 / P921? plot comes from Wikipedia extract instead (below).
   }
@@ -160,11 +167,22 @@ export async function resolveTitle(title: string, year: number, type: MovieType)
       `${EN_WIKI}?action=parse&prop=wikitext&page=${encodeURIComponent(best.title)}&section=${filmSec.index}&format=json&formatversion=2`
     );
     const wikitext = secText?.parse?.wikitext ?? "";
-    for (const place of extractFilmingPlaces(wikitext)) out.filmingLocations.push(place);
+    for (const place of extractFilmingPlaces(wikitext)) wikipediaLocations.push(place);
   }
 
-  // Dedupe + cap raw mentions.
-  out.filmingLocations = [...new Set(out.filmingLocations.filter(Boolean))].slice(0, 25);
+  // Preserve source provenance for distinct-source counting while exposing a
+  // merged, deduped list for callers' "did we find any locations?" check.
+  out.filmingLocations = [...new Set([...wikidataLocations, ...wikipediaLocations].filter(Boolean))].slice(0, 25);
+  for (const name of wikidataLocations) {
+    if (name && !out.locationSources.some((s) => s.name === name && s.kind === "wikidata")) {
+      out.locationSources.push({ name, kind: "wikidata" });
+    }
+  }
+  for (const name of wikipediaLocations) {
+    if (name && !out.locationSources.some((s) => s.name === name && s.kind === "wikipedia-section")) {
+      out.locationSources.push({ name, kind: "wikipedia-section" });
+    }
+  }
   return out;
 }
 
@@ -313,13 +331,22 @@ export async function resolveLabels(ids: string[]): Promise<Map<string, string>>
 /** Build raw mentions from a resolved title for candidate normalization. */
 export function mentionsFromResolved(res: ResolvedTitle): RawLocationMention[] {
   const mentions: RawLocationMention[] = [];
-  for (const loc of res.filmingLocations) {
+  const entries =
+    res.locationSources.length > 0
+      ? res.locationSources
+      : res.filmingLocations.map((name) => ({ name, kind: "wikipedia-section" as const }));
+  for (const e of entries) {
+    const isWikiData = e.kind === "wikidata";
     mentions.push({
-      name: loc,
-      sourceUrl: res.wikipediaUrl ?? "",
-      sourceTitle: res.wikipediaTitle ?? res.title,
-      sourceKind: "wikipedia-section",
-      note: "Filming locations (Wikipedia/Wikidata)",
+      name: e.name,
+      sourceUrl: isWikiData
+        ? `https://www.wikidata.org/wiki/${res.wikidataId ?? ""}`
+        : res.wikipediaUrl ?? "",
+      sourceTitle: isWikiData ? "Wikidata" : res.wikipediaTitle ?? res.title,
+      sourceKind: e.kind,
+      note: isWikiData
+        ? "Filming location (Wikidata P915)"
+        : "Filming locations (Wikipedia section)",
     });
   }
   return mentions;

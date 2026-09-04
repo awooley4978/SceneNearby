@@ -86,6 +86,7 @@ export interface ResearchJobStats {
   region_leads: number;
   prose_rejected: number;
   context_mismatches: number;
+  stage1_skipped?: number;
 }
 
 export interface ResearchJob {
@@ -144,7 +145,7 @@ export interface RawLocationMention {
   name: string;
   sourceUrl: string;
   sourceTitle: string;
-  sourceKind: "wikidata" | "wikipedia" | "wikipedia-section";
+  sourceKind: "wikidata" | "wikipedia" | "wikipedia-section" | "trusted-reference";
   note: string;
   wikidataId?: string;
   coords?: { lat: number; lng: number };
@@ -168,5 +169,6 @@ export interface CandidateDraft {
   duplicateOfCandidate?: string;
   regionLevel?: boolean; // true = city/region-level lead (never ready_for_review)
   geocodeContextMismatch?: boolean; // Nominatim pin landed outside film's contexts
+  stage1Skipped?: boolean; // stopped by Stage-1 upper-bound gate before geocode/photo
   researchNote?: string;
 }
