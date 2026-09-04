@@ -129,7 +129,9 @@ async function fetchMovieLocations(title: string): Promise<TrustedMatch | null> 
   while ((m = anchorRe.exec(indexRaw)) !== null) {
     const href = m[1];
     const text = decodeEntities(stripHtml(m[2])).trim();
-    if (!/movies\/[a-z0-9]\/[^/]+\.php$/i.test(href)) continue;
+    // Film links on the letter index are bare relative hrefs ("Dark-Knight.php"),
+    // not "movies/d/Dark-Knight.php". Nav/index links carry a "/" and are excluded.
+    if (!/^[^/]+\.php$/i.test(href)) continue;
     if (/[a-z0-9]-movies\.php$/i.test(href)) continue; // skip the index itself
     candidates.push({ href, text });
   }
@@ -157,7 +159,7 @@ async function fetchMovieLocations(title: string): Promise<TrustedMatch | null> 
 
   const pageUrl = pagePath.startsWith("http")
     ? pagePath
-    : `https://www.movie-locations.com/${pagePath.replace(/^\//, "")}`;
+    : `https://www.movie-locations.com/movies/${letter}/${pagePath.replace(/^\//, "")}`;
   const pageRaw = await politeFetch(pageUrl);
   if (!pageRaw) return null;
 
