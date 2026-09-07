@@ -15,6 +15,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useSaved } from '../../context/SavedContext';
 import { useEntitlement } from '../../context/EntitlementContext';
 import { getUserAlbum } from '../../services/albumService';
+import { deleteAccount } from '../../services/auth';
 
 const ADMIN_EMAILS = ['awooley4978@gmail.com', 'scenenearbysupport@gmail.com'];
 
@@ -27,6 +28,7 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
   const [navApp, setNavApp] = useState<string | null>(null);
   const [photoCount, setPhotoCount] = useState(0);
   const [visitedCount, setVisitedCount] = useState(0);
+  const [deleting, setDeleting] = useState(false);
 
   // Load saved nav preference
   React.useEffect(() => {
@@ -73,6 +75,31 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
     saves: savedIds.size,
     photos: photoCount,
     visited: visitedCount,
+  };
+
+  const confirmDeleteAccount = () => {
+    Alert.alert(
+      'Delete Account',
+      'This permanently deletes your account and all associated data, including your saved locations, photos, and contributions. This cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            setDeleting(true);
+            try {
+              await deleteAccount();
+              Alert.alert('Account Deleted', 'Your account and data have been permanently deleted.');
+            } catch (err: any) {
+              Alert.alert('Could Not Delete Account', err?.message || 'Please try again.');
+            } finally {
+              setDeleting(false);
+            }
+          },
+        },
+      ],
+    );
   };
 
   return (
@@ -305,6 +332,22 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
           <Text style={styles.resetButtonText}>🔄 Reset Onboarding Tour</Text>
           <Text style={styles.resetButtonDesc}>Re-welcome yourself and update preferences</Text>
         </TouchableOpacity>
+
+        {/* Delete Account (App Review requirement) — signed-in users only */}
+        {user ? (
+          <TouchableOpacity
+            style={styles.resetButton}
+            onPress={confirmDeleteAccount}
+            disabled={deleting}
+          >
+            <Text style={[styles.resetButtonText, { color: theme.colors.error }]}>
+              {deleting ? 'Deleting…' : '🗑️ Delete Account'}
+            </Text>
+            <Text style={styles.resetButtonDesc}>
+              Permanently delete your account and all associated data
+            </Text>
+          </TouchableOpacity>
+        ) : null}
       </View>
 
       {/* App info */}

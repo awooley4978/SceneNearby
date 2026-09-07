@@ -29,6 +29,7 @@ import { registerResearchRoutes } from "./research/routes";
 import { startResearchWorker } from "./research/worker";
 import { registerContributionRoutes } from "./contributions";
 import { registerEntitlementRoutes } from "./entitlements";
+import { registerAccountDeletionRoutes } from "./accountDeletion";
 import { runMigrations } from "./migrations";
 import { parsePhotoAttribution } from "./photoAttribution";
 import type { PhotoSubmission, FilmingLocation, LocationSummary, LocationRecord, RejectionReason } from "./types";
@@ -514,6 +515,7 @@ async function handleRequest(req: Request): Promise<Response> {
 registerResearchRoutes(router);
 registerContributionRoutes(router);
 registerEntitlementRoutes(router);
+registerAccountDeletionRoutes(router);
 startResearchWorker();
 // Apply additive schema migrations at boot (idempotent, never destructive).
 runMigrations().catch((err) => {

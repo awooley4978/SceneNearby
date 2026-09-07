@@ -31,44 +31,44 @@ export const UploadPhotoScreen: React.FC<{ route: any; navigation: any }> = ({
   const [status, setStatus] = useState<'idle' | 'picking' | 'preview' | 'uploading' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
 
-  // Request permissions and pick photo
+  // Request permissions and pick photo. Camera requires permission; the library
+  // path uses the native PHPicker (no broad Photo Library permission) — expo-image-picker
+  // only uses PHPicker when `allowsEditing` is NOT set, so omit it for the library.
   const pickPhoto = useCallback(async (useCamera: boolean) => {
     setStatus('picking');
     try {
-      // Check current permission status first
-      const permStatus = useCamera
-        ? await ImagePicker.getCameraPermissionsAsync()
-        : await ImagePicker.getMediaLibraryPermissionsAsync();
+      if (useCamera) {
+        // Check current permission status first
+        const permStatus = await ImagePicker.getCameraPermissionsAsync();
 
-      // If previously denied with canAskAgain: false, go straight to Settings
-      if (!permStatus.granted && !permStatus.canAskAgain) {
-        Alert.alert(
-          'Permission needed',
-          `Photo access was previously denied. Please enable it in Settings.`,
-          [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Open Settings', onPress: () => Linking.openSettings() },
-          ],
-        );
-        setStatus('idle');
-        return;
-      }
+        // If previously denied with canAskAgain: false, go straight to Settings
+        if (!permStatus.granted && !permStatus.canAskAgain) {
+          Alert.alert(
+            'Permission needed',
+            'Camera access was previously denied. Please enable it in Settings.',
+            [
+              { text: 'Cancel', style: 'cancel' },
+              { text: 'Open Settings', onPress: () => Linking.openSettings() },
+            ],
+          );
+          setStatus('idle');
+          return;
+        }
 
-      const permResult = useCamera
-        ? await ImagePicker.requestCameraPermissionsAsync()
-        : await ImagePicker.requestMediaLibraryPermissionsAsync();
+        const permResult = await ImagePicker.requestCameraPermissionsAsync();
 
-      if (!permResult.granted) {
-        Alert.alert(
-          'Permission needed',
-          `Please grant ${useCamera ? 'camera' : 'photo library'} access in Settings.`,
-          [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Open Settings', onPress: () => Linking.openSettings() },
-          ],
-        );
-        setStatus('idle');
-        return;
+        if (!permResult.granted) {
+          Alert.alert(
+            'Permission needed',
+            'Please grant camera access in Settings.',
+            [
+              { text: 'Cancel', style: 'cancel' },
+              { text: 'Open Settings', onPress: () => Linking.openSettings() },
+            ],
+          );
+          setStatus('idle');
+          return;
+        }
       }
 
       const result = useCamera
@@ -79,7 +79,6 @@ export const UploadPhotoScreen: React.FC<{ route: any; navigation: any }> = ({
           })
         : await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ['images'],
-            allowsEditing: true,
             quality: 0.85,
           });
 

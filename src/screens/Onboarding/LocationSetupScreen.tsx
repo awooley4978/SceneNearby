@@ -145,13 +145,7 @@ export const LocationSetupScreen: React.FC<LocationSetupScreenProps> = ({
                 }
               }}
           >
-            <Text style={styles.primaryButtonText}>{isLocating ? 'Detecting...' : 'Enable Location'}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.secondaryButton}
-            onPress={() => setLocationGranted(false)}
-          >
-            <Text style={styles.secondaryButtonText}>Not now</Text>
+            <Text style={styles.primaryButtonText}>{isLocating ? 'Detecting...' : 'Continue'}</Text>
           </TouchableOpacity>
         </View>
       </View>
