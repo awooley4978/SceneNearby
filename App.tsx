@@ -77,11 +77,10 @@ const App: React.FC = () => {
   };
 
   // ── Diagnostics overlay: live event log + heartbeat + fatal screen ──
-  // RELEASE (owner 08-29 / T-M5): diagnostic phase complete (Build 26 PASS).
-  // The overlay is DISABLED in release/TestFlight builds (__DEV__ is false) so
-  // the final RC is clean — this rendered diagnostic viewer is not shipped to
-  // users. It remains available in __DEV__ builds only for future QA. To keep
-  // this a narrow change, the viewer code is retained but gated; the tracer
+  // DIAGNOSTIC BUILD 29 ONLY (TestFlight): viewer re-enabled for the
+  // admin-email allowlist in release builds so the owner can inspect the live
+  // event log / fatal screen on-device. This branch is NOT the release
+  // candidate — Build 28 (main) keeps the __DEV__-only gate. The tracer
   // (installDiagnostics) and the logEvent capture in entitlement/iap services
   // are UNCHANGED and continue to persist snapshot data in the background.
   const DiagnosticsOverlay = () => {
@@ -92,7 +91,7 @@ const App: React.FC = () => {
     const [expanded, setExpanded] = useState(false);
     const [showRaw, setShowRaw] = useState(false);
     useEffect(() => subscribe(() => forceRender((t) => t + 1)), []);
-    if (!__DEV__ || !isAdmin) return null;
+    if (!isAdmin) return null;
     const state = getState();
     const aliveAgo = state.lastHeartbeat
       ? Math.max(0, Math.round((Date.now() - state.lastHeartbeat) / 1000))
