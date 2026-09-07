@@ -53,6 +53,61 @@ const listeners = new Set<() => void>();
 
 const now = () => Date.now();
 
+// ── Passive XHR network-error interceptor (diagnostic-only, owner 09-07) ──
+// Purpose: recover the native NSError signal before RN's fetch polyfill collapses
+// it to a generic "TypeError: Network request failed".
+//
+// Native trace (RCTNetworking.mm:674-676): the only native error info bridged to
+// JS is `error.localizedDescription` (string) plus a `kCFURLErrorTimedOut` bool.
+// NSError.domain / NSError.code / userInfo (TLS, DNS, socket, cancellation) are
+// DISCARDED there. RN's XMLHttpRequest.__didCompleteResponse then stores that
+// string and forwards it to `XMLHttpRequest._interceptor.loadingFailed(id, error)`
+// — the one JS hook that still sees it before whatwg-fetch's xhr.onerror throws
+// it away (whatwg-fetch/dist/fetch.umd.js:567). We observe that hook passively.
+interface XhrInterceptorHandle {
+  requestSent(id: number, url: string, method: string, headers: object): void;
+  responseReceived(id: number, url: string, status: number, headers: object): void;
+  dataReceived(id: number, data: string): void;
+  loadingFinished(id: number, encodedDataLength: number): void;
+  loadingFailed(id: number, error: string): void;
+}
+const pendingXhr: Record<number, string> = {};
+function installNetworkDiagnostic(): void {
+  const g = globalThis as any;
+  const XHR = g.XMLHttpRequest;
+  if (!XHR || typeof XHR.__setInterceptor_DO_NOT_USE !== 'function') {
+    logEvent('netDiag', 'unavailable (no XHR interceptor hook)');
+    return;
+  }
+  const interceptor: XhrInterceptorHandle = {
+    requestSent(id, url) {
+      pendingXhr[id] = url;
+      if (/identitytoolkit|securetoken|firebaseapp|www\.googleapis\.com/.test(url)) {
+        logEvent('netReq', `${id} ${url.slice(0, 120)}`);
+      }
+    },
+    responseReceived(id, url, status) {
+      if (pendingXhr[id]) {
+        logEvent('netResp', `${id} ${status} ${url.slice(0, 100)}`);
+      }
+    },
+    dataReceived() {},
+    loadingFinished(id) {
+      delete pendingXhr[id];
+    },
+    loadingFailed(id, error) {
+      const url = pendingXhr[id] || '';
+      delete pendingXhr[id];
+      // Capture the NATIVE error string + the failing URL. This is the signal
+      // whatwg-fetch discards; it is the max that survives the native→JS bridge.
+      logEvent('netFail', `${id} err="${error}" url=${url.slice(0, 120)}`);
+      console.warn(`[netDiag] native request failed id=${id} url=${url}`, error);
+    },
+  };
+  XHR.__setInterceptor_DO_NOT_USE(interceptor);
+  logEvent('netDiag', 'installed');
+}
+
 function emit() {
   listeners.forEach((l) => l());
 }
@@ -109,6 +164,9 @@ export async function installDiagnostics() {
   if (heartbeatTimer) {
     return;
   }
+  // Install the XHR interceptor SYNCHRONOUSLY (before any async work below) so
+  // the automatic anonymous sign-in / early requests can't slip past it.
+  installNetworkDiagnostic();
 
   // 1) Promote the previous session's final snapshot BEFORE any new writes:
   //    whatever is in diag_curr_session right now is the last state before the

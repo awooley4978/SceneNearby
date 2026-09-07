@@ -13,6 +13,7 @@ import {
   signInAnonymously,
   MagicLinkState,
 } from '../services/auth';
+import { logEvent } from '../services/diagnostics';
 
 interface AuthContextType {
   user: User | null;
@@ -75,8 +76,9 @@ const DEV_USER = {
  * `err.message` stays the generic "A network AuthError…" text. This helper pulls
  * that raw cause (plus a few other fields) out so the NEXT reproduction tells us
  * whether the failure was a fetch rejection (RN "TypeError: Network request
- * failed" / DNS / TLS) vs the SDK's 30–60s timeout. Behavior is unchanged: this
- * only enriches logging and the user-visible error string on the failure path.
+ * failed" / DNS / TLS) vs the SDK's 30–60s timeout. The result goes ONLY into the
+ * diagnostics ring buffer (admin overlay) and console — it is never shown in the
+ * user-visible error string, which is unchanged from before this diagnostic.
  */
 function describeAuthError(err: any): string {
   const seg: string[] = [];
@@ -143,17 +145,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const code = err?.code || '';
       const msg = err?.message || '';
       const detail = describeAuthError(err);
+      // Diagnostic detail stays in the ring buffer (admin overlay only), NOT in
+      // the user-visible error string.
+      logEvent('authError', `send code=${code} msg=${msg}${detail ? ` | ${detail}` : ''}`);
       console.error(`Magic link error: code=${code} msg=${msg}${detail ? ` | ${detail}` : ''}`, err);
       const isQuota = code.includes('quota') || code.includes('too-many');
-      const isNetwork = code === 'auth/network-request-failed';
       setMagicLinkState({
         status: 'error',
         email,
         error: isQuota
           ? `[${code}] Firebase daily email quota exceeded. Upgrade to Blaze plan or try again tomorrow.\n\n${msg}`
-          : isNetwork && detail
-            ? `[${code}] ${msg}\n\n${detail}`
-            : `[${code}] ${msg}`,
+          : `[${code}] ${msg}`,
       });
     }
   }, []);
@@ -170,6 +172,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const code = err?.code || '';
       const msg = err?.message || '';
       const detail = describeAuthError(err);
+      // Diagnostic detail stays in the ring buffer (admin overlay only), NOT in
+      // the user-visible error string.
+      logEvent('authError', `verify code=${code} msg=${msg}${detail ? ` | ${detail}` : ''}`);
       console.error(`Magic link verify error: code=${code} msg=${msg}${detail ? ` | ${detail}` : ''}`, err);
       if (code === 'auth/missing-email' || msg.includes('missing-email') || msg.includes('Could not find the email')) {
         setMagicLinkState({ status: 'needEmail', error: 'Please enter the email you used to request the link.' });
@@ -177,8 +182,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setMagicLinkState({ status: 'invalid', error: 'This sign-in link has expired or was already used.' });
       } else if (msg.includes('different device')) {
         setMagicLinkState({ status: 'error', error: 'Open this link on the same device where you requested it.' });
-      } else if (code === 'auth/network-request-failed' && detail) {
-        setMagicLinkState({ status: 'error', error: `[${code}] ${msg}\n\n${detail}` });
       } else {
         setMagicLinkState({ status: 'error', error: `[${code}] ${msg}` || 'Could not verify sign-in link.' });
       }
