@@ -67,6 +67,30 @@ const DEV_USER = {
   providerId: 'password',
 } as unknown as User;
 
+/**
+ * DIAGNOSTIC (owner 09-07, auth/network-request-failed on cellular): Firebase's
+ * @firebase/auth SDK throws `auth/network-request-failed` by wrapping a
+ * non-FirebaseError in its fetch handler, but the SDK stores the ORIGINAL
+ * underlying error string in `err.customData.message` — while the visible
+ * `err.message` stays the generic "A network AuthError…" text. This helper pulls
+ * that raw cause (plus a few other fields) out so the NEXT reproduction tells us
+ * whether the failure was a fetch rejection (RN "TypeError: Network request
+ * failed" / DNS / TLS) vs the SDK's 30–60s timeout. Behavior is unchanged: this
+ * only enriches logging and the user-visible error string on the failure path.
+ */
+function describeAuthError(err: any): string {
+  const seg: string[] = [];
+  const custom = err?.customData;
+  if (custom && typeof custom === 'object') {
+    if (custom.message != null) seg.push(`cause=${custom.message}`);
+    if (custom.serverResponse?.error?.message) seg.push(`server=${custom.serverResponse.error.message}`);
+  }
+  if (err?.cause != null) seg.push(`errCause=${String(err.cause)}`);
+  if (err?.name && err?.name !== 'Error') seg.push(`name=${err.name}`);
+  if (err?.nativeErrorCode != null) seg.push(`nativeErrorCode=${err.nativeErrorCode}`);
+  return seg.join(' | ');
+}
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(
     DEV_BYPASS ? DEV_USER : getCurrentUser()
@@ -118,14 +142,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (err: any) {
       const code = err?.code || '';
       const msg = err?.message || '';
-      console.error('Magic link error:', code, msg);
+      const detail = describeAuthError(err);
+      console.error(`Magic link error: code=${code} msg=${msg}${detail ? ` | ${detail}` : ''}`, err);
       const isQuota = code.includes('quota') || code.includes('too-many');
+      const isNetwork = code === 'auth/network-request-failed';
       setMagicLinkState({
         status: 'error',
         email,
         error: isQuota
           ? `[${code}] Firebase daily email quota exceeded. Upgrade to Blaze plan or try again tomorrow.\n\n${msg}`
-          : `[${code}] ${msg}`,
+          : isNetwork && detail
+            ? `[${code}] ${msg}\n\n${detail}`
+            : `[${code}] ${msg}`,
       });
     }
   }, []);
@@ -141,12 +169,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (err: any) {
       const code = err?.code || '';
       const msg = err?.message || '';
+      const detail = describeAuthError(err);
+      console.error(`Magic link verify error: code=${code} msg=${msg}${detail ? ` | ${detail}` : ''}`, err);
       if (code === 'auth/missing-email' || msg.includes('missing-email') || msg.includes('Could not find the email')) {
         setMagicLinkState({ status: 'needEmail', error: 'Please enter the email you used to request the link.' });
       } else if (msg.includes('expired') || msg.includes('already used')) {
         setMagicLinkState({ status: 'invalid', error: 'This sign-in link has expired or was already used.' });
       } else if (msg.includes('different device')) {
         setMagicLinkState({ status: 'error', error: 'Open this link on the same device where you requested it.' });
+      } else if (code === 'auth/network-request-failed' && detail) {
+        setMagicLinkState({ status: 'error', error: `[${code}] ${msg}\n\n${detail}` });
       } else {
         setMagicLinkState({ status: 'error', error: `[${code}] ${msg}` || 'Could not verify sign-in link.' });
       }

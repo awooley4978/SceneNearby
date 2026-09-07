@@ -217,31 +217,30 @@ export async function deleteAccount(): Promise<void> {
     ]);
   } catch {}
 
-  // 4. Delete the Firebase Auth account LAST (the requires-recent-login gate has
-  //    already been satisfied at step 1). Anonymous accounts have no Auth record.
-  if (!isAnonymous) {
-    try {
-      await user.delete();
-    } catch (err: any) {
-      if (err?.code === 'auth/requires-recent-login') {
-        throw new Error('For your security, please sign out and sign back in, then delete your account.');
-      }
-      throw new Error('Could not delete your account. Please try again.');
-    }
-  }
-
-  // 5. Clear local state + entitlement Keychain.
-  await clearAllLocalUserData();
-  // DIAGNOSTIC (owner 09-07): log each entitlement-key delete and read the key
-  // back immediately so a post-delete "Unlocked ✓" can be traced to one of:
-  //   (a) deleteItemAsync failed, (b) wrong key name, or (c) React context not
-  //   re-reading after the key is gone. Keys here MUST match entitlement.ts.
+  // 4. Preserve + clear the entitlement Keychain BEFORE user.delete().
+  //    user.delete() internally calls auth.signOut(), which fires
+  //    onAuthStateChanged(null) and triggers the EntitlementContext refresh. If
+  //    we cleared AFTER delete(), that refresh would read stale SecureStore state
+  //    (the exact "Unlocked after deletion" race). Clearing first guarantees the
+  //    refresh sees absent keys. We preserve the values so a FAILED
+  //    user.delete() can restore them and never leave a still-existing user
+  //    locally de-entitled.
   const entitlementKeys = [
     'entitlement.trialStartedAt',
     'entitlement.unlocked',
     'entitlement.unlockTransactionId',
     'entitlement.pendingGrant',
   ] as const;
+  const savedEntitlements: Record<string, string | null> = {};
+  for (const key of entitlementKeys) {
+    try {
+      savedEntitlements[key] = await SecureStore.getItemAsync(key);
+    } catch (err) {
+      savedEntitlements[key] = null;
+      console.warn(`[account-deletion] preserve SecureStore.getItemAsync FAILED key=${key}`, err);
+    }
+    console.log(`[account-deletion] preserved key=${key} value=${JSON.stringify(savedEntitlements[key])}`);
+  }
   for (const key of entitlementKeys) {
     try {
       await SecureStore.deleteItemAsync(key);
@@ -256,9 +255,36 @@ export async function deleteAccount(): Promise<void> {
     }
     console.log(`[account-deletion] entitlement key=${key} readback=${JSON.stringify(readback)}`);
   }
-  await clearPendingMagicLinkEmail();
+  // 5. Delete the Firebase Auth account (the requires-recent-login gate has
+  //    already been satisfied at step 1). Anonymous accounts have no Auth record.
+  if (!isAnonymous) {
+    try {
+      await user.delete();
+    } catch (err: any) {
+      // Auth deletion failed — restore the preserved entitlement so the still-
+      // existing account isn't left de-entitled on this device.
+      for (const key of entitlementKeys) {
+        const value = savedEntitlements[key];
+        if (value != null) {
+          try {
+            await SecureStore.setItemAsync(key, value);
+            console.log(`[account-deletion] restored key=${key} value=${JSON.stringify(value)}`);
+          } catch (restoreErr) {
+            console.warn(`[account-deletion] restore SecureStore.setItemAsync FAILED key=${key}`, restoreErr);
+          }
+        }
+      }
+      if (err?.code === 'auth/requires-recent-login') {
+        throw new Error('For your security, please sign out and sign back in, then delete your account.');
+      }
+      throw new Error('Could not delete your account. Please try again.');
+    }
+  }
 
-  // 6. Sign out (fires onAuthChange with user = null). After user.delete() the
+  // 6. Clear local (AsyncStorage) state + pending magic-link email.
+  await clearAllLocalUserData();
+  await clearPendingMagicLinkEmail();
+  // 7. Sign out (fires onAuthChange with user = null). After user.delete() the
   //    session is already invalid, but this clears any lingering local state.
   try {
     await firebaseSignOut(auth);
