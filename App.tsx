@@ -77,22 +77,25 @@ const App: React.FC = () => {
   };
 
   // ── Diagnostics overlay: live event log + heartbeat + fatal screen ──
-  // RELEASE (owner 08-29 / T-M5): diagnostic phase complete (Build 26 PASS).
-  // The overlay is DISABLED in release/TestFlight builds (__DEV__ is false) so
-  // the final RC is clean — this rendered diagnostic viewer is not shipped to
-  // users. It remains available in __DEV__ builds only for future QA. To keep
-  // this a narrow change, the viewer code is retained but gated; the tracer
-  // (installDiagnostics) and the logEvent capture in entitlement/iap services
-  // are UNCHANGED and continue to persist snapshot data in the background.
+  // DIAGNOSTIC (owner 09-07 / Build 34): the magic-link sign-in failure happens
+  // BEFORE auth completes, so the on-screen viewer must be reachable while the
+  // user is still anonymous (or signed out). Temporarily expose the overlay to
+  // anyone WITHOUT a signed-in email (anonymous/not-yet-authenticated) AND to
+  // admins, for this TestFlight build only. Signed-in non-admin emails still see
+  // nothing. REVERT before any release / App Review submission. This changes ONLY
+  // who can SEE the diagnostic overlay — no auth or entitlement behavior.
   const DiagnosticsOverlay = () => {
     const { user } = useAuth();
     const isAdmin =
       !!user?.email && DIAG_ADMIN_EMAILS.includes(user.email.toLowerCase());
+    // An anonymous user (uid set, email null) is what the app auto-creates on
+    // launch, and it is exactly the state during the failing sign-in attempt.
+    const showDiagnostics = isAdmin || !user?.email;
     const [, forceRender] = useState(0);
     const [expanded, setExpanded] = useState(false);
     const [showRaw, setShowRaw] = useState(false);
     useEffect(() => subscribe(() => forceRender((t) => t + 1)), []);
-    if (!__DEV__ || !isAdmin) return null;
+    if (!showDiagnostics) return null;
     const state = getState();
     const aliveAgo = state.lastHeartbeat
       ? Math.max(0, Math.round((Date.now() - state.lastHeartbeat) / 1000))
