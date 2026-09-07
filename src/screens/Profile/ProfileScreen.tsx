@@ -179,7 +179,7 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
             <Text style={styles.lifetimeEmoji}>🏆</Text>
             <Text style={styles.lifetimeTitle}>Unlocked ✓</Text>
             <Text style={styles.lifetimeDesc}>
-              You have full access to every location, list, and surprise — for good.
+              Your lifetime access to Scene Nearby’s movie & TV filming locations is yours for good.
             </Text>
           </View>
         ) : status === 'locked' ? (
