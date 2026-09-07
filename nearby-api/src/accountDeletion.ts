@@ -186,29 +186,35 @@ async function deleteFirestoreDoc(path: string): Promise<void> {
   }
 }
 
+/** Extract the /-relative document path from a full Firestore `name`. */
+function docPathFromName(name: string): string {
+  // name is "projects/<p>/databases/(default)/documents/<collection>/<id>"
+  const marker = "/documents/";
+  const idx = name.indexOf(marker);
+  return idx === -1 ? name : name.substring(idx + marker.length - 1);
+}
+
 /**
- * Delete all docs in a Firestore collection whose `field` equals `value`,
- * using a structured query (runQuery). Used for `photos` (userId) and the
- * "tips" subcollection docs (userId). Set `collectionGroup = true` when the
- * docs live in subcollections (e.g. "tips" under visitorTips/{locationId}).
+ * Delete all docs in a top-level Firestore collection whose `field` equals
+ * `value`, using a structured query (runQuery). Used for `photos` (userId),
+ * which is a top-level collection.
  *
  * The REST `runQuery` endpoint streams results as a JSON ARRAY of
  * RunQueryResponse objects (each `{ document: { name, fields }, readTime }`),
  * NOT a `{ document: [...], nextPageToken }` envelope — parse accordingly so
- * photos and collection-group tips are actually enumerated and deleted.
+ * photos are actually enumerated and deleted.
  */
 async function deleteDocsWhere(
   collectionId: string,
   field: string,
   value: string,
-  collectionGroup = false,
 ): Promise<void> {
   const token = await getAccessToken();
   const base = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT}/databases/(default)/documents`;
   const runUrl = `${base}:runQuery`;
   const body = {
     structuredQuery: {
-      from: [{ collectionId, allDescendants: collectionGroup }],
+      from: [{ collectionId }],
       where: {
         fieldFilter: {
           field: { fieldPath: field },
@@ -231,9 +237,55 @@ async function deleteDocsWhere(
   for (const item of Array.isArray(results) ? results : []) {
     const name = item?.document?.name ?? "";
     if (!name) continue;
-    // name is "projects/<p>/databases/(default)/documents/<collection>/<id>"
-    const docPath = name.substring(name.indexOf("/documents/") + "/documents".length);
-    await deleteFirestoreDoc(docPath);
+    await deleteFirestoreDoc(docPathFromName(name));
+  }
+}
+
+/**
+ * Delete a user's visitor tips. Tips live at
+ * `visitorTips/{locationId}/tips/{tipId}` with a `userId` field on each tip
+ * doc. We CANNOT use a collection-group query here: it requires a
+ * COLLECTION_GROUP_ASC composite index on `tips.userId` that does not exist,
+ * so the query fails with 400 FAILED_PRECONDITION. Instead we enumerate the
+ * `visitorTips` parent docs and, for each location, delete the tips whose
+ * `userId` equals the account uid. This needs no composite index and is
+ * retry-safe (deleting an already-deleted tip is a 404 that `deleteFirestoreDoc`
+ * ignores).
+ */
+async function deleteTipsForUser(uid: string): Promise<void> {
+  const token = await getAccessToken();
+  const base = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT}/databases/(default)/documents`;
+  const headers = { Authorization: `Bearer ${token}` };
+
+  // 1. List parent `visitorTips` docs. Small cardinality; pageSize 1000 is
+  //    sufficient for the current dataset.
+  const parentsRes = await fetch(`${base}/visitorTips?pageSize=1000`, { headers });
+  if (!parentsRes.ok) {
+    throw new Error(`Firestore list visitorTips → ${parentsRes.status} ${await parentsRes.text()}`);
+  }
+  const parents = ((await parentsRes.json()) as { documents?: Array<{ name?: string }> }).documents ?? [];
+
+  // 2. For each location, list its `tips` subcollection and delete the user's tips.
+  for (const parent of parents) {
+    const parentName = parent.name ?? "";
+    if (!parentName) continue;
+    const locationId = parentName.split("/").pop();
+    if (!locationId) continue;
+
+    const tipsRes = await fetch(`${base}/visitorTips/${locationId}/tips?pageSize=1000`, { headers });
+    if (!tipsRes.ok) {
+      throw new Error(`Firestore list tips for ${locationId} → ${tipsRes.status} ${await tipsRes.text()}`);
+    }
+    const tips = ((await tipsRes.json()) as { documents?: Array<{ name?: string; fields?: Record<string, unknown> }> }).documents ?? [];
+
+    for (const tip of tips) {
+      const tipName = tip.name ?? "";
+      if (!tipName) continue;
+      const tipUid = (tip.fields as { userId?: { stringValue?: string } } | undefined)?.userId?.stringValue ?? "";
+      if (tipUid === uid) {
+        await deleteFirestoreDoc(docPathFromName(tipName));
+      }
+    }
   }
 }
 
@@ -297,7 +349,7 @@ export function registerAccountDeletionRoutes(router: Router): void {
         const firestoreOps: Array<{ name: string; run: () => Promise<void> }> = [
           { name: "entitlements", run: () => deleteFirestoreDoc(`/entitlements/${uid}`) },
           { name: "photos", run: () => deleteDocsWhere("photos", "userId", uid) },
-          { name: "tips", run: () => deleteDocsWhere("tips", "userId", uid, true) },
+          { name: "tips", run: () => deleteTipsForUser(uid) },
         ];
         for (const op of firestoreOps) {
           try {
