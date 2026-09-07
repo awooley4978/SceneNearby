@@ -136,13 +136,41 @@ async function deleteFirestoreWhere(collectionName: string, field: string, value
 /**
  * Delete the signed-in user's account and associated data.
  * Throws on failure (surfaced to the caller for a clear completion/error state).
+ *
+ * Ordering matters: a stale login (`auth/requires-recent-login`) would otherwise
+ * let us wipe server data and THEN fail at `user.delete()`, leaving the account
+ * half-deleted (data gone, account still present). So the Auth account is
+ * deleted FIRST — the `requires-recent-login` throw happens before any data is
+ * touched. Anonymous accounts have no Firebase Auth record to delete (and can't
+ * be re-authenticated), so we skip `user.delete()` for them.
  */
 export async function deleteAccount(): Promise<void> {
   const user = getCurrentUser();
   if (!user) throw new Error('No signed-in account to delete.');
 
-  // 1. Delete server-side data (Turso + R2 + Firestore) using the ID token.
+  const isAnonymous = !!user.isAnonymous;
+  const uid = user.uid;
+
+  // 0. Fetch the ID token now, while the session is valid — we still need it for
+  //    the server-side data deletion after the Auth record is gone.
   const idToken = await user.getIdToken();
+
+  // 1. Delete the Firebase Auth account FIRST (the requires-recent-login gate).
+  //    If this throws, nothing has been deleted yet and the user can re-auth and
+  //    retry cleanly.
+  if (!isAnonymous) {
+    try {
+      await user.delete();
+    } catch (err: any) {
+      if (err?.code === 'auth/requires-recent-login') {
+        throw new Error('For your security, please sign out and sign back in, then delete your account.');
+      }
+      throw new Error('Could not delete your account. Please try again.');
+    }
+  }
+
+  // 2. Delete server-side data (Turso + R2 + Firestore). The ID token remains
+  //    signature-valid until its expiry, which the backend verifies.
   const res = await fetch(`${ACCOUNT_DELETE_API_BASE}/api/account/delete`, {
     method: 'POST',
     headers: {
@@ -158,11 +186,14 @@ export async function deleteAccount(): Promise<void> {
     } catch {}
     throw new Error(msg);
   }
+  const serverResult = (await res.json().catch(() => null)) as { success?: boolean } | null;
+  if (serverResult && serverResult.success === false) {
+    throw new Error('Could not delete all your data. Please try again.');
+  }
 
-  // 2. Delete Firestore uid-keyed subdocs for locations this device interacted
+  // 3. Delete Firestore uid-keyed subdocs for locations this device interacted
   //    with (worthItVotes/{uid} and visitTimes/{uid} have no userId field the
   //    server can query on without a full locations scan).
-  const uid = user.uid;
   try {
     const locationIds = await getInteractedLocationIds();
     await Promise.all(
@@ -175,7 +206,7 @@ export async function deleteAccount(): Promise<void> {
     );
   } catch {}
 
-  // 3. Best-effort client-side deletion of Firestore docs the server also handles
+  // 4. Best-effort client-side deletion of Firestore docs the server also handles
   //    (defense in depth if the server Firestore pass failed).
   try {
     await Promise.all([
@@ -183,16 +214,6 @@ export async function deleteAccount(): Promise<void> {
       deleteFirestoreWhere('tips', 'userId', uid),
     ]);
   } catch {}
-
-  // 4. Delete the Firebase Auth account. Surface requires-recent-login clearly.
-  try {
-    await user.delete();
-  } catch (err: any) {
-    if (err?.code === 'auth/requires-recent-login') {
-      throw new Error('For your security, please sign out and sign back in, then delete your account.');
-    }
-    throw new Error('Could not delete your account. Please try again.');
-  }
 
   // 5. Clear local state + entitlement Keychain.
   await clearAllLocalUserData();
@@ -204,6 +225,9 @@ export async function deleteAccount(): Promise<void> {
   ]);
   await clearPendingMagicLinkEmail();
 
-  // 6. Sign out (fires onAuthChange with user = null).
-  await firebaseSignOut(auth);
+  // 6. Sign out (fires onAuthChange with user = null). After user.delete() the
+  //    session is already invalid, but this clears any lingering local state.
+  try {
+    await firebaseSignOut(auth);
+  } catch {}
 }

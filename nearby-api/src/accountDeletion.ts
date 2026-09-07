@@ -162,15 +162,16 @@ async function deleteSubmissionsForUser(uid: string, email: string | null): Prom
   const conditions: string[] = [`submitter_uid = ${esc(uid)}`];
   if (email) conditions.push(`lower(user_info) = lower(${esc(email)})`);
   const where = conditions.join(" OR ");
-  const rows = (await runQuery(
+  return (await runQuery(
     `SELECT id, photo_path, photo_public_url FROM photo_submissions WHERE ${where}`,
   )) as SubmissionRow[];
+}
 
-  if (rows.length > 0) {
-    const ids = rows.map((r) => esc(r.id)).join(", ");
-    await runQuery(`DELETE FROM photo_submissions WHERE id IN (${ids})`);
-  }
-  return rows;
+/** Delete the Turso rows whose ids are in `rows` (must be run AFTER R2 cleanup succeeds). */
+async function deleteSubmissionRows(rows: SubmissionRow[]): Promise<void> {
+  if (rows.length === 0) return;
+  const ids = rows.map((r) => esc(r.id)).join(", ");
+  await runQuery(`DELETE FROM photo_submissions WHERE id IN (${ids})`);
 }
 
 async function deleteFirestoreDoc(path: string): Promise<void> {
@@ -190,6 +191,11 @@ async function deleteFirestoreDoc(path: string): Promise<void> {
  * using a structured query (runQuery). Used for `photos` (userId) and the
  * "tips" subcollection docs (userId). Set `collectionGroup = true` when the
  * docs live in subcollections (e.g. "tips" under visitorTips/{locationId}).
+ *
+ * The REST `runQuery` endpoint streams results as a JSON ARRAY of
+ * RunQueryResponse objects (each `{ document: { name, fields }, readTime }`),
+ * NOT a `{ document: [...], nextPageToken }` envelope — parse accordingly so
+ * photos and collection-group tips are actually enumerated and deleted.
  */
 async function deleteDocsWhere(
   collectionId: string,
@@ -214,25 +220,20 @@ async function deleteDocsWhere(
     },
   };
 
-  // Page through results until empty.
-  let pageToken: string | undefined;
-  for (;;) {
-    const res = await fetch(runUrl, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-      body: JSON.stringify(pageToken ? { structuredQuery: body.structuredQuery, pageToken } : body),
-    });
-    if (!res.ok) throw new Error(`Firestore runQuery ${collectionId} → ${res.status} ${await res.text()}`);
-    const data = (await res.json()) as { document?: any[]; nextPageToken?: string };
-    const docs = data.document ?? [];
-    for (const d of docs) {
-      const name: string = d.name ?? "";
-      // name is "projects/<p>/databases/(default)/documents/<collection>/<id>"
-      const docPath = name.substring(name.indexOf("/documents/") + "/documents".length);
-      await deleteFirestoreDoc(docPath);
-    }
-    pageToken = data.nextPageToken;
-    if (!pageToken || docs.length === 0) break;
+  const res = await fetch(runUrl, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`Firestore runQuery ${collectionId} → ${res.status} ${await res.text()}`);
+
+  const results = (await res.json()) as Array<{ document?: { name?: string } }>;
+  for (const item of Array.isArray(results) ? results : []) {
+    const name = item?.document?.name ?? "";
+    if (!name) continue;
+    // name is "projects/<p>/databases/(default)/documents/<collection>/<id>"
+    const docPath = name.substring(name.indexOf("/documents/") + "/documents".length);
+    await deleteFirestoreDoc(docPath);
   }
 }
 
@@ -255,49 +256,71 @@ export function registerAccountDeletionRoutes(router: Router): void {
 
       const { uid, email } = claims;
 
-      // 1. Turso submissions + R2 objects
+      // Deletion is a single logical transaction: we must NOT claim success while
+      // any attributable user data remains. Each subsystem deletes what it can and
+      // reports failure; the response is `success: true` only when every subsystem
+      // that could run actually completed (or had nothing to delete).
+      const failures: string[] = [];
+
+      // ── 1. R2 objects FIRST (retry-safe): delete the stored objects BEFORE the
+      //    Turso reference row, so a transient R2 failure leaves the row intact and
+      //    the next attempt can retry. Only once every object is gone do we drop the
+      //    Turso rows (which are the only pointer back to the keys).
       let rows: SubmissionRow[] = [];
       try {
         rows = await deleteSubmissionsForUser(uid, email);
-      } catch (err) {
-        console.error("Account deletion — Turso delete failed:", err);
-        return json({ error: "Could not delete your submissions. Please try again." }, 500);
-      }
-      for (const row of rows) {
-        for (const key of r2KeysFor(row)) {
-          try {
+        for (const row of rows) {
+          for (const key of r2KeysFor(row)) {
             await deletePhoto(key);
-          } catch (err) {
-            console.warn(`Account deletion — R2 delete failed for ${key}:`, err);
           }
+        }
+      } catch (err) {
+        console.error("Account deletion — R2/Turso select failed:", err);
+        failures.push("photos");
+      }
+
+      // ── 2. Turso rows (only after their R2 objects are gone).
+      if (!failures.includes("photos")) {
+        try {
+          await deleteSubmissionRows(rows);
+        } catch (err) {
+          console.error("Account deletion — Turso delete failed:", err);
+          failures.push("submissions");
         }
       }
 
-      // 2. Firestore user data (best-effort; do not fail the whole request on a
-      //    single collection error — but surface clearly if the service account
-      //    is missing).
+      // ── 3. Firestore user data.
       if (!isFirestoreEnabled()) {
         console.warn("Account deletion — FIREBASE_SERVICE_ACCOUNT not configured; Firestore data NOT deleted");
+        failures.push("firestore");
       } else {
-        const firestoreOps: Array<() => Promise<void>> = [
-          () => deleteFirestoreDoc(`/entitlements/${uid}`),
-          () => deleteDocsWhere("photos", "userId", uid),
-          () => deleteDocsWhere("tips", "userId", uid, true),
+        const firestoreOps: Array<{ name: string; run: () => Promise<void> }> = [
+          { name: "entitlements", run: () => deleteFirestoreDoc(`/entitlements/${uid}`) },
+          { name: "photos", run: () => deleteDocsWhere("photos", "userId", uid) },
+          { name: "tips", run: () => deleteDocsWhere("tips", "userId", uid, true) },
         ];
         for (const op of firestoreOps) {
           try {
-            await op();
+            await op.run();
           } catch (err) {
-            console.warn("Account deletion — Firestore delete failed:", err);
+            console.warn(`Account deletion — Firestore ${op.name} delete failed:`, err);
+            failures.push(op.name);
           }
         }
       }
 
       // NOTE: worthItVotes/{uid} and visitTimes/{uid} are subcollections keyed
       // BY uid under locations/{locationId}/ — they are deleted client-side by
-      // the app using the locationIds it knows from local state. The app also
-      // calls user.delete() (Firebase Auth) and clears local storage/Keychain.
+      // the app using the locationIds it knows from local state (defense in
+      // depth against the server's Firestore pass). The app also calls
+      // user.delete() (Firebase Auth) and clears local storage/Keychain.
 
+      if (failures.length > 0) {
+        return json(
+          { success: false, retryable: true, error: `Some data could not be deleted (${failures.join(", ")}). Please try again.` },
+          502,
+        );
+      }
       return json({ success: true });
     } catch (err) {
       console.error("Account deletion error:", err);
