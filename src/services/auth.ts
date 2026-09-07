@@ -11,7 +11,10 @@ import {
   ActionCodeSettings,
 } from '@firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { auth } from './firebase';
+import * as SecureStore from 'expo-secure-store';
+import { doc, deleteDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { auth, db } from './firebase';
+import { clearAllLocalUserData, getInteractedLocationIds } from './StorageService';
 
 // ── Types ──
 
@@ -110,4 +113,97 @@ export async function getPendingMagicLinkEmail(): Promise<string | null> {
 
 export async function clearPendingMagicLinkEmail(): Promise<void> {
   await AsyncStorage.removeItem(MAGIC_LINK_STORAGE_KEY);
+}
+
+// ── Account deletion ──
+// Permanently deletes the signed-in account and all associated data:
+//   - server-side (Turso submissions + R2 objects + Firestore) via POST /api/account/delete
+//   - Firestore uid-keyed subdocs (worthItVotes/visitTimes) that the server can't
+//     enumerate without a locations scan — deleted client-side for the location
+//     IDs this device knows about
+//   - Firebase Auth user
+//   - local AsyncStorage + entitlement Keychain
+
+const ACCOUNT_DELETE_API_BASE = process.env.EXPO_PUBLIC_API_URL || 'https://scene-nearby-api.fly.dev';
+
+/** Delete all Firestore docs in `collectionName` where `field === value`. */
+async function deleteFirestoreWhere(collectionName: string, field: string, value: string): Promise<void> {
+  const q = query(collection(db, collectionName), where(field, '==', value));
+  const snap = await getDocs(q);
+  await Promise.all(snap.docs.map((d: any) => deleteDoc(d.ref)));
+}
+
+/**
+ * Delete the signed-in user's account and associated data.
+ * Throws on failure (surfaced to the caller for a clear completion/error state).
+ */
+export async function deleteAccount(): Promise<void> {
+  const user = getCurrentUser();
+  if (!user) throw new Error('No signed-in account to delete.');
+
+  // 1. Delete server-side data (Turso + R2 + Firestore) using the ID token.
+  const idToken = await user.getIdToken();
+  const res = await fetch(`${ACCOUNT_DELETE_API_BASE}/api/account/delete`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${idToken}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  if (!res.ok) {
+    let msg = 'Could not delete your account. Please try again.';
+    try {
+      const data = await res.json();
+      if (data?.error) msg = data.error;
+    } catch {}
+    throw new Error(msg);
+  }
+
+  // 2. Delete Firestore uid-keyed subdocs for locations this device interacted
+  //    with (worthItVotes/{uid} and visitTimes/{uid} have no userId field the
+  //    server can query on without a full locations scan).
+  const uid = user.uid;
+  try {
+    const locationIds = await getInteractedLocationIds();
+    await Promise.all(
+      locationIds.map(async (locationId) => {
+        await Promise.all([
+          deleteDoc(doc(db, 'locations', locationId, 'worthItVotes', uid)).catch(() => {}),
+          deleteDoc(doc(db, 'locations', locationId, 'visitTimes', uid)).catch(() => {}),
+        ]);
+      }),
+    );
+  } catch {}
+
+  // 3. Best-effort client-side deletion of Firestore docs the server also handles
+  //    (defense in depth if the server Firestore pass failed).
+  try {
+    await Promise.all([
+      deleteFirestoreWhere('photos', 'userId', uid),
+      deleteFirestoreWhere('tips', 'userId', uid),
+    ]);
+  } catch {}
+
+  // 4. Delete the Firebase Auth account. Surface requires-recent-login clearly.
+  try {
+    await user.delete();
+  } catch (err: any) {
+    if (err?.code === 'auth/requires-recent-login') {
+      throw new Error('For your security, please sign out and sign back in, then delete your account.');
+    }
+    throw new Error('Could not delete your account. Please try again.');
+  }
+
+  // 5. Clear local state + entitlement Keychain.
+  await clearAllLocalUserData();
+  await Promise.all([
+    SecureStore.deleteItemAsync('entitlement.trialStartedAt').catch(() => {}),
+    SecureStore.deleteItemAsync('entitlement.unlocked').catch(() => {}),
+    SecureStore.deleteItemAsync('entitlement.unlockTransactionId').catch(() => {}),
+    SecureStore.deleteItemAsync('entitlement.pendingGrant').catch(() => {}),
+  ]);
+  await clearPendingMagicLinkEmail();
+
+  // 6. Sign out (fires onAuthChange with user = null).
+  await firebaseSignOut(auth);
 }

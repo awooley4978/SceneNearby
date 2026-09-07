@@ -83,31 +83,32 @@ export const ContributeScreen: React.FC = () => {
   }, []);
 
   // ── Photo picker (mirrors existing UploadPhotoScreen) ──
+  // Camera requires permission + launchCameraAsync. The library path uses the
+  // native PHPicker (no broad Photo Library permission) — expo-image-picker only
+  // uses PHPicker when `allowsEditing` is NOT set, so omit it for the library.
   const pickPhoto = useCallback(async (useCamera: boolean) => {
     try {
-      const permStatus = useCamera
-        ? await ImagePicker.getCameraPermissionsAsync()
-        : await ImagePicker.getMediaLibraryPermissionsAsync();
-      if (!permStatus.granted && !permStatus.canAskAgain) {
-        Alert.alert('Permission needed', 'Photo access was previously denied. Please enable it in Settings.', [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Open Settings', onPress: () => Linking.openSettings() },
-        ]);
-        return;
-      }
-      const permResult = useCamera
-        ? await ImagePicker.requestCameraPermissionsAsync()
-        : await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (!permResult.granted) {
-        Alert.alert('Permission needed', `Please grant ${useCamera ? 'camera' : 'photo library'} access in Settings.`, [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Open Settings', onPress: () => Linking.openSettings() },
-        ]);
-        return;
+      if (useCamera) {
+        const permStatus = await ImagePicker.getCameraPermissionsAsync();
+        if (!permStatus.granted && !permStatus.canAskAgain) {
+          Alert.alert('Permission needed', 'Camera access was previously denied. Please enable it in Settings.', [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Open Settings', onPress: () => Linking.openSettings() },
+          ]);
+          return;
+        }
+        const permResult = await ImagePicker.requestCameraPermissionsAsync();
+        if (!permResult.granted) {
+          Alert.alert('Permission needed', 'Please grant camera access in Settings.', [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Open Settings', onPress: () => Linking.openSettings() },
+          ]);
+          return;
+        }
       }
       const result = useCamera
         ? await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], allowsEditing: true, quality: 0.85 })
-        : await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], allowsEditing: true, quality: 0.85 });
+        : await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.85 });
       if (!result.canceled && result.assets?.length) {
         set({ photo: result.assets[0] });
       }

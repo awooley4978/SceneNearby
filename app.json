@@ -21,6 +21,8 @@
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Scene Nearby uses your location to show you nearby filming locations.",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "Scene Nearby uses your location to alert you when you're near a filming location.",
+        "NSCameraUsageDescription": "Scene Nearby uses your camera so you can take photos of filming locations to contribute to the app. For example, you can photograph a location you visit and submit it with your contribution.",
+        "NSPhotoLibraryUsageDescription": "Scene Nearby uses your photo library so you can choose photos of filming locations to contribute to the app. For example, you can select photos you previously took at a filming location and submit them with your contribution.",
         "LSApplicationQueriesSchemes": [
           "waze",
           "maps",

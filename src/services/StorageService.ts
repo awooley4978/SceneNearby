@@ -205,3 +205,49 @@ export async function setUserVisitTime(locationId: string, time: string): Promis
     await AsyncStorage.setItem(KEYS.USER_VISIT_TIME, JSON.stringify(all));
   } catch {}
 }
+
+// ── Account deletion helpers ──
+
+/**
+ * Collect the location IDs this user has interacted with locally (visited /
+ * dismissed / worth-it vote / visit-time). Used to delete the uid-keyed
+ * Firestore subdocs under locations/{id}/worthItVotes/{uid} and
+ * locations/{id}/visitTimes/{uid} on account deletion.
+ */
+export async function getInteractedLocationIds(): Promise<string[]> {
+  const ids = new Set<string>();
+  try {
+    for (const key of [KEYS.VISITED_LOCATIONS, KEYS.DISMISSED_LOCATIONS]) {
+      const raw = await AsyncStorage.getItem(key);
+      if (raw) for (const id of JSON.parse(raw) as string[]) ids.add(id);
+    }
+    for (const key of [KEYS.USER_WORTHIT_VOTE, KEYS.USER_VISIT_TIME]) {
+      const raw = await AsyncStorage.getItem(key);
+      if (raw) for (const id of Object.keys(JSON.parse(raw))) ids.add(id);
+    }
+  } catch {}
+  return [...ids];
+}
+
+/** Clear ALL locally-persisted user data (used by account deletion). */
+export async function clearAllLocalUserData(): Promise<void> {
+  try {
+    await AsyncStorage.multiRemove([
+      KEYS.ONBOARDING_COMPLETE,
+      KEYS.ONBOARDING_DATA,
+      KEYS.SAVED_IDS,
+      KEYS.NOTIFICATION_PREFS,
+      KEYS.USER_SETTINGS,
+      KEYS.LAST_CITY,
+      KEYS.VISITED_LOCATIONS,
+      KEYS.DISMISSED_LOCATIONS,
+      KEYS.USER_WORTHIT_VOTE,
+      KEYS.USER_VISIT_TIME,
+      KEYS.TRIAL_NOTICE_DISMISSED,
+    ]);
+  } catch {}
+  try {
+    const { setDestinationContext } = await import('./destinationContext');
+    await setDestinationContext(null);
+  } catch {}
+}

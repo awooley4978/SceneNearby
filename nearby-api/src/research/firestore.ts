@@ -28,7 +28,7 @@ export function isFirestoreEnabled(): boolean {
 
 let cachedToken: { token: string; expiresAt: number } | null = null;
 
-async function getAccessToken(): Promise<string> {
+export async function getAccessToken(): Promise<string> {
   const creds = sa();
   if (!creds) throw new Error("FIREBASE_SERVICE_ACCOUNT not configured");
   const now = Math.floor(Date.now() / 1000);
@@ -90,7 +90,7 @@ function toFields(obj: Record<string, unknown>): Record<string, unknown> {
   return out;
 }
 
-async function firestoreFetch(path: string, init: RequestInit = {}): Promise<any> {
+export async function firestoreFetch(path: string, init: RequestInit = {}): Promise<any> {
   const token = await getAccessToken();
   const url = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT}/databases/(default)/documents${path}`;
   const res = await fetch(url, {
