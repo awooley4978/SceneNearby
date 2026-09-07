@@ -232,12 +232,30 @@ export async function deleteAccount(): Promise<void> {
 
   // 5. Clear local state + entitlement Keychain.
   await clearAllLocalUserData();
-  await Promise.all([
-    SecureStore.deleteItemAsync('entitlement.trialStartedAt').catch(() => {}),
-    SecureStore.deleteItemAsync('entitlement.unlocked').catch(() => {}),
-    SecureStore.deleteItemAsync('entitlement.unlockTransactionId').catch(() => {}),
-    SecureStore.deleteItemAsync('entitlement.pendingGrant').catch(() => {}),
-  ]);
+  // DIAGNOSTIC (owner 09-07): log each entitlement-key delete and read the key
+  // back immediately so a post-delete "Unlocked ✓" can be traced to one of:
+  //   (a) deleteItemAsync failed, (b) wrong key name, or (c) React context not
+  //   re-reading after the key is gone. Keys here MUST match entitlement.ts.
+  const entitlementKeys = [
+    'entitlement.trialStartedAt',
+    'entitlement.unlocked',
+    'entitlement.unlockTransactionId',
+    'entitlement.pendingGrant',
+  ] as const;
+  for (const key of entitlementKeys) {
+    try {
+      await SecureStore.deleteItemAsync(key);
+    } catch (err) {
+      console.warn(`[account-deletion] SecureStore.deleteItemAsync FAILED key=${key}`, err);
+    }
+    let readback: string | null = null;
+    try {
+      readback = await SecureStore.getItemAsync(key);
+    } catch (err) {
+      console.warn(`[account-deletion] SecureStore.getItemAsync (readback) FAILED key=${key}`, err);
+    }
+    console.log(`[account-deletion] entitlement key=${key} readback=${JSON.stringify(readback)}`);
+  }
   await clearPendingMagicLinkEmail();
 
   // 6. Sign out (fires onAuthChange with user = null). After user.delete() the

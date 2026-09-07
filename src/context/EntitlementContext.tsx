@@ -22,6 +22,7 @@ import {
   onPurchase,
   type PurchaseOutcome,
 } from '../services/iap';
+import { useAuth } from './AuthContext';
 
 export type PurchaseUIState = 'idle' | 'purchasing' | 'restoring' | 'pending';
 
@@ -53,6 +54,13 @@ export const EntitlementProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [ui, setUi] = useState<PurchaseUIState>('idle');
   const [message, setMessage] = useState<string | undefined>(undefined);
 
+  // Auth identity drives the entitlement lookup: signed-in accounts resolve
+  // through the Firestore mirror, anonymous/device-only through the Keychain.
+  // Refresh whenever the user changes so a sign-out (or account deletion) that
+  // clears the Keychain is reflected immediately — otherwise the in-memory
+  // status keeps showing a stale "unlocked" until the next app launch.
+  const { user } = useAuth();
+
   const refresh = useCallback(async () => {
     const e = await getEntitlement();
     setEnt(e);
@@ -63,6 +71,14 @@ export const EntitlementProvider: React.FC<{ children: React.ReactNode }> = ({ c
     refresh();
     loadProduct().then(({ price: p }) => setPrice(p ?? null));
   }, [refresh]);
+
+  // Re-derive entitlement whenever the signed-in identity changes (sign in,
+  // sign out, account deletion). getEntitlement() reads auth.currentUser
+  // directly, but only after the AuthContext user state has settled, so key
+  // this effect on user?.uid.
+  useEffect(() => {
+    refresh();
+  }, [user?.uid, refresh]);
 
   // Listen for purchase outcomes.
   useEffect(() => {
