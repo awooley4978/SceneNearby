@@ -71,7 +71,28 @@ interface XhrInterceptorHandle {
   loadingFinished(id: number, encodedDataLength: number): void;
   loadingFailed(id: number, error: string): void;
 }
-const pendingXhr: Record<number, string> = {};
+const AUTH_URL_RE = /identitytoolkit|securetoken|firebaseapp|www\.googleapis\.com/;
+const pendingXhr: Record<number, { url: string; responded: boolean }> = {};
+let lastAuthNetworkFailure: AuthNetworkFailure | null = null;
+
+export interface AuthNetworkFailure {
+  url: string;
+  responded: boolean;
+  at: number;
+}
+
+/**
+ * The most recent AUTH-domain network failure, with whether the native layer
+ * received ANY HTTP response before the failure. `responded === false` means a
+ * pure transport failure (DNS/TLS/timeout/connection-lost) — no HTTP response
+ * ever arrived, so a magic-link oobCode was almost certainly NOT consumed and a
+ * retry is safe. `responded === true` means a response came back, so the code
+ * may be consumed and a blind retry would be wrong.
+ */
+export function getLastAuthNetworkFailure(): AuthNetworkFailure | null {
+  return lastAuthNetworkFailure;
+}
+
 function installNetworkDiagnostic(): void {
   const g = globalThis as any;
   const XHR = g.XMLHttpRequest;
@@ -81,13 +102,15 @@ function installNetworkDiagnostic(): void {
   }
   const interceptor: XhrInterceptorHandle = {
     requestSent(id, url) {
-      pendingXhr[id] = url;
-      if (/identitytoolkit|securetoken|firebaseapp|www\.googleapis\.com/.test(url)) {
+      pendingXhr[id] = { url, responded: false };
+      if (AUTH_URL_RE.test(url)) {
         logEvent('netReq', `${id} ${url.slice(0, 120)}`);
       }
     },
     responseReceived(id, url, status) {
-      if (pendingXhr[id]) {
+      const entry = pendingXhr[id];
+      if (entry) {
+        entry.responded = true;
         logEvent('netResp', `${id} ${status} ${url.slice(0, 100)}`);
       }
     },
@@ -96,8 +119,16 @@ function installNetworkDiagnostic(): void {
       delete pendingXhr[id];
     },
     loadingFailed(id, error) {
-      const url = pendingXhr[id] || '';
+      const entry = pendingXhr[id];
       delete pendingXhr[id];
+      const url = entry?.url || '';
+      if (AUTH_URL_RE.test(url)) {
+        lastAuthNetworkFailure = {
+          url,
+          responded: entry?.responded ?? false,
+          at: Date.now(),
+        };
+      }
       // Capture the NATIVE error string + the failing URL. This is the signal
       // whatwg-fetch discards; it is the max that survives the native→JS bridge.
       logEvent('netFail', `${id} err="${error}" url=${url.slice(0, 120)}`);

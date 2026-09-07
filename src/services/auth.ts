@@ -15,6 +15,7 @@ import * as SecureStore from 'expo-secure-store';
 import { doc, deleteDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { auth, db } from './firebase';
 import { clearAllLocalUserData, getInteractedLocationIds } from './StorageService';
+import { getLastAuthNetworkFailure } from './diagnostics';
 
 // ── Types ──
 
@@ -98,9 +99,35 @@ export async function signInWithMagicLink(url: string): Promise<User> {
   if (!email) {
     throw new Error('Could not find the email used to request this link.');
   }
-  const cred = await firebaseSignInWithEmailLink(auth, email, url);
-  await AsyncStorage.removeItem(MAGIC_LINK_STORAGE_KEY);
-  return cred.user;
+
+  // Network-retry (owner 09-07): retry ONLY a pure transport failure of the
+  // magic-link HTTPS call — i.e. `auth/network-request-failed` AND the native
+  // layer received no HTTP response for that attempt (the oobCode was almost
+  // certainly not consumed). Semantic errors (invalid/expired action code,
+  // quota, etc.) are never retried and always propagate immediately. The email
+  // and URL are kept intact across attempts; the caller's existing friendly
+  // error path runs unchanged if all attempts fail.
+  const RETRY_DELAYS_MS = [750, 2000];
+  let lastError: any;
+  for (let attempt = 0; ; attempt++) {
+    try {
+      const cred = await firebaseSignInWithEmailLink(auth, email, url);
+      await AsyncStorage.removeItem(MAGIC_LINK_STORAGE_KEY);
+      return cred.user;
+    } catch (err: any) {
+      lastError = err;
+      const isNetworkError = err?.code === 'auth/network-request-failed';
+      const failure = getLastAuthNetworkFailure();
+      const canRetry =
+        isNetworkError && !!failure && failure.responded === false && attempt < RETRY_DELAYS_MS.length;
+      if (!canRetry) {
+        throw err;
+      }
+      await new Promise((resolve) => setTimeout(resolve, RETRY_DELAYS_MS[attempt]));
+    }
+  }
+  // Unreachable — the loop either returns or throws. Satisfies TS exhaustiveness.
+  throw lastError;
 }
 
 export function isMagicLink(url: string): boolean {
