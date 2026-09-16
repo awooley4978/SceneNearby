@@ -10,6 +10,7 @@ import { LocationSetupScreen } from './src/screens/Onboarding/LocationSetupScree
 import { AuthProvider, useAuth } from './src/context/AuthContext';
 import { EntitlementProvider } from './src/context/EntitlementContext';
 import { useMagicLink } from './src/hooks/useMagicLink';
+import { useReviewerAccess } from './src/hooks/useReviewerAccess';
 import { theme } from './src/theme';
 import {
   getOnboardingComplete,
@@ -35,6 +36,11 @@ export const resetOnboarding = async () => {
 /** Inner component — mounts useMagicLink inside AuthProvider context */
 const MagicLinkListener: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   useMagicLink();
+  return <>{children}</>;
+};
+/** Inner component — mounts useReviewerAccess inside EntitlementProvider context */
+const ReviewerAccessListener: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  useReviewerAccess();
   return <>{children}</>;
 };
 const App: React.FC = () => {
@@ -210,11 +216,13 @@ const App: React.FC = () => {
           )}
           {appPhase === 'main' && (
             <EntitlementProvider>
-              <MagicLinkListener>
-                <ErrorBoundary>
-                  <AppNavigator />
-                </ErrorBoundary>
-              </MagicLinkListener>
+              <ReviewerAccessListener>
+                <MagicLinkListener>
+                  <ErrorBoundary>
+                    <AppNavigator />
+                  </ErrorBoundary>
+                </MagicLinkListener>
+              </ReviewerAccessListener>
             </EntitlementProvider>
           )}
           <DiagnosticsOverlay />
