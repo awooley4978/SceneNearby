@@ -2,7 +2,7 @@
   "expo": {
     "name": "Scene Nearby",
     "slug": "scene-nearby",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "scheme": "scenenearby",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,7 +15,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.cairn.scenenearby",
-      "buildNumber": "37",
+      "buildNumber": "1",
       "associatedDomains": [
         "applinks:scenenearby.firebaseapp.com"
       ],
