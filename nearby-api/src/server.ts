@@ -332,6 +332,10 @@ function transformLocation(rec: LocationRecord): FilmingLocation {
   
   let remoteDestination = null;
   try { remoteDestination = rec.remote_destination_json ? JSON.parse(rec.remote_destination_json) : null; } catch { /* keep null */ }
+
+  let announcement = null;
+  try { announcement = rec.announcement_json ? JSON.parse(rec.announcement_json) : null; } catch { /* keep null */ }
+
   const photoAttribution = parsePhotoAttribution(rec.photo_attribution_json ?? null);
 
   return {
@@ -355,6 +359,7 @@ function transformLocation(rec: LocationRecord): FilmingLocation {
     photoAttribution,
     focalPoint: (rec.focal_point_x != null && rec.focal_point_y != null) ? { x: rec.focal_point_x, y: rec.focal_point_y } : null,
     remoteDestination,
+    announcement,
     actors,
     estimatedVisitTime: rec.estimated_visit_time,
     worthItPercentage: rec.worth_it_percentage,

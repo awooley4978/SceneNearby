@@ -69,6 +69,15 @@ export interface FilmingLocation {
     sourceUrl: string | null;
     modified: string | null;
   } | null;
+  /** Time-aware location announcement (e.g. a temporary closure). */
+  announcement?: {
+    kind: string;
+    closesAt?: string | null;
+    headline: string;
+    body: string;
+    headlineAfter?: string | null;
+    bodyAfter?: string | null;
+  } | null;
 }
 
 export interface ActorGroup {

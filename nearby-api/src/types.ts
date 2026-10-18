@@ -91,6 +91,15 @@ export interface RemoteDestination {
   travel_time?: string;
 }
 
+export interface LocationAnnouncement {
+  kind: string;
+  closesAt?: string | null;
+  headline: string;
+  body: string;
+  headlineAfter?: string | null;
+  bodyAfter?: string | null;
+}
+
 export interface PhotoAttribution {
   photographer: string | null;
   license: string | null;
@@ -120,6 +129,7 @@ export interface LocationRecord {
   focal_point_x: number | null;
   focal_point_y: number | null;
   remote_destination_json: string | null;
+  announcement_json: string | null;
   actors_json: string | null;
   estimated_visit_time: string | null;
   worth_it_percentage: number | null;
@@ -147,6 +157,7 @@ export interface FilmingLocation {
   imageUrl: string | null;
   focalPoint: { x: number; y: number } | null;
   remoteDestination: RemoteDestination | null;
+  announcement: LocationAnnouncement | null;
   actors: string[];
   estimatedVisitTime: string | null;
   worthItPercentage: number | null;

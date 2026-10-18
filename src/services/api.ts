@@ -41,6 +41,14 @@ export interface ApiLocation {
     sourceUrl: string | null;
     modified: string | null;
   } | null;
+  announcement?: {
+    kind: string;
+    closesAt?: string | null;
+    headline: string;
+    body: string;
+    headlineAfter?: string | null;
+    bodyAfter?: string | null;
+  } | null;
   remoteDestination: {
     country?: string;
     island?: string;

@@ -260,6 +260,18 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
     );
   }
 
+  // ── Time-aware announcement (e.g. a temporary closure) ──
+  const announcement = location.announcement;
+  const announcementClosed = announcement?.closesAt
+    ? new Date(announcement.closesAt).getTime() <= Date.now()
+    : false;
+  const announcementHeadline = announcementClosed
+    ? announcement?.headlineAfter ?? announcement?.headline
+    : announcement?.headline;
+  const announcementBody = announcementClosed
+    ? announcement?.bodyAfter ?? announcement?.body
+    : announcement?.body;
+
   return (
     <View style={styles.container}>
       <ScrollView
@@ -301,6 +313,15 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
             />
           </View>
 
+          {/* Closure / announcement banner (non-interactive so BackButton stays tappable) */}
+          {announcement && (
+            <View style={styles.announcementBanner} pointerEvents="none">
+              <View style={styles.announcementBannerPill}>
+                <Text style={styles.announcementBannerText}>{announcementHeadline}</Text>
+              </View>
+            </View>
+          )}
+
           {/* Corner brackets — featured-location frame */}
           <LocationFrame />
           {/* Hero content */}
@@ -341,6 +362,13 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
         {/* ── Cards — staggered fade-in cascade ── */}
 
         <BrandDivider />
+
+        {/* Closure / announcement note */}
+        {announcement && (
+          <SectionCard icon="⚠️" title={announcementHeadline} fadeDelay={80}>
+            <Text style={styles.announcementBody}>{announcementBody}</Text>
+          </SectionCard>
+        )}
 
         {/* Remote Destination Warning */}
         {location.remoteDestination && (
@@ -581,6 +609,36 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: 'rgba(255,255,255,0.90)',
     letterSpacing: 0.2,
+  },
+
+  // ── Announcement ──
+  announcementBanner: {
+    position: 'absolute',
+    top: 60,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    zIndex: 2,
+  },
+  announcementBannerPill: {
+    backgroundColor: 'rgba(0,0,0,0.65)',
+    borderWidth: 1,
+    borderColor: theme.colors.gold,
+    borderRadius: 999,
+    paddingVertical: 8,
+    paddingHorizontal: 18,
+  },
+  announcementBannerText: {
+    color: theme.colors.gold,
+    fontSize: 13,
+    fontWeight: '700',
+    letterSpacing: 0.4,
+    textAlign: 'center',
+  },
+  announcementBody: {
+    color: theme.colors.textSecondary,
+    fontSize: 14,
+    lineHeight: 21,
   },
 
   // ── Chips row (unused — retained for MetadataToken elsewhere) ──
