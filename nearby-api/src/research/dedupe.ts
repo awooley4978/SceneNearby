@@ -120,6 +120,7 @@ export function findCandidateDuplicate(
 export function computeConfidence(args: {
   sourceCount: number;
   hasStructuredSource: boolean;
+  hasTrustedSource?: boolean;
   hasCoords: boolean;
   hasAddress: boolean;
   hasUsablePhoto: boolean;
@@ -128,13 +129,53 @@ export function computeConfidence(args: {
 }): number {
   let score = 20; // base: a mention exists
   score += Math.min(args.sourceCount * 12, 36); // up to +36 for independent sources
-  if (args.hasStructuredSource) score += 10; // Wikidata/Wikipedia structured > loose
+  if (args.hasStructuredSource) score += 10; // Wikidata P915 / Wikipedia filming section / trusted reference
+  if (args.hasTrustedSource) score += 10; // owner-designated trusted reference that supports the place
   if (args.hasCoords) score += 12;
   if (args.hasAddress) score += 10;
   if (args.hasUsablePhoto) score += 8;
   if (args.duplicate) score -= 15; // likely same place as existing record
   if (args.regionLevel) score = Math.min(score, 55); // city/region lead: never ready_for_review (>=75)
   return Math.max(0, Math.min(100, Math.round(score)));
+}
+
+/** Maximum confidence a candidate can reach given only Stage-1 evidence (before
+ * geocode/photo). The remaining steps can add at most coords(12)+address(10)+
+ * photo(8) = 30, and duplicate/region caps only ever LOWER a score, so ignoring
+ * them yields a valid upper bound. */
+export function computeUpperBound(args: {
+  sourceCount: number;
+  hasStructuredSource: boolean;
+  hasTrustedSource?: boolean;
+}): number {
+  return (
+    20 +
+    Math.min(args.sourceCount * 12, 36) +
+    (args.hasStructuredSource ? 10 : 0) +
+    (args.hasTrustedSource ? 10 : 0) +
+    30
+  );
+}
+
+/** Derive the three source-based scoring inputs from a candidate's mentions.
+ * Distinct corroborating sources are counted by the candidate's URL-deduped
+ * sources list; structured = Wikidata P915, a Wikipedia "Filming" section, or a
+ * trusted reference (i.e. any curated/structured source — loose prose/IMDb are
+ * not structured); trusted = an owner-designated reference page. */
+export function candidateSourceMetrics(c: CandidateDraft): {
+  sourceCount: number;
+  hasStructuredSource: boolean;
+  hasTrustedSource: boolean;
+} {
+  const sourceCount = c.sources.length;
+  const hasStructuredSource = c.mentions.some(
+    (m) =>
+      m.sourceKind === "wikidata" ||
+      m.sourceKind === "wikipedia-section" ||
+      m.sourceKind === "trusted-reference"
+  );
+  const hasTrustedSource = c.mentions.some((m) => m.sourceKind === "trusted-reference");
+  return { sourceCount, hasStructuredSource, hasTrustedSource };
 }
 
 /** City/region-level detection: name geocoded to its own top-level admin area

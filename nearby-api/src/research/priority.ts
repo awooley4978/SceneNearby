@@ -18,6 +18,7 @@
 //     keep one pass in flight.
 import { runQuery, esc } from "../db";
 import { resolveTitle, mentionsFromResolved, isVenueName, isProseFragment } from "./discovery";
+import { queryTrustedSources, trustedMentionsFromMatches } from "./trustedSources";
 import { geocode } from "./nominatim";
 import { findCommonsPhotos } from "./commons";
 import {
@@ -26,6 +27,8 @@ import {
   loadResearchCandidates,
   findCandidateDuplicate,
   computeConfidence,
+  computeUpperBound,
+  candidateSourceMetrics,
   isRegionLevel,
   photoUsable,
 } from "./dedupe";
@@ -346,13 +349,28 @@ async function runFilmPipeline(
     return 0;
   }
   let mentions = mentionsFromResolved(resolved).slice(0, cfg.wikipedia_max_candidates);
+  const trustedMatches = await queryTrustedSources(resolved.title);
+  mentions = [...mentions, ...trustedMentionsFromMatches(trustedMatches)];
   mentions = mentions.filter((m) => !isProseFragment(m.name));
   const candidates = normalizeMentions(mentions);
+
+  // Stage-1 upper-bound gate: stop VENUE candidates that cannot reach 80% before
+  // geocode/photo. Non-venue names are still geocoded to preserve region tokens.
+  let stage1Skipped = 0;
+  for (const c of candidates) {
+    if (!isVenueName(c.name)) continue;
+    const metrics = candidateSourceMetrics(c);
+    if (computeUpperBound(metrics) < 80) {
+      c.stage1Skipped = true;
+      stage1Skipped++;
+    }
+  }
+  const active = candidates.filter((c) => !c.stage1Skipped);
 
   // Geocode (bounded); venue names get "<name>, <region>" context first.
   let geocoded = 0;
   const displayByCand = new Map<CandidateDraft, string>();
-  for (const c of candidates) {
+  for (const c of active) {
     if (geocoded >= cfg.max_geocode_attempts_per_job) break;
     if (c.coords?.lat && c.coords?.lng) continue;
     const plain = [c.address, c.city, c.name].filter(Boolean).join(", ");
@@ -374,7 +392,7 @@ async function runFilmPipeline(
   // Region gate for state/province/city requests: a pin outside the requested
   // region keeps its address but drops coords (needs_research), never deleted.
   if (regionContext) {
-    for (const c of candidates) {
+    for (const c of active) {
       if (c.coords && !coordsMatchRegion(displayByCand.get(c) ?? "", c.address, c.city, regionContext)) {
         c.geocodeContextMismatch = true;
         c.coords = undefined;
@@ -383,8 +401,8 @@ async function runFilmPipeline(
     }
   }
 
-  const leads = candidates.filter((c) => isRegionLevel(c));
-  const specific = candidates.filter((c) => !isRegionLevel(c));
+  const leads = active.filter((c) => isRegionLevel(c));
+  const specific = active.filter((c) => !isRegionLevel(c));
 
   // Photos (Commons, bounded).
   for (const c of specific) {
@@ -396,9 +414,11 @@ async function runFilmPipeline(
   const existing = await loadResearchCandidates();
   let dups = 0;
   for (const c of specific) {
+    const metrics = candidateSourceMetrics(c);
     const confArgs = {
-      sourceCount: c.mentions.length,
-      hasStructuredSource: true,
+      sourceCount: metrics.sourceCount,
+      hasStructuredSource: metrics.hasStructuredSource,
+      hasTrustedSource: metrics.hasTrustedSource,
       hasCoords: !!c.coords,
       hasAddress: !!c.address,
       hasUsablePhoto: photoUsable(c.photos[0]),

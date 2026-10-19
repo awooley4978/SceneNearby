@@ -13,6 +13,7 @@ import { claimNextJob, getJob, updateJobStatus } from "./jobs";
 import { getResearchConfig, incrementDailyJobCount, getDailyJobCount } from "./config";
 import { claimNextPriorityRequest, runPriorityPass } from "./priority";
 import { resolveTitle, mentionsFromResolved, isVenueName, isProseFragment } from "./discovery";
+import { queryTrustedSources, trustedMentionsFromMatches } from "./trustedSources";
 import { geocode } from "./nominatim";
 import { findCommonsPhotos } from "./commons";
 import {
@@ -21,6 +22,8 @@ import {
   findProductionDuplicate,
   findCandidateDuplicate,
   computeConfidence,
+  computeUpperBound,
+  candidateSourceMetrics,
   isRegionLevel,
 } from "./dedupe";
 import {
@@ -147,9 +150,10 @@ async function runJob(jobId: string, cfg: ResearchConfig): Promise<void> {
       throw new Error(`Could not resolve "${job.movie_title} (${job.year})" to a Wikipedia/Wikidata record`);
     }
 
-    // 1. Raw mentions
-    let mentions = mentionsFromResolved(resolved);
-    mentions = mentions.slice(0, cfg.wikipedia_max_candidates);
+    // 1. Raw mentions (Wikipedia/Wikidata + owner-designated trusted references)
+    let mentions = mentionsFromResolved(resolved).slice(0, cfg.wikipedia_max_candidates);
+    const trustedMatches = await queryTrustedSources(resolved.title);
+    mentions = [...mentions, ...trustedMentionsFromMatches(trustedMatches)];
 
     // 1b. Prose guard: sentence fragments NEVER enter the candidate pipeline.
     const proseRejected: string[] = [];
@@ -164,6 +168,19 @@ async function runJob(jobId: string, cfg: ResearchConfig): Promise<void> {
     // 2. Normalize within job (same place from multiple sources -> one candidate)
     const candidates = normalizeMentions(mentions, resolved, jobId);
 
+    // 2b. Stage-1 upper-bound gate: stop VENUE candidates that cannot reach 80%
+    // before geocode/photo. Non-venue names (potential region-level leads) are
+    // still geocoded so the region-context gate keeps its region tokens.
+    let stage1Skipped = 0;
+    for (const c of candidates) {
+      if (!isVenueName(c.name)) continue;
+      const metrics = candidateSourceMetrics(c);
+      if (computeUpperBound(metrics) < 80) {
+        c.stage1Skipped = true;
+        stage1Skipped++;
+      }
+    }
+
     // 3. Geocode each candidate lacking coords (bounded).
     //    For VENUE names ("Navy Pier", "Wacker Drive") try "<name>, <city-context>"
     //    (from section titles like "Filming in Chicago") first — fixes ambiguous
@@ -175,6 +192,7 @@ async function runJob(jobId: string, cfg: ResearchConfig): Promise<void> {
     const ctxLower = contexts.map((c) => c.toLowerCase());
     for (const c of candidates) {
       if (geocoded >= cfg.max_geocode_attempts_per_job) break;
+      if (c.stage1Skipped) continue;
       if (c.coords && c.coords.lat && c.coords.lng) continue;
       const plain = [c.address, c.city, c.name].filter(Boolean).join(", ");
       const variants: string[] = [];
@@ -204,8 +222,8 @@ async function runJob(jobId: string, cfg: ResearchConfig): Promise<void> {
     for (const c of candidates) {
       c.regionLevel = isRegionLevel(c);
     }
-    const leads = candidates.filter((c) => c.regionLevel);
-    const specific = candidates.filter((c) => !c.regionLevel);
+    const leads = candidates.filter((c) => c.regionLevel && !c.stage1Skipped);
+    const specific = candidates.filter((c) => !c.regionLevel && !c.stage1Skipped);
 
     // 3c. Region-context gate (post-geocode): a venue pin must land inside a
     // filming region named by the article — section-title contexts ("Filming in
@@ -244,9 +262,11 @@ async function runJob(jobId: string, cfg: ResearchConfig): Promise<void> {
 
     // Log region-level leads (dry-run output only; nothing written anywhere).
     for (const lead of leads) {
+      const leadMetrics = candidateSourceMetrics(lead);
       const leadConf = computeConfidence({
-        sourceCount: lead.mentions.length,
-        hasStructuredSource: true,
+        sourceCount: leadMetrics.sourceCount,
+        hasStructuredSource: leadMetrics.hasStructuredSource,
+        hasTrustedSource: leadMetrics.hasTrustedSource,
         hasCoords: !!lead.coords,
         hasAddress: !!lead.address,
         hasUsablePhoto: false,
@@ -287,9 +307,11 @@ async function runJob(jobId: string, cfg: ResearchConfig): Promise<void> {
     const existing = await loadResearchCandidates();
     let dups = 0;
     for (const c of specific) {
+      const metrics = candidateSourceMetrics(c);
       const confArgs = {
-        sourceCount: c.mentions.length,
-        hasStructuredSource: true,
+        sourceCount: metrics.sourceCount,
+        hasStructuredSource: metrics.hasStructuredSource,
+        hasTrustedSource: metrics.hasTrustedSource,
         hasCoords: !!c.coords,
         hasAddress: !!c.address,
         hasUsablePhoto: photoUsable(c.photos[0]),
@@ -326,6 +348,7 @@ async function runJob(jobId: string, cfg: ResearchConfig): Promise<void> {
         duplicates_skipped: dups,
         geocoded,
         photos_found: photosFound,
+        stage1_skipped: stage1Skipped,
         sources_count: candidates.reduce((n, c) => n + c.sources.length, 0),
       },
     });
