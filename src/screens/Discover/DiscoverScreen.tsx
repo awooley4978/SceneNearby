@@ -18,6 +18,7 @@ import { LocationCategory, categoryColors, CITIES } from '../../models';
 import { useAllLocations, useActorGroups, useMovieGroups } from '../../services/hooks';
 import { calculateDistance } from '../../services/geo';
 import { LocationCard } from '../../components/LocationCard';
+import { ClosureRibbon } from '../../components/ClosureRibbon';
 import { AlsoFilmedHere } from '../../components/AlsoFilmedHere';
 import { groupLocationsByPlace } from '../../services/placeGrouping';
 import { CardSkeleton } from '../../components/SkeletonLoader';
@@ -141,7 +142,9 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
           id: `movie-${key}`,
           label: first.movieOrShow,
           subtitle: `${first.year} • ${total} location${total !== 1 ? 's' : ''}`,
-          data: { movieTitle: first.movieOrShow },
+          // A title row carries a closure ribbon when any of its locations has
+          // an active announcement (e.g. a temporarily closed filming spot).
+          data: { movieTitle: first.movieOrShow, hasAnnouncement: locs.some((l) => !!l.announcement) },
         });
       }
     }
@@ -348,9 +351,10 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
 
   const renderSearchResult = ({ item }: { item: SearchResultItem }) => {
     const emoji = item.type === 'movie' ? '🎬' : item.type === 'show' ? '📺' : item.type === 'city' ? '📍' : '🎭';
+    const hasAnnouncement = item.type === 'movie' || item.type === 'show' ? !!item.data?.hasAnnouncement : false;
     return (
       <TouchableOpacity
-        style={styles.searchResultRow}
+        style={[styles.searchResultRow, hasAnnouncement && styles.searchResultRowAnnounced]}
         onPress={() => handleSearchResultPress(item)}
       >
         <Text style={styles.searchResultEmoji}>{emoji}</Text>
@@ -359,6 +363,8 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
           <Text style={styles.searchResultSub}>{item.subtitle}</Text>
         </View>
         <Text style={styles.searchResultChevron}>›</Text>
+        {/* Red corner ribbon — this title has a location with an active announcement */}
+        {hasAnnouncement && <ClosureRibbon label="Closed" size={44} fontSize={7} />}
       </TouchableOpacity>
     );
   };
@@ -675,6 +681,11 @@ const styles = StyleSheet.create({
   searchResultRow: {
     flexDirection: 'row', alignItems: 'center', padding: 12,
     borderBottomWidth: 1, borderBottomColor: theme.colors.surface3 + '40',
+  },
+  searchResultRowAnnounced: {
+    position: 'relative',
+    overflow: 'hidden',
+    paddingRight: 34,
   },
   searchResultEmoji: { fontSize: 20, marginRight: 10 },
   searchResultInfo: { flex: 1 },
