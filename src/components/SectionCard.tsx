@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, StyleProp, ViewStyle, TextStyle } from 'react-native';
 import { theme } from '../theme';
 import { FadeInView } from './FadeInView';
 
@@ -12,6 +12,10 @@ interface SectionCardProps {
   variant?: CardVariant;
   elevated?: boolean;
   fadeDelay?: number;
+  /** Extra container style (e.g. a tinted announcement card). */
+  style?: StyleProp<ViewStyle>;
+  /** Extra style for the header title. */
+  titleStyle?: StyleProp<TextStyle>;
 }
 
 export const SectionCard: React.FC<SectionCardProps> = ({
@@ -21,6 +25,8 @@ export const SectionCard: React.FC<SectionCardProps> = ({
   variant = 'standard',
   elevated,
   fadeDelay = 0,
+  style,
+  titleStyle,
 }) => {
   const hasHeader = !!(icon || title);
 
@@ -34,6 +40,7 @@ export const SectionCard: React.FC<SectionCardProps> = ({
         variant === 'story' && styles.cardStory,
         variant === 'gallery' && styles.cardGallery,
         elevated && styles.elevated,
+        style,
       ]}
     >
       {/* ── Quote: gold bar + open + close marks ── */}
@@ -78,6 +85,7 @@ export const SectionCard: React.FC<SectionCardProps> = ({
                 variant === 'trivia' && styles.titleTrivia,
                 variant === 'story' && styles.titleStory,
                 variant === 'quote' && styles.titleQuote,
+                titleStyle,
               ]}
             >
               {title}

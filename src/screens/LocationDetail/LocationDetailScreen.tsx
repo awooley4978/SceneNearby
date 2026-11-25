@@ -22,6 +22,7 @@ import { useUserLocation } from '../../hooks/useUserLocation';
 import { MapPlaceholder } from '../../components/MapPlaceholder';
 import { SmartHeroImage } from '../../components/SmartHeroImage';
 import { PhotoAttribution } from '../../components/PhotoAttribution';
+import { ClosureRibbon } from '../../components/ClosureRibbon';
 import { isAllRightsReservedPhoto } from '../../utils/photoAttribution';
 import { WorthTheVisit } from '../../components/WorthTheVisit';
 import { EstimatedVisitTime } from '../../components/EstimatedVisitTime';
@@ -313,13 +314,11 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
             />
           </View>
 
-          {/* Closure / announcement banner (non-interactive so BackButton stays tappable) */}
+          {/* Closure / announcement ribbon — red diagonal corner ribbon, pinned
+              top-right and clipped to the corner. pointerEvents="none" so
+              BackButton stays tappable. */}
           {announcement && (
-            <View style={styles.announcementBanner} pointerEvents="none">
-              <View style={styles.announcementBannerPill}>
-                <Text style={styles.announcementBannerText}>{announcementHeadline}</Text>
-              </View>
-            </View>
+            <ClosureRibbon label={announcementHeadline ?? 'Closed'} size={128} fontSize={12} />
           )}
 
           {/* Corner brackets — featured-location frame */}
@@ -363,9 +362,15 @@ export const LocationDetailScreen: React.FC<{ route: any; navigation: any }> = (
 
         <BrandDivider />
 
-        {/* Closure / announcement note */}
+        {/* Closure / announcement note — red-tinted, red-bordered, louder */}
         {announcement && (
-          <SectionCard icon="⚠️" title={announcementHeadline} fadeDelay={80}>
+          <SectionCard
+            icon="⚠️"
+            title={announcementHeadline}
+            fadeDelay={80}
+            style={styles.announcementCard}
+            titleStyle={styles.announcementCardTitle}
+          >
             <Text style={styles.announcementBody}>{announcementBody}</Text>
           </SectionCard>
         )}
@@ -612,33 +617,23 @@ const styles = StyleSheet.create({
   },
 
   // ── Announcement ──
-  announcementBanner: {
-    position: 'absolute',
-    top: 60,
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-    zIndex: 2,
+  announcementCard: {
+    backgroundColor: 'rgba(198,40,40,0.14)',
+    borderWidth: 1.5,
+    borderColor: '#C62828',
   },
-  announcementBannerPill: {
-    backgroundColor: 'rgba(0,0,0,0.65)',
-    borderWidth: 1,
-    borderColor: theme.colors.gold,
-    borderRadius: 999,
-    paddingVertical: 8,
-    paddingHorizontal: 18,
-  },
-  announcementBannerText: {
-    color: theme.colors.gold,
-    fontSize: 13,
-    fontWeight: '700',
-    letterSpacing: 0.4,
-    textAlign: 'center',
+  announcementCardTitle: {
+    color: '#FF6B6B',
+    fontSize: 15,
+    fontWeight: '800',
+    letterSpacing: 0.6,
+    textTransform: 'uppercase',
   },
   announcementBody: {
-    color: theme.colors.textSecondary,
-    fontSize: 14,
-    lineHeight: 21,
+    color: theme.colors.textPrimary,
+    fontSize: 16,
+    lineHeight: 25,
+    fontWeight: '500',
   },
 
   // ── Chips row (unused — retained for MetadataToken elsewhere) ──
