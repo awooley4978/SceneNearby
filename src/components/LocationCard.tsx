@@ -15,6 +15,7 @@ import { SmartHeroImage } from './SmartHeroImage';
 import { PhotoAttribution } from './PhotoAttribution';
 import { DistanceBadge } from './DistanceBadge';
 import { StarRating } from './StarRating';
+import { ClosureRibbon } from './ClosureRibbon';
 import { useRatingMap } from '../services/hooks';
 import { useSaved } from '../context/SavedContext';
 import { formatCardAddress } from '../utils/address';
@@ -28,6 +29,9 @@ interface LocationCardProps {
   showRating?: boolean;
   index?: number;
 }
+
+/** Corner-ribbon square used on the card photo (readable at card size). */
+const CARD_RIBBON_SIZE = 76;
 
 const GRADIENT_PAIRS: Record<string, string[]> = {
   Drama: ['#2D1B69', '#1a1a2e'],
@@ -50,6 +54,9 @@ export const LocationCard: React.FC<LocationCardProps> = ({
   const cardAddress = formatCardAddress(location.address, location.city, location.country);
   const { isSaved: checkSaved, toggleSave: contextToggle } = useSaved();
   const isSaved = checkSaved(location.id);
+  // A location with an active announcement (e.g. temporarily closed) gets the
+  // red closure ribbon on its photo, matching the location detail screen.
+  const hasAnnouncement = !!location.announcement;
   const [imageError, setImageError] = useState(false);
   const heartScale = useRef(new Animated.Value(1)).current;
   const pressAnim = useRef(new Animated.Value(0)).current;
@@ -176,6 +183,13 @@ export const LocationCard: React.FC<LocationCardProps> = ({
             ) : (
               <MapPlaceholder locationId={location.id} locationName={location.title} />
             )}
+            {/* Closure / announcement ribbon — red diagonal corner ribbon on the
+                photo, same treatment as the location detail hero. The heart and
+                distance badge shift inward so nothing is covered. */}
+            {hasAnnouncement && (
+              <ClosureRibbon label="Closed" size={CARD_RIBBON_SIZE} fontSize={12} />
+            )}
+
             {/* Category badge — top left */}
             <View style={styles.heroBadgeTopLeft}>
               <CategoryBadge category={location.category} />
@@ -183,7 +197,7 @@ export const LocationCard: React.FC<LocationCardProps> = ({
 
             {/* Distance badge — top right */}
             {location.distanceFromUser !== undefined && (
-              <View style={styles.heroBadgeTopRight}>
+              <View style={[styles.heroBadgeTopRight, hasAnnouncement && styles.heroBadgeTopRightAnnounced]}>
                 {location.distanceFromUser < 0.1 ? (
                   <View style={styles.arrivalBadge}>
                     <Text style={styles.arrivalText}>YOU'RE HERE 🎉</Text>
@@ -198,7 +212,7 @@ export const LocationCard: React.FC<LocationCardProps> = ({
 
             {/* Save / Heart button */}
             <TouchableOpacity
-              style={styles.heartButton}
+              style={[styles.heartButton, hasAnnouncement && styles.heartButtonAnnounced]}
               onPress={handleSave}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
@@ -371,6 +385,10 @@ const styles = StyleSheet.create({
     right: 12,
     zIndex: 10,
   },
+  // Slide clear of the corner ribbon (CARD_RIBBON_SIZE wide) when announced.
+  heroBadgeTopRightAnnounced: {
+    right: CARD_RIBBON_SIZE + 8,
+  },
   heartButton: {
     position: 'absolute',
     top: 12,
@@ -382,6 +400,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.3)',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  // Slide clear of the corner ribbon (CARD_RIBBON_SIZE wide) when announced.
+  heartButtonAnnounced: {
+    right: CARD_RIBBON_SIZE + 8,
   },
   particle: {
     position: 'absolute',
