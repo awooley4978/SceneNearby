@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '../../theme';
-import { LocationCategory, categoryColors, CITIES } from '../../models';
+import { LocationCategory, categoryColors, CITIES, getAnnouncementRibbonLabel } from '../../models';
 import { useAllLocations, useActorGroups, useMovieGroups } from '../../services/hooks';
 import { calculateDistance } from '../../services/geo';
 import { LocationCard } from '../../components/LocationCard';
@@ -142,9 +142,13 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
           id: `movie-${key}`,
           label: first.movieOrShow,
           subtitle: `${first.year} • ${total} location${total !== 1 ? 's' : ''}`,
-          // A title row carries a closure ribbon when any of its locations has
-          // an active announcement (e.g. a temporarily closed filming spot).
-          data: { movieTitle: first.movieOrShow, hasAnnouncement: locs.some((l) => !!l.announcement) },
+          // A title row carries a ribbon when any of its locations has an
+          // announcement (e.g. a temporarily closed filming spot). The label is
+          // time-aware: "Closing soon" before closesAt, "Under renovation" after.
+          data: {
+            movieTitle: first.movieOrShow,
+            announcement: locs.find((l) => !!l.announcement)?.announcement ?? null,
+          },
         });
       }
     }
@@ -351,7 +355,8 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
 
   const renderSearchResult = ({ item }: { item: SearchResultItem }) => {
     const emoji = item.type === 'movie' ? '🎬' : item.type === 'show' ? '📺' : item.type === 'city' ? '📍' : '🎭';
-    const hasAnnouncement = item.type === 'movie' || item.type === 'show' ? !!item.data?.hasAnnouncement : false;
+    const announcement = item.type === 'movie' || item.type === 'show' ? item.data?.announcement ?? null : null;
+    const hasAnnouncement = !!announcement;
     return (
       <TouchableOpacity
         style={[styles.searchResultRow, hasAnnouncement && styles.searchResultRowAnnounced]}
@@ -364,7 +369,7 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
         </View>
         <Text style={[styles.searchResultChevron, hasAnnouncement && styles.searchResultChevronAnnounced]}>›</Text>
         {/* Red corner ribbon — this title has a location with an active announcement */}
-        {hasAnnouncement && <ClosureRibbon label="Closed" size={56} fontSize={9.5} />}
+        {hasAnnouncement && <ClosureRibbon label={getAnnouncementRibbonLabel(announcement)} size={56} fontSize={9.5} />}
       </TouchableOpacity>
     );
   };

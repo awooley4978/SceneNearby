@@ -80,6 +80,23 @@ export interface FilmingLocation {
   } | null;
 }
 
+/**
+ * Label for the red corner ribbon on a location photo / search row.
+ *
+ * While the announcement's `closesAt` is still in the future the place is
+ * open but about to close ("Closing soon"); once that date has passed — or
+ * when no `closesAt` is known — it reads "Under renovation".
+ */
+export const getAnnouncementRibbonLabel = (
+  announcement?: { closesAt?: string | null } | null,
+): string => {
+  const closesAtMs = announcement?.closesAt ? new Date(announcement.closesAt).getTime() : NaN;
+  if (!Number.isNaN(closesAtMs) && closesAtMs > Date.now()) {
+    return 'Closing soon';
+  }
+  return 'Under renovation';
+};
+
 export interface ActorGroup {
   name: string;
   locationIds: string[];

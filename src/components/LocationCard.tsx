@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { theme } from '../theme';
-import { FilmingLocation } from '../models';
+import { FilmingLocation, getAnnouncementRibbonLabel } from '../models';
 import { CategoryBadge } from './CategoryBadge';
 import { MapPlaceholder } from './MapPlaceholder';
 import { SmartHeroImage } from './SmartHeroImage';
@@ -54,9 +54,11 @@ export const LocationCard: React.FC<LocationCardProps> = ({
   const cardAddress = formatCardAddress(location.address, location.city, location.country);
   const { isSaved: checkSaved, toggleSave: contextToggle } = useSaved();
   const isSaved = checkSaved(location.id);
-  // A location with an active announcement (e.g. temporarily closed) gets the
-  // red closure ribbon on its photo, matching the location detail screen.
+  // A location with an announcement (e.g. a temporary closure) gets the red
+  // ribbon on its photo, matching the location detail screen. The label is
+  // time-aware: "Closing soon" before closesAt, "Under renovation" after.
   const hasAnnouncement = !!location.announcement;
+  const ribbonLabel = getAnnouncementRibbonLabel(location.announcement);
   const [imageError, setImageError] = useState(false);
   const heartScale = useRef(new Animated.Value(1)).current;
   const pressAnim = useRef(new Animated.Value(0)).current;
@@ -187,7 +189,7 @@ export const LocationCard: React.FC<LocationCardProps> = ({
                 photo, same treatment as the location detail hero. The heart and
                 distance badge shift inward so nothing is covered. */}
             {hasAnnouncement && (
-              <ClosureRibbon label="Closed" size={CARD_RIBBON_SIZE} fontSize={12} />
+              <ClosureRibbon label={ribbonLabel} size={CARD_RIBBON_SIZE} fontSize={12} />
             )}
 
             {/* Category badge — top left */}
