@@ -362,7 +362,7 @@ export const DiscoverScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
           <Text style={styles.searchResultLabel}>{item.label}</Text>
           <Text style={styles.searchResultSub}>{item.subtitle}</Text>
         </View>
-        <Text style={styles.searchResultChevron}>›</Text>
+        <Text style={[styles.searchResultChevron, hasAnnouncement && styles.searchResultChevronAnnounced]}>›</Text>
         {/* Red corner ribbon — this title has a location with an active announcement */}
         {hasAnnouncement && <ClosureRibbon label="Closed" size={44} fontSize={7} />}
       </TouchableOpacity>
@@ -685,13 +685,14 @@ const styles = StyleSheet.create({
   searchResultRowAnnounced: {
     position: 'relative',
     overflow: 'hidden',
-    paddingRight: 34,
   },
   searchResultEmoji: { fontSize: 20, marginRight: 10 },
   searchResultInfo: { flex: 1 },
   searchResultLabel: { fontSize: 14, fontWeight: '600', color: theme.colors.textPrimary },
   searchResultSub: { fontSize: 12, color: theme.colors.textSecondary, marginTop: 1 },
   searchResultChevron: { fontSize: 18, color: theme.colors.textTertiary, fontWeight: '300' },
+  // Keep the chevron clear of the 44pt corner ribbon.
+  searchResultChevronAnnounced: { marginRight: 26 },
 
   chipsContainer: { marginBottom: 12 },
   chipsContent: { gap: 6 },
